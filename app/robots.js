@@ -5,10 +5,13 @@ export default function robots() {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/api/', '/auth/'],
+        allow: ['/', '/login'],
+        disallow: ['/admin*', '/api/', '/auth/'],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: [
+      `${baseUrl}/sitemap.xml`,
+      'https://www.webguruji.online/sitemap_index.xml',
+    ],
   };
 }
