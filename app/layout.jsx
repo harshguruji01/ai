@@ -46,20 +46,20 @@ export const metadata = {
     siteName: 'GuruAI',
     images: [
       {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'GuruAI Chatbot Interface',
+        url: '/logo.png',
+        width: 800,
+        height: 800,
+        alt: 'GuruAI Logo',
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: 'GuruAI — AI Chat Assistant',
     description:
       'Chat with NVIDIA Nemotron 3 Ultra 550B and generate high-resolution art with Stable Diffusion XL on GuruAI.',
     creator: '@harshguruji',
-    images: ['/og-image.png'],
+    images: ['/logo.png'],
   },
 };
 
@@ -75,6 +75,8 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
       </head>
       <body className="antialiased selection:bg-blue-500 selection:text-white">
         {children}
@@ -82,3 +84,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+

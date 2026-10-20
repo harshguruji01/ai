@@ -75,6 +75,26 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_ENV: production
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://wumdbpyhpblvgjttsbpv.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80' }}
+
+      - name: Prepare Root Site for GitHub Pages
+        run: |
+          mkdir -p ./out
+          cp index.html ./out/index.html
+          cp admin.html ./out/admin.html
+          cp logo.png ./out/logo.png
+          cp robots.txt ./out/robots.txt
+          cp sitemap.xml ./out/sitemap.xml
+          cp CNAME ./out/CNAME
+          touch ./out/.nojekyll
+          if [ -d "./public" ]; then
+            cp -r ./public/* ./out/ || true
+          fi
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

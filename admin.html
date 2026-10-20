@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GuruAI Admin Command Center — User Tracking & Roles</title>
+  <meta name="description" content="Manage GuruAI registered users, track Google and local accounts, assign admin roles, and inspect database activity." />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#6366f1',
+              600: '#4f46e5',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            heading: ['Outfit', 'Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      background-color: #07090e;
+      color: #f8fafc;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#07090e] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="border-b border-slate-800/80 bg-[#0c101d]/90 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform">
+          <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-base tracking-wide text-white font-heading">GuruAI</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 font-semibold tracking-wider uppercase">Admin Portal</span>
+          </div>
+          <span class="text-[11px] text-slate-400 block -mt-0.5">Database User Tracking & Role Governance</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white text-xs font-semibold transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <span>Open Chatbot</span>
+      </a>
+
+      <!-- Current Auth Status -->
+      <div id="headerAuthBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs">
+        <span class="w-2 h-2 rounded-full bg-slate-500" id="headerAuthDot"></span>
+        <span id="headerAuthText" class="text-slate-300 font-medium">Checking session...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- 1. NOT LOGGED IN HERO STATE -->
+    <section id="loginPromptSection" class="hidden rounded-2xl bg-[#0d1222]/90 border border-slate-800/80 p-8 text-center space-y-5 max-w-xl mx-auto my-12 shadow-2xl">
+      <div class="w-16 h-16 rounded-2xl bg-indigo-950/80 border border-indigo-500/40 text-cyan-400 mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      </div>
+      <div class="space-y-1.5">
+        <h2 class="text-xl font-bold font-heading text-white">Admin Authentication Required</h2>
+        <p class="text-xs text-slate-400 max-w-md mx-auto">Please sign in with your Google Account or GuruAI credentials to access the user governance console.</p>
+      </div>
+
+      <div class="pt-2 space-y-3 max-w-sm mx-auto">
+        <button id="googleSignInAdminBtn" type="button" class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 text-white font-semibold text-sm flex items-center justify-center gap-3 shadow-md transition group">
+          <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+          </svg>
+          <span>Sign In with Google</span>
+        </button>
+
+        <a href="index.html" class="block w-full py-2.5 px-4 rounded-xl bg-slate-950/60 hover:bg-slate-900 border border-slate-800 text-xs text-slate-400 font-medium transition">
+          Return to GuruAI Home
+        </a>
+      </div>
+    </section>
+
+    <!-- 2. ADMIN DASHBOARD CONTENT (VISIBLE WHEN LOGGED IN) -->
+    <div id="adminContentSection" class="hidden space-y-6">
+
+      <!-- Logged User Admin Banner -->
+      <section class="rounded-2xl bg-gradient-to-r from-indigo-950/70 via-slate-900 to-slate-900 border border-indigo-500/30 p-5 md:p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div id="adminUserAvatar" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 border border-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-600/30 overflow-hidden flex-shrink-0">
+            A
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <h1 id="adminUserName" class="text-lg md:text-xl font-bold font-heading text-white">Administrator</h1>
+              <span id="adminRoleBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold flex items-center gap-1">
+                <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg>
+                <span id="adminRoleText">Admin</span>
+              </span>
+              <span id="adminProviderBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-semibold">
+                Google Account
+              </span>
+            </div>
+            <p id="adminUserEmail" class="text-xs text-slate-300 font-mono">admin@example.com</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 flex-wrap self-end md:self-auto">
+          <!-- Button to make self admin if not already -->
+          <button id="makeSelfAdminBtn" type="button" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md transition active:scale-95">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg>
+            <span>Set Me As Admin</span>
+          </button>
+
+          <button id="refreshDataBtn" type="button" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Refresh</span>
+          </button>
+
+          <button id="adminSignOutBtn" type="button" class="px-3.5 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 text-xs font-semibold border border-rose-800/60 transition">
+            Sign Out
+          </button>
+        </div>
+      </section>
+
+      <!-- STATS SUMMARY CARDS -->
+      <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-2xl bg-[#0d1222] border border-slate-800 shadow-sm space-y-1">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Users</span>
+          <div class="text-2xl font-bold font-heading text-white" id="statTotalUsers">0</div>
+          <span class="text-[10px] text-cyan-400">Tracked in database</span>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#0d1222] border border-slate-800 shadow-sm space-y-1">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Google Accounts</span>
+          <div class="text-2xl font-bold font-heading text-cyan-300" id="statGoogleUsers">0</div>
+          <span class="text-[10px] text-emerald-400">OAuth Authenticated</span>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#0d1222] border border-slate-800 shadow-sm space-y-1">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Admin Staff</span>
+          <div class="text-2xl font-bold font-heading text-amber-400" id="statAdminUsers">0</div>
+          <span class="text-[10px] text-amber-300">Elevated Permissions</span>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#0d1222] border border-slate-800 shadow-sm space-y-1">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">System Status</span>
+          <div class="text-2xl font-bold font-heading text-emerald-400 flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Live</span>
+          </div>
+          <span class="text-[10px] text-slate-400 font-mono">Postgres RLS Active</span>
+        </div>
+      </section>
+
+      <!-- USERS DIRECTORY & ROLE MANAGEMENT -->
+      <section class="rounded-2xl bg-[#0d1222] border border-slate-800 shadow-xl overflow-hidden space-y-4 p-5">
+        
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold font-heading text-white">Registered User Directory</h2>
+            <p class="text-xs text-slate-400">View tracked accounts, identify Google Sign-Ins, and toggle Admin privileges.</p>
+          </div>
+
+          <!-- Search input -->
+          <div class="w-full sm:w-64 relative">
+            <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="userSearchInput" type="text" placeholder="Search by email or name..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          </div>
+        </div>
+
+        <!-- USERS TABLE -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800/80">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase font-semibold text-[11px] tracking-wider">
+                <th class="p-3.5">User</th>
+                <th class="p-3.5">Provider</th>
+                <th class="p-3.5">Role</th>
+                <th class="p-3.5">Admin Status</th>
+                <th class="p-3.5">Last Active</th>
+                <th class="p-3.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody" class="divide-y divide-slate-800/60">
+              <tr>
+                <td colspan="6" class="p-8 text-center text-slate-500">
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></span>
+                    <span>Loading database records...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800/80 py-4 px-6 text-center text-xs text-slate-500">
+    GuruAI Admin Console • Powered by Supabase & Next.js • Protected by PostgreSQL Row Level Security
+  </footer>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80';
+
+    let supabase = null;
+    if (window.supabase && window.supabase.createClient) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    let currentSessionUser = null;
+    let allUsersList = [];
+
+    // DOM References
+    const headerAuthDot = document.getElementById('headerAuthDot');
+    const headerAuthText = document.getElementById('headerAuthText');
+    const loginPromptSection = document.getElementById('loginPromptSection');
+    const adminContentSection = document.getElementById('adminContentSection');
+    const googleSignInAdminBtn = document.getElementById('googleSignInAdminBtn');
+    const makeSelfAdminBtn = document.getElementById('makeSelfAdminBtn');
+    const refreshDataBtn = document.getElementById('refreshDataBtn');
+    const adminSignOutBtn = document.getElementById('adminSignOutBtn');
+    const userSearchInput = document.getElementById('userSearchInput');
+    const usersTableBody = document.getElementById('usersTableBody');
+
+    // Stats
+    const statTotalUsers = document.getElementById('statTotalUsers');
+    const statGoogleUsers = document.getElementById('statGoogleUsers');
+    const statAdminUsers = document.getElementById('statAdminUsers');
+
+    // Google Sign-In Action
+    googleSignInAdminBtn.onclick = async () => {
+      if (!supabase) return alert('Supabase client not initialized');
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.href.split('#')[0]
+        }
+      });
+      if (error) alert('Google Sign-In failed: ' + error.message);
+    };
+
+    // Sign Out
+    adminSignOutBtn.onclick = async () => {
+      if (supabase) await supabase.auth.signOut();
+      window.location.reload();
+    };
+
+    // Track User in DB
+    async function trackCurrentUser(user) {
+      if (!user) return;
+      try {
+        // Call server tracking API
+        fetch('/api/auth/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user })
+        }).catch(() => {});
+
+        // Direct Supabase upsert fallback
+        if (supabase) {
+          const now = new Date().toISOString();
+          const fullName = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+          const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+          const provider = user.app_metadata?.provider || (user.identities && user.identities[0]?.provider) || 'google';
+
+          await supabase.from('profiles').upsert({
+            id: user.id,
+            email: user.email.toLowerCase(),
+            display_name: fullName,
+            avatar_url: avatarUrl,
+            updated_at: now
+          }, { onConflict: 'id' });
+
+          await supabase.from('users').upsert({
+            id: user.id,
+            email: user.email.toLowerCase(),
+            name: fullName,
+            full_name: fullName,
+            avatar_url: avatarUrl,
+            provider: provider,
+            last_login_at: now,
+            updated_at: now,
+            is_active: true
+          }, { onConflict: 'id' });
+        }
+      } catch (err) {
+        console.warn('Track user error:', err);
+      }
+    }
+
+    // Set Me As Admin Action
+    makeSelfAdminBtn.onclick = async () => {
+      if (!currentSessionUser) return;
+      makeSelfAdminBtn.disabled = true;
+      makeSelfAdminBtn.innerHTML = '<span>Saving...</span>';
+
+      try {
+        let updated = false;
+        // 1. Try server API
+        try {
+          const res = await fetch('/api/admin/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: currentSessionUser.id,
+              email: currentSessionUser.email,
+              isAdmin: true
+            })
+          });
+          if (res.ok) updated = true;
+        } catch(e){}
+
+        // 2. Direct Supabase update
+        if (supabase) {
+          await supabase.from('profiles').update({ is_admin: true, role: 'admin' }).eq('id', currentSessionUser.id);
+          await supabase.from('users').update({ role: 'ADMIN' }).eq('id', currentSessionUser.id);
+          updated = true;
+        }
+
+        if (updated) {
+          alert('Success! You are now set as an Admin.');
+          await loadUsers();
+          updateAdminHeader(currentSessionUser);
+        }
+      } catch (err) {
+        alert('Could not update admin status: ' + err.message);
+      } finally {
+        makeSelfAdminBtn.disabled = false;
+        makeSelfAdminBtn.innerHTML = `<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg><span>Set Me As Admin</span>`;
+      }
+    };
+
+    // Toggle Admin For Any User
+    async function toggleUserAdmin(userId, email, currentStatus) {
+      const newStatus = !currentStatus;
+      const confirmAction = confirm(`Are you sure you want to ${newStatus ? 'grant Admin rights to' : 'revoke Admin rights from'} ${email}?`);
+      if (!confirmAction) return;
+
+      try {
+        // Try server API
+        const res = await fetch('/api/admin/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, email, isAdmin: newStatus })
+        });
+
+        // Direct fallback
+        if (supabase) {
+          await supabase.from('profiles').update({ is_admin: newStatus, role: newStatus ? 'admin' : 'student' }).eq('id', userId);
+          await supabase.from('users').update({ role: newStatus ? 'ADMIN' : 'USER' }).eq('id', userId);
+        }
+
+        await loadUsers();
+      } catch (err) {
+        alert('Failed to update user: ' + err.message);
+      }
+    }
+
+    // Load All Users
+    async function loadUsers() {
+      try {
+        let users = [];
+
+        // 1. Try server admin endpoint
+        try {
+          const res = await fetch('/api/admin/users');
+          if (res.ok) {
+            const data = await res.json();
+            if (data.users) users = data.users;
+          }
+        } catch(e){}
+
+        // 2. Direct Supabase query fallback
+        if (!users.length && supabase) {
+          const { data: profiles } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+          const { data: usersData } = await supabase.from('users').select('*');
+          const pMap = new Map();
+          if (usersData) {
+            usersData.forEach(u => pMap.set(u.id, u.provider || 'email'));
+          }
+          if (profiles) {
+            users = profiles.map(p => ({
+              ...p,
+              provider: pMap.get(p.id) || (p.email?.includes('gmail') ? 'google' : 'email')
+            }));
+          }
+        }
+
+        allUsersList = users;
+        renderUsersTable(allUsersList);
+        updateStats(allUsersList);
+      } catch (err) {
+        console.error('Failed to load users:', err);
+        usersTableBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-rose-400">Failed to load users: ${err.message}</td></tr>`;
+      }
+    }
+
+    // Update Stats Cards
+    function updateStats(users) {
+      statTotalUsers.textContent = users.length;
+      const googleCount = users.filter(u => (u.provider === 'google' || u.email?.endsWith('@gmail.com'))).length;
+      statGoogleUsers.textContent = googleCount;
+      const adminCount = users.filter(u => u.is_admin || u.role === 'admin' || u.role === 'ADMIN').length;
+      statAdminUsers.textContent = adminCount;
+    }
+
+    // Render Users Table
+    function renderUsersTable(users) {
+      if (!users.length) {
+        usersTableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">No users found.</td></tr>`;
+        return;
+      }
+
+      usersTableBody.innerHTML = users.map(user => {
+        const isGoogle = user.provider === 'google' || user.email?.endsWith('@gmail.com');
+        const isAdmin = Boolean(user.is_admin || user.role === 'admin' || user.role === 'ADMIN' || user.email === 'harshguruji01@gmail.com');
+        const name = user.display_name || user.name || user.email.split('@')[0];
+        const avatarInitial = (name || user.email)[0].toUpperCase();
+        const dateStr = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Active';
+
+        return `
+          <tr class="hover:bg-slate-900/50 transition">
+            <td class="p-3.5">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-300 text-xs overflow-hidden flex-shrink-0">
+                  ${user.avatar_url ? `<img src="${user.avatar_url}" alt="${name}" class="w-full h-full object-cover" />` : avatarInitial}
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-200">${name}</div>
+                  <div class="text-[11px] text-slate-400 font-mono">${user.email}</div>
+                </div>
+              </div>
+            </td>
+            <td class="p-3.5">
+              ${isGoogle ? `
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-800/60 text-cyan-300 font-semibold text-[11px]">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                  </svg>
+                  Google
+                </span>
+              ` : `
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-[11px]">
+                  Email
+                </span>
+              `}
+            </td>
+            <td class="p-3.5">
+              <span class="font-mono text-slate-300 capitalize">${user.role || 'User'}</span>
+            </td>
+            <td class="p-3.5">
+              ${isAdmin ? `
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 font-bold text-[11px]">
+                  <svg class="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg>
+                  Admin
+                </span>
+              ` : `
+                <span class="inline-block px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[11px]">
+                  Standard
+                </span>
+              `}
+            </td>
+            <td class="p-3.5 text-slate-400 font-mono text-[11px]">
+              ${dateStr}
+            </td>
+            <td class="p-3.5 text-right">
+              <button 
+                onclick="toggleUserAdmin('${user.id}', '${user.email}', ${isAdmin})"
+                class="px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  isAdmin 
+                    ? 'bg-rose-950/60 hover:bg-rose-900 border border-rose-800/60 text-rose-300' 
+                    : 'bg-indigo-600/80 hover:bg-indigo-500 text-white shadow-sm'
+                }"
+              >
+                ${isAdmin ? 'Revoke Admin' : 'Make Admin'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Filter Search
+    userSearchInput.oninput = () => {
+      const query = userSearchInput.value.toLowerCase().trim();
+      if (!query) {
+        renderUsersTable(allUsersList);
+        return;
+      }
+      const filtered = allUsersList.filter(u => 
+        (u.email && u.email.toLowerCase().includes(query)) ||
+        (u.display_name && u.display_name.toLowerCase().includes(query)) ||
+        (u.name && u.name.toLowerCase().includes(query)) ||
+        (u.provider && u.provider.toLowerCase().includes(query)) ||
+        (u.role && u.role.toLowerCase().includes(query))
+      );
+      renderUsersTable(filtered);
+    };
+
+    refreshDataBtn.onclick = () => loadUsers();
+
+    // Update Header and Admin Profile
+    function updateAdminHeader(user) {
+      if (user) {
+        headerAuthDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        headerAuthText.textContent = user.email;
+
+        loginPromptSection.classList.add('hidden');
+        adminContentSection.classList.remove('hidden');
+
+        const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+        document.getElementById('adminUserName').textContent = name;
+        document.getElementById('adminUserEmail').textContent = user.email;
+
+        const avatarEl = document.getElementById('adminUserAvatar');
+        if (user.user_metadata?.avatar_url || user.user_metadata?.picture) {
+          avatarEl.innerHTML = `<img src="${user.user_metadata.avatar_url || user.user_metadata.picture}" alt="${name}" class="w-full h-full object-cover" />`;
+        } else {
+          avatarEl.textContent = name[0].toUpperCase();
+        }
+
+        const isGoogle = user.app_metadata?.provider === 'google' || user.email.endsWith('@gmail.com');
+        document.getElementById('adminProviderBadge').textContent = isGoogle ? 'Google Account' : 'Email Account';
+
+        // Check Admin Status
+        const isAdmin = user.email === 'harshguruji01@gmail.com';
+        if (isAdmin) {
+          document.getElementById('adminRoleBadge').classList.remove('hidden');
+          document.getElementById('adminRoleText').textContent = 'Master Admin';
+        }
+      } else {
+        headerAuthDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        headerAuthText.textContent = 'Guest (Not Logged In)';
+        loginPromptSection.classList.remove('hidden');
+        adminContentSection.classList.add('hidden');
+      }
+    }
+
+    // Initialize Auth Session
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        currentSessionUser = session?.user || null;
+        updateAdminHeader(currentSessionUser);
+        if (currentSessionUser) {
+          trackCurrentUser(currentSessionUser);
+          loadUsers();
+        }
+      });
+
+      supabase.auth.onAuthStateChange((event, session) => {
+        currentSessionUser = session?.user || null;
+        updateAdminHeader(currentSessionUser);
+        if (currentSessionUser) {
+          trackCurrentUser(currentSessionUser);
+          loadUsers();
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -4,8 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>GuruAI — AI Chat Assistant & Creative Studio</title>
-  <meta name="description" content="Experience intelligent conversation with NVIDIA Nemotron 3 Ultra 550B and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI by HarshGuruJi." />
-  <link rel="icon" type="image/svg+xml" href="app/icon.svg" />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="canonical" href="https://ai.webguruji.online/" />
+  <meta name="robots" content="index, follow" />
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ai.webguruji.online/" />
+  <meta property="og:title" content="GuruAI — AI Chat Assistant & Creative Studio" />
+  <meta property="og:description" content="Experience intelligent conversation with NVIDIA Nemotron 3 Ultra 550B and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI by HarshGuruJi." />
+  <meta property="og:image" content="https://ai.webguruji.online/logo.png" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="GuruAI — AI Chat Assistant & Creative Studio" />
+  <meta name="twitter:description" content="Experience intelligent conversation with NVIDIA Nemotron 3 Ultra 550B and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI." />
+  <meta name="twitter:image" content="https://ai.webguruji.online/logo.png" />
 
   <!-- Google Fonts: Inter, Outfit, Fira Code -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -141,19 +154,9 @@
       <div class="p-3.5 space-y-3 border-b border-[var(--border-color)] flex-shrink-0">
         <div class="flex items-center justify-between">
           <a href="https://webguruji.online" target="_blank" class="flex items-center gap-2.5 group overflow-hidden">
-            <!-- GuruAI Logo SVG -->
-            <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-              <svg viewBox="0 0 32 32" class="w-6 h-6" fill="none">
-                <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-                <circle cx="22" cy="10" r="2.2" fill="#38BDF8" />
-                <defs>
-                  <linearGradient id="guruGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#6366F1" />
-                    <stop offset="50%" stop-color="#8B5CF6" />
-                    <stop offset="100%" stop-color="#06B6D4" />
-                  </linearGradient>
-                </defs>
-              </svg>
+            <!-- GuruAI Logo -->
+            <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform overflow-hidden flex-shrink-0">
+              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
             </div>
             <div class="leading-tight">
               <span class="font-bold text-sm text-white tracking-wide font-heading">GuruAI</span>
@@ -189,6 +192,15 @@
 
       <!-- Footer User Panel -->
       <div class="p-3 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] space-y-2.5 flex-shrink-0">
+        <!-- Admin Console Link (shown when admin) -->
+        <a href="admin.html" id="sidebarAdminLink" class="hidden flex items-center justify-between p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold transition group">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg>
+            <span>Admin Portal</span>
+          </div>
+          <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-200">admin.html</span>
+        </a>
+
         <!-- Allowance Indicator -->
         <div class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between text-xs">
           <div class="flex items-center gap-2">
@@ -418,6 +430,25 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
         </button>
 
+        <div class="relative my-3">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-800"></div>
+          </div>
+          <div class="relative flex justify-center text-xs">
+            <span class="bg-slate-900 px-3 text-slate-500 uppercase tracking-wider font-medium text-[10px]">Or continue with</span>
+          </div>
+        </div>
+
+        <button type="button" class="googleOAuthBtn w-full py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-800/90 border border-slate-800 hover:border-slate-700 text-slate-200 font-semibold text-sm flex items-center justify-center gap-2.5 transition shadow-sm group">
+          <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
         <div class="pt-2 text-center text-xs text-slate-400">
           Don't have an account? <button type="button" id="switchToRegisterBtn" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Sign Up</button>
         </div>
@@ -452,6 +483,25 @@
         <button type="submit" id="registerSubmitBtn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition">
           <span>Create Account</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+
+        <div class="relative my-3">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-800"></div>
+          </div>
+          <div class="relative flex justify-center text-xs">
+            <span class="bg-slate-900 px-3 text-slate-500 uppercase tracking-wider font-medium text-[10px]">Or continue with</span>
+          </div>
+        </div>
+
+        <button type="button" class="googleOAuthBtn w-full py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-800/90 border border-slate-800 hover:border-slate-700 text-slate-200 font-semibold text-sm flex items-center justify-center gap-2.5 transition shadow-sm group">
+          <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+          </svg>
+          <span>Continue with Google</span>
         </button>
 
         <div class="pt-2 text-center text-xs text-slate-400">
@@ -514,11 +564,26 @@
 
       <!-- 4. LOGGED IN MEMBER VIEW -->
       <div id="loggedInView" class="space-y-4 hidden text-center">
-        <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-          <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-lg" id="loggedInAvatarLarge">U</div>
+        <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+          <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-lg overflow-hidden" id="loggedInAvatarLarge">U</div>
           <div class="text-sm font-semibold text-slate-200" id="loggedInEmailText">user@example.com</div>
-          <div class="inline-block px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[11px] font-semibold">Active Member • 10 requests / 12h</div>
+          <div id="loggedInRoleBadge" class="inline-block px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[11px] font-semibold">Active Member • 10 requests / 12h</div>
         </div>
+
+        <div class="space-y-2">
+          <!-- Admin Portal Link -->
+          <a href="admin.html" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md flex items-center justify-center gap-2 transition group">
+            <svg class="w-4 h-4 fill-current group-hover:rotate-12 transition-transform" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg>
+            <span>Open Admin Portal (admin.html)</span>
+          </a>
+
+          <!-- Promote Myself to Admin Button -->
+          <button type="button" id="makeSelfAdminModalBtn" class="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-amber-300 hover:text-amber-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition">
+            <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span>Make Logged User Admin</span>
+          </button>
+        </div>
+
         <button type="button" id="logoutBtn" class="w-full py-2.5 px-4 rounded-xl bg-rose-900/60 hover:bg-rose-800/80 border border-rose-700/50 text-rose-200 font-semibold text-sm transition">Sign Out</button>
       </div>
 
@@ -724,6 +789,174 @@
     switchToForgotBtn.onclick = () => setAuthModalMode('forgot');
     forgotBackToLoginBtn.onclick = () => setAuthModalMode('login');
 
+    // Google Sign-In Buttons Handler
+    function initGoogleAuthButtons() {
+      document.querySelectorAll('.googleOAuthBtn').forEach((btn) => {
+        btn.onclick = async () => {
+          if (!supabaseClient) {
+            showAuthAlert('error', 'Supabase client not loaded.');
+            return;
+          }
+          showAuthAlert('clear', '');
+          const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              redirectTo: window.location.href.split('#')[0],
+            },
+          });
+          if (error) {
+            showAuthAlert('error', error.message);
+          }
+        };
+      });
+    }
+    initGoogleAuthButtons();
+
+    // Track User (Google or Email) into Database
+    async function trackUserInDb(user) {
+      if (!user) return;
+      try {
+        // 1. Try Next.js server tracking API
+        fetch('/api/auth/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user }),
+        }).catch(() => {});
+
+        // 2. Direct Supabase Client fallback (for static hosting)
+        if (supabaseClient) {
+          const now = new Date().toISOString();
+          const fullName =
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            user.email.split('@')[0];
+          const avatarUrl =
+            user.user_metadata?.avatar_url ||
+            user.user_metadata?.picture ||
+            null;
+          const provider =
+            user.app_metadata?.provider ||
+            (user.identities && user.identities[0]?.provider) ||
+            'google';
+
+          await supabaseClient.from('profiles').upsert(
+            {
+              id: user.id,
+              email: user.email.toLowerCase(),
+              display_name: fullName,
+              avatar_url: avatarUrl,
+              updated_at: now,
+            },
+            { onConflict: 'id' }
+          );
+
+          await supabaseClient.from('users').upsert(
+            {
+              id: user.id,
+              email: user.email.toLowerCase(),
+              name: fullName,
+              full_name: fullName,
+              avatar_url: avatarUrl,
+              provider: provider,
+              last_login_at: now,
+              updated_at: now,
+              is_active: true,
+            },
+            { onConflict: 'id' }
+          );
+        }
+      } catch (trackErr) {
+        console.warn('Track user in DB error:', trackErr);
+      }
+    }
+
+    // Check & Apply Admin Status
+    async function checkAdminStatus(user) {
+      const sidebarAdminLink = document.getElementById('sidebarAdminLink');
+      const loggedInRoleBadge = document.getElementById('loggedInRoleBadge');
+      if (!user) {
+        if (sidebarAdminLink) sidebarAdminLink.classList.add('hidden');
+        return;
+      }
+
+      let isAdmin = user.email === 'harshguruji01@gmail.com';
+
+      if (supabaseClient) {
+        try {
+          const { data } = await supabaseClient
+            .from('profiles')
+            .select('is_admin, role')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (data?.is_admin || data?.role === 'admin' || data?.role === 'ADMIN') {
+            isAdmin = true;
+          }
+        } catch (e) {}
+      }
+
+      if (isAdmin) {
+        userStatusLabel.textContent = 'Admin Master';
+        userStatusLabel.className = 'text-[10px] text-amber-400 font-bold';
+        headerTierText.textContent = 'Admin';
+        headerTierText.className =
+          'text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 ml-0.5';
+        if (sidebarAdminLink) sidebarAdminLink.classList.remove('hidden');
+        if (loggedInRoleBadge) {
+          loggedInRoleBadge.className =
+            'inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-bold';
+          loggedInRoleBadge.innerHTML =
+            '<svg class="w-3 h-3 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg> Master Admin • Unlimited';
+        }
+      } else {
+        if (sidebarAdminLink) sidebarAdminLink.classList.add('hidden');
+      }
+    }
+
+    // Make Myself Admin button in profile modal
+    const makeSelfAdminModalBtn = document.getElementById('makeSelfAdminModalBtn');
+    if (makeSelfAdminModalBtn) {
+      makeSelfAdminModalBtn.onclick = async () => {
+        if (!currentUser) return;
+        makeSelfAdminModalBtn.disabled = true;
+        makeSelfAdminModalBtn.textContent = 'Promoting to Admin...';
+        try {
+          // 1. Try server endpoint
+          try {
+            await fetch('/api/admin/users', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: currentUser.id,
+                email: currentUser.email,
+                isAdmin: true,
+              }),
+            });
+          } catch (e) {}
+
+          // 2. Direct Supabase update
+          if (supabaseClient) {
+            await supabaseClient
+              .from('profiles')
+              .update({ is_admin: true, role: 'admin' })
+              .eq('id', currentUser.id);
+            await supabaseClient
+              .from('users')
+              .update({ role: 'ADMIN' })
+              .eq('id', currentUser.id);
+          }
+
+          alert('Success! You are now an Admin on GuruAI. Refreshing state...');
+          window.location.reload();
+        } catch (err) {
+          alert('Could not set admin status: ' + err.message);
+        } finally {
+          makeSelfAdminModalBtn.disabled = false;
+          makeSelfAdminModalBtn.textContent = 'Make Logged User Admin';
+        }
+      };
+    }
+
     // Sync User Session State
     function updateUserState(user) {
       currentUser = user;
@@ -732,42 +965,62 @@
         remainingAllowance = 10;
         localStorage.setItem('guruai_allowance', 10);
         userAvatar.textContent = (user.email || 'U')[0].toUpperCase();
-        userAvatar.className = 'w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 border border-indigo-400 flex items-center justify-center text-white text-xs font-bold';
-        userNameLabel.textContent = user.email.split('@')[0];
+        userAvatar.className =
+          'w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 border border-indigo-400 flex items-center justify-center text-white text-xs font-bold';
+        userNameLabel.textContent = (user.user_metadata?.full_name || user.email.split('@')[0]);
         userStatusLabel.textContent = 'Member (10 req/12h)';
         userStatusLabel.className = 'text-[10px] text-emerald-400 font-semibold';
         userTierLabel.textContent = 'Member Allowance';
         headerTierText.textContent = 'Member';
-        headerTierText.className = 'text-[10px] font-mono px-1 py-0.2 rounded bg-indigo-900/60 text-cyan-300 ml-0.5';
+        headerTierText.className =
+          'text-[10px] font-mono px-1 py-0.2 rounded bg-indigo-900/60 text-cyan-300 ml-0.5';
         if (imageLockIcon) imageLockIcon.classList.add('hidden');
         if (headerSignInBtn) {
-          headerSignInBtn.className = 'flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 transition';
+          headerSignInBtn.className =
+            'flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 transition';
           headerSignInBtn.innerHTML = `
-            <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white">
-              ${(user.email || 'U')[0].toUpperCase()}
+            <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden">
+              ${
+                user.user_metadata?.avatar_url
+                  ? `<img src="${user.user_metadata.avatar_url}" alt="User" class="w-full h-full object-cover" />`
+                  : (user.email || 'U')[0].toUpperCase()
+              }
             </div>
-            <span class="text-xs text-slate-200 font-medium hidden sm:inline max-w-[120px] truncate">${user.email.split('@')[0]}</span>
+            <span class="text-xs text-slate-200 font-medium hidden sm:inline max-w-[120px] truncate">${
+              user.user_metadata?.full_name || user.email.split('@')[0]
+            }</span>
           `;
         }
+
+        // Track in DB & verify Admin rights
+        trackUserInDb(user);
+        checkAdminStatus(user);
       } else {
         maxRequests = 2;
-        remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '2', 10);
+        remainingAllowance = parseInt(
+          localStorage.getItem('guruai_allowance') || '2',
+          10
+        );
         userAvatar.textContent = 'G';
-        userAvatar.className = 'w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold';
+        userAvatar.className =
+          'w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold';
         userNameLabel.textContent = 'Guest Visitor';
         userStatusLabel.textContent = 'Click to Sign In';
         userStatusLabel.className = 'text-[10px] text-cyan-400 group-hover:underline';
         userTierLabel.textContent = 'Guest Allowance';
         headerTierText.textContent = 'Guest';
-        headerTierText.className = 'text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5';
+        headerTierText.className =
+          'text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5';
         if (imageLockIcon) imageLockIcon.classList.remove('hidden');
         if (headerSignInBtn) {
-          headerSignInBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95';
+          headerSignInBtn.className =
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95';
           headerSignInBtn.innerHTML = `
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
             <span>Sign In</span>
           `;
         }
+        checkAdminStatus(null);
       }
       updateQuotaUI();
     }
@@ -801,7 +1054,10 @@
         if (event === 'PASSWORD_RECOVERY') {
           openAuthModal('forgot');
           verifyOtpResetForm.classList.remove('hidden');
-          showAuthAlert('success', 'Recovery link accepted! Please enter your new password below.');
+          showAuthAlert(
+            'success',
+            'Recovery link accepted! Please enter your new password below.'
+          );
         }
       });
     }
@@ -1000,11 +1256,8 @@
     function renderWelcome() {
       chatFeed.innerHTML = `
         <div class="h-full flex flex-col items-center justify-center text-center space-y-7 my-auto py-8">
-          <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30">
-            <svg viewBox="0 0 32 32" class="w-10 h-10" fill="none">
-              <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-              <circle cx="22" cy="10" r="2.2" fill="#38BDF8" />
-            </svg>
+          <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30 overflow-hidden flex-shrink-0">
+            <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
           </div>
 
           <div class="space-y-2 max-w-lg">
@@ -1051,10 +1304,8 @@
 
       const avatar = isUser
         ? `<div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 font-bold text-xs flex-shrink-0 mt-0.5">${currentUser ? (currentUser.email || 'U')[0].toUpperCase() : 'U'}</div>`
-        : `<div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md">
-            <svg viewBox="0 0 32 32" class="w-5 h-5" fill="none">
-              <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+        : `<div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
+            <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
           </div>`;
 
       const bubbleClass = isUser
@@ -1087,10 +1338,8 @@
       const assistantMsgDiv = document.createElement('div');
       assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';
       assistantMsgDiv.innerHTML = `
-        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md">
-          <svg viewBox="0 0 32 32" class="w-5 h-5" fill="none">
-            <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
+          <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
         </div>
         <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1">
           <div id="activeStreamBubble" class="relative rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-sm leading-relaxed whitespace-pre-wrap"></div>
