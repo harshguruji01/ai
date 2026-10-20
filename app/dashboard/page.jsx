@@ -252,7 +252,7 @@ export default function DashboardPage() {
             <span>Open Chat</span>
           </Link>
 
-          <a href="https://www.webguruji.online/dashboard.html" target="_blank" rel="noopener noreferrer" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-950/70 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900/80 text-xs font-semibold transition shadow-sm">
+          <a href="https://webguruji.online" target="_blank" rel="noopener noreferrer" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-950/70 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900/80 text-xs font-semibold transition shadow-sm">
             <ExternalLink className="w-3.5 h-3.5" />
             <span>Main Website Dashboard</span>
           </a>
@@ -386,7 +386,7 @@ export default function DashboardPage() {
                   <span>Permanent Conversation History</span>
                 </div>
               </div>
-              <a href="https://www.webguruji.online/dashboard.html" target="_blank" className="text-[11px] text-indigo-400 hover:text-indigo-300 underline font-medium">Manage on HarshGuruJi &rarr;</a>
+              <a href="https://webguruji.online" target="_blank" className="text-[11px] text-indigo-400 hover:text-indigo-300 underline font-medium">Manage on HarshGuruJi &rarr;</a>
             </div>
           </div>
         </section>
@@ -580,7 +580,7 @@ export default function DashboardPage() {
         <section className="rounded-3xl bg-[#0d121f] border border-slate-800 p-5 sm:p-6 shadow-xl space-y-3">
           <h3 className="text-sm font-bold text-slate-300">HarshGuruJi Connected Ecosystem Portals</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-            <a href="https://www.webguruji.online/dashboard.html" target="_blank" className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-indigo-500/60 text-slate-200 transition group flex items-center justify-between">
+            <a href="https://webguruji.online" target="_blank" className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-indigo-500/60 text-slate-200 transition group flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-indigo-950/80 border border-indigo-500/40 flex items-center justify-center text-indigo-400 font-bold">🌐</div>
                 <div>
@@ -591,7 +591,7 @@ export default function DashboardPage() {
               <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition" />
             </a>
 
-            <a href="https://www.webguruji.online/store.html" target="_blank" className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-indigo-500/60 text-slate-200 transition group flex items-center justify-between">
+            <a href="https://webguruji.online/store.html" target="_blank" className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-indigo-500/60 text-slate-200 transition group flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold">🎮</div>
                 <div>

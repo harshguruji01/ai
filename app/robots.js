@@ -11,7 +11,7 @@ export default function robots() {
     ],
     sitemap: [
       `${baseUrl}/sitemap.xml`,
-      'https://www.webguruji.online/sitemap_index.xml',
+      'https://webguruji.online/sitemap_index.xml',
     ],
   };
 }

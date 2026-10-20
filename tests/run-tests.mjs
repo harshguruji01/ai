@@ -121,9 +121,9 @@ test('System Prompt: English default rules included', () => {
 test('System Prompt: Permanent Creator Memory includes Owner, Domains & Biography Link', () => {
   const prompt = buildSystemPrompt('english');
   assert.ok(prompt.includes('HarshGuruJi'));
-  assert.ok(prompt.includes('https://www.webguruji.online'));
+  assert.ok(prompt.includes('https://webguruji.online'));
   assert.ok(prompt.includes('https://ai.webguruji.online'));
-  assert.ok(prompt.includes('https://www.webguruji.online/owner.html'));
+  assert.ok(prompt.includes('https://webguruji.online/owner.html'));
 });
 
 // 4. Guest Anti-Abuse Key Hash Tests
