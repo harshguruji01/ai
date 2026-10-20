@@ -13,6 +13,7 @@ import {
   Shield,
   Check,
   ExternalLink,
+  LogIn,
 } from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 

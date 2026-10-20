@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { createClient } from '@/lib/supabase/client';
 import ChatSidebar from '@/components/ChatSidebar';
@@ -68,7 +68,32 @@ export default function GuruAiApp() {
     initFingerprint();
   }, []);
 
-  // 2. Fetch User Session, Preferences & Usage Status
+  // 2. Refresh Usage Allowance from Server
+  const refreshUsageStatus = useCallback(
+    async (currentUser) => {
+      try {
+        const url = currentUser ? '/api/usage' : `/api/usage?fp=${fingerprint || ''}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          setQuota({
+            remainingAllowance: data.remainingAllowance,
+            maxRequests: data.maxRequests,
+            resetInSeconds: data.resetInSeconds,
+            cooldownMessage:
+              data.remainingAllowance <= 0
+                ? 'Your current allowance is exhausted. Please wait for the window reset.'
+                : null,
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to refresh usage status:', err);
+      }
+    },
+    [fingerprint]
+  );
+
+  // 3. Fetch User Session, Preferences & Usage Status
   useEffect(() => {
     async function bootstrapApp() {
       try {
@@ -151,29 +176,7 @@ export default function GuruAiApp() {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase]);
-
-  // Refresh Usage Allowance from Server
-  const refreshUsageStatus = async (currentUser) => {
-    try {
-      const url = currentUser ? '/api/usage' : `/api/usage?fp=${fingerprint || ''}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setQuota({
-          remainingAllowance: data.remainingAllowance,
-          maxRequests: data.maxRequests,
-          resetInSeconds: data.resetInSeconds,
-          cooldownMessage:
-            data.remainingAllowance <= 0
-              ? 'Your current allowance is exhausted. Please wait for the window reset.'
-              : null,
-        });
-      }
-    } catch (err) {
-      console.warn('Failed to refresh usage status:', err);
-    }
-  };
+  }, [supabase, refreshUsageStatus]);
 
   // Apply Theme & Typography styles to document.body
   const applyTheme = (prefs) => {

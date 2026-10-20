@@ -74,6 +74,15 @@
   - Floating scroll-to-bottom action.
   - Responsive mobile drawer navigation.
 
+### E. Integrated Email Authentication & Password Recovery
+- **Direct In-App Sign In & Registration:** Users can sign in or create accounts directly from the AI platform using Email & Password.
+- **Forgot Password with "Send Code to Mail":**
+  - Users request a password recovery code sent to their registered email address.
+  - Implements a 60-second cooldown timer to prevent SMTP spam and rate-limit hits.
+  - Allows entering the 6-digit verification code directly on-site to set a new password (`supabase.auth.verifyOtp` + `supabase.auth.updateUser`), or clicking the email recovery link directly.
+- **Dedicated `/login` Window:** Full-screen responsive authentication portal at `https://ai.webguruji.online/login` synchronized with the main AI workspace.
+- **Standalone `index.html`:** Zero-build single-file version for direct local browser execution or GitHub Pages deployment with embedded Supabase JS SDK.
+
 ---
 
 ## 3. Environment Variables Setup
@@ -110,32 +119,53 @@ NEXT_PUBLIC_COOKIE_DOMAIN=.webguruji.online
 
 ---
 
-## 4. Local Development & Testing
+## 4. Local Development, Quality & Testing
 
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Run automated test suite
+# 2. Run automated test suite (13/13 unit tests)
 npm test
 
-# 3. Build production bundle
+# 3. Run ESLint code quality check
+npm run lint
+
+# 4. Build production bundle (standalone output)
 npm run build
 
-# 4. Start development server
+# 5. Start development server
 npm run dev
 ```
 
 ---
 
-## 5. Production Deployment
+## 5. Deployment Options
 
-1. **Host on Vercel or Custom Node.js Server:**
-   - Link repository and set environment variables.
-   - Set custom domain to `ai.webguruji.online`.
-2. **DNS & SSL:**
-   - Add CNAME record for `ai` pointing to your deployment.
-   - Verify SSL certificate covers `*.webguruji.online`.
-3. **Supabase Auth Redirect URLs:**
-   - In Supabase Dashboard > Authentication > URL Configuration:
-     - Add `https://ai.webguruji.online/**` to **Redirect URLs**.
+### Option A: Docker Container (Recommended)
+```bash
+# Build and run with docker-compose
+docker compose up -d --build
+```
+
+### Option B: VPS Deployment Script
+A production-ready Ubuntu setup script is provided in `deploy/setup-vps.sh`:
+```bash
+chmod +x deploy/setup-vps.sh
+./deploy/setup-vps.sh
+```
+
+### Option C: GitHub Pages / Direct Browser Access
+Open `index.html` directly in any web browser or activate GitHub Pages on `main` / `root` to run the standalone GuruAI studio with no backend needed.
+
+---
+
+## 6. Supabase URL Configuration
+
+In Supabase Dashboard > Authentication > URL Configuration:
+- **Site URL:** `https://webguruji.online`
+- **Redirect URLs:**
+  - `https://ai.webguruji.online/**`
+  - `https://webguruji.online/**`
+  - `http://localhost:3000/**`
+

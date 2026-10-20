@@ -221,7 +221,7 @@ export default function ChatWindow({
                       {card.summary}
                     </div>
                     <div className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
-                      "{card.prompt}"
+                      &ldquo;{card.prompt}&rdquo;
                     </div>
                   </button>
                 );
