@@ -863,9 +863,18 @@
 
       document.getElementById('modalGoogleSignInBtn').addEventListener('click', async () => {
         if (!supabase) return;
-        const returnUrl = window.location.href;
-        localStorage.setItem('hg_auth_redirect', returnUrl);
-        sessionStorage.setItem('hg_auth_redirect', returnUrl);
+        const returnUrl = (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null')
+          ? 'https://ai.webguruji.online/dashboard.html'
+          : window.location.href.split('#')[0];
+        
+        try {
+          localStorage.setItem('hg_auth_redirect', returnUrl);
+          sessionStorage.setItem('hg_auth_redirect', returnUrl);
+          const isWebGuruji = window.location.hostname === 'webguruji.online' || window.location.hostname.endsWith('.webguruji.online');
+          const domainStr = isWebGuruji ? '; domain=.webguruji.online' : '';
+          const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
+          document.cookie = `hg_auth_redirect=${encodeURIComponent(returnUrl)}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
+        } catch (e) {}
 
         await supabase.auth.signInWithOAuth({
           provider: 'google',

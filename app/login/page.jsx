@@ -22,7 +22,10 @@ import GuruLogo from '@/components/GuruLogo';
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextUrl = searchParams.get('next') || '/';
+  const rawNext = searchParams.get('next') || '/';
+  const nextUrl = (rawNext.includes('webguruji.online') && !rawNext.includes('ai.webguruji.online'))
+    ? '/'
+    : (!rawNext.startsWith('/') && !rawNext.includes('ai.webguruji.online') && !rawNext.includes('localhost') ? '/' : rawNext);
   const initialReset = searchParams.get('reset_password') === 'true';
 
   const [supabase] = useState(() => createClient());
@@ -43,7 +46,7 @@ function LoginContent() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user && mode !== 'update_password') {
-        router.push(nextUrl);
+        window.location.href = nextUrl.startsWith('/') ? nextUrl : '/';
       }
     });
 
@@ -60,7 +63,7 @@ function LoginContent() {
       if (event === 'PASSWORD_RECOVERY') {
         setMode('update_password');
       } else if (session?.user && mode !== 'update_password') {
-        router.push(nextUrl);
+        window.location.href = nextUrl.startsWith('/') ? nextUrl : '/';
       }
     });
 
@@ -92,22 +95,22 @@ function LoginContent() {
     setSuccessMsg('');
     setLoading(true);
     try {
+      const target = (typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null' && window.location.protocol !== 'file:')
+        ? (nextUrl.startsWith('/') ? `${window.location.origin}${nextUrl}` : nextUrl)
+        : 'https://ai.webguruji.online/';
+
       if (typeof window !== 'undefined') {
         try {
-          const target = nextUrl.startsWith('/') ? `${window.location.origin}${nextUrl}` : nextUrl;
           sessionStorage.setItem('hg_auth_redirect', target);
           localStorage.setItem('hg_auth_redirect', target);
-          const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-          const domainStr = isLocal ? '' : '; domain=.webguruji.online';
+          const isWebGuruji = window.location.hostname === 'webguruji.online' || window.location.hostname.endsWith('.webguruji.online');
+          const domainStr = isWebGuruji ? '; domain=.webguruji.online' : '';
           const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
           document.cookie = `hg_auth_redirect=${encodeURIComponent(target)}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
         } catch (e) {}
       }
 
-      const redirectUrl =
-        typeof window !== 'undefined'
-          ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`
-          : undefined;
+      const redirectUrl = target;
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -162,7 +165,7 @@ function LoginContent() {
       if (data?.user) {
         setSuccessMsg('Signed in successfully! Redirecting...');
         setTimeout(() => {
-          router.push(nextUrl);
+          window.location.href = nextUrl.startsWith('/') ? nextUrl : '/';
         }, 500);
       }
     } catch (err) {
@@ -252,7 +255,7 @@ function LoginContent() {
       if (signUpData?.session) {
         setSuccessMsg('Account created and signed in successfully! Redirecting...');
         setTimeout(() => {
-          router.push(nextUrl);
+          window.location.href = nextUrl.startsWith('/') ? nextUrl : '/';
         }, 600);
         return;
       }
@@ -267,7 +270,7 @@ function LoginContent() {
         if (!signInError && signInData?.user) {
           setSuccessMsg('Account created and signed in successfully! Redirecting...');
           setTimeout(() => {
-            router.push(nextUrl);
+            window.location.href = nextUrl.startsWith('/') ? nextUrl : '/';
           }, 600);
           return;
         }
@@ -358,7 +361,7 @@ function LoginContent() {
 
       setSuccessMsg('Password reset successful! You are now logged in. Redirecting...');
       setTimeout(() => {
-        router.push(nextUrl);
+        window.location.href = nextUrl.startsWith('/') ? nextUrl : '/';
       }, 800);
     } catch (err) {
       setErrorMsg(err.message || 'Invalid or expired code. Please request a new one.');
@@ -393,7 +396,7 @@ function LoginContent() {
 
       setSuccessMsg('Password updated successfully! Redirecting...');
       setTimeout(() => {
-        router.push(nextUrl);
+        window.location.href = nextUrl.startsWith('/') ? nextUrl : '/';
       }, 800);
     } catch (err) {
       setErrorMsg(err.message || 'Failed to update password.');

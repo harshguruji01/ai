@@ -77,8 +77,8 @@ export default function AuthModal({
           const currentUrl = window.location.href.split('#')[0];
           sessionStorage.setItem('hg_auth_redirect', currentUrl);
           localStorage.setItem('hg_auth_redirect', currentUrl);
-          const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-          const domainStr = isLocal ? '' : '; domain=.webguruji.online';
+          const isWebGuruji = window.location.hostname === 'webguruji.online' || window.location.hostname.endsWith('.webguruji.online');
+          const domainStr = isWebGuruji ? '; domain=.webguruji.online' : '';
           const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
           document.cookie = `hg_auth_redirect=${encodeURIComponent(currentUrl)}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
         } catch (e) {}
