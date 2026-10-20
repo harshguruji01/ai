@@ -317,6 +317,7 @@ export default function GuruAiApp() {
     setQuota((prev) => ({ ...prev, cooldownMessage: null }));
 
     const userMsg = {
+      id: 'user-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
       role: 'user',
       content: promptToSend,
       messageType: 'text',
@@ -377,6 +378,7 @@ export default function GuruAiApp() {
         setMessages((prev) => [
           ...prev,
           {
+            id: 'assistant-img-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
             role: 'assistant',
             content: `Generated image for: "${promptToSend}"`,
             messageType: 'image',
@@ -549,6 +551,7 @@ export default function GuruAiApp() {
         setMessages((prev) => [
           ...prev,
           {
+            id: 'assistant-text-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
             role: 'assistant',
             content: finalAnswer,
             reasoning: streamedReasoning.trim() || null,
@@ -660,7 +663,7 @@ export default function GuruAiApp() {
       />
 
       {/* 2. Main Chat Center Workspace */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden">
+      <main className="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative">
         <ChatWindow
           messages={messages}
           streamingContent={streamingContent}
@@ -682,7 +685,7 @@ export default function GuruAiApp() {
         />
 
         {/* 3. Bottom Composer */}
-        <div className="p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/90 backdrop-blur-md flex-shrink-0">
+        <div className="w-full p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/95 backdrop-blur-md flex-shrink-0 z-20">
           <ChatInput
             inputPrompt={inputPrompt}
             setInputPrompt={setInputPrompt}

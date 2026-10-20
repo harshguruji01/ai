@@ -276,7 +276,7 @@
     </aside>
 
     <!-- 2. MAIN WORKSPACE -->
-    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+    <main class="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative bg-[var(--bg-primary)]">
       
       <!-- Top Navigation Header -->
       <header class="h-14 border-b border-[var(--border-color)] px-4 flex items-center justify-between bg-[var(--bg-secondary)]/80 backdrop-blur-md z-10 flex-shrink-0">
@@ -326,13 +326,13 @@
         </div>
       </header>
 
-      <!-- Chat Messages Container -->
-      <div id="chatFeed" class="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto pb-10">
+      <!-- Chat Messages Container (Scrolls independently while input remains pinned) -->
+      <div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
         <!-- Rendered dynamically -->
       </div>
 
-      <!-- Bottom Chat Composer (Fixed at bottom like ChatGPT & Gemini with zero movement/overlap) -->
-      <div class="p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/95 backdrop-blur-md flex-shrink-0 sticky bottom-0 z-20">
+      <!-- Bottom Chat Composer (Permanently fixed at the bottom with zero shifting) -->
+      <div class="w-full p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/95 backdrop-blur-md flex-shrink-0 z-20">
         <div class="w-full max-w-4xl mx-auto space-y-2">
           
           <form id="chatForm" class="relative rounded-2xl border transition-all duration-200 bg-[var(--composer-bg)] backdrop-blur-md shadow-xl border-[var(--border-color)] focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/25">
@@ -649,6 +649,7 @@
     let currentUser = null;
     let conversations = JSON.parse(localStorage.getItem('guruai_local_conversations') || '[]');
     let currentConvId = null;
+    let conversationHistory = [];
     let isGenerating = false;
     let isImageMode = false;
     let currentTheme = localStorage.getItem('guruai_theme') || 'dark';
@@ -1573,6 +1574,7 @@
 
       deductAllowance();
 
+      const bubbleId = 'stream-bubble-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
       const assistantMsgDiv = document.createElement('div');
       assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';
       assistantMsgDiv.innerHTML = `
@@ -1580,11 +1582,11 @@
           <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
         </div>
         <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1">
-          <div id="activeStreamBubble" class="relative rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-sm leading-relaxed whitespace-pre-wrap"></div>
+          <div id="${bubbleId}" class="relative rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-sm leading-relaxed whitespace-pre-wrap"><span class="streaming-cursor"></span></div>
         </div>
       `;
       chatFeed.appendChild(assistantMsgDiv);
-      const streamBubble = document.getElementById('activeStreamBubble');
+      const streamBubble = document.getElementById(bubbleId);
 
       async function readSseStream(response) {
         const reader = response.body.getReader();
@@ -1623,7 +1625,9 @@
                 }
                 const safeText = fullText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 renderHtml += safeText;
-                streamBubble.innerHTML = renderHtml + '<span class="streaming-cursor"></span>';
+                if (streamBubble) {
+                  streamBubble.innerHTML = renderHtml + '<span class="streaming-cursor"></span>';
+                }
                 chatFeed.scrollTop = chatFeed.scrollHeight;
               } catch(e){}
             }
@@ -1637,7 +1641,13 @@
         }
         const safeText = fullText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         finalHtml += safeText;
-        streamBubble.innerHTML = finalHtml || 'Completed.';
+        if (streamBubble) {
+          streamBubble.innerHTML = finalHtml || 'Completed.';
+          streamBubble.removeAttribute('id');
+        }
+        if (fullText) {
+          conversationHistory.push({ role: 'assistant', content: fullText });
+        }
         return fullText.length > 0;
       }
 
@@ -1648,7 +1658,12 @@
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, language: currentLang })
+          body: JSON.stringify({
+            prompt,
+            conversationId: currentConvId,
+            messages: conversationHistory,
+            language: currentLang
+          })
         });
         if (response.ok && response.body) {
           backendStreamed = await readSseStream(response);
@@ -1661,7 +1676,11 @@
           const edgeRes = await fetch('https://wumdbpyhpblvgjttsbpv.supabase.co/functions/v1/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt, language: currentLang })
+            body: JSON.stringify({
+              prompt,
+              messages: conversationHistory,
+              language: currentLang
+            })
           });
           if (edgeRes.ok && edgeRes.body) {
             backendStreamed = await readSseStream(edgeRes);
@@ -1689,9 +1708,16 @@
           } else {
             answer = `I am GuruAI, proudly created and developed by **HarshGuruJi** (Harsh Patel)! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Details**: https://webguruji.online/owner.html`;
           }
-          streamBubble.innerHTML = answer.replace(/\n/g, '<br/>');
+          if (streamBubble) {
+            streamBubble.innerHTML = answer.replace(/\n/g, '<br/>');
+            streamBubble.removeAttribute('id');
+          }
+          conversationHistory.push({ role: 'assistant', content: answer });
         } else {
-          streamBubble.innerHTML = `<span class="text-rose-400 font-medium">⚠️ Connection error: AI server is temporarily unreachable. Please check your internet connection and retry.</span>`;
+          if (streamBubble) {
+            streamBubble.innerHTML = `<span class="text-rose-400 font-medium">⚠️ Connection error: AI server is temporarily unreachable. Please check your internet connection and retry.</span>`;
+            streamBubble.removeAttribute('id');
+          }
         }
       }
 
@@ -1844,6 +1870,7 @@
       // Clear welcome screen on first message
       if (!currentConvId) {
         currentConvId = Date.now().toString();
+        conversationHistory = [];
         chatFeed.innerHTML = '';
       }
 
@@ -1851,6 +1878,7 @@
       promptInput.style.height = 'auto';
 
       appendMessage('user', text);
+      conversationHistory.push({ role: 'user', content: text });
 
       if (isImageMode) {
         generateImageResponse(text);
@@ -1869,6 +1897,7 @@
     // New Chat Handler
     document.getElementById('newChatBtn').onclick = () => {
       currentConvId = null;
+      conversationHistory = [];
       renderWelcome();
       promptInput.value = '';
       promptInput.focus();

@@ -73,7 +73,7 @@ export default function ChatWindow({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[var(--bg-primary)] relative">
+    <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden bg-[var(--bg-primary)] relative">
       {/* Top Header */}
       <header className="h-14 border-b border-[var(--border-color)] px-4 flex items-center justify-between bg-[var(--bg-secondary)]/80 backdrop-blur-md z-10 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -164,7 +164,7 @@ export default function ChatWindow({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto"
+        className="flex-1 min-h-0 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto"
       >
         {messages.length === 0 && !streamingContent ? (
           /* Welcome Screen Hero */
