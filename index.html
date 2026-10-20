@@ -276,10 +276,18 @@
             <span class="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5" id="headerTierText">Guest</span>
           </button>
 
-          <!-- User Dashboard Button (Only for Logged-In User) -->
-          <a href="dashboard.html" id="headerDashboardBtn" class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 hover:border-cyan-500/60 hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 text-xs font-semibold transition group shadow-sm active:scale-95" title="User AI Dashboard">
-            <svg class="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-5a1 1 0 011-1h4a1 1 0 011 1v9a1 1 0 01-1 1h-4a1 1 0 01-1-1v-9z"/></svg>
-            <span class="hidden sm:inline">Dashboard</span>
+          <!-- User Dashboard Logo Icon (Only for Logged-In User) -->
+          <a href="dashboard.html" id="headerDashboardBtn" class="hidden relative flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-full bg-slate-900/90 border border-indigo-500/50 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 text-slate-200 transition-all group active:scale-95" title="User Dashboard (dashboard.html)">
+            <div id="headerDashboardAvatar" class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 border border-indigo-300/60 flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+              <span id="headerDashboardAvatarInitial">U</span>
+              <img id="headerDashboardAvatarImg" src="" alt="Avatar" class="w-full h-full object-cover hidden" />
+            </div>
+            <div class="hidden sm:flex flex-col text-left leading-tight pr-1">
+              <span id="headerDashboardUserName" class="text-xs font-semibold text-slate-200 group-hover:text-white truncate max-w-[110px]">Dashboard</span>
+              <span class="text-[9px] font-mono text-cyan-400 font-medium">Dashboard ↗</span>
+            </div>
+            <svg class="w-3.5 h-3.5 text-cyan-400 group-hover:translate-x-0.5 transition-transform hidden sm:inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#0d121f] animate-pulse"></span>
           </a>
 
           <!-- Prominent Header Sign In Button -->
@@ -1102,8 +1110,28 @@
       if (user) {
         initUserQuota(user);
 
-        // Show Dashboard icon and sidebar link ONLY for logged in user
-        if (headerDashboardBtn) headerDashboardBtn.classList.remove('hidden');
+        // Show Dashboard logo icon and sidebar link ONLY for logged in user
+        if (headerDashboardBtn) {
+          headerDashboardBtn.classList.remove('hidden');
+          const initial = document.getElementById('headerDashboardAvatarInitial');
+          const img = document.getElementById('headerDashboardAvatarImg');
+          const nameEl = document.getElementById('headerDashboardUserName');
+          const uName = user.user_metadata?.full_name || (user.email ? user.email.split('@')[0] : 'User');
+          if (nameEl) nameEl.textContent = uName;
+          if (user.user_metadata?.avatar_url) {
+            if (img) {
+              img.src = user.user_metadata.avatar_url;
+              img.classList.remove('hidden');
+            }
+            if (initial) initial.classList.add('hidden');
+          } else {
+            if (initial) {
+              initial.textContent = (user.email || 'U')[0].toUpperCase();
+              initial.classList.remove('hidden');
+            }
+            if (img) img.classList.add('hidden');
+          }
+        }
         if (sidebarDashboardLink) sidebarDashboardLink.classList.remove('hidden');
 
         userAvatar.textContent = (user.email || 'U')[0].toUpperCase();
@@ -1118,20 +1146,7 @@
           'text-[10px] font-mono px-1 py-0.2 rounded bg-indigo-900/60 text-cyan-300 ml-0.5';
         if (imageLockIcon) imageLockIcon.classList.add('hidden');
         if (headerSignInBtn) {
-          headerSignInBtn.className =
-            'flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 transition';
-          headerSignInBtn.innerHTML = `
-            <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden">
-              ${
-                user.user_metadata?.avatar_url
-                  ? `<img src="${user.user_metadata.avatar_url}" alt="User" class="w-full h-full object-cover" />`
-                  : (user.email || 'U')[0].toUpperCase()
-              }
-            </div>
-            <span class="text-xs text-slate-200 font-medium hidden sm:inline max-w-[120px] truncate">${
-              user.user_metadata?.full_name || user.email.split('@')[0]
-            }</span>
-          `;
+          headerSignInBtn.classList.add('hidden');
         }
 
         // Track in DB & verify Admin rights
@@ -1156,6 +1171,7 @@
           'text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5';
         if (imageLockIcon) imageLockIcon.classList.remove('hidden');
         if (headerSignInBtn) {
+          headerSignInBtn.classList.remove('hidden');
           headerSignInBtn.className =
             'flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95';
           headerSignInBtn.innerHTML = `

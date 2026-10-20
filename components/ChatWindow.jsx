@@ -139,28 +139,22 @@ export default function ChatWindow({
             <div className="flex items-center gap-2">
               {/* User Dashboard Link (only for logged-in user) */}
               <a
-                href={`${mainSiteUrl}/dashboard.html`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-cyan-500/60 hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 text-xs font-semibold transition group shadow-sm active:scale-95"
-                title="Open User Dashboard (webguruji.online/dashboard.html)"
+                href="/dashboard.html"
+                className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-full bg-slate-900/90 border border-indigo-500/50 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 text-slate-200 transition-all group active:scale-95"
+                title="User AI Dashboard (dashboard.html)"
               >
-                <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </a>
-
-              <button
-                onClick={() => onOpenAuth?.('login')}
-                className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 transition"
-                title={`Signed in as ${user.email}`}
-              >
-                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white">
-                  {(user.email || 'U')[0].toUpperCase()}
+                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 border border-indigo-300/60 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+                  {user.user_metadata?.avatar_url ? (
+                    <img src={user.user_metadata.avatar_url} alt="User" className="w-full h-full object-cover" />
+                  ) : (
+                    (user.email || 'U')[0].toUpperCase()
+                  )}
                 </div>
-                <span className="text-xs text-slate-200 font-medium hidden sm:inline max-w-[120px] truncate">
-                  {user.email.split('@')[0]}
+                <span className="text-xs text-slate-200 font-medium hidden sm:inline max-w-[110px] truncate">
+                  {user.user_metadata?.full_name || (user.email ? user.email.split('@')[0] : 'Dashboard')}
                 </span>
-              </button>
+                <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+              </a>
             </div>
           )}
         </div>
