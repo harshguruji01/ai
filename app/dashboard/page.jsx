@@ -22,9 +22,10 @@ import {
   Sun,
   Palette
 } from 'lucide-react';
-import { getSupabaseClient } from '../../lib/supabaseClient';
+import { createClient } from '@/lib/supabase/client';
 
 export default function DashboardPage() {
+  const [supabase] = useState(() => createClient());
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,8 +40,6 @@ export default function DashboardPage() {
   const [font, setFont] = useState('sans');
   const [temp, setTemp] = useState('0.7');
   const [notice, setNotice] = useState('');
-
-  const supabase = getSupabaseClient();
 
   useEffect(() => {
     // 1. Load preferences
@@ -115,6 +114,7 @@ export default function DashboardPage() {
     }
 
     initSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Quota calculation & timer
@@ -422,7 +422,7 @@ export default function DashboardPage() {
         <section className="rounded-3xl bg-[#0d121f] border border-slate-800 p-5 sm:p-7 shadow-xl space-y-6">
           <div className="border-b border-slate-800/80 pb-4">
             <h2 className="text-base sm:text-lg font-bold text-white">AI Studio Settings &amp; Personalization</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Customize your assistant's dialect, theme, and creativity.</p>
+            <p className="text-xs text-slate-400 mt-0.5">Customize your assistant&apos;s dialect, theme, and creativity.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
