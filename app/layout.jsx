@@ -1,3 +1,4 @@
+import Script from 'next/script';
 import './globals.css';
 
 export const metadata = {
@@ -80,6 +81,10 @@ export default function RootLayout({ children }) {
       </head>
       <body className="antialiased selection:bg-blue-500 selection:text-white">
         {children}
+        <Script
+          src="https://cdn.jotfor.ms/agent/embedjs/01a159a06bc07000894e20cde0f72d11e529/embed.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
