@@ -401,7 +401,7 @@ export default function GuruAiApp() {
       return;
     }
 
-    // FLOW 2: Streaming Text Chat with Llama 3.1 70B
+    // FLOW 2: Streaming Text Chat with NVIDIA Nemotron 3 Ultra 550B
     const controller = new AbortController();
     abortControllerRef.current = controller;
 

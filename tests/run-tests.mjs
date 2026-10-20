@@ -135,6 +135,15 @@ test('Security: IP extraction handles multiple forwarded proxy hops safely', () 
   assert.strictEqual(extracted, '203.0.113.195');
 });
 
+// 6. Thinking and Reasoning Format Tests
+test('Reasoning: Parses <think> blocks and separates thoughts from response', () => {
+  const rawText = '<think>\nThinking about GPU computing...\n</think>\n\nHere is the answer.';
+  const match = rawText.match(/^<think>([\s\S]*?)<\/think>\s*([\s\S]*)$/);
+  assert.ok(match);
+  assert.strictEqual(match[1].trim(), 'Thinking about GPU computing...');
+  assert.strictEqual(match[2].trim(), 'Here is the answer.');
+});
+
 console.log(`\n========================================`);
 console.log(`Test Summary: ${passedTests} passed, ${failedTests} failed.`);
 console.log(`========================================\n`);
