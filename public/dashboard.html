@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>User Dashboard & AI Studio — GuruAI by HarshGuruJi</title>
+  <meta name="description" content="View your GuruAI allowance, usage analytics, conversation history, and personalize your AI chat preferences." />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="canonical" href="https://ai.webguruji.online/dashboard.html" />
+
+  <!-- Google Fonts: Inter, Outfit, Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            cyanAccent: '#06b6d4',
+            neonGreen: '#00ffcc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            heading: ['Outfit', 'Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+            serif: ['Merriweather', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg-primary: #07090e;
+      --bg-secondary: #0d121f;
+      --bg-surface: #141b2d;
+      --border-color: rgba(51, 65, 85, 0.6);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #6366f1;
+      --accent-secondary: #06b6d4;
+    }
+
+    body.theme-light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-surface: #ffffff;
+      --border-color: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #0284c7;
+    }
+
+    body.theme-cyberpunk {
+      --bg-primary: #04070d;
+      --bg-secondary: #090e1a;
+      --bg-surface: #0f172a;
+      --border-color: rgba(0, 255, 204, 0.3);
+      --text-primary: #ecfeff;
+      --text-secondary: #22d3ee;
+      --accent-primary: #a855f7;
+      --accent-secondary: #00ffcc;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-active, 'Inter', system-ui, sans-serif);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .font-sans-mode { --font-active: 'Inter', system-ui, sans-serif; }
+    .font-serif-mode { --font-active: 'Merriweather', serif; }
+    .font-mono-mode { --font-active: 'Fira Code', monospace; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans-mode antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="border-b border-[var(--border-color)] bg-[var(--bg-secondary)]/90 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform">
+          <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-base tracking-wide text-white font-heading">GuruAI</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 font-semibold uppercase tracking-wider">Dashboard</span>
+          </div>
+          <span class="text-[11px] text-slate-400 block -mt-0.5">Account, Quotas &amp; Studio Settings</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Right Quick Controls -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <a href="index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white text-xs font-semibold transition active:scale-95 shadow-sm">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <span>Open Chat</span>
+      </a>
+
+      <a href="https://www.webguruji.online/dashboard.html" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-950/70 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900/80 text-xs font-semibold transition shadow-sm active:scale-95" title="Main HarshGuruJi Website Dashboard">
+        <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        <span>Main Dashboard</span>
+      </a>
+
+      <!-- Auth Action Button (Sign In / Sign Out) -->
+      <button id="authActionBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+        <span id="authActionBtnText">Sign In</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- 1. USER PROFILE & IDENTITY HERO -->
+    <section class="rounded-3xl bg-gradient-to-r from-indigo-950/80 via-[var(--bg-secondary)] to-[var(--bg-surface)] border border-[var(--border-color)] p-5 sm:p-7 shadow-2xl relative overflow-hidden">
+      <!-- Glow ambient -->
+      <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative z-10">
+        <div class="flex items-center gap-4">
+          <!-- Profile Avatar -->
+          <div id="userAvatarContainer" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 border border-indigo-400/60 flex items-center justify-center text-white font-bold text-2xl shadow-xl shadow-indigo-600/25 overflow-hidden flex-shrink-0">
+            <span id="userAvatarInitial">G</span>
+            <img id="userAvatarImg" src="" alt="Avatar" class="w-full h-full object-cover hidden" />
+          </div>
+
+          <div class="space-y-1 min-w-0">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <h1 id="userDisplayName" class="text-xl sm:text-2xl font-bold font-heading text-white truncate">Guest Visitor</h1>
+              
+              <!-- Tier Badge -->
+              <span id="tierBadge" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-semibold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                <span id="tierBadgeText">Guest Tier</span>
+              </span>
+
+              <!-- Golden Tick Badge (if verified) -->
+              <span id="goldenTickBadge" class="hidden text-[11px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold flex items-center gap-1">
+                <span>✓</span>
+                <span>Verified</span>
+              </span>
+
+              <!-- Admin Link Pill (if admin) -->
+              <a href="admin.html" id="adminPortalPill" class="hidden text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40 font-semibold transition flex items-center gap-1">
+                <span>🛡️</span>
+                <span>Admin Console ↗</span>
+              </a>
+            </div>
+
+            <p id="userEmailText" class="text-xs sm:text-sm text-slate-400 font-mono truncate">Not signed in (Limited allowance)</p>
+
+            <div class="flex items-center gap-3 pt-1 text-[11px] text-slate-400 flex-wrap">
+              <span id="authStatusText">● Session active</span>
+              <span class="text-slate-600">|</span>
+              <span>Model: <strong class="text-cyan-400">NVIDIA Nemotron 3 Ultra 550B</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Top CTA -->
+        <div class="flex items-center gap-2 self-stretch sm:self-auto justify-end">
+          <button id="quickNewChatBtn" class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 transition active:scale-95">
+            <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Start New Chat</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. AI ALLOWANCE & QUOTA GAUGE -->
+    <section class="rounded-3xl bg-[var(--bg-secondary)] border border-[var(--border-color)] p-5 sm:p-6 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></div>
+            <h2 class="text-base sm:text-lg font-bold font-heading text-white">Live AI Usage Allowance</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Rolling window quota for NVIDIA Nemotron 3 Ultra text reasoning &amp; SDXL Lightning generation.</p>
+        </div>
+
+        <button id="refreshQuotaBtn" class="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-300 hover:text-white font-medium transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span>Sync Allowance</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+        <!-- Quota Status Metric -->
+        <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Remaining Requests</span>
+            <span id="quotaCapLabel" class="font-mono text-cyan-400 font-bold">10 Max</span>
+          </div>
+          <div class="my-2">
+            <div class="flex items-baseline gap-2">
+              <span id="remainingQuotaNum" class="text-3xl font-extrabold font-heading text-white">10</span>
+              <span class="text-xs text-slate-400">/ <span id="maxQuotaNum">10</span> left</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full h-2 rounded-full bg-slate-800 mt-2 overflow-hidden">
+              <div id="quotaProgressBar" class="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all duration-300" style="width: 100%;"></div>
+            </div>
+          </div>
+          <span class="text-[11px] text-emerald-400 flex items-center gap-1">
+            <span>●</span>
+            <span id="quotaWindowDesc">Rolling 12-hour window</span>
+          </span>
+        </div>
+
+        <!-- Window Reset Countdown -->
+        <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 flex flex-col justify-between">
+          <span class="text-xs text-slate-400">Next Quota Reset</span>
+          <div class="my-2">
+            <span id="resetTimerText" class="text-2xl font-bold font-mono text-cyan-300">--:--:--</span>
+          </div>
+          <span class="text-[11px] text-slate-400">Automatically restores to full limit</span>
+        </div>
+
+        <!-- Tier Perks Card -->
+        <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/50 to-slate-950/80 border border-indigo-500/20 flex flex-col justify-between">
+          <span class="text-xs text-indigo-300 font-semibold">Tier Privileges</span>
+          <div class="space-y-1.5 my-1.5 text-xs text-slate-300">
+            <div class="flex items-center gap-1.5">
+              <span class="text-emerald-400">✓</span>
+              <span>Ultra 550B Full Context Stream</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-emerald-400">✓</span>
+              <span>SDXL Hyper-Realistic Images</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-emerald-400">✓</span>
+              <span>Saved Chat &amp; Cloud History</span>
+            </div>
+          </div>
+          <a href="https://www.webguruji.online/dashboard.html" target="_blank" class="text-[11px] text-indigo-400 hover:text-indigo-300 underline font-medium">Manage Account on HarshGuruJi &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. USAGE ANALYTICS & ACTIVITY CARDS -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-sm space-y-1">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Saved Chats</span>
+        <div class="text-2xl font-bold font-heading text-white" id="statSavedChats">0</div>
+        <span class="text-[10px] text-cyan-400">In local workspace</span>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-sm space-y-1">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Exchanged Prompts</span>
+        <div class="text-2xl font-bold font-heading text-white" id="statTotalMessages">0</div>
+        <span class="text-[10px] text-indigo-400">Total conversation turns</span>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-sm space-y-1">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">AI Images Created</span>
+        <div class="text-2xl font-bold font-heading text-white" id="statImagesCount">0</div>
+        <span class="text-[10px] text-purple-400">SDXL Lightning</span>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-sm space-y-1">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Active Engine</span>
+        <div class="text-base font-bold font-heading text-white truncate">Nemotron 3 Ultra</div>
+        <span class="text-[10px] text-emerald-400">NVIDIA 550B LLM</span>
+      </div>
+    </section>
+
+    <!-- 4. AI STUDIO PREFERENCES & SETTINGS -->
+    <section class="rounded-3xl bg-[var(--bg-secondary)] border border-[var(--border-color)] p-5 sm:p-7 shadow-xl space-y-6">
+      <div class="border-b border-slate-800/80 pb-4">
+        <h2 class="text-base sm:text-lg font-bold font-heading text-white">AI Studio Preferences &amp; Settings</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Customize your conversational persona, visual appearance, language, and creativity parameters.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Setting 1: Theme Switcher -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-slate-300 block">Appearance Theme</label>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button type="button" onclick="setStudioTheme('dark')" id="themeBtn-dark" class="p-3 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition group">
+              <div class="w-4 h-4 rounded-full bg-slate-950 border border-slate-700 mb-2"></div>
+              <div class="text-xs font-bold text-white">Dark Mode</div>
+              <div class="text-[10px] text-slate-400">Default Obsidian</div>
+            </button>
+
+            <button type="button" onclick="setStudioTheme('light')" id="themeBtn-light" class="p-3 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition group">
+              <div class="w-4 h-4 rounded-full bg-slate-100 border border-slate-300 mb-2"></div>
+              <div class="text-xs font-bold text-white">Light Mode</div>
+              <div class="text-[10px] text-slate-400">Clean Slate</div>
+            </button>
+
+            <button type="button" onclick="setStudioTheme('cyberpunk')" id="themeBtn-cyberpunk" class="p-3 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition group">
+              <div class="w-4 h-4 rounded-full bg-cyan-400 border border-purple-500 mb-2"></div>
+              <div class="text-xs font-bold text-white">Cyberpunk</div>
+              <div class="text-[10px] text-cyan-400">Neon Glow</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Setting 2: Conversational Language -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-slate-300 block">AI Conversational Language</label>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button type="button" onclick="setStudioLang('english')" id="langBtn-english" class="p-3 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition">
+              <div class="text-sm font-bold text-white">English</div>
+              <div class="text-[10px] text-slate-400">Global Standard</div>
+            </button>
+
+            <button type="button" onclick="setStudioLang('hinglish')" id="langBtn-hinglish" class="p-3 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition">
+              <div class="text-sm font-bold text-white">Hinglish</div>
+              <div class="text-[10px] text-slate-400">Hindi in English letters</div>
+            </button>
+
+            <button type="button" onclick="setStudioLang('hindi')" id="langBtn-hindi" class="p-3 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition">
+              <div class="text-sm font-bold text-white">हिन्दी</div>
+              <div class="text-[10px] text-slate-400">Devanagari script</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Setting 3: Font Family -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-slate-300 block">Typography Font Family</label>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button type="button" onclick="setStudioFont('sans')" id="fontBtn-sans" class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition font-sans">
+              <span class="text-xs font-bold text-white block">Inter Sans</span>
+              <span class="text-[10px] text-slate-400">Modern clean</span>
+            </button>
+
+            <button type="button" onclick="setStudioFont('serif')" id="fontBtn-serif" class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition font-serif">
+              <span class="text-xs font-bold text-white block">Merriweather</span>
+              <span class="text-[10px] text-slate-400">Editorial serif</span>
+            </button>
+
+            <button type="button" onclick="setStudioFont('mono')" id="fontBtn-mono" class="p-2.5 rounded-xl border border-slate-700 bg-slate-900/90 text-left hover:border-indigo-500 transition font-mono">
+              <span class="text-xs font-bold text-white block">Fira Code</span>
+              <span class="text-[10px] text-slate-400">Developer monospace</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Setting 4: Creativity Temperature Slider -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-semibold text-slate-300">Creativity (Temperature)</label>
+            <span id="tempValueLabel" class="font-mono text-xs text-cyan-400 font-bold">0.7</span>
+          </div>
+          <input type="range" min="0.1" max="1.0" step="0.1" value="0.7" id="tempSlider" oninput="updateTemperature(this.value)" class="w-full accent-indigo-500 cursor-pointer" />
+          <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+            <span>0.1 (Precise/Code)</span>
+            <span>0.7 (Balanced)</span>
+            <span>1.0 (Creative/Stories)</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action save feedback notice -->
+      <div id="saveFeedbackNotice" class="hidden text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center gap-2">
+        <span>✓</span>
+        <span>Settings successfully applied and synced across GuruAI.</span>
+      </div>
+    </section>
+
+    <!-- 5. LOCAL CHAT HISTORY & CONVERSATION MANAGEMENT -->
+    <section class="rounded-3xl bg-[var(--bg-secondary)] border border-[var(--border-color)] p-5 sm:p-7 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold font-heading text-white">Your Chat Conversations</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Manage, export, or resume your previous dialogue sessions with GuruAI.</p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="exportChatsJson()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-slate-200 font-medium transition">
+            <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span>Export (JSON)</span>
+          </button>
+
+          <button onclick="clearAllChats()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/60 text-xs text-rose-300 font-medium transition">
+            <svg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <span>Clear History</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Conversations List -->
+      <div id="conversationsContainer" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+        <!-- Injected via JavaScript -->
+        <div class="text-center py-8 text-xs text-slate-500">Loading conversation history...</div>
+      </div>
+    </section>
+
+    <!-- 6. CONNECTED HARSHGURUJI ECOSYSTEM STRIP -->
+    <section class="rounded-3xl bg-[var(--bg-secondary)] border border-[var(--border-color)] p-5 sm:p-6 shadow-xl space-y-3">
+      <h3 class="text-sm font-bold font-heading text-slate-300">HarshGuruJi Connected Ecosystem Portals</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <a href="https://www.webguruji.online/dashboard.html" target="_blank" class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-indigo-500/60 text-slate-200 transition group flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-indigo-950/80 border border-indigo-500/40 flex items-center justify-center text-indigo-400 font-bold">🌐</div>
+            <div class="text-left">
+              <div class="text-xs font-bold text-white group-hover:text-indigo-300 transition">Main WebGuruJi Dashboard</div>
+              <div class="text-[10px] text-slate-400">Profile, Badges &amp; Store</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-500 group-hover:text-white transition">&rarr;</span>
+        </a>
+
+        <a href="https://www.webguruji.online/store.html" target="_blank" class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-indigo-500/60 text-slate-200 transition group flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold">🎮</div>
+            <div class="text-left">
+              <div class="text-xs font-bold text-white group-hover:text-emerald-300 transition">HarshGuruJi App Store</div>
+              <div class="text-[10px] text-slate-400">APKs, Games &amp; Tools</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-500 group-hover:text-white transition">&rarr;</span>
+        </a>
+
+        <a href="https://books.webguruji.online/" target="_blank" class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-indigo-500/60 text-slate-200 transition group flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-950/80 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold">📚</div>
+            <div class="text-left">
+              <div class="text-xs font-bold text-white group-hover:text-amber-300 transition">NCERT Books Library</div>
+              <div class="text-[10px] text-slate-400">Class 1-12 Textbooks</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-500 group-hover:text-white transition">&rarr;</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-4 text-center text-xs text-slate-500 mt-auto">
+    <span>GuruAI Studio Dashboard &copy; 2026 HarshGuruJi. All rights reserved.</span>
+  </footer>
+
+  <!-- AUTH POPUP MODAL (If user clicks Sign In) -->
+  <div id="authModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#0d1222] border border-slate-800 rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+      <button id="closeAuthModalBtn" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-950 border border-indigo-500/40 mx-auto flex items-center justify-center text-cyan-400 mb-2">
+          <img src="logo.png" alt="Logo" class="w-8 h-8 rounded-lg" />
+        </div>
+        <h3 class="text-lg font-bold font-heading text-white">Sign In to GuruAI</h3>
+        <p class="text-xs text-slate-400">Unlock 10 requests / 12h, SDXL image generation and persistent conversation history.</p>
+      </div>
+
+      <div class="pt-2 space-y-2.5">
+        <button id="modalGoogleSignInBtn" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-semibold text-xs flex items-center justify-center gap-2.5 shadow-md transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <a href="index.html" class="block text-center py-2 text-xs text-slate-400 hover:text-slate-200">
+          Continue as Guest
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Supabase Initialization
+    const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2Nzk3NDQsImV4cCI6MjA2MjI1NTc0NH0.4uO70hEfZiR0e7d5YQv-x1rO8P9-W_7Wf-3zYn6j-gE';
+    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    let currentUser = null;
+    let maxAllowance = 2;
+    let remainingAllowance = 2;
+    let resetTimerInterval = null;
+
+    // 1. Initial State Loading
+    document.addEventListener('DOMContentLoaded', async () => {
+      loadPreferences();
+      loadConversationsList();
+      await checkAuthAndQuota();
+      setupEvents();
+    });
+
+    // Check Supabase Auth & Setup Quotas
+    async function checkAuthAndQuota() {
+      try {
+        if (!supabase) return;
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && session.user) {
+          currentUser = session.user;
+          renderUserProfile(currentUser);
+        } else {
+          // Check local stored session
+          const localStored = localStorage.getItem('hg_auth_user');
+          if (localStored) {
+            try {
+              currentUser = JSON.parse(localStored);
+              renderUserProfile(currentUser);
+            } catch (e) {}
+          }
+        }
+      } catch (e) {
+        console.warn('Auth check error:', e);
+      }
+
+      calculateQuota();
+    }
+
+    function renderUserProfile(user) {
+      if (!user) return;
+      const email = user.email || 'Member';
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || email.split('@')[0];
+      const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+
+      document.getElementById('userDisplayName').textContent = name;
+      document.getElementById('userEmailText').textContent = email;
+      document.getElementById('tierBadgeText').textContent = 'Pro Member';
+      document.getElementById('authActionBtnText').textContent = 'Sign Out';
+
+      if (avatarUrl) {
+        const img = document.getElementById('userAvatarImg');
+        img.src = avatarUrl;
+        img.classList.remove('hidden');
+        document.getElementById('userAvatarInitial').classList.add('hidden');
+      } else {
+        document.getElementById('userAvatarInitial').textContent = name.charAt(0).toUpperCase();
+      }
+
+      // Check Golden Tick and Admin from Supabase profile
+      if (supabase && user.id) {
+        supabase.from('profiles').select('*').eq('id', user.id).single().then(({ data }) => {
+          if (data) {
+            if (data.is_golden_tick || data.golden_tick) {
+              document.getElementById('goldenTickBadge').classList.remove('hidden');
+            }
+            if (data.role === 'admin' || data.is_admin) {
+              document.getElementById('adminPortalPill').classList.remove('hidden');
+              document.getElementById('tierBadgeText').textContent = 'Admin Tier';
+            }
+          }
+        });
+      }
+    }
+
+    function calculateQuota() {
+      const now = Date.now();
+      let windowDuration = 6 * 3600 * 1000; // 6h for guest
+      let stored = null;
+
+      if (currentUser) {
+        maxAllowance = 10;
+        windowDuration = 12 * 3600 * 1000; // 12h for member
+        const key = 'guruai_quota_user_' + currentUser.id;
+        try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
+        if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
+          stored = { remaining: 10, windowStart: now };
+          localStorage.setItem(key, JSON.stringify(stored));
+        }
+      } else {
+        maxAllowance = 2;
+        windowDuration = 6 * 3600 * 1000;
+        const key = 'guruai_quota_guest';
+        try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
+        if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
+          stored = { remaining: 2, windowStart: now };
+          localStorage.setItem(key, JSON.stringify(stored));
+        }
+      }
+
+      remainingAllowance = stored.remaining;
+
+      // Update UI elements
+      document.getElementById('remainingQuotaNum').textContent = remainingAllowance;
+      document.getElementById('maxQuotaNum').textContent = maxAllowance;
+      document.getElementById('quotaCapLabel').textContent = `${maxAllowance} Max`;
+      document.getElementById('quotaWindowDesc').textContent = currentUser ? 'Rolling 12-hour window' : 'Rolling 6-hour guest limit';
+
+      const pct = Math.max(0, Math.min(100, (remainingAllowance / maxAllowance) * 100));
+      document.getElementById('quotaProgressBar').style.width = pct + '%';
+
+      // Start Countdown Timer
+      startResetCountdown(stored.windowStart, windowDuration);
+    }
+
+    function startResetCountdown(windowStart, windowDuration) {
+      if (resetTimerInterval) clearInterval(resetTimerInterval);
+
+      function update() {
+        const now = Date.now();
+        const elapsed = now - windowStart;
+        const remainingMs = Math.max(0, windowDuration - elapsed);
+
+        if (remainingMs <= 0) {
+          document.getElementById('resetTimerText').textContent = 'Refreshed!';
+          calculateQuota();
+          return;
+        }
+
+        const hrs = Math.floor(remainingMs / (3600 * 1000));
+        const mins = Math.floor((remainingMs % (3600 * 1000)) / (60 * 1000));
+        const secs = Math.floor((remainingMs % (60 * 1000)) / 1000);
+        document.getElementById('resetTimerText').textContent = 
+          `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      update();
+      resetTimerInterval = setInterval(update, 1000);
+    }
+
+    // Load & Render Preferences
+    function loadPreferences() {
+      const theme = localStorage.getItem('guruai_theme') || 'dark';
+      setStudioTheme(theme, false);
+
+      const lang = localStorage.getItem('guruai_lang') || 'english';
+      setStudioLang(lang, false);
+
+      const font = localStorage.getItem('guruai_font') || 'sans';
+      setStudioFont(font, false);
+
+      const temp = localStorage.getItem('guruai_temp') || '0.7';
+      const slider = document.getElementById('tempSlider');
+      if (slider) slider.value = temp;
+      const tempLabel = document.getElementById('tempValueLabel');
+      if (tempLabel) tempLabel.textContent = temp;
+    }
+
+    window.setStudioTheme = function(theme, showFeedback = true) {
+      document.body.classList.remove('theme-light', 'theme-cyberpunk');
+      if (theme === 'light') document.body.classList.add('theme-light');
+      if (theme === 'cyberpunk') document.body.classList.add('theme-cyberpunk');
+      localStorage.setItem('guruai_theme', theme);
+
+      ['dark', 'light', 'cyberpunk'].forEach(t => {
+        const btn = document.getElementById('themeBtn-' + t);
+        if (btn) {
+          if (t === theme) {
+            btn.classList.add('border-cyan-500', 'bg-cyan-500/10');
+            btn.classList.remove('border-slate-700');
+          } else {
+            btn.classList.remove('border-cyan-500', 'bg-cyan-500/10');
+            btn.classList.add('border-slate-700');
+          }
+        }
+      });
+
+      if (showFeedback) flashFeedback('Theme set to ' + theme);
+    };
+
+    window.setStudioLang = function(lang, showFeedback = true) {
+      localStorage.setItem('guruai_lang', lang);
+      ['english', 'hinglish', 'hindi'].forEach(l => {
+        const btn = document.getElementById('langBtn-' + l);
+        if (btn) {
+          if (l === lang) {
+            btn.classList.add('border-indigo-500', 'bg-indigo-500/20');
+            btn.classList.remove('border-slate-700');
+          } else {
+            btn.classList.remove('border-indigo-500', 'bg-indigo-500/20');
+            btn.classList.add('border-slate-700');
+          }
+        }
+      });
+      if (showFeedback) flashFeedback('Language updated to ' + lang);
+    };
+
+    window.setStudioFont = function(font, showFeedback = true) {
+      document.body.classList.remove('font-sans-mode', 'font-serif-mode', 'font-mono-mode');
+      document.body.classList.add(`font-${font}-mode`);
+      localStorage.setItem('guruai_font', font);
+
+      ['sans', 'serif', 'mono'].forEach(f => {
+        const btn = document.getElementById('fontBtn-' + f);
+        if (btn) {
+          if (f === font) {
+            btn.classList.add('border-cyan-500', 'bg-cyan-500/10');
+            btn.classList.remove('border-slate-700');
+          } else {
+            btn.classList.remove('border-cyan-500', 'bg-cyan-500/10');
+            btn.classList.add('border-slate-700');
+          }
+        }
+      });
+      if (showFeedback) flashFeedback('Font family set to ' + font);
+    };
+
+    window.updateTemperature = function(val) {
+      document.getElementById('tempValueLabel').textContent = val;
+      localStorage.setItem('guruai_temp', val);
+      flashFeedback('Temperature set to ' + val);
+    };
+
+    function flashFeedback(msg) {
+      const el = document.getElementById('saveFeedbackNotice');
+      if (el) {
+        el.querySelector('span:last-child').textContent = msg;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 2500);
+      }
+    }
+
+    // Conversations Manager
+    function loadConversationsList() {
+      const container = document.getElementById('conversationsContainer');
+      let convs = [];
+      try {
+        convs = JSON.parse(localStorage.getItem('guruai_local_conversations') || '[]');
+      } catch (e) {}
+
+      document.getElementById('statSavedChats').textContent = convs.length;
+
+      let totalMsgs = 0;
+      let totalImages = 0;
+      convs.forEach(c => {
+        if (Array.isArray(c.messages)) {
+          totalMsgs += c.messages.length;
+          c.messages.forEach(m => {
+            if (m.imageUrl || (m.content && m.content.includes('http') && m.content.includes('image'))) {
+              totalImages++;
+            }
+          });
+        }
+      });
+
+      document.getElementById('statTotalMessages').textContent = totalMsgs;
+      document.getElementById('statImagesCount').textContent = totalImages;
+
+      if (!convs.length) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-xs text-slate-500 bg-slate-950/40 rounded-2xl border border-slate-800/60 p-6">
+            <span class="text-2xl block mb-2">💬</span>
+            <span class="font-medium text-slate-400 block mb-1">No saved conversations found</span>
+            <span class="text-[11px] text-slate-500 block mb-4">Start a new conversation on GuruAI to track chat history here.</span>
+            <a href="index.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow">
+              <span>Start First Chat</span> &rarr;
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = convs.map(c => `
+        <div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-slate-700 flex items-center justify-between gap-3 transition group">
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-semibold text-white truncate group-hover:text-cyan-300 transition">
+              ${escapeHtml(c.title || 'Untitled Dialogue')}
+            </div>
+            <div class="text-[10px] text-slate-500 flex items-center gap-2 mt-0.5">
+              <span>${c.messages ? c.messages.length : 0} messages</span>
+              <span>●</span>
+              <span>${c.updatedAt ? new Date(c.updatedAt).toLocaleDateString() : 'Recent'}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <a href="index.html?conv=${encodeURIComponent(c.id)}" class="px-2.5 py-1 rounded-lg bg-indigo-950/70 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900/80 text-[11px] font-semibold transition">
+              Resume
+            </a>
+            <button onclick="deleteSingleChat('${c.id}')" class="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition" title="Delete conversation">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.deleteSingleChat = function(id) {
+      let convs = JSON.parse(localStorage.getItem('guruai_local_conversations') || '[]');
+      convs = convs.filter(c => c.id !== id);
+      localStorage.setItem('guruai_local_conversations', JSON.stringify(convs));
+      loadConversationsList();
+      flashFeedback('Conversation deleted');
+    };
+
+    window.clearAllChats = function() {
+      if (confirm('Are you sure you want to delete all saved conversations? This cannot be undone.')) {
+        localStorage.removeItem('guruai_local_conversations');
+        loadConversationsList();
+        flashFeedback('All conversation history cleared');
+      }
+    };
+
+    window.exportChatsJson = function() {
+      const raw = localStorage.getItem('guruai_local_conversations') || '[]';
+      const blob = new Blob([raw], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `guruai-chat-history-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    // Event Bindings
+    function setupEvents() {
+      document.getElementById('refreshQuotaBtn').addEventListener('click', () => {
+        calculateQuota();
+        flashFeedback('Allowance refreshed');
+      });
+
+      document.getElementById('quickNewChatBtn').addEventListener('click', () => {
+        window.location.href = 'index.html?new=true';
+      });
+
+      const authBtn = document.getElementById('authActionBtn');
+      authBtn.addEventListener('click', async () => {
+        if (currentUser) {
+          // Sign Out
+          if (supabase) await supabase.auth.signOut();
+          localStorage.removeItem('hg_auth_user');
+          sessionStorage.clear();
+          window.location.reload();
+        } else {
+          // Open Sign In Modal
+          document.getElementById('authModal').classList.remove('hidden');
+          document.getElementById('authModal').classList.add('flex');
+        }
+      });
+
+      document.getElementById('closeAuthModalBtn').addEventListener('click', () => {
+        document.getElementById('authModal').classList.add('hidden');
+        document.getElementById('authModal').classList.remove('flex');
+      });
+
+      document.getElementById('modalGoogleSignInBtn').addEventListener('click', async () => {
+        if (!supabase) return;
+        const returnUrl = window.location.href;
+        localStorage.setItem('hg_auth_redirect', returnUrl);
+        sessionStorage.setItem('hg_auth_redirect', returnUrl);
+
+        await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: returnUrl,
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
