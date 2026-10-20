@@ -299,13 +299,6 @@ export default function DashboardPage() {
                       <span>Verified</span>
                     </span>
                   )}
-
-                  {isAdmin && (
-                    <a href="/admin.html" className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-semibold hover:bg-rose-500/30 transition flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" />
-                      <span>Admin Portal ↗</span>
-                    </a>
-                  )}
                 </div>
 
                 <p className="text-xs sm:text-sm text-slate-400 font-mono truncate">{displayEmail}</p>

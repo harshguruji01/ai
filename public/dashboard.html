@@ -166,12 +166,6 @@
                 <span>✓</span>
                 <span>Verified</span>
               </span>
-
-              <!-- Admin Link Pill (if admin) -->
-              <a href="admin.html" id="adminPortalPill" class="hidden text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40 font-semibold transition flex items-center gap-1">
-                <span>🛡️</span>
-                <span>Admin Console ↗</span>
-              </a>
             </div>
 
             <p id="userEmailText" class="text-xs sm:text-sm text-slate-400 font-mono truncate">Not signed in (Limited allowance)</p>
@@ -570,7 +564,6 @@
               document.getElementById('goldenTickBadge').classList.remove('hidden');
             }
             if (data.role === 'admin' || data.is_admin) {
-              document.getElementById('adminPortalPill').classList.remove('hidden');
               document.getElementById('tierBadgeText').textContent = 'Admin Tier';
             }
           }

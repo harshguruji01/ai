@@ -4,7 +4,18 @@ import { supabaseAdmin } from '@/lib/supabase/admin';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+const MASTER_ADMIN_KEY = process.env.ADMIN_GATE_KEY || '2547277654';
+
+function checkAdminAuth(request) {
+  const key = request.headers.get('x-admin-key');
+  return key === MASTER_ADMIN_KEY;
+}
+
+export async function GET(request) {
+  if (!checkAdminAuth(request)) {
+    return NextResponse.json({ error: 'Unauthorized: Admin access key required' }, { status: 403 });
+  }
+
   try {
     // Fetch profiles
     const { data: profiles, error: pErr } = await supabaseAdmin
@@ -46,6 +57,10 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  if (!checkAdminAuth(request)) {
+    return NextResponse.json({ error: 'Unauthorized: Admin access key required' }, { status: 403 });
+  }
+
   try {
     const { userId, email, isAdmin } = await request.json();
 

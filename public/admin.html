@@ -66,10 +66,12 @@
       </a>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3">
+      <a href="https://webguruji.online/admin.html" target="_top" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-950/70 border border-amber-500/40 text-amber-300 hover:bg-amber-900/80 text-xs font-semibold transition shadow-sm" title="Master WebGuruJi Admin Console">
+        <span>👑 HarshGuruJi Admin</span>
+      </a>
       <a href="index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white text-xs font-semibold transition">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        <span>Open Chatbot</span>
+        <span>GuruAI Chat</span>
       </a>
 
       <!-- Current Auth Status -->
@@ -83,14 +85,40 @@
   <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
+    <!-- 0. ACCESS BLOCKED / 403 RESTRICTED (VISIBLE WHEN DIRECT ACCESS OR UNAUTHORIZED) -->
+    <section id="accessBlockedSection" class="hidden rounded-3xl bg-[#0c101d] border border-rose-500/30 p-8 sm:p-10 text-center space-y-6 max-w-xl mx-auto my-12 shadow-2xl relative overflow-hidden">
+      <div class="w-16 h-16 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-400 mx-auto flex items-center justify-center shadow-lg shadow-rose-500/20 text-3xl">
+        🛡️
+      </div>
+      <div class="space-y-2">
+        <span class="text-[11px] font-mono px-3 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold uppercase tracking-widest">403 Restricted Area</span>
+        <h2 class="text-2xl font-bold font-heading text-white">GuruAI Admin Console is Restricted</h2>
+        <p id="accessBlockReason" class="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+          Yeh page public users ke liye uplabdh nahi hai. Direct URL ya public link se is console ko access karna blocked hai.
+        </p>
+        <p class="text-xs text-slate-400 max-w-md mx-auto">
+          GuruAI administrative controls sirf authorized platform administrator ke liye <strong class="text-amber-300">https://webguruji.online/admin.html</strong> par uplabdh hain.
+        </p>
+      </div>
+
+      <div class="pt-2 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+        <a href="https://webguruji.online/admin.html" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-lg transition text-center flex items-center justify-center gap-1.5">
+          <span>👑 Open Master Admin (webguruji.online)</span>
+        </a>
+        <a href="index.html" class="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-xs transition text-center flex items-center justify-center">
+          Return to GuruAI Chat
+        </a>
+      </div>
+    </section>
+
     <!-- 1. NOT LOGGED IN HERO STATE -->
     <section id="loginPromptSection" class="hidden rounded-2xl bg-[#0d1222]/90 border border-slate-800/80 p-8 text-center space-y-5 max-w-xl mx-auto my-12 shadow-2xl">
       <div class="w-16 h-16 rounded-2xl bg-indigo-950/80 border border-indigo-500/40 text-cyan-400 mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/20">
         <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
       </div>
       <div class="space-y-1.5">
-        <h2 class="text-xl font-bold font-heading text-white">Admin Authentication Required</h2>
-        <p class="text-xs text-slate-400 max-w-md mx-auto">Please sign in with your Google Account or GuruAI credentials to access the user governance console.</p>
+        <h2 class="text-xl font-bold font-heading text-white">Master Admin Authentication Required</h2>
+        <p class="text-xs text-slate-400 max-w-md mx-auto">Please sign in with your authorized Master Admin Google account (harshguruji01@gmail.com) to access the user governance console.</p>
       </div>
 
       <div class="pt-2 space-y-3 max-w-sm mx-auto">
@@ -101,7 +129,7 @@
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
           </svg>
-          <span>Sign In with Google</span>
+          <span>Sign In as Master Admin</span>
         </button>
 
         <a href="index.html" class="block w-full py-2.5 px-4 rounded-xl bg-slate-950/60 hover:bg-slate-900 border border-slate-800 text-xs text-slate-400 font-medium transition">
@@ -135,12 +163,6 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap self-end md:self-auto">
-          <!-- Button to make self admin if not already -->
-          <button id="makeSelfAdminBtn" type="button" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md transition active:scale-95">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg>
-            <span>Set Me As Admin</span>
-          </button>
-
           <button id="refreshDataBtn" type="button" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             <span>Refresh</span>
@@ -245,16 +267,38 @@
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
+    const MASTER_ADMIN_EMAIL = 'harshguruji01@gmail.com';
+    const MASTER_GATE_KEY = '2547277654';
+
     let currentSessionUser = null;
     let allUsersList = [];
+
+    // Gate Verification: Only accessible via Master Admin Portal (webguruji.online/admin.html)
+    function isGateUnlocked() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const gate = params.get('gate');
+        const key = params.get('key');
+        if (gate === 'master_admin' && (key === MASTER_GATE_KEY || !key)) return true;
+
+        // Check if embedded in iframe from authorized domain
+        const inIframe = window.self !== window.top;
+        const ref = document.referrer || '';
+        if (inIframe && (ref.includes('webguruji.online') || ref.includes('localhost') || ref.includes('127.0.0.1'))) {
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
 
     // DOM References
     const headerAuthDot = document.getElementById('headerAuthDot');
     const headerAuthText = document.getElementById('headerAuthText');
+    const accessBlockedSection = document.getElementById('accessBlockedSection');
+    const accessBlockReason = document.getElementById('accessBlockReason');
     const loginPromptSection = document.getElementById('loginPromptSection');
     const adminContentSection = document.getElementById('adminContentSection');
     const googleSignInAdminBtn = document.getElementById('googleSignInAdminBtn');
-    const makeSelfAdminBtn = document.getElementById('makeSelfAdminBtn');
     const refreshDataBtn = document.getElementById('refreshDataBtn');
     const adminSignOutBtn = document.getElementById('adminSignOutBtn');
     const userSearchInput = document.getElementById('userSearchInput');
@@ -266,35 +310,37 @@
     const statAdminUsers = document.getElementById('statAdminUsers');
 
     // Google Sign-In Action
-    googleSignInAdminBtn.onclick = async () => {
-      if (!supabase) return alert('Supabase client not initialized');
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.href.split('#')[0]
-        }
-      });
-      if (error) alert('Google Sign-In failed: ' + error.message);
-    };
+    if (googleSignInAdminBtn) {
+      googleSignInAdminBtn.onclick = async () => {
+        if (!supabase) return alert('Supabase client not initialized');
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.href.split('#')[0]
+          }
+        });
+        if (error) alert('Google Sign-In failed: ' + error.message);
+      };
+    }
 
     // Sign Out
-    adminSignOutBtn.onclick = async () => {
-      if (supabase) await supabase.auth.signOut();
-      window.location.reload();
-    };
+    if (adminSignOutBtn) {
+      adminSignOutBtn.onclick = async () => {
+        if (supabase) await supabase.auth.signOut();
+        window.location.reload();
+      };
+    }
 
     // Track User in DB
     async function trackCurrentUser(user) {
       if (!user) return;
       try {
-        // Call server tracking API
         fetch('/api/auth/track', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user })
         }).catch(() => {});
 
-        // Direct Supabase upsert fallback
         if (supabase) {
           const now = new Date().toISOString();
           const fullName = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
@@ -326,63 +372,39 @@
       }
     }
 
-    // Set Me As Admin Action
-    makeSelfAdminBtn.onclick = async () => {
-      if (!currentSessionUser) return;
-      makeSelfAdminBtn.disabled = true;
-      makeSelfAdminBtn.innerHTML = '<span>Saving...</span>';
+    // Check if user is authorized Master Admin
+    function isUserAuthorizedAdmin(user) {
+      if (!user || !user.email) return false;
+      const email = user.email.toLowerCase().trim();
+      return email === MASTER_ADMIN_EMAIL.toLowerCase();
+    }
 
-      try {
-        let updated = false;
-        // 1. Try server API
-        try {
-          const res = await fetch('/api/admin/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: currentSessionUser.id,
-              email: currentSessionUser.email,
-              isAdmin: true
-            })
-          });
-          if (res.ok) updated = true;
-        } catch(e){}
-
-        // 2. Direct Supabase update
-        if (supabase) {
-          await supabase.from('profiles').update({ is_admin: true, role: 'admin' }).eq('id', currentSessionUser.id);
-          await supabase.from('users').update({ role: 'ADMIN' }).eq('id', currentSessionUser.id);
-          updated = true;
-        }
-
-        if (updated) {
-          alert('Success! You are now set as an Admin.');
-          await loadUsers();
-          updateAdminHeader(currentSessionUser);
-        }
-      } catch (err) {
-        alert('Could not update admin status: ' + err.message);
-      } finally {
-        makeSelfAdminBtn.disabled = false;
-        makeSelfAdminBtn.innerHTML = `<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg><span>Set Me As Admin</span>`;
-      }
-    };
-
-    // Toggle Admin For Any User
+    // Toggle Admin For Any User (Protected)
     async function toggleUserAdmin(userId, email, currentStatus) {
+      if (!currentSessionUser || !isUserAuthorizedAdmin(currentSessionUser)) {
+        alert('Unauthorized: Only Master Admin can modify user privileges.');
+        return;
+      }
+
       const newStatus = !currentStatus;
       const confirmAction = confirm(`Are you sure you want to ${newStatus ? 'grant Admin rights to' : 'revoke Admin rights from'} ${email}?`);
       if (!confirmAction) return;
 
       try {
-        // Try server API
         const res = await fetch('/api/admin/users', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': MASTER_GATE_KEY
+          },
           body: JSON.stringify({ userId, email, isAdmin: newStatus })
         });
 
-        // Direct fallback
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Server rejected authorization.');
+        }
+
         if (supabase) {
           await supabase.from('profiles').update({ is_admin: newStatus, role: newStatus ? 'admin' : 'student' }).eq('id', userId);
           await supabase.from('users').update({ role: newStatus ? 'ADMIN' : 'USER' }).eq('id', userId);
@@ -394,19 +416,24 @@
       }
     }
 
-    // Load All Users
+    // Load All Users (Protected)
     async function loadUsers() {
+      if (!currentSessionUser || !isUserAuthorizedAdmin(currentSessionUser)) {
+        return;
+      }
+
       try {
         let users = [];
 
-        // 1. Try server admin endpoint
         try {
-          const res = await fetch('/api/admin/users');
+          const res = await fetch('/api/admin/users', {
+            headers: { 'x-admin-key': MASTER_GATE_KEY }
+          });
           if (res.ok) {
             const data = await res.json();
             if (data.users) users = data.users;
           }
-        } catch(e){}
+        } catch (e) {}
 
         // 2. Direct Supabase query fallback
         if (!users.length && supabase) {
@@ -505,16 +532,20 @@
               ${dateStr}
             </td>
             <td class="p-3.5 text-right">
-              <button 
-                onclick="toggleUserAdmin('${user.id}', '${user.email}', ${isAdmin})"
-                class="px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  isAdmin 
-                    ? 'bg-rose-950/60 hover:bg-rose-900 border border-rose-800/60 text-rose-300' 
-                    : 'bg-indigo-600/80 hover:bg-indigo-500 text-white shadow-sm'
-                }"
-              >
-                ${isAdmin ? 'Revoke Admin' : 'Make Admin'}
-              </button>
+              ${(user.email && user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) ? `
+                <span class="text-[11px] text-amber-400/80 font-medium px-2 py-1 rounded bg-amber-400/10 border border-amber-400/20">Master Protected</span>
+              ` : `
+                <button 
+                  onclick="toggleUserAdmin('${user.id}', '${user.email}', ${isAdmin})"
+                  class="px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                    isAdmin 
+                      ? 'bg-rose-950/60 hover:bg-rose-900 border border-rose-800/60 text-rose-300' 
+                      : 'bg-indigo-600/80 hover:bg-indigo-500 text-white shadow-sm'
+                  }"
+                >
+                  ${isAdmin ? 'Revoke Admin' : 'Make Admin'}
+                </button>
+              `}
             </td>
           </tr>
         `;
@@ -522,58 +553,100 @@
     }
 
     // Filter Search
-    userSearchInput.oninput = () => {
-      const query = userSearchInput.value.toLowerCase().trim();
-      if (!query) {
-        renderUsersTable(allUsersList);
-        return;
-      }
-      const filtered = allUsersList.filter(u => 
-        (u.email && u.email.toLowerCase().includes(query)) ||
-        (u.display_name && u.display_name.toLowerCase().includes(query)) ||
-        (u.name && u.name.toLowerCase().includes(query)) ||
-        (u.provider && u.provider.toLowerCase().includes(query)) ||
-        (u.role && u.role.toLowerCase().includes(query))
-      );
-      renderUsersTable(filtered);
-    };
+    if (userSearchInput) {
+      userSearchInput.oninput = () => {
+        const query = userSearchInput.value.toLowerCase().trim();
+        if (!query) {
+          renderUsersTable(allUsersList);
+          return;
+        }
+        const filtered = allUsersList.filter(u => 
+          (u.email && u.email.toLowerCase().includes(query)) ||
+          (u.display_name && u.display_name.toLowerCase().includes(query)) ||
+          (u.name && u.name.toLowerCase().includes(query)) ||
+          (u.provider && u.provider.toLowerCase().includes(query)) ||
+          (u.role && u.role.toLowerCase().includes(query))
+        );
+        renderUsersTable(filtered);
+      };
+    }
 
-    refreshDataBtn.onclick = () => loadUsers();
+    if (refreshDataBtn) {
+      refreshDataBtn.onclick = () => loadUsers();
+    }
 
-    // Update Header and Admin Profile
+    // Update Header and Admin Gate Access
     function updateAdminHeader(user) {
-      if (user) {
-        headerAuthDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-        headerAuthText.textContent = user.email;
+      const gateOpen = isGateUnlocked();
 
-        loginPromptSection.classList.add('hidden');
-        adminContentSection.classList.remove('hidden');
+      if (user) {
+        const isAuthorized = isUserAuthorizedAdmin(user);
+
+        if (!isAuthorized) {
+          // Block non-admin authenticated users
+          headerAuthDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+          headerAuthText.textContent = `Access Denied (${user.email})`;
+
+          if (loginPromptSection) loginPromptSection.classList.add('hidden');
+          if (adminContentSection) adminContentSection.classList.add('hidden');
+          if (accessBlockedSection) {
+            accessBlockedSection.classList.remove('hidden');
+            if (accessBlockReason) {
+              accessBlockReason.innerHTML = `Aapka account (<strong class="text-rose-300">${user.email}</strong>) is console ke liye authorized nahi hai. Yeh page sirf Master Administrator (<strong class="text-amber-300">${MASTER_ADMIN_EMAIL}</strong>) ke liye arakshit hai.`;
+            }
+          }
+          return;
+        }
+
+        // Master Admin authenticated
+        headerAuthDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        headerAuthText.textContent = `${user.email} (Master Admin)`;
+
+        if (accessBlockedSection) accessBlockedSection.classList.add('hidden');
+        if (loginPromptSection) loginPromptSection.classList.add('hidden');
+        if (adminContentSection) adminContentSection.classList.remove('hidden');
 
         const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
-        document.getElementById('adminUserName').textContent = name;
-        document.getElementById('adminUserEmail').textContent = user.email;
+        const nameEl = document.getElementById('adminUserName');
+        const emailEl = document.getElementById('adminUserEmail');
+        if (nameEl) nameEl.textContent = name;
+        if (emailEl) emailEl.textContent = user.email;
 
         const avatarEl = document.getElementById('adminUserAvatar');
-        if (user.user_metadata?.avatar_url || user.user_metadata?.picture) {
-          avatarEl.innerHTML = `<img src="${user.user_metadata.avatar_url || user.user_metadata.picture}" alt="${name}" class="w-full h-full object-cover" />`;
-        } else {
-          avatarEl.textContent = name[0].toUpperCase();
+        if (avatarEl) {
+          if (user.user_metadata?.avatar_url || user.user_metadata?.picture) {
+            avatarEl.innerHTML = `<img src="${user.user_metadata.avatar_url || user.user_metadata.picture}" alt="${name}" class="w-full h-full object-cover" />`;
+          } else {
+            avatarEl.textContent = name[0].toUpperCase();
+          }
         }
 
         const isGoogle = user.app_metadata?.provider === 'google' || user.email.endsWith('@gmail.com');
-        document.getElementById('adminProviderBadge').textContent = isGoogle ? 'Google Account' : 'Email Account';
+        const badgeEl = document.getElementById('adminProviderBadge');
+        if (badgeEl) badgeEl.textContent = isGoogle ? 'Google Account' : 'Email Account';
 
-        // Check Admin Status
-        const isAdmin = user.email === 'harshguruji01@gmail.com';
-        if (isAdmin) {
-          document.getElementById('adminRoleBadge').classList.remove('hidden');
-          document.getElementById('adminRoleText').textContent = 'Master Admin';
-        }
+        const roleBadge = document.getElementById('adminRoleBadge');
+        const roleText = document.getElementById('adminRoleText');
+        if (roleBadge) roleBadge.classList.remove('hidden');
+        if (roleText) roleText.textContent = 'Master Admin';
+
       } else {
-        headerAuthDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-        headerAuthText.textContent = 'Guest (Not Logged In)';
-        loginPromptSection.classList.remove('hidden');
-        adminContentSection.classList.add('hidden');
+        // Not logged in
+        if (gateOpen) {
+          // Gate is unlocked from webguruji.online/admin.html -> Show login prompt
+          headerAuthDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+          headerAuthText.textContent = 'Admin Gate (Sign-in required)';
+          if (accessBlockedSection) accessBlockedSection.classList.add('hidden');
+          if (loginPromptSection) loginPromptSection.classList.remove('hidden');
+          if (adminContentSection) adminContentSection.classList.add('hidden');
+        } else {
+          // Direct public access attempted without gate -> BLOCK ACCESS
+          headerAuthDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+          headerAuthText.textContent = 'Restricted 403 (Public Blocked)';
+          if (loginPromptSection) loginPromptSection.classList.add('hidden');
+          if (adminContentSection) adminContentSection.classList.add('hidden');
+          if (accessBlockedSection) accessBlockedSection.classList.remove('hidden');
+        }
       }
     }
 
@@ -582,7 +655,7 @@
       supabase.auth.getSession().then(({ data: { session } }) => {
         currentSessionUser = session?.user || null;
         updateAdminHeader(currentSessionUser);
-        if (currentSessionUser) {
+        if (currentSessionUser && isUserAuthorizedAdmin(currentSessionUser)) {
           trackCurrentUser(currentSessionUser);
           loadUsers();
         }
@@ -591,11 +664,13 @@
       supabase.auth.onAuthStateChange((event, session) => {
         currentSessionUser = session?.user || null;
         updateAdminHeader(currentSessionUser);
-        if (currentSessionUser) {
+        if (currentSessionUser && isUserAuthorizedAdmin(currentSessionUser)) {
           trackCurrentUser(currentSessionUser);
           loadUsers();
         }
       });
+    } else {
+      updateAdminHeader(null);
     }
   </script>
 </body>
