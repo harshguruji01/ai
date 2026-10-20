@@ -72,9 +72,23 @@ export default function AuthModal({
     setSuccessMsg('');
     setLoading(true);
     try {
+      if (typeof window !== 'undefined') {
+        try {
+          const currentUrl = window.location.href.split('#')[0];
+          sessionStorage.setItem('hg_auth_redirect', currentUrl);
+          localStorage.setItem('hg_auth_redirect', currentUrl);
+          const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const domainStr = isLocal ? '' : '; domain=.webguruji.online';
+          const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
+          document.cookie = `hg_auth_redirect=${encodeURIComponent(currentUrl)}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
+        } catch (e) {}
+      }
+
       const returnUrl =
         typeof window !== 'undefined'
-          ? `${window.location.origin}${window.location.pathname}`
+          ? (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null'
+              ? 'https://ai.webguruji.online/'
+              : `${window.location.origin}${window.location.pathname}`)
           : undefined;
 
       const { error } = await supabase.auth.signInWithOAuth({

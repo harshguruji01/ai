@@ -92,6 +92,18 @@ function LoginContent() {
     setSuccessMsg('');
     setLoading(true);
     try {
+      if (typeof window !== 'undefined') {
+        try {
+          const target = nextUrl.startsWith('/') ? `${window.location.origin}${nextUrl}` : nextUrl;
+          sessionStorage.setItem('hg_auth_redirect', target);
+          localStorage.setItem('hg_auth_redirect', target);
+          const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const domainStr = isLocal ? '' : '; domain=.webguruji.online';
+          const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
+          document.cookie = `hg_auth_redirect=${encodeURIComponent(target)}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
+        } catch (e) {}
+      }
+
       const redirectUrl =
         typeof window !== 'undefined'
           ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`

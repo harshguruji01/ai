@@ -810,6 +810,18 @@
     switchToForgotBtn.onclick = () => setAuthModalMode('forgot');
     forgotBackToLoginBtn.onclick = () => setAuthModalMode('login');
 
+    // Cross-Domain Auth Redirect Tracking (Prevents Supabase OAuth from getting stuck on dashboard.html)
+    function setCrossDomainAuthRedirect(url) {
+      try {
+        sessionStorage.setItem('hg_auth_redirect', url);
+        localStorage.setItem('hg_auth_redirect', url);
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const domainStr = isLocal ? '' : '; domain=.webguruji.online';
+        const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
+        document.cookie = `hg_auth_redirect=${encodeURIComponent(url)}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
+      } catch (e) {}
+    }
+
     // Google Sign-In Buttons Handler
     function initGoogleAuthButtons() {
       document.querySelectorAll('.googleOAuthBtn').forEach((btn) => {
@@ -819,7 +831,14 @@
             return;
           }
           showAuthAlert('clear', '');
-          const returnUrl = window.location.origin + window.location.pathname;
+          const currentUrl = window.location.href.split('#')[0];
+          setCrossDomainAuthRedirect(currentUrl);
+
+          const returnUrl =
+            (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null')
+              ? 'https://ai.webguruji.online/'
+              : (window.location.origin + window.location.pathname);
+
           const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
@@ -1178,6 +1197,14 @@
 
         // Smoothly clean OAuth tokens from address bar without reloading or jumping pages
         if (session?.user && typeof window !== 'undefined') {
+          try {
+            sessionStorage.removeItem('hg_auth_redirect');
+            localStorage.removeItem('hg_auth_redirect');
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const domainStr = isLocal ? '' : '; domain=.webguruji.online';
+            document.cookie = `hg_auth_redirect=; path=/; max-age=0${domainStr}; SameSite=Lax`;
+          } catch(e) {}
+
           const hash = window.location.hash || '';
           const search = window.location.search || '';
           if (hash.includes('access_token') || search.includes('code=')) {
