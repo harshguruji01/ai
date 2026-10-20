@@ -59,35 +59,70 @@
   <style>
     /* Design Tokens */
     :root {
-      --bg-primary: #07090e;
-      --bg-secondary: #0d121f;
-      --bg-surface: #141b2d;
+      /* Theme A: Dark Slate (Default) */
+      --bg-primary: #030712;
+      --bg-secondary: #090e17;
+      --bg-surface: #0f172a;
       --border-color: rgba(51, 65, 85, 0.6);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --accent-primary: #6366f1;
       --accent-secondary: #06b6d4;
-      --composer-bg: rgba(13, 18, 31, 0.85);
-      --bubble-assistant: rgba(20, 27, 45, 0.85);
+      --composer-bg: rgba(9, 14, 23, 0.95);
+      --bubble-assistant: rgba(15, 23, 42, 0.9);
       --bubble-user: #4f46e5;
       --bubble-border: rgba(51, 65, 85, 0.5);
     }
 
+    /* Theme B: Daylight Light Mode (Solid deep black text for crystal clear daylight readability) */
     body.theme-light {
-      --bg-primary: #f8fafc;
-      --bg-secondary: #f1f5f9;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
       --bg-surface: #ffffff;
-      --border-color: #e2e8f0;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --accent-primary: #4f46e5;
+      --border-color: #cbd5e1;
+      --text-primary: #000000;
+      --text-secondary: #0f172a;
+      --accent-primary: #4338ca;
       --accent-secondary: #0284c7;
-      --composer-bg: rgba(255, 255, 255, 0.95);
+      --composer-bg: #ffffff;
       --bubble-assistant: #ffffff;
-      --bubble-user: #4f46e5;
-      --bubble-border: #e2e8f0;
+      --bubble-user: #4338ca;
+      --bubble-border: #cbd5e1;
     }
 
+    /* Daylight high-contrast text overrides */
+    body.theme-light .text-white,
+    body.theme-light .text-slate-100,
+    body.theme-light .text-slate-200,
+    body.theme-light .text-slate-300 {
+      color: #000000 !important;
+    }
+
+    body.theme-light .text-slate-400,
+    body.theme-light .text-slate-500 {
+      color: #1e293b !important;
+    }
+
+    body.theme-light .bg-slate-950,
+    body.theme-light .bg-slate-900,
+    body.theme-light .bg-slate-800 {
+      background-color: #f1f5f9 !important;
+      color: #000000 !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.theme-light input,
+    body.theme-light textarea {
+      color: #000000 !important;
+      background-color: #ffffff !important;
+    }
+
+    body.theme-light input::placeholder,
+    body.theme-light textarea::placeholder {
+      color: #475569 !important;
+    }
+
+    /* Theme C: Matrix / Cyberpunk */
     body.theme-cyberpunk {
       --bg-primary: #04070d;
       --bg-secondary: #090e1a;
@@ -97,7 +132,7 @@
       --text-secondary: #22d3ee;
       --accent-primary: #a855f7;
       --accent-secondary: #00ffcc;
-      --composer-bg: rgba(9, 14, 26, 0.92);
+      --composer-bg: rgba(9, 14, 26, 0.95);
       --bubble-assistant: rgba(15, 23, 42, 0.9);
       --bubble-user: #7c3aed;
       --bubble-border: rgba(0, 255, 204, 0.35);
@@ -299,12 +334,12 @@
       </header>
 
       <!-- Chat Messages Container -->
-      <div id="chatFeed" class="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
+      <div id="chatFeed" class="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto pb-10">
         <!-- Rendered dynamically -->
       </div>
 
-      <!-- Bottom Chat Composer -->
-      <div class="p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/90 backdrop-blur-md flex-shrink-0">
+      <!-- Bottom Chat Composer (Fixed at bottom like ChatGPT & Gemini with zero movement/overlap) -->
+      <div class="p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/95 backdrop-blur-md flex-shrink-0 sticky bottom-0 z-20">
         <div class="w-full max-w-4xl mx-auto space-y-2">
           
           <form id="chatForm" class="relative rounded-2xl border transition-all duration-200 bg-[var(--composer-bg)] backdrop-blur-md shadow-xl border-[var(--border-color)] focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/25">
@@ -1596,13 +1631,12 @@
       chatFeed.scrollTop = chatFeed.scrollHeight;
     }
 
-    // Streaming AI Response Simulation (NVIDIA Nemotron 3 Ultra 550B Engine)
+    // Streaming AI Response (NVIDIA Nemotron 3 Ultra 550B via Supabase Edge Function & /api/chat)
     async function streamResponse(prompt) {
       isGenerating = true;
       stopGenBtn.classList.remove('hidden');
       sendBtn.classList.add('hidden');
 
-      // Deduct allowance atomically
       deductAllowance();
 
       const assistantMsgDiv = document.createElement('div');
@@ -1618,8 +1652,64 @@
       chatFeed.appendChild(assistantMsgDiv);
       const streamBubble = document.getElementById('activeStreamBubble');
 
-      // Check if backend API is live
+      async function readSseStream(response) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+        let fullReasoning = '';
+        let buffer = '';
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed === 'data: [DONE]') continue;
+            if (trimmed.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(trimmed.slice(6));
+                const reasoning = data.reasoning || data.choices?.[0]?.delta?.reasoning_content || '';
+                const token = data.token || data.choices?.[0]?.delta?.content || '';
+
+                if (reasoning) {
+                  fullReasoning += reasoning;
+                }
+                if (token) {
+                  fullText += token;
+                }
+
+                let renderHtml = '';
+                if (fullReasoning) {
+                  const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                  renderHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono" ${fullText ? '' : 'open'}><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thinking Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
+                }
+                const safeText = fullText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                renderHtml += safeText;
+                streamBubble.innerHTML = renderHtml + '<span class="streaming-cursor"></span>';
+                chatFeed.scrollTop = chatFeed.scrollHeight;
+              } catch(e){}
+            }
+          }
+        }
+
+        let finalHtml = '';
+        if (fullReasoning) {
+          const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          finalHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono"><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thought Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
+        }
+        const safeText = fullText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        finalHtml += safeText;
+        streamBubble.innerHTML = finalHtml || 'Completed.';
+        return fullText.length > 0;
+      }
+
       let backendStreamed = false;
+
+      // 1. Try local/hosted Next.js /api/chat route first
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
@@ -1627,50 +1717,28 @@
           body: JSON.stringify({ prompt, language: currentLang })
         });
         if (response.ok && response.body) {
-          const reader = response.body.getReader();
-          const decoder = new TextDecoder();
-          let fullText = '';
-          let fullReasoning = '';
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n');
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                try {
-                  const data = JSON.parse(line.slice(6));
-                  if (data.reasoning) {
-                    fullReasoning += data.reasoning;
-                  }
-                  if (data.token) {
-                    fullText += data.token;
-                  }
-                  let renderHtml = '';
-                  if (fullReasoning) {
-                    renderHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono" ${fullText ? '' : 'open'}><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thinking Process</summary><div class="mt-2 whitespace-pre-wrap">${fullReasoning}</div></details>`;
-                  }
-                  renderHtml += fullText;
-                  streamBubble.innerHTML = renderHtml + '<span class="streaming-cursor"></span>';
-                  chatFeed.scrollTop = chatFeed.scrollHeight;
-                } catch(e){}
-              }
-            }
-          }
-          let finalHtml = '';
-          if (fullReasoning) {
-            finalHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono"><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thought Process</summary><div class="mt-2 whitespace-pre-wrap">${fullReasoning}</div></details>`;
-          }
-          finalHtml += fullText;
-          streamBubble.innerHTML = finalHtml;
-          backendStreamed = true;
+          backendStreamed = await readSseStream(response);
         }
-      } catch (e) {
-        // Fallback to standalone client streaming
+      } catch (e) {}
+
+      // 2. Fallback to live Supabase Edge Function (works on GitHub Pages & static hosting)
+      if (!backendStreamed) {
+        try {
+          const edgeRes = await fetch('https://wumdbpyhpblvgjttsbpv.supabase.co/functions/v1/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, language: currentLang })
+          });
+          if (edgeRes.ok && edgeRes.body) {
+            backendStreamed = await readSseStream(edgeRes);
+          }
+        } catch (edgeErr) {
+          console.warn('Edge function fallback error:', edgeErr);
+        }
       }
 
+      // 3. Fallback on network disconnection
       if (!backendStreamed) {
-        // Standalone instant AI demonstration response tailored to selected language
         const lowerPrompt = prompt.toLowerCase();
         const isCreatorQuery = [
           'who created you', 'who made you', 'who built you', 'who is your owner', 'who is your developer',
@@ -1678,38 +1746,154 @@
           'kiska ai', 'developer kaun', 'owner detail', 'owner link', 'तुम्हें किसने बनाया', 'तुम्हारा मालिक'
         ].some(k => lowerPrompt.includes(k));
 
-        let answer = '';
         if (isCreatorQuery) {
+          let answer = '';
           if (currentLang === 'hinglish') {
-            answer = `Mujhe **HarshGuruJi** (Harsh Patel) ne banaya aur engineer kiya hai! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://www.webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Biography & Details**: https://www.webguruji.online/owner.html\n\nHarshGuruJi ke complete technology platform me GuruAI, App Store, NCERT Books Library aur ChatBase messaging ecosystem shamil hain. Aap mere creator ke baare me aur details [webguruji.online/owner.html](https://www.webguruji.online/owner.html) par dekh sakte hain!`;
+            answer = `Mujhe **HarshGuruJi** (Harsh Patel) ne banaya aur engineer kiya hai! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://www.webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Biography & Details**: https://www.webguruji.online/owner.html`;
           } else if (currentLang === 'hindi') {
-            answer = `मुझे **HarshGuruJi** (Harsh Patel) ने बनाया और विकसित किया है! 🚀\n\n• **निर्माता एवं मालिक**: HarshGuruJi (Harsh Patel)\n• **आधिकारिक मुख्य वेबसाइट**: https://www.webguruji.online\n• **आधिकारिक AI डोमेन**: https://ai.webguruji.online\n• **मालिक का विवरण एवं प्रोफ़ाइल**: https://www.webguruji.online/owner.html\n\nमैं HarshGuruJi के बहु-उपयोगी तकनीक पारितंत्र (GuruAI, App Store, NCERT Books, ChatBase) का प्रमुख AI सहायक हूँ। मेरे निर्माता के बारे में अधिक जानने के लिए: [webguruji.online/owner.html](https://www.webguruji.online/owner.html)`;
+            answer = `मुझे **HarshGuruJi** (Harsh Patel) ने बनाया और विकसित किया है! 🚀\n\n• **निर्माता एवं मालिक**: HarshGuruJi (Harsh Patel)\n• **आधिकारिक मुख्य वेबसाइट**: https://www.webguruji.online\n• **आधिकारिक AI डोमेन**: https://ai.webguruji.online\n• **मालिक का विवरण**: https://www.webguruji.online/owner.html`;
           } else {
-            answer = `I am GuruAI, proudly created, engineered, and developed by **HarshGuruJi** (Harsh Patel)! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://www.webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Details & Biography**: https://www.webguruji.online/owner.html\n\nI am the flagship artificial intelligence engine of the HarshGuruJi technology ecosystem (spanning GuruAI, App Store, Digital NCERT Library, and ChatBase). Learn more about my founder at [webguruji.online/owner.html](https://www.webguruji.online/owner.html)!`;
+            answer = `I am GuruAI, proudly created and developed by **HarshGuruJi** (Harsh Patel)! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://www.webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Details**: https://www.webguruji.online/owner.html`;
           }
-        } else if (currentLang === 'hinglish') {
-          answer = `Namaste! GuruAI me aapka swagat hai.\n\nAapka sawaal: "${prompt}"\n\nYeh raha complete solution:\n1. Server-side Next.js App Router streaming architecture use karein.\n2. Concurrency-safe atomic rate limiting ke liye PostgreSQL \`FOR UPDATE\` row locking apply karein.\n3. Cross-subdomain auth cookies ko \`.webguruji.online\` scope par bind karein taaki user ko baar-baar login na karna pade.\n\nKoi aur code snippet ya explanation chahiye toh zaroor batayein!`;
-        } else if (currentLang === 'hindi') {
-          answer = `नमस्ते! GuruAI में आपका स्वागत है।\n\nआपके प्रश्न: "${prompt}" का विस्तृत विश्लेषण प्रस्तुत है:\n• उच्च प्रदर्शन और डीप रीजनिंग के लिए NVIDIA Nemotron 3 Ultra 550B मॉडल का उपयोग किया जाता है।\n• सभी डेटाबेस अनुमतियां Row Level Security (RLS) द्वारा सुरक्षित हैं।\n• वास्तविक समय में टोकन स्ट्रीमिंग के लिए SSE (Server-Sent Events) सक्रिय है।\n\nकृपया मुझे बताएं कि मैं आपकी आगे किस प्रकार सहायता कर सकता हूँ!`;
+          streamBubble.innerHTML = answer.replace(/\n/g, '<br/>');
         } else {
-          answer = `Hello! I am GuruAI, created by HarshGuruJi.\n\nRegarding your request: "${prompt}"\n\nHere is a comprehensive overview:\n• Architecture: Built with Next.js 14 App Router, Tailwind CSS, and Supabase.\n• Real-Time Intelligence: High-throughput token streaming & deep reasoning powered by NVIDIA NIM (Nemotron 3 Ultra 550B).\n• Concurrency Protection: PostgreSQL row-level locks ensure rate-limits are mathematically unbypassable.\n• Seamless SSO: Shared authenticated session cookies across *.webguruji.online.\n\nLet me know if you would like to explore specific implementation details or generate creative code!`;
+          streamBubble.innerHTML = `<span class="text-rose-400 font-medium">⚠️ Connection error: AI server is temporarily unreachable. Please check your internet connection and retry.</span>`;
         }
-
-        const words = answer.split(' ');
-        let accumulated = '';
-        for (let i = 0; i < words.length; i++) {
-          if (!isGenerating) break;
-          accumulated += (i === 0 ? '' : ' ') + words[i];
-          streamBubble.innerHTML = accumulated + '<span class="streaming-cursor"></span>';
-          chatFeed.scrollTop = chatFeed.scrollHeight;
-          await new Promise((r) => setTimeout(r, 35));
-        }
-        streamBubble.innerHTML = accumulated;
       }
 
       isGenerating = false;
       stopGenBtn.classList.add('hidden');
       sendBtn.classList.remove('hidden');
+    }
+
+    // Lightbox Controls
+    window.openLightbox = function(src, caption) {
+      const lightbox = document.getElementById('imageLightbox');
+      const img = document.getElementById('lightboxImg');
+      const cap = document.getElementById('lightboxCaption');
+      if (lightbox && img) {
+        img.src = src;
+        if (cap) cap.textContent = caption || 'Generated Artwork';
+        lightbox.classList.remove('hidden');
+      }
+    };
+
+    window.closeLightbox = function() {
+      const lightbox = document.getElementById('imageLightbox');
+      if (lightbox) lightbox.classList.add('hidden');
+    };
+
+    // AI Image Studio Generation Flow (Cloudflare Workers AI / Flux / SDXL)
+    async function generateImageResponse(prompt) {
+      if (!currentUser) {
+        openAuthModal('login');
+        return;
+      }
+
+      isGenerating = true;
+      stopGenBtn.classList.remove('hidden');
+      sendBtn.classList.add('hidden');
+
+      deductAllowance();
+
+      const assistantMsgDiv = document.createElement('div');
+      assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';
+      const bubbleId = 'img-bubble-' + Date.now();
+      assistantMsgDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
+          <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
+        </div>
+        <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-2">
+          <div id="${bubbleId}" class="relative rounded-2xl p-4 bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-md">
+            <div class="flex items-center gap-2.5 text-xs text-purple-400 mb-2">
+              <span class="w-2 h-2 rounded-full bg-purple-500 animate-ping"></span>
+              <span class="font-semibold">AI Image Studio • Stable Diffusion XL / Flux</span>
+            </div>
+            <div class="w-72 sm:w-80 h-72 sm:h-80 rounded-xl bg-slate-900/90 border border-purple-500/30 flex flex-col items-center justify-center text-center p-4 space-y-3 animate-pulse">
+              <div class="w-10 h-10 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
+              <div class="text-xs text-slate-300 font-medium">Generating high-resolution artwork...</div>
+              <div class="text-[11px] text-purple-300/80 line-clamp-2 max-w-xs font-mono">"${prompt.replace(/"/g, '&quot;')}"</div>
+            </div>
+          </div>
+        </div>
+      `;
+      chatFeed.appendChild(assistantMsgDiv);
+      chatFeed.scrollTop = chatFeed.scrollHeight;
+
+      const bubbleEl = document.getElementById(bubbleId);
+      let finalImageUrl = null;
+
+      // 1. Try Next.js backend image generation endpoint
+      try {
+        const res = await fetch('/api/images/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, conversationId: currentConvId })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.imageUrl) {
+            finalImageUrl = data.imageUrl;
+          }
+        }
+      } catch (err) {}
+
+      // 2. Direct Fallback to Free High-Res Cloudflare / Flux Model Engine (matching free-image-generation-api)
+      if (!finalImageUrl) {
+        const seed = Math.floor(Math.random() * 1000000);
+        finalImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}&model=flux`;
+      }
+
+      // Preload image so it renders cleanly
+      const imgTest = new Image();
+      imgTest.src = finalImageUrl;
+      imgTest.onload = () => {
+        if (!bubbleEl) return;
+        const safePrompt = prompt.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        bubbleEl.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-xs pb-1 border-b border-[var(--border-color)]">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="font-bold text-xs text-purple-400">Stable Diffusion XL • 1024×1024</span>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono">AI Studio</span>
+            </div>
+            <div class="relative group rounded-xl overflow-hidden border border-slate-700/80 bg-black/60 shadow-lg cursor-pointer" onclick="openLightbox('${finalImageUrl}', '${safePrompt}')">
+              <img src="${finalImageUrl}" alt="${safePrompt}" class="w-full max-w-sm rounded-xl object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3 justify-between">
+                <span class="text-xs text-white font-medium truncate max-w-[200px]">Click to view full size</span>
+                <span class="text-[10px] bg-purple-600 text-white px-2 py-0.5 rounded-full font-bold">1024x1024</span>
+              </div>
+            </div>
+            <div class="text-xs text-slate-300 font-medium leading-relaxed bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-purple-400 font-semibold">Prompt:</span> "${safePrompt}"
+            </div>
+            <div class="flex items-center gap-2 pt-1">
+              <a href="${finalImageUrl}" download="guruai-image-${Date.now()}.jpg" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span>Download Artwork</span>
+              </a>
+              <button onclick="openLightbox('${finalImageUrl}', '${safePrompt}')" class="flex items-center gap-1 py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <span>Full View</span>
+              </button>
+            </div>
+          </div>
+        `;
+        chatFeed.scrollTop = chatFeed.scrollHeight;
+        isGenerating = false;
+        stopGenBtn.classList.add('hidden');
+        sendBtn.classList.remove('hidden');
+      };
+
+      imgTest.onerror = () => {
+        if (!bubbleEl) return;
+        bubbleEl.innerHTML = `<span class="text-rose-400 font-medium">⚠️ Image generation request timed out. Please retry.</span>`;
+        isGenerating = false;
+        stopGenBtn.classList.add('hidden');
+        sendBtn.classList.remove('hidden');
+      };
     }
 
     // Handle Form Submit
@@ -1733,7 +1917,12 @@
       promptInput.style.height = 'auto';
 
       appendMessage('user', text);
-      streamResponse(text);
+
+      if (isImageMode) {
+        generateImageResponse(text);
+      } else {
+        streamResponse(text);
+      }
     };
 
     // Stop Generation Handler

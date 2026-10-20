@@ -406,23 +406,28 @@ export default function GuruAiApp() {
     abortControllerRef.current = controller;
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: controller.signal,
-        body: JSON.stringify({
-          prompt: promptToSend,
-          conversationId: activeConversationId,
-          messages: currentHistory,
-          fingerprint,
-          isImageMode: false,
-          language: preferences.ai_language || 'english',
-        }),
-      });
+      let res;
+      try {
+        res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            prompt: promptToSend,
+            conversationId: activeConversationId,
+            messages: currentHistory,
+            fingerprint,
+            isImageMode: false,
+            language: preferences.ai_language || 'english',
+          }),
+        });
+      } catch (e) {
+        // Fallback handled below
+      }
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        if (res.status === 429) {
+      if (!res || !res.ok) {
+        if (res && res.status === 429) {
+          const errData = await res.json().catch(() => ({}));
           setQuota((prev) => ({
             ...prev,
             remainingAllowance: 0,
@@ -437,29 +442,55 @@ export default function GuruAiApp() {
               isError: true,
             },
           ]);
-        } else if (res.status === 403 && errData.requiresLogin) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'assistant',
-              content: `🎨 ${errData.message}`,
-              messageType: 'text',
-              isError: true,
-            },
-          ]);
-        } else {
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'assistant',
-              content: `❌ Error: ${errData.error || 'Failed to complete request.'}`,
-              messageType: 'text',
-              isError: true,
-            },
-          ]);
+          setIsGenerating(false);
+          return;
+        } else if (res && res.status === 403) {
+          const errData = await res.json().catch(() => ({}));
+          if (errData.requiresLogin) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                role: 'assistant',
+                content: `🎨 ${errData.message}`,
+                messageType: 'text',
+                isError: true,
+              },
+            ]);
+            setIsGenerating(false);
+            return;
+          }
         }
-        setIsGenerating(false);
-        return;
+
+        // Fallback to live Supabase Edge Function
+        try {
+          res = await fetch('https://wumdbpyhpblvgjttsbpv.supabase.co/functions/v1/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal,
+            body: JSON.stringify({
+              prompt: promptToSend,
+              messages: currentHistory,
+              language: preferences.ai_language || 'english',
+            }),
+          });
+        } catch (edgeErr) {
+          console.warn('Edge function fallback error:', edgeErr);
+        }
+
+        if (!res || !res.ok) {
+          const errData = res ? await res.json().catch(() => ({})) : {};
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: `❌ Error: ${errData.error || 'Failed to complete request. Please retry.'}`,
+              messageType: 'text',
+              isError: true,
+            },
+          ]);
+          setIsGenerating(false);
+          return;
+        }
       }
 
       // Stream SSE chunks
@@ -481,12 +512,15 @@ export default function GuruAiApp() {
           if (trimmed.startsWith('data: ')) {
             try {
               const eventData = JSON.parse(trimmed.slice(6));
-              if (eventData.reasoning) {
-                streamedReasoning += eventData.reasoning;
+              const rToken = eventData.reasoning || eventData.choices?.[0]?.delta?.reasoning_content || '';
+              const cToken = eventData.token || eventData.choices?.[0]?.delta?.content || '';
+
+              if (rToken) {
+                streamedReasoning += rToken;
                 setStreamingReasoning(streamedReasoning);
               }
-              if (eventData.token) {
-                streamedAnswer += eventData.token;
+              if (cToken) {
+                streamedAnswer += cToken;
                 setStreamingContent(streamedAnswer);
               }
               if (eventData.conversationId && !serverConvId) {

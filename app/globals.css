@@ -24,25 +24,57 @@
     --ring-glow: rgba(99, 102, 241, 0.25);
   }
 
-  /* Theme B: Light Mode */
+  /* Theme B: Daylight Light Mode (Solid deep black text for crystal clear daylight readability) */
   body.theme-light {
-    --bg-primary: #f8fafc;
-    --bg-secondary: #f1f5f9;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
     --bg-surface: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.85);
-    --border-color: #e2e8f0;
-    --border-focus: #4f46e5;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
-    --accent-primary: #4f46e5;
+    --bg-card: #ffffff;
+    --border-color: #cbd5e1;
+    --border-focus: #4338ca;
+    --text-primary: #000000;
+    --text-secondary: #0f172a;
+    --text-muted: #334155;
+    --accent-primary: #4338ca;
     --accent-secondary: #0284c7;
-    --accent-hover: #4338ca;
-    --composer-bg: rgba(255, 255, 255, 0.95);
+    --accent-hover: #3730a3;
+    --composer-bg: #ffffff;
     --bubble-assistant: #ffffff;
-    --bubble-user: #4f46e5;
-    --bubble-border: #e2e8f0;
-    --ring-glow: rgba(79, 70, 229, 0.15);
+    --bubble-user: #4338ca;
+    --bubble-border: #cbd5e1;
+    --ring-glow: rgba(79, 70, 229, 0.2);
+  }
+
+  /* Daylight high-contrast text overrides */
+  body.theme-light .text-white,
+  body.theme-light .text-slate-100,
+  body.theme-light .text-slate-200,
+  body.theme-light .text-slate-300 {
+    color: #000000 !important;
+  }
+
+  body.theme-light .text-slate-400,
+  body.theme-light .text-slate-500 {
+    color: #1e293b !important;
+  }
+
+  body.theme-light .bg-slate-950,
+  body.theme-light .bg-slate-900,
+  body.theme-light .bg-slate-800 {
+    background-color: #f1f5f9 !important;
+    color: #000000 !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  body.theme-light input,
+  body.theme-light textarea {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+  }
+
+  body.theme-light input::placeholder,
+  body.theme-light textarea::placeholder {
+    color: #475569 !important;
   }
 
   /* Theme C: Matrix / Cyberpunk Neon */
@@ -59,7 +91,7 @@
     --accent-primary: #a855f7;
     --accent-secondary: #00ffcc;
     --accent-hover: #9333ea;
-    --composer-bg: rgba(9, 14, 26, 0.9);
+    --composer-bg: rgba(9, 14, 26, 0.95);
     --bubble-assistant: rgba(15, 23, 42, 0.9);
     --bubble-user: #7c3aed;
     --bubble-border: rgba(0, 255, 204, 0.35);
