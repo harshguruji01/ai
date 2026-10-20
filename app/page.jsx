@@ -8,6 +8,7 @@ import ChatWindow from '@/components/ChatWindow';
 import ChatInput from '@/components/ChatInput';
 import SettingsPanel from '@/components/SettingsPanel';
 import ImagePreview from '@/components/ImagePreview';
+import AuthModal from '@/components/AuthModal';
 
 export default function GuruAiApp() {
   const [supabase] = useState(() => createClient());
@@ -19,6 +20,8 @@ export default function GuruAiApp() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login');
   const [previewImageData, setPreviewImageData] = useState(null);
 
   // Conversation & Chat State
@@ -124,10 +127,27 @@ export default function GuruAiApp() {
 
     bootstrapApp();
 
+    // Check if user arrived via recovery link
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const hash = window.location.hash || '';
+      if (searchParams.get('reset_password') || hash.includes('type=recovery')) {
+        setAuthModalMode('update_password');
+        setAuthModalOpen(true);
+      }
+    }
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null);
+      if (event === 'PASSWORD_RECOVERY') {
+        setAuthModalMode('update_password');
+        setAuthModalOpen(true);
+      }
+      if (session?.user) {
+        refreshUsageStatus(session.user);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -537,15 +557,18 @@ export default function GuruAiApp() {
     executeSend(lastUserPrompt, isImageMode, historyBeforeLastUser);
   };
 
+  const handleOpenAuth = (mode = 'login') => {
+    setAuthModalMode(mode);
+    setAuthModalOpen(true);
+  };
+
   // Starter Prompt Card Click
   const handlePromptSelect = (selectedPrompt) => {
     const isImgPrompt =
       selectedPrompt.toLowerCase().includes('generate an image') ||
       selectedPrompt.toLowerCase().includes('generate image');
     if (isImgPrompt && !user) {
-      alert(
-        '🎨 AI Image Studio is available for signed-in members. Please sign in at https://webguruji.online to generate images with Stable Diffusion XL!'
-      );
+      handleOpenAuth('login');
       return;
     }
     if (isImgPrompt) {
@@ -584,6 +607,7 @@ export default function GuruAiApp() {
         onLogout={handleLogout}
         currentTheme={preferences.theme}
         onQuickThemeToggle={handleQuickThemeToggle}
+        onOpenAuth={handleOpenAuth}
       />
 
       {/* 2. Main Chat Center Workspace */}
@@ -618,11 +642,7 @@ export default function GuruAiApp() {
             setIsImageMode={setIsImageMode}
             isLoggedIn={!!user}
             remainingAllowance={quota.remainingAllowance}
-            onOpenLoginPrompt={() =>
-              alert(
-                '🎨 AI Image Generation is available to signed-in users. Please sign in at https://webguruji.online to unlock high-resolution Stable Diffusion XL image creation!'
-              )
-            }
+            onOpenLoginPrompt={() => handleOpenAuth('login')}
           />
         </div>
       </main>
@@ -645,6 +665,18 @@ export default function GuruAiApp() {
         imageUrl={previewImageData?.url}
         prompt={previewImageData?.prompt}
         onClose={() => setPreviewImageData(null)}
+      />
+
+      {/* 6. Auth Modal (Login / Sign Up / Forgot Password) */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        supabase={supabase}
+        initialMode={authModalMode}
+        onAuthSuccess={(authenticatedUser) => {
+          setUser(authenticatedUser);
+          refreshUsageStatus(authenticatedUser);
+        }}
       />
     </div>
   );

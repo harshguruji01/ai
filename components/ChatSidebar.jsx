@@ -71,6 +71,7 @@ export default function ChatSidebar({
   onLogout,
   currentTheme = 'dark',
   onQuickThemeToggle,
+  onOpenAuth,
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingId, setEditingId] = useState(null);
@@ -346,13 +347,14 @@ export default function ChatSidebar({
                 <p className="leading-relaxed">
                   Your chat history is kept purely in temporary memory and never stored in the database.
                 </p>
-                <a
-                  href={mainSiteUrl}
-                  className="inline-flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 font-semibold pt-1"
+                <button
+                  type="button"
+                  onClick={() => onOpenAuth?.('login')}
+                  className="inline-flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 font-semibold pt-1 cursor-pointer transition"
                 >
                   <span>Sign in to save chats</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                  <LogIn className="w-3.5 h-3.5" />
+                </button>
               </div>
             )
           ) : (
@@ -410,13 +412,17 @@ export default function ChatSidebar({
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-xs text-slate-400">
-                  <div className="w-7 h-7 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 text-xs font-bold">
+                <div
+                  onClick={() => onOpenAuth?.('login')}
+                  className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition group"
+                  title="Click to sign in with email"
+                >
+                  <div className="w-7 h-7 rounded-xl bg-slate-800 group-hover:bg-indigo-600/30 flex items-center justify-center text-slate-300 group-hover:text-cyan-300 text-xs font-bold transition">
                     G
                   </div>
                   <div className="leading-tight">
-                    <div className="font-semibold text-slate-300">Guest Visitor</div>
-                    <div className="text-[10px] text-amber-400">2 chats • 6h Reset</div>
+                    <div className="font-semibold text-slate-300 group-hover:text-white transition">Guest Visitor</div>
+                    <div className="text-[10px] text-cyan-400 group-hover:underline">Click to Sign In</div>
                   </div>
                 </div>
               )
@@ -459,14 +465,15 @@ export default function ChatSidebar({
                   <LogOut className="w-4 h-4" />
                 </button>
               ) : (
-                <a
-                  href={mainSiteUrl}
-                  title="Login on WebGuruJi"
-                  aria-label="Login"
+                <button
+                  type="button"
+                  onClick={() => onOpenAuth?.('login')}
+                  title="Sign In with Email"
+                  aria-label="Sign In with Email"
                   className="p-1.5 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-slate-800 transition"
                 >
                   <LogIn className="w-4 h-4" />
-                </a>
+                </button>
               )}
             </div>
           </div>
