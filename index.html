@@ -1079,7 +1079,19 @@
       submitBtn.innerHTML = `<span>Signing in...</span>`;
 
       try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error && error.message && error.message.toLowerCase().includes('email not confirmed')) {
+          try {
+            await fetch('/api/auth/signup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+            });
+            const retry = await supabaseClient.auth.signInWithPassword({ email, password });
+            data = retry.data;
+            error = retry.error;
+          } catch (_) {}
+        }
         if (error) throw error;
         showAuthAlert('success', 'Signed in successfully!');
         updateUserState(data.user);
@@ -1105,6 +1117,11 @@
         return;
       }
 
+      if (password.length < 6) {
+        showAuthAlert('error', 'Password must be at least 6 characters.');
+        return;
+      }
+
       if (!supabaseClient) {
         showAuthAlert('error', 'Supabase client not loaded.');
         return;
@@ -1115,20 +1132,47 @@
       submitBtn.innerHTML = `<span>Creating account...</span>`;
 
       try {
-        const { data, error } = await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: window.location.origin
+        // Step 1: Try backend auto-confirmed signup first (bypasses email inbox wait completely)
+        let backendOk = false;
+        try {
+          const resp = await fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          if (resp.ok) {
+            backendOk = true;
           }
+        } catch (_) {}
+
+        // Step 2: Fall back to client signUp if API is unavailable
+        if (!backendOk) {
+          const { error: signUpError } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: window.location.origin
+            }
+          });
+          if (signUpError && !signUpError.message.toLowerCase().includes('already registered')) {
+            throw signUpError;
+          }
+        }
+
+        // Step 3: Automatically sign in immediately without forcing email confirmation wait!
+        const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
         });
-        if (error) throw error;
-        if (data.session) {
+
+        if (signInError) {
+          throw signInError;
+        }
+
+        if (signInData?.user) {
           showAuthAlert('success', 'Account created and signed in successfully!');
-          updateUserState(data.user);
-          setTimeout(() => closeAuthModal(), 800);
-        } else {
-          showAuthAlert('success', 'Verification email sent! Check your inbox to confirm your account.');
+          updateUserState(signInData.user);
+          setTimeout(() => closeAuthModal(), 600);
         }
       } catch (err) {
         showAuthAlert('error', err.message || 'Sign up failed.');

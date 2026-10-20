@@ -124,10 +124,26 @@ function LoginContent() {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      let { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
+
+      if (error && error.message?.toLowerCase().includes('email not confirmed')) {
+        try {
+          await fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.trim(), password }),
+          });
+          const retry = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
+          data = retry.data;
+          error = retry.error;
+        } catch (_) {}
+      }
 
       if (error) throw error;
 
@@ -167,25 +183,49 @@ function LoginContent() {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
+      // Step 1: Call backend auto-confirmed signup API
+      let backendOk = false;
+      try {
+        const resp = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim(), password }),
+        });
+        if (resp.ok) {
+          backendOk = true;
+        }
+      } catch (_) {}
+
+      // Step 2: Fallback to client signUp
+      if (!backendOk) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: {
+            emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
+          },
+        });
+
+        if (signUpError && !signUpError.message?.toLowerCase().includes('already registered')) {
+          throw signUpError;
+        }
+      }
+
+      // Step 3: Immediately sign in user with email & password without waiting for email confirmation
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
-        options: {
-          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
-        },
       });
 
-      if (error) throw error;
+      if (signInError) {
+        throw signInError;
+      }
 
-      if (data?.session) {
-        setSuccessMsg('Account created! Redirecting...');
+      if (signInData?.user) {
+        setSuccessMsg('Account created and signed in successfully! Redirecting...');
         setTimeout(() => {
           router.push(nextUrl);
         }, 600);
-      } else {
-        setSuccessMsg(
-          'Verification email sent! Check your inbox to confirm your account, then sign in.'
-        );
       }
     } catch (err) {
       setErrorMsg(err.message || 'Failed to create account.');

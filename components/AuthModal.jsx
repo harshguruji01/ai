@@ -79,10 +79,26 @@ export default function AuthModal({
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      let { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password,
       });
+
+      if (error && error.message?.toLowerCase().includes('email not confirmed')) {
+        try {
+          await fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.trim(), password }),
+          });
+          const retry = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
+          data = retry.data;
+          error = retry.error;
+        } catch (_) {}
+      }
 
       if (error) {
         throw error;
@@ -125,28 +141,50 @@ export default function AuthModal({
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password: password,
-        options: {
-          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
-        },
-      });
+      // Step 1: Call auto-confirm signup API
+      let backendOk = false;
+      try {
+        const resp = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim(), password }),
+        });
+        if (resp.ok) {
+          backendOk = true;
+        }
+      } catch (_) {}
 
-      if (error) {
-        throw error;
+      // Step 2: Fall back to client signUp if API failed
+      if (!backendOk) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: password,
+          options: {
+            emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
+          },
+        });
+
+        if (signUpError && !signUpError.message?.toLowerCase().includes('already registered')) {
+          throw signUpError;
+        }
       }
 
-      if (data?.session) {
+      // Step 3: Immediately sign in user with email & password without waiting for email
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password,
+      });
+
+      if (signInError) {
+        throw signInError;
+      }
+
+      if (signInData?.user) {
         setSuccessMsg('Account created and signed in successfully!');
-        if (onAuthSuccess) onAuthSuccess(data.user);
+        if (onAuthSuccess) onAuthSuccess(signInData.user);
         setTimeout(() => {
           onClose();
-        }, 800);
-      } else {
-        setSuccessMsg(
-          'Verification email sent! Please check your inbox to confirm your account, then sign in.'
-        );
+        }, 600);
       }
     } catch (err) {
       setErrorMsg(err.message || 'Failed to sign up.');
