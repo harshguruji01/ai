@@ -195,6 +195,36 @@ test('Workflow: React components render Dashboard only for logged-in user withou
   assert.ok(authModal.includes('window.location.pathname'), 'AuthModal must return user to AI page');
 });
 
+// 8. AI Dashboard & Admin Panel Integration Tests
+test('Workflow: dashboard.html and Next.js route exist with complete settings & quota analytics', () => {
+  const dashHtml = fs.readFileSync('dashboard.html', 'utf8');
+  assert.ok(dashHtml.includes('Live AI Usage Allowance'), 'Must show live allowance section');
+  assert.ok(dashHtml.includes('resetTimerText'), 'Must show rolling reset timer');
+  assert.ok(dashHtml.includes('setStudioTheme'), 'Must include theme settings');
+  assert.ok(dashHtml.includes('setStudioLang'), 'Must include language settings');
+  assert.ok(dashHtml.includes('tempSlider'), 'Must include creativity temperature');
+  assert.ok(dashHtml.includes('conversationsContainer'), 'Must include chat history manager');
+  assert.ok(dashHtml.includes('webguruji.online/dashboard.html'), 'Must link to main site dashboard');
+
+  const dashReact = fs.readFileSync('app/dashboard/page.jsx', 'utf8');
+  assert.ok(dashReact.includes('Live AI Quota &amp; Allowance'), 'React route must display quota');
+  assert.ok(dashReact.includes('handleSetTheme'), 'React route must support themes');
+  assert.ok(dashReact.includes('handleSetLang'), 'React route must support language');
+});
+
+test('Workflow: Main Admin Panels contain GuruAI Command Center integration', () => {
+  const siteAdmin = fs.readFileSync('../../site/admin.html', 'utf8');
+  assert.ok(siteAdmin.includes("switchMasterTab('guruai')"), 'site/admin.html must have guruai tab trigger');
+  assert.ok(siteAdmin.includes('id="pane-guruai"'), 'site/admin.html must have pane-guruai');
+  assert.ok(siteAdmin.includes('tile-guruai-app'), 'site/admin.html must have GuruAI stat tile');
+  assert.ok(siteAdmin.includes('https://ai.webguruji.online/admin.html'), 'site/admin.html must link to AI admin');
+
+  const storeAdmin = fs.readFileSync('../store/admin.html', 'utf8');
+  assert.ok(storeAdmin.includes("switchMasterTab('guruai')"), 'store/admin.html must have guruai tab trigger');
+  assert.ok(storeAdmin.includes('id="pane-guruai"'), 'store/admin.html must have pane-guruai');
+  assert.ok(storeAdmin.includes('tile-guruai-app'), 'store/admin.html must have GuruAI stat tile');
+});
+
 console.log(`\n========================================`);
 console.log(`Test Summary: ${passedTests} passed, ${failedTests} failed.`);
 console.log(`========================================\n`);
