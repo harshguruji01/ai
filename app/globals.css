@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Theme A: Dark Slate (Default) */
+    --bg-primary: #07090e;
+    --bg-secondary: #0d121f;
+    --bg-surface: #141b2d;
+    --bg-card: rgba(20, 27, 45, 0.7);
+    --border-color: rgba(51, 65, 85, 0.6);
+    --border-focus: #6366f1;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-primary: #6366f1;
+    --accent-secondary: #06b6d4;
+    --accent-hover: #4f46e5;
+    --composer-bg: rgba(13, 18, 31, 0.85);
+    --bubble-assistant: rgba(20, 27, 45, 0.85);
+    --bubble-user: #4f46e5;
+    --bubble-border: rgba(51, 65, 85, 0.5);
+    --ring-glow: rgba(99, 102, 241, 0.25);
+  }
+
+  /* Theme B: Light Mode */
+  body.theme-light {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #f1f5f9;
+    --bg-surface: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --border-color: #e2e8f0;
+    --border-focus: #4f46e5;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --accent-primary: #4f46e5;
+    --accent-secondary: #0284c7;
+    --accent-hover: #4338ca;
+    --composer-bg: rgba(255, 255, 255, 0.95);
+    --bubble-assistant: #ffffff;
+    --bubble-user: #4f46e5;
+    --bubble-border: #e2e8f0;
+    --ring-glow: rgba(79, 70, 229, 0.15);
+  }
+
+  /* Theme C: Matrix / Cyberpunk Neon */
+  body.theme-cyberpunk {
+    --bg-primary: #04070d;
+    --bg-secondary: #090e1a;
+    --bg-surface: #0f172a;
+    --bg-card: rgba(15, 23, 42, 0.75);
+    --border-color: rgba(0, 255, 204, 0.25);
+    --border-focus: #00ffcc;
+    --text-primary: #ecfeff;
+    --text-secondary: #22d3ee;
+    --text-muted: #0891b2;
+    --accent-primary: #a855f7;
+    --accent-secondary: #00ffcc;
+    --accent-hover: #9333ea;
+    --composer-bg: rgba(9, 14, 26, 0.9);
+    --bubble-assistant: rgba(15, 23, 42, 0.9);
+    --bubble-user: #7c3aed;
+    --bubble-border: rgba(0, 255, 204, 0.35);
+    --ring-glow: rgba(0, 255, 204, 0.3);
+  }
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-active, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  min-height: 100vh;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Typography Selection Tokens */
+.font-sans-mode {
+  --font-active: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-serif-mode {
+  --font-active: 'Merriweather', Georgia, Cambria, 'Times New Roman', serif;
+}
+
+.font-mono-mode {
+  --font-active: 'Fira Code', 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
+}
+
+.text-size-small {
+  font-size: 0.875rem; /* 14px */
+}
+
+.text-size-medium {
+  font-size: 1rem; /* 16px */
+}
+
+.text-size-large {
+  font-size: 1.125rem; /* 18px */
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+  }
+}
+
+@keyframes cursorBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.streaming-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  background-color: var(--accent-secondary);
+  margin-left: 3px;
+  vertical-align: middle;
+  border-radius: 2px;
+  animation: cursorBlink 0.9s infinite;
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .streaming-cursor {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Polished Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}

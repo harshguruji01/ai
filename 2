@@ -1,0 +1,465 @@
+PROMPT 2 — GURUAI PREMIUM UI/UX TRANSFORMATION
+1. ROLE AND PROJECT OBJECTIVE
+Act as a Senior UI/UX Designer, Next.js Frontend Architect, React Engineer, Animation Specialist, Accessibility Expert, and Performance Optimization Engineer.
+Upgrade my existing AI chatbot application into a premium, modern, production-quality AI platform with a beautiful ChatGPT-inspired interface, advanced interactions, responsive layouts, smooth animations, customizable themes, and a polished user experience.
+Official project details
+AI product name: GuruAI
+Official URL: [https://ai.webguruji.online](https://ai.webguruji.online/)
+Main website: [https://webguruji.online](https://webguruji.online/)
+Brand owner: HarshGuruJi
+Framework: Next.js App Router
+Frontend: React and JavaScript/JSX
+Styling: Tailwind CSS
+Icons: Lucide React
+Authentication and database: Existing Supabase integration
+AI backend: Existing NVIDIA NIM integration
+The product must always be branded as GuruAI, not HarshGuruJi AI.
+The domain and website ownership must remain unchanged. Do not change the URL, DNS, subdomain, authentication provider, or existing backend architecture merely to rename the product.
+2. CRITICAL DEVELOPMENT RULES
+Before making changes, inspect the existing project files, components, dependencies, routing, styling, and application architecture.
+Preserve all working functionality, including:
+Supabase authentication and session management.
+Existing cross-subdomain login integration.
+NVIDIA text-generation integration.
+NVIDIA image-generation integration.
+Guest and authenticated-user usage limits.
+Server-side rate limiting.
+Chat persistence and conversation history.
+User preferences.
+Theme and language settings.
+Image preview and download functionality.
+API routes and database relationships.
+SEO, metadata, and deployment configuration.
+Do not rewrite the backend merely to improve the frontend.
+Do not delete working features, replace actual API calls with mock data, or create decorative buttons that do nothing.
+Modify only the files necessary for the requested UI/UX improvements and product rebranding.
+If a component must be refactored, preserve its existing API contracts and functionality.
+3. GURUAI BRAND IDENTITY
+Create a distinctive, professional visual identity for GuruAI.
+Branding requirements
+Display the product name as GuruAI.
+Use a modern AI-inspired logo mark that can be implemented as an SVG.
+Create a compact logo suitable for the sidebar, mobile header, browser favicon, and loading screen.
+Use a consistent brand color palette.
+Maintain excellent contrast in all themes.
+Use subtle gradients and restrained glow effects.
+Keep the overall appearance clean, premium, and trustworthy.
+Suggested visual direction:
+Primary: deep indigo and electric violet.
+Secondary: cyan and blue highlights.
+Dark backgrounds: charcoal and deep navy.
+Light backgrounds: soft white and cool neutral gray.
+Neon theme: controlled cyan, violet, and green accents.
+Use CSS variables or Tailwind theme tokens so the entire visual identity can be changed consistently.
+Do not copy ChatGPT's logo or claim that GuruAI is an official OpenAI product.
+Rebranding scope
+Update all user-visible product-name references in:
+Navigation and sidebar.
+Application header.
+Loading and welcome screens.
+Login-related UI where the product name appears.
+Settings panels.
+Browser title and metadata.
+Open Graph metadata.
+Empty states.
+Error messages where appropriate.
+Favicon and application icon assets.
+PWA manifest, if present.
+README and user-facing documentation.
+Do not rename unrelated internal variables, database columns, Supabase project identifiers, or existing infrastructure unless strictly necessary.
+4. PREMIUM APPLICATION LAYOUT
+Build a responsive application shell with three logical areas:
+Left conversation sidebar.
+Main AI conversation workspace.
+Optional contextual panel or settings drawer.
+The contextual panel should not permanently reduce the available chat width. Open it only when needed.
+Use a flexible layout that adapts smoothly to desktop, tablet, and mobile screens.
+Desktop layout
+The sidebar should have a configurable width and a collapse/expand control.
+The main conversation area should have a readable maximum width while allowing long code blocks, tables, and images to render correctly.
+Keep the interface visually balanced, with consistent spacing, padding, alignment, and component sizing.
+Avoid unnecessary empty panels and excessive decorative elements.
+5. ADVANCED SIDEBAR
+Create a premium conversation sidebar with the following features:
+Header
+GuruAI logo and wordmark.
+Sidebar collapse/expand button.
+New Chat button.
+Conversation management
+Search conversations.
+Recent conversations.
+Group conversations by date where useful.
+Show conversation titles.
+Highlight the currently active conversation.
+Open previous conversations.
+Rename conversations.
+Delete conversations with a confirmation dialog.
+Show a helpful empty state when no conversations exist.
+Add loading skeletons while history loads.
+Support pagination or incremental loading for large histories.
+Sidebar footer
+User avatar or initials.
+Account information.
+Usage allowance indicator.
+Settings access.
+Theme selector.
+Sign-out action when authenticated.
+All conversation operations must continue to use the existing authenticated backend.
+Never display another user's conversations.
+For guest users, keep the existing no-persistence rule. Do not save guest conversations simply to populate the sidebar.
+6. PREMIUM CHAT WORKSPACE
+Design the main chat workspace to feel modern, spacious, and focused.
+Welcome screen
+When no conversation is active, display:
+GuruAI branding.
+A concise welcome heading.
+A short description of what GuruAI can help with.
+A prominent chat composer.
+Suggested prompt cards.
+Quick-action buttons for supported features.
+Example welcome heading:
+"What can I help you with today?"
+Supporting text:
+"Ask questions, explore ideas, write code, solve problems, or create images with GuruAI."
+Suggested prompt categories:
+Writing and creativity.
+Programming and debugging.
+Learning and explanations.
+Productivity and planning.
+AI image creation.
+Each suggestion must populate the input or initiate the corresponding legitimate workflow.
+Do not present a feature as available if the existing backend does not support it.
+Conversation view
+Support:
+Clearly distinguished user and assistant messages.
+Markdown formatting.
+Syntax-highlighted code.
+Responsive tables.
+Blockquotes and lists.
+Image previews.
+Message timestamps where useful.
+Copy-response controls.
+Copy-code controls.
+Retry actions after recoverable errors.
+Appropriate loading and streaming states.
+Automatic scrolling that does not interrupt users reading earlier messages.
+A scroll-to-bottom control when necessary.
+Keep the message layout readable on both large monitors and narrow mobile screens.
+7. ADVANCED CHAT COMPOSER
+Build a modern, expandable, keyboard-accessible input area.
+Required controls
+Multiline message input.
+Send button.
+Image-generation toggle.
+Attachment button only if a real attachment workflow is supported.
+Stop-generation button when generation is active and cancellation is supported.
+Input validation and helpful error messages.
+Remaining-usage counter.
+Keyboard shortcuts.
+Keyboard behavior
+Enter sends a message when appropriate.
+Shift+Enter inserts a newline.
+Keyboard shortcuts must not interfere with normal text editing.
+Preserve the user's draft when a request fails.
+Disable controls only when their operation genuinely cannot be performed.
+Image mode
+Provide a clear Image mode toggle.
+When enabled, visually indicate that the next request is intended for image generation.
+For guests, preserve the existing restriction and show a login prompt when image generation is requested.
+For authenticated users, invoke the existing real image-generation API.
+Do not implement a fake image-generation animation that ends with a fabricated image.
+Visual design
+Use a rounded composer surface, subtle border, clear focus state, balanced padding, and restrained shadow.
+Make the input comfortable to use on touch devices.
+Keep it above the mobile keyboard and respect safe-area insets.
+8. ADVANCED MESSAGE ACTIONS
+Add contextual message actions where appropriate.
+User messages
+Copy message.
+Edit and resend only if supported by the existing conversation model.
+Retry a request when appropriate.
+Assistant messages
+Copy response.
+Regenerate response.
+Copy individual code blocks.
+Open generated images.
+Download generated images.
+Show useful generation status.
+Use tooltips for icon-only buttons.
+Provide accessible labels and clear confirmation feedback.
+Prevent duplicate API requests caused by rapid repeated clicks.
+9. THREE COMPLETE THEMES
+Implement three visually distinct themes.
+Theme A: Dark
+Deep charcoal or navy surfaces.
+Comfortable text contrast.
+Subtle borders.
+Restrained violet and cyan accents.
+Minimal visual noise.
+Theme B: Light
+Clean white or soft-gray surfaces.
+Dark readable typography.
+Subtle separators.
+Balanced neutral colors.
+Clear focus indicators.
+Theme C: Matrix / Cyberpunk Neon
+Dark backgrounds.
+Controlled neon-green, cyan, and violet highlights.
+Optional subtle grid patterns.
+Lightweight glow effects.
+Modern technical atmosphere.
+Avoid excessively bright effects that reduce readability.
+Theme implementation
+Use design tokens and CSS variables rather than duplicating the entire stylesheet for each theme.
+Apply theme changes immediately.
+Persist authenticated-user preferences using the existing Supabase user_preferences table and localStorage.
+Keep the existing source-of-truth and synchronization rules.
+When switching accounts, ensure the previous user's settings cannot leak into the next user's session.
+For guests, preserve the existing locked-customization policy and display a functional login action.
+Respect system preferences when no explicit theme has been selected.
+10. TYPOGRAPHY AND READABILITY
+Provide adjustable text sizes:
+Small.
+Medium.
+Large.
+Provide a font-family selection:
+System UI.
+A bundled or properly loaded readable sans-serif alternative.
+Use consistent typography scales for:
+Headings.
+Message text.
+Metadata.
+Code blocks.
+Buttons.
+Inputs.
+Settings.
+Maintain readable line lengths and adequate line spacing.
+Support Hindi, Hinglish, English, Unicode symbols, and Devanagari text without clipping or broken layouts.
+Do not allow large font settings to break the sidebar, buttons, or composer.
+11. PREMIUM ANIMATIONS
+Use smooth, lightweight animations to improve feedback and navigation.
+Required animation categories
+Sidebar open and close.
+Mobile drawer transitions.
+Message appearance.
+Button hover and press states.
+Dialog and settings-panel transitions.
+Theme transitions.
+Loading indicators.
+Streaming response cursor.
+Image-preview opening and closing.
+Copy-button feedback.
+Skeleton loading states.
+Animation guidelines
+Prefer CSS transitions and keyframes for simple effects.
+Use a dedicated animation library only when the existing dependency stack justifies it.
+Keep most interface transitions brief and subtle.
+Avoid animating large areas unnecessarily.
+Avoid continuous animations that consume CPU or battery.
+Never delay a real action merely to complete an animation.
+Do not animate message content in ways that interfere with reading.
+Respect prefers-reduced-motion.
+Ensure focus management works during animated drawer and dialog transitions.
+Buttons should have clear hover, focus, pressed, disabled, and loading states.
+12. RESPONSIVE MOBILE DESIGN
+The mobile interface must be a first-class experience, not merely a compressed desktop layout.
+Mobile header
+Include:
+Sidebar menu button.
+Compact GuruAI logo.
+Current conversation title when appropriate.
+Relevant actions.
+Mobile sidebar
+Implement a slide-out drawer with:
+Conversation history.
+New Chat action.
+Search.
+Settings.
+Account controls.
+Close the drawer after navigation when appropriate.
+Provide an overlay, Escape-key handling, correct focus behavior, and accessible drawer semantics.
+Mobile chat
+Use the full available width.
+Prevent horizontal scrolling.
+Maintain comfortable message padding.
+Keep code blocks scrollable within their own containers.
+Resize images responsively.
+Avoid fixed-width controls.
+Keep the composer usable above the keyboard.
+Respect mobile safe-area insets.
+Ensure buttons are touch-friendly.
+Test narrow screens, portrait and landscape orientations, tablets, and desktop layouts.
+13. SETTINGS EXPERIENCE
+Build a polished settings panel with clearly organized sections.
+Appearance
+Theme selection.
+Text-size selection.
+Font-family selection.
+Animation preference where appropriate.
+AI preferences
+English output.
+Hindi output.
+Hinglish output.
+Use the existing preferences backend and validation.
+Account
+Current account information.
+Authentication status.
+Sign-out action.
+Usage information.
+Settings behavior
+Show a loading state while preferences load.
+Apply valid changes immediately.
+Show a save indicator.
+Handle failed saves without losing the previous persisted configuration.
+Avoid redundant database requests.
+Show a clear login requirement for guest-only locked settings.
+Do not introduce new database columns unless required and supported by a migration.
+14. USAGE COUNTER AND STATUS INDICATORS
+Display the remaining generation allowance in a compact, unobtrusive badge.
+For guests, show the current remaining allowance out of two requests.
+For authenticated users, show the current remaining allowance out of ten requests.
+Include the applicable six-hour or twelve-hour reset information where useful.
+Retrieve usage information from the existing trusted server endpoint.
+Never calculate the authoritative allowance exclusively in the browser.
+Update the displayed counter after accepted requests and synchronize it with server responses.
+Handle exhausted limits with a clear explanation and reset time.
+Use warning styling only when it communicates a meaningful state.
+15. LOADING, EMPTY, AND ERROR STATES
+Create consistent states for:
+Initial application loading.
+Session verification.
+Conversation-history loading.
+Empty conversation history.
+AI response generation.
+Image generation.
+Network failure.
+Rate-limit exhaustion.
+Authentication expiration.
+Database errors.
+Provider errors.
+Image-loading failures.
+Failed preference updates.
+Use skeletons where they improve perceived performance.
+Use concise error messages with an appropriate retry action.
+Never display false success notifications.
+Do not reveal API keys, database internals, stack traces, or sensitive provider details to the user.
+16. ACCESSIBILITY
+Meet practical WCAG 2.2 AA accessibility expectations wherever applicable.
+Implement:
+Semantic HTML.
+Accessible button names.
+Keyboard navigation.
+Visible focus states.
+Appropriate ARIA attributes.
+Sufficient color contrast.
+Screen-reader-friendly loading and status announcements.
+Accessible dialogs and drawers.
+Focus restoration after closing overlays.
+Reduced-motion support.
+Proper image alternative text.
+Clear validation messages.
+Do not communicate important states through color alone.
+Ensure all major actions can be completed without a mouse.
+17. PERFORMANCE OPTIMIZATION
+Keep the interface smooth on Windows 11 computers with 8 GB RAM and on average mobile devices.
+Implement:
+Efficient React component boundaries.
+Minimal unnecessary re-renders.
+Lazy loading for suitable noncritical components.
+Lightweight animation techniques.
+Responsive image rendering.
+Pagination for conversation history.
+Cleanup of event listeners.
+Correct cancellation of obsolete requests.
+No unnecessary polling.
+No excessive background effects.
+No large decorative 3D scenes unless explicitly requested.
+Avoid adding heavy dependencies for simple CSS interactions.
+Preserve the existing AI streaming behavior and do not buffer entire responses unnecessarily.
+Use Next.js optimization features appropriately.
+18. SEO AND PRODUCT METADATA
+Update the application metadata to reflect the new product name.
+Use:
+Title: GuruAI — AI Chat Assistant
+Canonical URL: [https://ai.webguruji.online](https://ai.webguruji.online/)
+Accurate product description.
+Open Graph title and description.
+Appropriate social-preview image.
+Consistent browser title.
+GuruAI favicon and app icon where assets are available.
+Update existing SEO configuration without duplicating conflicting metadata files.
+Keep robots.txt, sitemap, authentication callbacks, and deployment settings compatible with the existing project.
+Do not expose private conversations or user-specific data to search engines.
+19. IMPLEMENTATION FILES
+Inspect the existing repository and modify the files that are actually required.
+Potential files include:
+app/layout.jsx
+app/page.jsx
+app/globals.css
+Existing chat components.
+Existing sidebar components.
+Existing message renderer.
+Existing chat composer.
+Existing settings components.
+Existing theme configuration.
+Existing application metadata.
+Existing manifest and icon assets.
+Existing responsive utility styles.
+Create reusable components only where they improve maintainability.
+Do not generate duplicate components or redundant CSS files.
+Preserve all existing API contracts, database schemas, authentication callbacks, and backend behavior.
+If a new dependency is necessary, explain why it is required and ensure it is compatible with the current Next.js version.
+20. TESTING AND ACCEPTANCE CRITERIA
+After implementation, verify the following.
+Branding
+All visible product branding says GuruAI.
+Main website and subdomain URLs remain unchanged.
+The new logo and favicon render correctly.
+Metadata uses the correct product name.
+Functional behavior
+Existing login and logout work.
+Text generation still uses the real NVIDIA backend.
+Image generation still uses the real configured image backend.
+Rate limits remain enforced by the server.
+Guest conversations remain temporary.
+Authenticated conversation history remains persistent.
+Settings remain correctly synchronized.
+Sidebar search, navigation, rename, and delete operations work.
+Message actions perform their intended functions.
+Visual quality
+Dark, Light, and Matrix themes render correctly.
+Text sizes and fonts work.
+Animations are smooth.
+Reduced-motion preferences are respected.
+Mobile drawer works.
+Composer remains usable on mobile.
+Images and code blocks fit narrow screens.
+No unintended horizontal overflow occurs.
+No overlapping controls or clipped text appear.
+Engineering quality
+No missing imports.
+No broken routes.
+No hydration errors.
+No avoidable React warnings.
+No browser console errors introduced by the changes.
+No leaked secrets.
+No regressions in existing functionality.
+Run the available build, lint, and tests. Report actual results and clearly identify anything that could not be verified.
+21. FINAL DELIVERY REQUIREMENTS
+Complete the implementation rather than returning only design suggestions.
+Provide:
+A short summary of the existing project structure.
+A list of files modified or added.
+The complete implementation for every changed file, or the actual changes directly in the repository when tools permit.
+Any dependency changes.
+A description of the new GuruAI branding and interface.
+Confirmation of the existing features preserved.
+Test results.
+Any remaining issues or configuration requirements.
+Do not leave TODO comments, fake integrations, dead buttons, or placeholder functionality in features claimed to be complete.
+If the implementation is too large for one response, divide the work into clearly numbered stages without changing the agreed architecture.
+FINAL OBJECTIVE
+Transform the existing application at https://ai.webguruji.online into GuruAI, a premium, responsive, modern AI chatbot interface with advanced conversation management, elegant animations, three complete themes, polished mobile navigation, accessible interactions, and excellent performance.
+Preserve the existing authentication, NVIDIA AI integration, Supabase persistence, image generation, usage limits, and security architecture.
+The finished result must look professional, feel responsive, and remain genuinely functional across mobile, tablet, and desktop devices.
+**Product branding: GuruAI. Brand owner: HarshGuruJi. Official domain: ai.webguruji.

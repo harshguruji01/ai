@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="guruGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="50%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#F472B6" />
+    </linearGradient>
+  </defs>
+  <!-- Background Squircle -->
+  <rect width="32" height="32" rx="9" fill="#0A0E1A" />
+  <rect width="30" height="30" x="1" y="1" rx="8" stroke="url(#guruGrad)" stroke-width="1.5" stroke-opacity="0.8" />
+  
+  <!-- Stylized GuruAI "G" & Intelligence Core -->
+  <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" 
+        stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Neural Spark Accent -->
+  <circle cx="22" cy="10" r="2.2" fill="url(#sparkGrad)" />
+  <circle cx="22" cy="10" r="3.2" stroke="#38BDF8" stroke-width="0.75" stroke-opacity="0.6" />
+</svg>
