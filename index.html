@@ -1445,8 +1445,23 @@
 
       if (!backendStreamed) {
         // Standalone instant AI demonstration response tailored to selected language
+        const lowerPrompt = prompt.toLowerCase();
+        const isCreatorQuery = [
+          'who created you', 'who made you', 'who built you', 'who is your owner', 'who is your developer',
+          'who owns you', 'who is harshguruji', 'who is harsh', 'kisne banaya', 'owner kaun', 'creator kaun',
+          'kiska ai', 'developer kaun', 'owner detail', 'owner link', 'तुम्हें किसने बनाया', 'तुम्हारा मालिक'
+        ].some(k => lowerPrompt.includes(k));
+
         let answer = '';
-        if (currentLang === 'hinglish') {
+        if (isCreatorQuery) {
+          if (currentLang === 'hinglish') {
+            answer = `Mujhe **HarshGuruJi** (Harsh Patel) ne banaya aur engineer kiya hai! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://www.webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Biography & Details**: https://www.webguruji.online/owner.html\n\nHarshGuruJi ke complete technology platform me GuruAI, App Store, NCERT Books Library aur ChatBase messaging ecosystem shamil hain. Aap mere creator ke baare me aur details [webguruji.online/owner.html](https://www.webguruji.online/owner.html) par dekh sakte hain!`;
+          } else if (currentLang === 'hindi') {
+            answer = `मुझे **HarshGuruJi** (Harsh Patel) ने बनाया और विकसित किया है! 🚀\n\n• **निर्माता एवं मालिक**: HarshGuruJi (Harsh Patel)\n• **आधिकारिक मुख्य वेबसाइट**: https://www.webguruji.online\n• **आधिकारिक AI डोमेन**: https://ai.webguruji.online\n• **मालिक का विवरण एवं प्रोफ़ाइल**: https://www.webguruji.online/owner.html\n\nमैं HarshGuruJi के बहु-उपयोगी तकनीक पारितंत्र (GuruAI, App Store, NCERT Books, ChatBase) का प्रमुख AI सहायक हूँ। मेरे निर्माता के बारे में अधिक जानने के लिए: [webguruji.online/owner.html](https://www.webguruji.online/owner.html)`;
+          } else {
+            answer = `I am GuruAI, proudly created, engineered, and developed by **HarshGuruJi** (Harsh Patel)! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://www.webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Details & Biography**: https://www.webguruji.online/owner.html\n\nI am the flagship artificial intelligence engine of the HarshGuruJi technology ecosystem (spanning GuruAI, App Store, Digital NCERT Library, and ChatBase). Learn more about my founder at [webguruji.online/owner.html](https://www.webguruji.online/owner.html)!`;
+          }
+        } else if (currentLang === 'hinglish') {
           answer = `Namaste! GuruAI me aapka swagat hai.\n\nAapka sawaal: "${prompt}"\n\nYeh raha complete solution:\n1. Server-side Next.js App Router streaming architecture use karein.\n2. Concurrency-safe atomic rate limiting ke liye PostgreSQL \`FOR UPDATE\` row locking apply karein.\n3. Cross-subdomain auth cookies ko \`.webguruji.online\` scope par bind karein taaki user ko baar-baar login na karna pade.\n\nKoi aur code snippet ya explanation chahiye toh zaroor batayein!`;
         } else if (currentLang === 'hindi') {
           answer = `नमस्ते! GuruAI में आपका स्वागत है।\n\nआपके प्रश्न: "${prompt}" का विस्तृत विश्लेषण प्रस्तुत है:\n• उच्च प्रदर्शन और डीप रीजनिंग के लिए NVIDIA Nemotron 3 Ultra 550B मॉडल का उपयोग किया जाता है।\n• सभी डेटाबेस अनुमतियां Row Level Security (RLS) द्वारा सुरक्षित हैं।\n• वास्तविक समय में टोकन स्ट्रीमिंग के लिए SSE (Server-Sent Events) सक्रिय है।\n\nकृपया मुझे बताएं कि मैं आपकी आगे किस प्रकार सहायता कर सकता हूँ!`;

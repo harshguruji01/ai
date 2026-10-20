@@ -5,7 +5,7 @@ import {
   userPreferencesSchema,
   conversationCreateSchema,
 } from '../lib/validation.js';
-import { buildSystemPrompt, isImageIntent } from '../lib/ai/nvidia.js';
+import { buildSystemPrompt, isImageIntent, isCreatorIntent } from '../lib/ai/nvidia.js';
 import { generateGuestKeyHash, extractClientIp } from '../lib/security.js';
 
 console.log('🚀 Running HarshGuruJi AI Automated Test Suite...\n');
@@ -90,6 +90,15 @@ test('AI Intent: Does NOT falsely classify text/code queries containing the word
   assert.strictEqual(isImageIntent('What is image processing in Python OpenCV?'), false);
 });
 
+test('AI Intent: Accurately detects creator and owner queries', () => {
+  assert.strictEqual(isCreatorIntent('who created you?'), true);
+  assert.strictEqual(isCreatorIntent('tumhe kisne banaya hai?'), true);
+  assert.strictEqual(isCreatorIntent('who is your owner?'), true);
+  assert.strictEqual(isCreatorIntent('who is harshguruji?'), true);
+  assert.strictEqual(isCreatorIntent('owner kaun hai'), true);
+  assert.strictEqual(isCreatorIntent('Write a quicksort in JavaScript'), false);
+});
+
 // 3. System Prompt Construction Tests
 test('System Prompt: Hindi Devanagari instructions included', () => {
   const prompt = buildSystemPrompt('hindi');
@@ -107,6 +116,14 @@ test('System Prompt: Hinglish conversational rules included', () => {
 test('System Prompt: English default rules included', () => {
   const prompt = buildSystemPrompt('english');
   assert.ok(prompt.includes('English'));
+});
+
+test('System Prompt: Permanent Creator Memory includes Owner, Domains & Biography Link', () => {
+  const prompt = buildSystemPrompt('english');
+  assert.ok(prompt.includes('HarshGuruJi'));
+  assert.ok(prompt.includes('https://www.webguruji.online'));
+  assert.ok(prompt.includes('https://ai.webguruji.online'));
+  assert.ok(prompt.includes('https://www.webguruji.online/owner.html'));
 });
 
 // 4. Guest Anti-Abuse Key Hash Tests
