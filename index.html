@@ -1289,7 +1289,7 @@
     registerForm.onsubmit = async (e) => {
       e.preventDefault();
       showAuthAlert('clear', '');
-      const email = document.getElementById('registerEmail').value.trim();
+      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
       const password = document.getElementById('registerPassword').value;
       const confirmPassword = document.getElementById('registerConfirmPassword').value;
 
@@ -1313,48 +1313,95 @@
       submitBtn.innerHTML = `<span>Creating account...</span>`;
 
       try {
-        // Step 1: Try backend auto-confirmed signup first (bypasses email inbox wait completely)
-        let backendOk = false;
+        const displayName = email.split('@')[0];
+
+        // Step 1: Try backend auto-confirmed signup first
         try {
           const resp = await fetch('/api/auth/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password, name: displayName })
           });
-          if (resp.ok) {
-            backendOk = true;
+          const respJson = await resp.json().catch(() => ({}));
+          if (resp.status === 409 || (respJson.error && respJson.error.toLowerCase().includes('already registered'))) {
+            showAuthAlert('error', 'This email is already registered. Please sign in with your password.');
+            openAuthModal('login');
+            const loginEmailInput = document.getElementById('loginEmail');
+            if (loginEmailInput) loginEmailInput.value = email;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+            return;
           }
         } catch (_) {}
 
-        // Step 2: Fall back to client signUp if API is unavailable
-        if (!backendOk) {
-          const { error: signUpError } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: window.location.origin
-            }
-          });
-          if (signUpError && !signUpError.message.toLowerCase().includes('already registered')) {
-            throw signUpError;
-          }
-        }
-
-        // Step 3: Automatically sign in immediately without forcing email confirmation wait!
-        const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+        // Step 2: Supabase client signUp
+        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
           email,
-          password
+          password,
+          options: {
+            data: {
+              full_name: displayName,
+              name: displayName
+            },
+            emailRedirectTo: window.location.origin
+          }
         });
 
-        if (signInError) {
-          throw signInError;
+        if (signUpError) {
+          if (
+            signUpError.message?.toLowerCase().includes('already registered') ||
+            signUpError.message?.toLowerCase().includes('already exists')
+          ) {
+            showAuthAlert('error', 'This email is already registered. Please sign in instead.');
+            openAuthModal('login');
+            const loginEmailInput = document.getElementById('loginEmail');
+            if (loginEmailInput) loginEmailInput.value = email;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+            return;
+          }
+          throw signUpError;
         }
 
-        if (signInData?.user) {
-          showAuthAlert('success', 'Account created and signed in successfully!');
-          updateUserState(signInData.user);
-          setTimeout(() => closeAuthModal(), 600);
+        // Supabase returns error: null but identities: [] if the email is already in auth.users
+        if (signUpData?.user && Array.isArray(signUpData.user.identities) && signUpData.user.identities.length === 0) {
+          showAuthAlert('error', 'This email is already registered. Please sign in with your password or Google.');
+          openAuthModal('login');
+          const loginEmailInput = document.getElementById('loginEmail');
+          if (loginEmailInput) loginEmailInput.value = email;
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+          return;
         }
+
+        // Case A: User has an active session immediately
+        if (signUpData?.session) {
+          showAuthAlert('success', 'Account created and signed in successfully!');
+          updateUserState(signUpData.user);
+          setTimeout(() => closeAuthModal(), 600);
+          return;
+        }
+
+        // Case B: Try signing in immediately with the new password
+        try {
+          const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (!signInError && signInData?.user) {
+            showAuthAlert('success', 'Account created and signed in successfully!');
+            updateUserState(signInData.user);
+            setTimeout(() => closeAuthModal(), 600);
+            return;
+          }
+        } catch (_) {}
+
+        // Case C: Email confirmation is pending
+        showAuthAlert('success', 'Account created! Please check your email to verify your account, then sign in.');
+        openAuthModal('login');
+        const loginEmailInput = document.getElementById('loginEmail');
+        if (loginEmailInput) loginEmailInput.value = email;
       } catch (err) {
         showAuthAlert('error', err.message || 'Sign up failed.');
       } finally {

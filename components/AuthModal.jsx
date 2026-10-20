@@ -180,53 +180,95 @@ export default function AuthModal({
 
     setLoading(true);
     try {
-      // Step 1: Call auto-confirm signup API
-      let backendOk = false;
+      const cleanEmail = email.trim().toLowerCase();
+      const displayName = cleanEmail.split('@')[0];
+
+      // Step 1: Call auto-confirm signup API if available
+      let backendSessionUser = null;
       try {
         const resp = await fetch('/api/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email.trim(), password }),
+          body: JSON.stringify({ email: cleanEmail, password, name: displayName }),
         });
-        if (resp.ok) {
-          backendOk = true;
+        const respJson = await resp.json().catch(() => ({}));
+        if (resp.status === 409 || (respJson.error && respJson.error.toLowerCase().includes('already registered'))) {
+          setErrorMsg('This email is already registered. Please sign in with your password.');
+          setMode('login');
+          setLoading(false);
+          return;
+        }
+        if (resp.ok && respJson.success) {
+          backendSessionUser = respJson.user;
         }
       } catch (_) {}
 
-      // Step 2: Fall back to client signUp if API failed
-      if (!backendOk) {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: email.trim(),
-          password: password,
-          options: {
-            emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
-          },
-        });
-
-        if (signUpError && !signUpError.message?.toLowerCase().includes('already registered')) {
-          throw signUpError;
-        }
-      }
-
-      // Step 3: Immediately sign in user with email & password without waiting for email
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+      // Step 2: Supabase client signUp
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: cleanEmail,
         password: password,
+        options: {
+          data: {
+            full_name: displayName,
+            name: displayName,
+          },
+          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
+        },
       });
 
-      if (signInError) {
-        throw signInError;
+      if (signUpError) {
+        if (
+          signUpError.message?.toLowerCase().includes('already registered') ||
+          signUpError.message?.toLowerCase().includes('already exists')
+        ) {
+          setErrorMsg('This email is already registered. Please sign in instead.');
+          setMode('login');
+          setLoading(false);
+          return;
+        }
+        throw signUpError;
       }
 
-      if (signInData?.user) {
+      // Supabase returns error: null but identities: [] if the email already exists in auth.users
+      if (signUpData?.user && Array.isArray(signUpData.user.identities) && signUpData.user.identities.length === 0) {
+        setErrorMsg('This email is already registered. Please sign in with your password or Google.');
+        setMode('login');
+        setLoading(false);
+        return;
+      }
+
+      // Case A: User has an active session immediately
+      if (signUpData?.session) {
         setSuccessMsg('Account created and signed in successfully!');
-        if (onAuthSuccess) onAuthSuccess(signInData.user);
+        if (onAuthSuccess) onAuthSuccess(signUpData.user);
         setTimeout(() => {
           onClose();
         }, 600);
+        return;
       }
+
+      // Case B: Try signing in immediately with the new password
+      try {
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: password,
+        });
+
+        if (!signInError && signInData?.user) {
+          setSuccessMsg('Account created and signed in successfully!');
+          if (onAuthSuccess) onAuthSuccess(signInData.user);
+          setTimeout(() => {
+            onClose();
+          }, 600);
+          return;
+        }
+      } catch (_) {}
+
+      // Case C: Account created, but email confirmation is pending
+      setSuccessMsg('Account created successfully! Please check your email to verify your account, or sign in.');
+      setMode('login');
     } catch (err) {
-      setErrorMsg(err.message || 'Failed to sign up.');
+      setErrorMsg(err.message || 'Failed to create account.');
     } finally {
       setLoading(false);
     }

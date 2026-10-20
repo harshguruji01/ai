@@ -49,40 +49,16 @@ export async function POST(request) {
       });
     }
 
-    // If user already exists, auto-confirm their email and update password if needed
+    // If user already exists, inform the client with status 409 Conflict
     if (createError && (
       createError.message?.toLowerCase().includes('already registered') ||
       createError.message?.toLowerCase().includes('already exists') ||
       createError.status === 422
     )) {
-      // Search for the user to confirm them
-      const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
-      const existingUser = listData?.users?.find(u => u.email?.toLowerCase() === cleanEmail);
-
-      if (existingUser) {
-        // Auto-confirm the user and update password
-        await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
-          email_confirm: true,
-          password: password,
-          user_metadata: {
-            full_name: displayName,
-            name: displayName,
-          },
-        });
-
-        await supabaseAdmin.from('users').upsert({
-          id: existingUser.id,
-          email: cleanEmail,
-          name: displayName,
-          role: 'user',
-        }, { onConflict: 'id' });
-
-        return NextResponse.json({
-          success: true,
-          message: 'Account updated and verified successfully.',
-          user: { id: existingUser.id, email: cleanEmail },
-        });
-      }
+      return NextResponse.json(
+        { error: 'This email is already registered. Please sign in instead.' },
+        { status: 409 }
+      );
     }
 
     if (createError) {
