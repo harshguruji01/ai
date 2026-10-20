@@ -192,6 +192,15 @@
 
       <!-- Footer User Panel -->
       <div class="p-3 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] space-y-2.5 flex-shrink-0">
+        <!-- User Dashboard Link (shown only when logged in) -->
+        <a href="https://www.webguruji.online/dashboard.html" id="sidebarDashboardLink" target="_blank" rel="noopener noreferrer" class="hidden flex items-center justify-between p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 text-xs font-semibold transition group">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-5a1 1 0 011-1h4a1 1 0 011 1v9a1 1 0 01-1 1h-4a1 1 0 01-1-1v-9z"/></svg>
+            <span>User Dashboard</span>
+          </div>
+          <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-200">dashboard.html</span>
+        </a>
+
         <!-- Admin Console Link (shown when admin) -->
         <a href="admin.html" id="sidebarAdminLink" class="hidden flex items-center justify-between p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold transition group">
           <div class="flex items-center gap-2">
@@ -266,6 +275,12 @@
             <span id="headerQuotaText">2/2 Left</span>
             <span class="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5" id="headerTierText">Guest</span>
           </button>
+
+          <!-- User Dashboard Button (Only for Logged-In User) -->
+          <a href="https://www.webguruji.online/dashboard.html" id="headerDashboardBtn" target="_blank" rel="noopener noreferrer" class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 hover:border-cyan-500/60 hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 text-xs font-semibold transition group shadow-sm active:scale-95" title="User Dashboard (webguruji.online/dashboard.html)">
+            <svg class="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-5a1 1 0 011-1h4a1 1 0 011 1v9a1 1 0 01-1 1h-4a1 1 0 01-1-1v-9z"/></svg>
+            <span class="hidden sm:inline">Dashboard</span>
+          </a>
 
           <!-- Prominent Header Sign In Button -->
           <button id="headerSignInBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95">
@@ -571,6 +586,12 @@
         </div>
 
         <div class="space-y-2">
+          <!-- User Dashboard Link -->
+          <a href="https://www.webguruji.online/dashboard.html" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 via-indigo-600 to-indigo-700 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition group">
+            <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-5a1 1 0 011-1h4a1 1 0 011 1v9a1 1 0 01-1 1h-4a1 1 0 01-1-1v-9z"/></svg>
+            <span>Open User Dashboard (webguruji.online)</span>
+          </a>
+
           <!-- Admin Portal Link -->
           <a href="admin.html" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md flex items-center justify-center gap-2 transition group">
             <svg class="w-4 h-4 fill-current group-hover:rotate-12 transition-transform" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg>
@@ -798,10 +819,11 @@
             return;
           }
           showAuthAlert('clear', '');
+          const returnUrl = window.location.origin + window.location.pathname;
           const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
-              redirectTo: window.location.href.split('#')[0],
+              redirectTo: returnUrl,
             },
           });
           if (error) {
@@ -957,13 +979,114 @@
       };
     }
 
+    // Initialize & Track Quota Rolling Windows (10 requests / 12h for Member, 2 requests / 6h for Guest)
+    function initUserQuota(user) {
+      const now = Date.now();
+      if (user) {
+        maxRequests = 10;
+        const windowDuration = 12 * 60 * 60 * 1000; // 12 hours
+        const key = 'guruai_quota_user_' + user.id;
+        let stored = null;
+        try {
+          stored = JSON.parse(localStorage.getItem(key));
+        } catch (e) {}
+
+        if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
+          stored = {
+            remaining: 10,
+            windowStart: now,
+          };
+          localStorage.setItem(key, JSON.stringify(stored));
+        }
+        remainingAllowance = stored.remaining;
+      } else {
+        maxRequests = 2;
+        const windowDuration = 6 * 60 * 60 * 1000; // 6 hours
+        const key = 'guruai_quota_guest';
+        let stored = null;
+        try {
+          stored = JSON.parse(localStorage.getItem(key));
+        } catch (e) {}
+
+        if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
+          stored = {
+            remaining: 2,
+            windowStart: now,
+          };
+          localStorage.setItem(key, JSON.stringify(stored));
+        }
+        remainingAllowance = stored.remaining;
+      }
+      updateQuotaUI();
+      syncUsageFromServer(user);
+    }
+
+    async function syncUsageFromServer(user) {
+      try {
+        const res = await fetch('/api/usage');
+        if (res.ok) {
+          const data = await res.json();
+          if (typeof data.remainingAllowance === 'number') {
+            remainingAllowance = data.remainingAllowance;
+            maxRequests = data.maxRequests || (user ? 10 : 2);
+            if (user) {
+              const key = 'guruai_quota_user_' + user.id;
+              localStorage.setItem(key, JSON.stringify({
+                remaining: remainingAllowance,
+                windowStart: Date.now() - (data.resetInSeconds ? (12 * 3600 - data.resetInSeconds) * 1000 : 0),
+              }));
+            }
+            updateQuotaUI();
+          }
+        }
+      } catch (e) {}
+    }
+
+    function deductAllowance() {
+      const now = Date.now();
+      if (currentUser) {
+        const key = 'guruai_quota_user_' + currentUser.id;
+        let stored = null;
+        try {
+          stored = JSON.parse(localStorage.getItem(key));
+        } catch (e) {}
+        const prev = (stored && typeof stored.remaining === 'number') ? stored.remaining : remainingAllowance;
+        const rem = Math.max(0, prev - 1);
+        remainingAllowance = rem;
+        localStorage.setItem(key, JSON.stringify({
+          remaining: rem,
+          windowStart: stored?.windowStart || now,
+        }));
+      } else {
+        const key = 'guruai_quota_guest';
+        let stored = null;
+        try {
+          stored = JSON.parse(localStorage.getItem(key));
+        } catch (e) {}
+        const prev = (stored && typeof stored.remaining === 'number') ? stored.remaining : remainingAllowance;
+        const rem = Math.max(0, prev - 1);
+        remainingAllowance = rem;
+        localStorage.setItem(key, JSON.stringify({
+          remaining: rem,
+          windowStart: stored?.windowStart || now,
+        }));
+      }
+      updateQuotaUI();
+    }
+
     // Sync User Session State
     function updateUserState(user) {
       currentUser = user;
+      const headerDashboardBtn = document.getElementById('headerDashboardBtn');
+      const sidebarDashboardLink = document.getElementById('sidebarDashboardLink');
+
       if (user) {
-        maxRequests = 10;
-        remainingAllowance = 10;
-        localStorage.setItem('guruai_allowance', 10);
+        initUserQuota(user);
+
+        // Show Dashboard icon and sidebar link ONLY for logged in user
+        if (headerDashboardBtn) headerDashboardBtn.classList.remove('hidden');
+        if (sidebarDashboardLink) sidebarDashboardLink.classList.remove('hidden');
+
         userAvatar.textContent = (user.email || 'U')[0].toUpperCase();
         userAvatar.className =
           'w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 border border-indigo-400 flex items-center justify-center text-white text-xs font-bold';
@@ -996,11 +1119,12 @@
         trackUserInDb(user);
         checkAdminStatus(user);
       } else {
-        maxRequests = 2;
-        remainingAllowance = parseInt(
-          localStorage.getItem('guruai_allowance') || '2',
-          10
-        );
+        initUserQuota(null);
+
+        // Hide Dashboard icon and sidebar link for guests
+        if (headerDashboardBtn) headerDashboardBtn.classList.add('hidden');
+        if (sidebarDashboardLink) sidebarDashboardLink.classList.add('hidden');
+
         userAvatar.textContent = 'G';
         userAvatar.className =
           'w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold';
@@ -1051,6 +1175,20 @@
       // Listen for auth state change & password recovery
       supabaseClient.auth.onAuthStateChange((event, session) => {
         updateUserState(session?.user || null);
+
+        // Smoothly clean OAuth tokens from address bar without reloading or jumping pages
+        if (session?.user && typeof window !== 'undefined') {
+          const hash = window.location.hash || '';
+          const search = window.location.search || '';
+          if (hash.includes('access_token') || search.includes('code=')) {
+            try {
+              if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, document.title, window.location.pathname);
+              }
+            } catch (e) {}
+          }
+        }
+
         if (event === 'PASSWORD_RECOVERY') {
           openAuthModal('forgot');
           verifyOtpResetForm.classList.remove('hidden');
@@ -1374,10 +1512,8 @@
       stopGenBtn.classList.remove('hidden');
       sendBtn.classList.add('hidden');
 
-      // Deduct allowance
-      remainingAllowance = Math.max(0, remainingAllowance - 1);
-      localStorage.setItem('guruai_allowance', remainingAllowance);
-      updateQuotaUI();
+      // Deduct allowance atomically
+      deductAllowance();
 
       const assistantMsgDiv = document.createElement('div');
       assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';

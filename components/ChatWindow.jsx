@@ -14,6 +14,7 @@ import {
   ArrowDown,
   Sparkles,
   LogIn,
+  LayoutDashboard,
 } from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 import MessageBubble from '@/components/MessageBubble';
@@ -135,18 +136,32 @@ export default function ChatWindow({
               <span>Sign In</span>
             </button>
           ) : (
-            <button
-              onClick={() => onOpenAuth?.('login')}
-              className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 transition"
-              title={`Signed in as ${user.email}`}
-            >
-              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white">
-                {(user.email || 'U')[0].toUpperCase()}
-              </div>
-              <span className="text-xs text-slate-200 font-medium hidden sm:inline max-w-[120px] truncate">
-                {user.email.split('@')[0]}
-              </span>
-            </button>
+            <div className="flex items-center gap-2">
+              {/* User Dashboard Link (only for logged-in user) */}
+              <a
+                href={`${mainSiteUrl}/dashboard.html`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-cyan-500/60 hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 text-xs font-semibold transition group shadow-sm active:scale-95"
+                title="Open User Dashboard (webguruji.online/dashboard.html)"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </a>
+
+              <button
+                onClick={() => onOpenAuth?.('login')}
+                className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 transition"
+                title={`Signed in as ${user.email}`}
+              >
+                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white">
+                  {(user.email || 'U')[0].toUpperCase()}
+                </div>
+                <span className="text-xs text-slate-200 font-medium hidden sm:inline max-w-[120px] truncate">
+                  {user.email.split('@')[0]}
+                </span>
+              </button>
+            </div>
           )}
         </div>
       </header>

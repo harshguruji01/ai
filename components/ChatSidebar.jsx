@@ -13,6 +13,7 @@ import {
   LogOut,
   LogIn,
   ExternalLink,
+  LayoutDashboard,
   ChevronLeft,
   ChevronRight,
   Sun,
@@ -396,6 +397,21 @@ export default function ChatSidebar({
             </div>
           )}
 
+          {/* Dashboard Link for Logged In User */}
+          {user && !isCollapsed && (
+            <a
+              href={`${mainSiteUrl}/dashboard.html`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open User Dashboard"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 border border-cyan-500/25 text-cyan-300 hover:text-white hover:border-cyan-400/60 hover:bg-cyan-500/20 text-xs font-semibold transition group shadow-sm"
+            >
+              <LayoutDashboard className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform flex-shrink-0" />
+              <span>User Dashboard</span>
+              <ExternalLink className="w-3 h-3 ml-auto opacity-60 group-hover:opacity-100" />
+            </a>
+          )}
+
           {/* Account & Controls Row */}
           <div className="flex items-center justify-between pt-1">
             {!isCollapsed ? (
@@ -429,6 +445,20 @@ export default function ChatSidebar({
             ) : null}
 
             <div className="flex items-center gap-1">
+              {/* Dashboard Icon for collapsed or quick action when user is logged in */}
+              {user && (
+                <a
+                  href={`${mainSiteUrl}/dashboard.html`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="User Dashboard"
+                  aria-label="User Dashboard"
+                  className="p-1.5 rounded-lg text-cyan-400 hover:text-white hover:bg-cyan-500/20 transition"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                </a>
+              )}
+
               {/* Quick Theme Toggle */}
               {onQuickThemeToggle && !isCollapsed && (
                 <button

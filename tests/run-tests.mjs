@@ -161,6 +161,40 @@ test('Reasoning: Parses <think> blocks and separates thoughts from response', ()
   assert.strictEqual(match[2].trim(), 'Here is the answer.');
 });
 
+// 7. Workflow: Dashboard Icon & In-place Login Tests
+import fs from 'node:fs';
+
+test('Workflow: index.html has conditional Dashboard button and member limit setup', () => {
+  const indexHtml = fs.readFileSync('index.html', 'utf8');
+  assert.ok(indexHtml.includes('id="headerDashboardBtn"'), 'Must have header dashboard button');
+  assert.ok(indexHtml.includes('id="sidebarDashboardLink"'), 'Must have sidebar dashboard link');
+  assert.ok(indexHtml.includes('dashboard.html'), 'Must point to dashboard.html');
+  assert.ok(indexHtml.includes("headerDashboardBtn.classList.remove('hidden')"), 'Must show dashboard on login');
+  assert.ok(indexHtml.includes("headerDashboardBtn.classList.add('hidden')"), 'Must hide dashboard on logout');
+  assert.ok(indexHtml.includes('maxRequests = 10'), 'Member must get 10 requests');
+  assert.ok(indexHtml.includes('12 * 60 * 60 * 1000'), 'Member window must be 12 hours');
+});
+
+test('Workflow: React components render Dashboard only for logged-in user without external redirect', () => {
+  const chatWindow = fs.readFileSync('components/ChatWindow.jsx', 'utf8');
+  assert.ok(chatWindow.includes('LayoutDashboard'), 'ChatWindow must import/use LayoutDashboard');
+  assert.ok(chatWindow.includes('dashboard.html'), 'ChatWindow must link to dashboard.html');
+  assert.ok(chatWindow.includes('!user ?') && chatWindow.includes('User Dashboard Link'), 'ChatWindow must check user before showing Dashboard');
+
+  const chatSidebar = fs.readFileSync('components/ChatSidebar.jsx', 'utf8');
+  assert.ok(chatSidebar.includes('LayoutDashboard'), 'ChatSidebar must import/use LayoutDashboard');
+  assert.ok(chatSidebar.includes('dashboard.html'), 'ChatSidebar must link to dashboard.html');
+  assert.ok(chatSidebar.includes('{user &&'), 'ChatSidebar must check user before showing Dashboard');
+
+  const settingsPanel = fs.readFileSync('components/SettingsPanel.jsx', 'utf8');
+  assert.ok(settingsPanel.includes('LayoutDashboard'), 'SettingsPanel must import/use LayoutDashboard');
+  assert.ok(settingsPanel.includes('dashboard.html'), 'SettingsPanel must link to dashboard.html');
+
+  const authModal = fs.readFileSync('components/AuthModal.jsx', 'utf8');
+  assert.ok(authModal.includes('handleGoogleSignIn'), 'AuthModal must support Google Sign-In');
+  assert.ok(authModal.includes('window.location.pathname'), 'AuthModal must return user to AI page');
+});
+
 console.log(`\n========================================`);
 console.log(`Test Summary: ${passedTests} passed, ${failedTests} failed.`);
 console.log(`========================================\n`);
@@ -168,3 +202,4 @@ console.log(`========================================\n`);
 if (failedTests > 0) {
   process.exit(1);
 }
+

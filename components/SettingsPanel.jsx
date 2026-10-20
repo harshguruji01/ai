@@ -14,6 +14,7 @@ import {
   Check,
   ExternalLink,
   LogIn,
+  LayoutDashboard,
 } from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 
@@ -35,6 +36,7 @@ export default function SettingsPanel({
   const [activeTab, setActiveTab] = useState('appearance');
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const mainSiteUrl = process.env.NEXT_PUBLIC_MAIN_SITE_URL || 'https://webguruji.online';
 
   useEffect(() => {
     setTheme(preferences.theme || 'dark');
@@ -252,12 +254,24 @@ export default function SettingsPanel({
                   Authentication Status
                 </div>
                 {isLoggedIn ? (
-                  <div className="space-y-1">
-                    <div className="font-semibold text-slate-200">{user?.email}</div>
-                    <div className="text-emerald-400 text-[11px] flex items-center gap-1">
-                      <Shield className="w-3.5 h-3.5" />
-                      <span>Verified WebGuruJi Member</span>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <div className="font-semibold text-slate-200">{user?.email}</div>
+                      <div className="text-emerald-400 text-[11px] flex items-center gap-1">
+                        <Shield className="w-3.5 h-3.5" />
+                        <span>Verified WebGuruJi Member</span>
+                      </div>
                     </div>
+                    <a
+                      href={`${mainSiteUrl}/dashboard.html`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:text-white hover:bg-cyan-500/20 text-xs font-semibold transition"
+                    >
+                      <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Open User Dashboard</span>
+                      <ExternalLink className="w-3 h-3 ml-1 opacity-70" />
+                    </a>
                   </div>
                 ) : (
                   <div className="space-y-1">
