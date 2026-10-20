@@ -25,6 +25,7 @@ export default function SettingsPanel({
   onSavePreferences,
   remainingAllowance = 2,
   maxRequests = 2,
+  onOpenAuth,
 }) {
   const [theme, setTheme] = useState(preferences.theme || 'dark');
   const [fontSize, setFontSize] = useState(preferences.font_size || 'medium');
@@ -125,12 +126,13 @@ export default function SettingsPanel({
               <Lock className="w-3.5 h-3.5 flex-shrink-0" />
               <span>Settings sync is locked for Guest users</span>
             </div>
-            <a
-              href={loginUrl}
-              className="text-[11px] font-bold bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full hover:bg-amber-400 transition"
+            <button
+              type="button"
+              onClick={() => onOpenAuth?.('login')}
+              className="text-[11px] font-bold bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full hover:bg-amber-400 transition cursor-pointer"
             >
               Sign In
-            </a>
+            </button>
           </div>
         )}
 
@@ -313,13 +315,14 @@ export default function SettingsPanel({
                 )}
               </button>
             ) : (
-              <a
-                href={loginUrl}
-                className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-1"
+              <button
+                type="button"
+                onClick={() => onOpenAuth?.('login')}
+                className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Sign In</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+                <LogIn className="w-3.5 h-3.5" />
+              </button>
             )}
           </div>
         </div>

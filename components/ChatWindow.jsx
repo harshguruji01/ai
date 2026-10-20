@@ -13,6 +13,7 @@ import {
   Brain,
   ArrowDown,
   Sparkles,
+  LogIn,
 } from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 import MessageBubble from '@/components/MessageBubble';
@@ -34,6 +35,7 @@ export default function ChatWindow({
   resetInSeconds = 0,
   cooldownMessage = null,
   aiLanguage = 'english',
+  onOpenAuth,
 }) {
   const scrollRef = useRef(null);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
@@ -121,6 +123,30 @@ export default function ChatWindow({
           >
             <Settings className="w-4 h-4" />
           </button>
+
+          {/* Prominent Header Sign In / Profile Trigger */}
+          {!user ? (
+            <button
+              onClick={() => onOpenAuth?.('login')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign In</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => onOpenAuth?.('login')}
+              className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 transition"
+              title={`Signed in as ${user.email}`}
+            >
+              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white">
+                {(user.email || 'U')[0].toUpperCase()}
+              </div>
+              <span className="text-xs text-slate-200 font-medium hidden sm:inline max-w-[120px] truncate">
+                {user.email.split('@')[0]}
+              </span>
+            </button>
+          )}
         </div>
       </header>
 

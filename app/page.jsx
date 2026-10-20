@@ -628,6 +628,7 @@ export default function GuruAiApp() {
           resetInSeconds={quota.resetInSeconds}
           cooldownMessage={quota.cooldownMessage}
           aiLanguage={preferences.ai_language}
+          onOpenAuth={handleOpenAuth}
         />
 
         {/* 3. Bottom Composer */}
@@ -657,6 +658,10 @@ export default function GuruAiApp() {
         onSavePreferences={handleSavePreferences}
         remainingAllowance={quota.remainingAllowance}
         maxRequests={quota.maxRequests}
+        onOpenAuth={(mode) => {
+          setSettingsOpen(false);
+          handleOpenAuth(mode || 'login');
+        }}
       />
 
       {/* 5. Image Lightbox */}

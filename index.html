@@ -254,6 +254,12 @@
             <span id="headerQuotaText">2/2 Left</span>
             <span class="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5" id="headerTierText">Guest</span>
           </button>
+
+          <!-- Prominent Header Sign In Button -->
+          <button id="headerSignInBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+            <span id="headerSignInBtnText">Sign In</span>
+          </button>
         </div>
       </header>
 
@@ -700,7 +706,16 @@
       authModal.classList.add('hidden');
     }
 
-    openAuthBtn.onclick = () => openAuthModal('login');
+    const headerSignInBtn = document.getElementById('headerSignInBtn');
+    if (headerSignInBtn) {
+      headerSignInBtn.onclick = () => openAuthModal(currentUser ? 'profile' : 'login');
+    }
+    const headerQuotaBadge = document.getElementById('headerQuotaBadge');
+    if (headerQuotaBadge) {
+      headerQuotaBadge.onclick = () => openAuthModal(currentUser ? 'profile' : 'login');
+    }
+
+    openAuthBtn.onclick = () => openAuthModal(currentUser ? 'profile' : 'login');
     userProfileBtn.onclick = () => openAuthModal(currentUser ? 'profile' : 'login');
     closeAuthModalBtn.onclick = closeAuthModal;
 
@@ -725,6 +740,15 @@
         headerTierText.textContent = 'Member';
         headerTierText.className = 'text-[10px] font-mono px-1 py-0.2 rounded bg-indigo-900/60 text-cyan-300 ml-0.5';
         if (imageLockIcon) imageLockIcon.classList.add('hidden');
+        if (headerSignInBtn) {
+          headerSignInBtn.className = 'flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 transition';
+          headerSignInBtn.innerHTML = `
+            <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-[10px] font-bold text-white">
+              ${(user.email || 'U')[0].toUpperCase()}
+            </div>
+            <span class="text-xs text-slate-200 font-medium hidden sm:inline max-w-[120px] truncate">${user.email.split('@')[0]}</span>
+          `;
+        }
       } else {
         maxRequests = 2;
         remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '2', 10);
@@ -737,6 +761,13 @@
         headerTierText.textContent = 'Guest';
         headerTierText.className = 'text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5';
         if (imageLockIcon) imageLockIcon.classList.remove('hidden');
+        if (headerSignInBtn) {
+          headerSignInBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95';
+          headerSignInBtn.innerHTML = `
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+            <span>Sign In</span>
+          `;
+        }
       }
       updateQuotaUI();
     }
