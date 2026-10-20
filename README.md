@@ -28,7 +28,7 @@
    │      └── Storage Bucket: generated-images (Private with Signed URLs)
    │
    └──► [ NVIDIA NIM API ]
-          ├── Text Streaming: meta/llama-3.1-70b-instruct (SSE Chunks)
+          ├── Text Streaming: nvidia/nemotron-3-ultra-550b-a55b (Deep Reasoning & SSE Chunks)
           └── Image Studio: stabilityai/stable-diffusion-xl
 ```
 
@@ -57,7 +57,7 @@
   - `refund_usage_allowance` safely refunds quota if upstream AI provider fails.
 
 ### C. NVIDIA NIM API Integration
-- **Text Chat:** Streams completions from `meta/llama-3.1-70b-instruct` in real-time.
+- **Text Chat:** Streams completions from `nvidia/nemotron-3-ultra-550b-a55b` with real-time deep reasoning (`reasoning_content`) and token streaming.
 - **Image Studio:** Generates high-resolution images via `stabilityai/stable-diffusion-xl`, saves them in a private Supabase Storage bucket (`generated-images`), and provides 24-hour signed URLs.
 - **Language Adaptability:** Dynamically injects system prompts for **English**, **Hinglish**, or **Hindi (Devanagari)**.
 
@@ -104,7 +104,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
 # NVIDIA NIM API Key
 NVIDIA_API_KEY=nvapi-...
 NVIDIA_API_BASE_URL=https://integrate.api.nvidia.com/v1
-NVIDIA_TEXT_MODEL=meta/llama-3.1-70b-instruct
+NVIDIA_TEXT_MODEL=nvidia/nemotron-3-ultra-550b-a55b
 NVIDIA_IMAGE_MODEL=stabilityai/stable-diffusion-xl
 
 # Anti-Abuse & Rate Limiting Security

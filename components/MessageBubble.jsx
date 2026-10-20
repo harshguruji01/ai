@@ -1,9 +1,85 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Copy, Check, Download, RefreshCw, AlertCircle, Maximize2 } from 'lucide-react';
+import {
+  Copy,
+  Check,
+  Download,
+  RefreshCw,
+  AlertCircle,
+  Maximize2,
+  Brain,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 import CodeBlock from '@/components/CodeBlock';
+
+// Helper: extract <think>...</think> if present
+function extractThinking(rawContent = '', explicitReasoning = null) {
+  if (explicitReasoning) {
+    return { reasoning: explicitReasoning, content: rawContent || '' };
+  }
+  if (!rawContent) return { reasoning: null, content: '' };
+
+  const match = rawContent.match(/^<think>([\s\S]*?)<\/think>\s*([\s\S]*)$/);
+  if (match) {
+    return {
+      reasoning: match[1].trim(),
+      content: match[2],
+    };
+  }
+
+  // Handle unclosed <think> during streaming
+  if (rawContent.startsWith('<think>')) {
+    return {
+      reasoning: rawContent.slice(7).trim(),
+      content: '',
+    };
+  }
+
+  return { reasoning: null, content: rawContent };
+}
+
+function ThinkingSection({ reasoning, isStreaming = false }) {
+  const [isExpanded, setIsExpanded] = useState(!isStreaming ? false : true);
+
+  if (!reasoning) return null;
+
+  return (
+    <div className="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 overflow-hidden text-xs">
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between px-3 py-2 text-cyan-300 hover:text-cyan-200 hover:bg-slate-800/40 transition select-none"
+      >
+        <div className="flex items-center gap-2">
+          <Brain className={`w-3.5 h-3.5 text-cyan-400 ${isStreaming ? 'animate-pulse' : ''}`} />
+          <span className="font-medium tracking-wide">
+            {isStreaming ? 'Thinking...' : 'Thought Process'}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 text-slate-400">
+          <span className="text-[10px] uppercase font-mono tracking-wider">
+            {isExpanded ? 'Hide' : 'Show'}
+          </span>
+          {isExpanded ? (
+            <ChevronUp className="w-3.5 h-3.5" />
+          ) : (
+            <ChevronDown className="w-3.5 h-3.5" />
+          )}
+        </div>
+      </button>
+
+      {isExpanded && (
+        <div className="px-3 pb-3 pt-1 border-t border-slate-800/60 font-mono text-[11px] text-slate-400 leading-relaxed max-h-64 overflow-y-auto whitespace-pre-wrap select-text">
+          {reasoning}
+          {isStreaming && <span className="streaming-cursor" aria-hidden="true" />}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Helper: Markdown parser supporting code blocks, bold, lists, and inline code
 function parseMarkdown(content = '') {
@@ -97,8 +173,13 @@ export default function MessageBubble({
   const isUser = message.role === 'user';
   const isError = message.isError || message.status === 'failed';
 
+  const { reasoning, content: actualContent } = extractThinking(
+    message.content,
+    message.reasoning
+  );
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(message.content);
+    navigator.clipboard.writeText(actualContent || message.content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -152,20 +233,30 @@ export default function MessageBubble({
               </div>
             </div>
           ) : (
-            /* Text Message Markdown */
+            /* Text Message Markdown with Thinking Section */
             <div className="leading-relaxed">
-              {parseMarkdown(message.content).map((part, pIdx) => {
-                if (part.type === 'code') {
-                  return <CodeBlock key={pIdx} language={part.language} code={part.code} />;
-                }
-                return (
-                  <FormattedText
-                    key={pIdx}
-                    text={part.text}
-                    isStreaming={isStreaming && pIdx === parseMarkdown(message.content).length - 1}
-                  />
-                );
-              })}
+              {reasoning && (
+                <ThinkingSection
+                  reasoning={reasoning}
+                  isStreaming={isStreaming && !actualContent}
+                />
+              )}
+              {actualContent ? (
+                parseMarkdown(actualContent).map((part, pIdx) => {
+                  if (part.type === 'code') {
+                    return <CodeBlock key={pIdx} language={part.language} code={part.code} />;
+                  }
+                  return (
+                    <FormattedText
+                      key={pIdx}
+                      text={part.text}
+                      isStreaming={isStreaming && pIdx === parseMarkdown(actualContent).length - 1}
+                    />
+                  );
+                })
+              ) : isStreaming && reasoning ? null : (
+                <p className="text-slate-400 italic">Thinking...</p>
+              )}
             </div>
           )}
 

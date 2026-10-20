@@ -160,6 +160,7 @@ export async function POST(request) {
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
     let accumulatedContent = '';
+    let accumulatedReasoning = '';
 
     const transformStream = new TransformStream({
       async transform(chunk, controller) {
@@ -172,11 +173,31 @@ export async function POST(request) {
           if (trimmed.startsWith('data: ')) {
             try {
               const parsed = JSON.parse(trimmed.slice(6));
-              const token = parsed.choices?.[0]?.delta?.content || '';
+              const delta = parsed.choices?.[0]?.delta || {};
+              const reasoning = delta.reasoning_content || '';
+              const token = delta.content || '';
+
+              if (reasoning) {
+                accumulatedReasoning += reasoning;
+                controller.enqueue(
+                  encoder.encode(
+                    `data: ${JSON.stringify({
+                      reasoning,
+                      conversationId: activeConversationId,
+                    })}\n\n`
+                  )
+                );
+              }
+
               if (token) {
                 accumulatedContent += token;
                 controller.enqueue(
-                  encoder.encode(`data: ${JSON.stringify({ token, conversationId: activeConversationId })}\n\n`)
+                  encoder.encode(
+                    `data: ${JSON.stringify({
+                      token,
+                      conversationId: activeConversationId,
+                    })}\n\n`
+                  )
                 );
               }
             } catch (e) {
@@ -198,17 +219,21 @@ export async function POST(request) {
           )
         );
 
-        // Persist final assistant response for logged-in user
-        if (isLoggedIn && userId && activeConversationId && accumulatedContent.trim()) {
+        // Persist final assistant response with thinking block for logged-in user
+        const finalContent = accumulatedReasoning.trim()
+          ? `<think>\n${accumulatedReasoning.trim()}\n</think>\n\n${accumulatedContent}`
+          : accumulatedContent;
+
+        if (isLoggedIn && userId && activeConversationId && finalContent.trim()) {
           try {
             await supabaseAdmin.from('chat_messages').insert({
               conversation_id: activeConversationId,
               user_id: userId,
               role: 'assistant',
-              content: accumulatedContent,
+              content: finalContent,
               message_type: 'text',
               status: 'completed',
-              model: process.env.NVIDIA_TEXT_MODEL || 'meta/llama-3.1-70b-instruct',
+              model: process.env.NVIDIA_TEXT_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b',
             });
 
             // Update conversation updated_at

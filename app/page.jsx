@@ -29,6 +29,7 @@ export default function GuruAiApp() {
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [streamingContent, setStreamingContent] = useState('');
+  const [streamingReasoning, setStreamingReasoning] = useState('');
   const [inputPrompt, setInputPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isImageMode, setIsImageMode] = useState(false);
@@ -465,6 +466,7 @@ export default function GuruAiApp() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let streamedAnswer = '';
+      let streamedReasoning = '';
       let serverConvId = activeConversationId;
 
       while (true) {
@@ -479,6 +481,10 @@ export default function GuruAiApp() {
           if (trimmed.startsWith('data: ')) {
             try {
               const eventData = JSON.parse(trimmed.slice(6));
+              if (eventData.reasoning) {
+                streamedReasoning += eventData.reasoning;
+                setStreamingReasoning(streamedReasoning);
+              }
               if (eventData.token) {
                 streamedAnswer += eventData.token;
                 setStreamingContent(streamedAnswer);
@@ -501,12 +507,17 @@ export default function GuruAiApp() {
         }
       }
 
-      if (streamedAnswer) {
+      if (streamedAnswer || streamedReasoning) {
+        const finalAnswer = streamedReasoning.trim()
+          ? `<think>\n${streamedReasoning.trim()}\n</think>\n\n${streamedAnswer}`
+          : streamedAnswer;
+
         setMessages((prev) => [
           ...prev,
           {
             role: 'assistant',
-            content: streamedAnswer,
+            content: finalAnswer,
+            reasoning: streamedReasoning.trim() || null,
             messageType: 'text',
             status: 'completed',
             created_at: new Date().toISOString(),
@@ -514,6 +525,7 @@ export default function GuruAiApp() {
         ]);
       }
       setStreamingContent('');
+      setStreamingReasoning('');
 
       if (user && serverConvId && !activeConversationId) {
         const convRes = await fetch('/api/conversations');
@@ -618,6 +630,7 @@ export default function GuruAiApp() {
         <ChatWindow
           messages={messages}
           streamingContent={streamingContent}
+          streamingReasoning={streamingReasoning}
           isGenerating={isGenerating}
           isImageMode={isImageMode}
           onOpenSidebar={() => setSidebarOpen(true)}

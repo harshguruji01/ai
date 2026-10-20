@@ -22,6 +22,7 @@ import UsageBadge from '@/components/UsageBadge';
 export default function ChatWindow({
   messages = [],
   streamingContent = '',
+  streamingReasoning = '',
   isGenerating = false,
   isImageMode = false,
   onOpenSidebar,
@@ -89,7 +90,7 @@ export default function ChatWindow({
                 GuruAI
               </span>
               <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hidden sm:inline-block">
-                Llama 3.1 70B & SDXL
+                Nemotron 3 Ultra 550B & SDXL
               </span>
             </div>
           </div>
@@ -246,11 +247,12 @@ export default function ChatWindow({
             ))}
 
             {/* Live Streaming Message Bubble */}
-            {streamingContent && (
+            {(streamingContent || streamingReasoning) && (
               <MessageBubble
                 message={{
                   role: 'assistant',
                   content: streamingContent,
+                  reasoning: streamingReasoning,
                   messageType: 'text',
                   status: 'completed',
                 }}
@@ -260,7 +262,7 @@ export default function ChatWindow({
             )}
 
             {/* Generating Skeleton / Status Animation */}
-            {isGenerating && !streamingContent && (
+            {isGenerating && !streamingContent && !streamingReasoning && (
               <div className="flex gap-3 md:gap-4 justify-start items-center animate-fade-in">
                 <GuruLogo size={32} />
                 <div className="bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] px-4 py-3 rounded-2xl rounded-bl-none text-xs text-slate-300 flex items-center gap-2.5 shadow-sm">
