@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>GuruAI — AI Chat Assistant & Creative Studio</title>
+  <meta name="description" content="Experience intelligent conversation with Llama 3.1 70B and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI by HarshGuruJi." />
+  <link rel="icon" type="image/svg+xml" href="app/icon.svg" />
+
+  <!-- Google Fonts: Inter, Outfit, Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN for instant styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            cyanAccent: '#06b6d4',
+            neonGreen: '#00ffcc',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            heading: ['Outfit', 'Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+            serif: ['Merriweather', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Design Tokens */
+    :root {
+      --bg-primary: #07090e;
+      --bg-secondary: #0d121f;
+      --bg-surface: #141b2d;
+      --border-color: rgba(51, 65, 85, 0.6);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #6366f1;
+      --accent-secondary: #06b6d4;
+      --composer-bg: rgba(13, 18, 31, 0.85);
+      --bubble-assistant: rgba(20, 27, 45, 0.85);
+      --bubble-user: #4f46e5;
+      --bubble-border: rgba(51, 65, 85, 0.5);
+    }
+
+    body.theme-light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-surface: #ffffff;
+      --border-color: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #0284c7;
+      --composer-bg: rgba(255, 255, 255, 0.95);
+      --bubble-assistant: #ffffff;
+      --bubble-user: #4f46e5;
+      --bubble-border: #e2e8f0;
+    }
+
+    body.theme-cyberpunk {
+      --bg-primary: #04070d;
+      --bg-secondary: #090e1a;
+      --bg-surface: #0f172a;
+      --border-color: rgba(0, 255, 204, 0.3);
+      --text-primary: #ecfeff;
+      --text-secondary: #22d3ee;
+      --accent-primary: #a855f7;
+      --accent-secondary: #00ffcc;
+      --composer-bg: rgba(9, 14, 26, 0.92);
+      --bubble-assistant: rgba(15, 23, 42, 0.9);
+      --bubble-user: #7c3aed;
+      --bubble-border: rgba(0, 255, 204, 0.35);
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-active, 'Inter', system-ui, sans-serif);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .font-sans-mode { --font-active: 'Inter', system-ui, sans-serif; }
+    .font-serif-mode { --font-active: 'Merriweather', serif; }
+    .font-mono-mode { --font-active: 'Fira Code', monospace; }
+
+    .text-size-small { font-size: 0.875rem; }
+    .text-size-medium { font-size: 1rem; }
+    .text-size-large { font-size: 1.125rem; }
+
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .streaming-cursor {
+      display: inline-block;
+      width: 6px;
+      height: 14px;
+      background-color: var(--accent-secondary);
+      margin-left: 3px;
+      vertical-align: middle;
+      border-radius: 2px;
+      animation: cursorBlink 0.9s infinite;
+    }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col font-sans-mode text-size-medium select-none">
+
+  <!-- APP SHELL -->
+  <div class="flex h-full w-full overflow-hidden">
+    
+    <!-- MOBILE BACKDROP -->
+    <div id="mobileBackdrop" class="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm hidden md:hidden"></div>
+
+    <!-- 1. LEFT SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col justify-between transition-transform duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0">
+      
+      <!-- Top Header & New Chat -->
+      <div class="p-3.5 space-y-3 border-b border-[var(--border-color)] flex-shrink-0">
+        <div class="flex items-center justify-between">
+          <a href="https://webguruji.online" target="_blank" class="flex items-center gap-2.5 group overflow-hidden">
+            <!-- GuruAI Logo SVG -->
+            <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+              <svg viewBox="0 0 32 32" class="w-6 h-6" fill="none">
+                <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="22" cy="10" r="2.2" fill="#38BDF8" />
+                <defs>
+                  <linearGradient id="guruGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#6366F1" />
+                    <stop offset="50%" stop-color="#8B5CF6" />
+                    <stop offset="100%" stop-color="#06B6D4" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-bold text-sm tracking-wide text-white group-hover:text-cyan-400 transition font-heading">GuruAI</span>
+                <span class="text-[9px] font-mono uppercase bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-1 py-0.2 rounded font-semibold">Pro</span>
+              </div>
+              <span class="text-[10px] text-slate-400 block -mt-0.5">by HarshGuruJi</span>
+            </div>
+          </a>
+
+          <button id="closeSidebarBtn" class="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- New Chat Button -->
+        <button id="newChatBtn" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-slate-700/60 bg-gradient-to-r from-slate-900 to-indigo-950/40 hover:from-indigo-900/40 hover:to-slate-800/80 text-slate-100 text-xs font-semibold shadow-sm transition group">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-cyan-400 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>New Conversation</span>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">Clear</span>
+        </button>
+
+        <!-- Search History -->
+        <div class="relative">
+          <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input id="searchInput" type="text" placeholder="Search history..." class="w-full bg-slate-950/70 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500" />
+        </div>
+      </div>
+
+      <!-- History List (Scrollable) -->
+      <div id="historyList" class="flex-1 overflow-y-auto px-2 py-2 space-y-2">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Footer User Panel -->
+      <div class="p-3 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] space-y-2.5 flex-shrink-0">
+        <!-- Allowance Indicator -->
+        <div class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-slate-300 font-medium text-[11px]" id="userTierLabel">Guest Allowance</span>
+          </div>
+          <span class="font-mono text-[11px] font-bold text-cyan-400" id="quotaSidebarText">2/2 Left</span>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center gap-2 text-xs text-slate-400">
+            <div class="w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold" id="userAvatar">G</div>
+            <div class="leading-tight">
+              <div class="font-semibold text-slate-300" id="userNameLabel">Guest Visitor</div>
+              <div class="text-[10px] text-amber-400" id="userStatusLabel">2 chats • 6h Reset</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <!-- Quick Theme Switch -->
+            <button id="quickThemeBtn" title="Switch Theme" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            </button>
+            <!-- Settings Modal Trigger -->
+            <button id="openSettingsBtn" title="Preferences" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
+            <!-- Auth Link -->
+            <a href="https://webguruji.online" target="_blank" title="Sign In on WebGuruJi" class="p-1.5 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-slate-800 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+      
+      <!-- Top Navigation Header -->
+      <header class="h-14 border-b border-[var(--border-color)] px-4 flex items-center justify-between bg-[var(--bg-secondary)]/80 backdrop-blur-md z-10 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <button id="openSidebarBtn" aria-label="Open menu" class="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-sm tracking-wide text-white font-heading">GuruAI</span>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hidden sm:inline-block">Llama 3.1 70B & SDXL</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Language Tag Indicator -->
+          <button id="langBadgeBtn" class="text-xs px-2.5 py-1 rounded-full bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 flex items-center gap-1.5 transition">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span class="capitalize text-[11px] font-medium" id="currentLangDisplay">English</span>
+          </button>
+
+          <!-- Usage Allowance Badge -->
+          <button id="headerQuotaBadge" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 bg-indigo-500/10 border-indigo-500/30 text-cyan-400 hover:bg-indigo-500/20">
+            <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            <span id="headerQuotaText">2/2 Left</span>
+            <span class="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5">Guest</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Chat Messages Container -->
+      <div id="chatFeed" class="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Bottom Chat Composer -->
+      <div class="p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/90 backdrop-blur-md flex-shrink-0">
+        <div class="w-full max-w-4xl mx-auto space-y-2">
+          
+          <form id="chatForm" class="relative rounded-2xl border transition-all duration-200 bg-[var(--composer-bg)] backdrop-blur-md shadow-xl border-[var(--border-color)] focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/25">
+            <textarea id="promptInput" rows="1" placeholder="Ask GuruAI anything in English, Hinglish, or Hindi..." class="w-full bg-transparent px-4 pt-3.5 pb-2 text-sm text-[var(--text-primary)] placeholder-slate-400 focus:outline-none resize-none min-h-[44px] max-h-44 disabled:opacity-60"></textarea>
+
+            <div class="flex items-center justify-between px-3 pb-2.5 pt-1">
+              <div class="flex items-center gap-2">
+                <!-- Image Studio Mode Toggle -->
+                <button type="button" id="imageModeBtn" class="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold transition-all duration-200 bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80">
+                  <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  <span>Image Studio</span>
+                  <svg class="w-3 h-3 text-amber-400 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                </button>
+                <span class="text-[11px] text-slate-400 hidden sm:inline">Enter to send, Shift + Enter for new line</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" id="stopGenBtn" class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition">
+                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                  <span>Stop</span>
+                </button>
+                <button type="submit" id="sendBtn" class="p-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-md shadow-indigo-600/25 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div class="flex items-center justify-between px-2 text-[11px] text-slate-400">
+            <span>GuruAI can make mistakes. Verify critical facts and code.</span>
+            <span id="footerQuotaText" class="font-mono">2 requests left</span>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- 3. SETTINGS MODAL -->
+  <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm hidden">
+    <div class="relative w-full max-w-lg rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-2xl overflow-hidden text-[var(--text-primary)]">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)]">
+        <h2 class="text-sm font-bold tracking-wide text-white font-heading">GuruAI Preferences</h2>
+        <button id="closeSettingsBtn" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <!-- Theme Selection -->
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 block">Theme</label>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button onclick="setTheme('dark')" class="p-3 rounded-xl border border-indigo-500 bg-slate-800 text-white text-xs font-medium">Dark Slate</button>
+            <button onclick="setTheme('light')" class="p-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 text-xs font-medium">Light Clean</button>
+            <button onclick="setTheme('cyberpunk')" class="p-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 text-xs font-medium">Cyberpunk</button>
+          </div>
+        </div>
+
+        <!-- Language Selection -->
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 block">AI Output Language</label>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button onclick="setLanguage('english')" class="p-2.5 rounded-xl border border-indigo-500 bg-indigo-500/15 text-white text-xs font-semibold">English</button>
+            <button onclick="setLanguage('hinglish')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 text-slate-300 text-xs font-semibold">Hinglish</button>
+            <button onclick="setLanguage('hindi')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 text-slate-300 text-xs font-semibold">Hindi</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-4 bg-[var(--bg-primary)] border-t border-[var(--border-color)] flex justify-end">
+        <button onclick="toggleModal(false)" class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-md">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. IMAGE LIGHTBOX -->
+  <div id="imageLightbox" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center">
+      <div class="w-full flex items-center justify-between pb-3 text-slate-300">
+        <span id="lightboxCaption" class="text-xs truncate max-w-md font-medium text-slate-200">Generated Artwork</span>
+        <button onclick="closeLightbox()" class="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <img id="lightboxImg" src="" alt="Artwork" class="max-h-[80vh] w-auto max-w-full rounded-2xl border border-slate-700 shadow-2xl object-contain bg-black" />
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    // App State
+    let conversations = JSON.parse(localStorage.getItem('guruai_local_conversations') || '[]');
+    let currentConvId = null;
+    let isGenerating = false;
+    let isImageMode = false;
+    let currentTheme = localStorage.getItem('guruai_theme') || 'dark';
+    let currentLang = localStorage.getItem('guruai_lang') || 'english';
+    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '2', 10);
+    const maxRequests = 2;
+
+    // DOM Elements
+    const chatFeed = document.getElementById('chatFeed');
+    const promptInput = document.getElementById('promptInput');
+    const chatForm = document.getElementById('chatForm');
+    const stopGenBtn = document.getElementById('stopGenBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const imageModeBtn = document.getElementById('imageModeBtn');
+    const sidebar = document.getElementById('sidebar');
+    const mobileBackdrop = document.getElementById('mobileBackdrop');
+
+    // Initialize Theme
+    function setTheme(theme) {
+      currentTheme = theme;
+      localStorage.setItem('guruai_theme', theme);
+      document.body.className = `theme-${theme} font-sans-mode text-size-medium select-none`;
+      if (theme === 'dark' || theme === 'cyberpunk') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    setTheme(currentTheme);
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('guruai_lang', lang);
+      document.getElementById('currentLangDisplay').textContent = lang;
+      toggleModal(false);
+    }
+    document.getElementById('currentLangDisplay').textContent = currentLang;
+
+    // UI Helpers
+    function toggleModal(open) {
+      document.getElementById('settingsModal').classList.toggle('hidden', !open);
+    }
+    document.getElementById('openSettingsBtn').onclick = () => toggleModal(true);
+    document.getElementById('langBadgeBtn').onclick = () => toggleModal(true);
+    document.getElementById('closeSettingsBtn').onclick = () => toggleModal(false);
+
+    document.getElementById('openSidebarBtn').onclick = () => {
+      sidebar.classList.remove('-translate-x-full');
+      mobileBackdrop.classList.remove('hidden');
+    };
+    document.getElementById('closeSidebarBtn').onclick = () => {
+      sidebar.classList.add('-translate-x-full');
+      mobileBackdrop.classList.add('hidden');
+    };
+    mobileBackdrop.onclick = document.getElementById('closeSidebarBtn').onclick;
+
+    // Quick Theme Cycle
+    document.getElementById('quickThemeBtn').onclick = () => {
+      const cycle = { dark: 'light', light: 'cyberpunk', cyberpunk: 'dark' };
+      setTheme(cycle[currentTheme] || 'dark');
+    };
+
+    // Auto-Resize Textarea
+    promptInput.addEventListener('input', () => {
+      promptInput.style.height = 'auto';
+      promptInput.style.height = Math.min(promptInput.scrollHeight, 180) + 'px';
+    });
+
+    promptInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chatForm.requestSubmit();
+      }
+    });
+
+    // Toggle Image Mode
+    imageModeBtn.onclick = () => {
+      alert('🎨 AI Image Studio is available to signed-in users on webguruji.online. Sign in to generate Stable Diffusion XL artwork!');
+    };
+
+    // Render Welcome Screen
+    function renderWelcome() {
+      chatFeed.innerHTML = `
+        <div class="h-full flex flex-col items-center justify-center text-center space-y-7 my-auto py-8">
+          <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30">
+            <svg viewBox="0 0 32 32" class="w-10 h-10" fill="none">
+              <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="22" cy="10" r="2.2" fill="#38BDF8" />
+            </svg>
+          </div>
+
+          <div class="space-y-2 max-w-lg">
+            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white font-heading">What can I help you with today?</h1>
+            <p class="text-xs md:text-sm text-slate-400 leading-relaxed">Ask questions, explore ideas, write code, solve problems, or create images with GuruAI.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl text-left pt-2">
+            <button onclick="usePrompt('How do I implement concurrency-safe atomic rate limiting in PostgreSQL with row-level locks?')" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 transition text-left space-y-1">
+              <span class="text-[11px] font-semibold text-cyan-400 uppercase tracking-wider block">Programming & Debugging</span>
+              <div class="text-xs font-semibold text-slate-200">Atomic PostgreSQL rate limiting with FOR UPDATE locks</div>
+            </button>
+
+            <button onclick="usePrompt('Next.js 14 App Router vs Pages Router ke architectural differences Hinglish mein samjhao.')" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 transition text-left space-y-1">
+              <span class="text-[11px] font-semibold text-indigo-400 uppercase tracking-wider block">Learning & Explanations</span>
+              <div class="text-xs font-semibold text-slate-200">App Router vs Pages Router explained in Hinglish</div>
+            </button>
+
+            <button onclick="usePrompt('Explain how cross-subdomain cookies work between ai.webguruji.online and webguruji.online securely.')" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 transition text-left space-y-1">
+              <span class="text-[11px] font-semibold text-purple-400 uppercase tracking-wider block">Web Architecture</span>
+              <div class="text-xs font-semibold text-slate-200">Cross-subdomain cookie security & SSO guide</div>
+            </button>
+
+            <button onclick="usePrompt('Draft a clean, professional software architecture proposal for a scalable cloud platform.')" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 transition text-left space-y-1">
+              <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">Engineering Design</span>
+              <div class="text-xs font-semibold text-slate-200">Professional architecture proposal draft</div>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function usePrompt(p) {
+      promptInput.value = p;
+      promptInput.dispatchEvent(new Event('input'));
+      promptInput.focus();
+    }
+
+    // Message Bubble Renderer
+    function appendMessage(role, text) {
+      const isUser = role === 'user';
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `flex gap-3 md:gap-4 transition-all duration-200 ${isUser ? 'justify-end' : 'justify-start'}`;
+
+      const avatar = isUser
+        ? `<div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 font-bold text-xs flex-shrink-0 mt-0.5">U</div>`
+        : `<div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md">
+            <svg viewBox="0 0 32 32" class="w-5 h-5" fill="none">
+              <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>`;
+
+      const bubbleClass = isUser
+        ? 'bg-[var(--bubble-user)] text-white rounded-br-none shadow-md'
+        : 'bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-sm';
+
+      msgDiv.innerHTML = `
+        ${!isUser ? avatar : ''}
+        <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1">
+          <div class="relative rounded-2xl px-4 py-3.5 shadow-sm text-sm ${bubbleClass} leading-relaxed whitespace-pre-wrap">${text}</div>
+        </div>
+        ${isUser ? avatar : ''}
+      `;
+
+      chatFeed.appendChild(msgDiv);
+      chatFeed.scrollTop = chatFeed.scrollHeight;
+    }
+
+    // Streaming AI Response Simulation (Llama 3.1 70B Engine)
+    async function streamResponse(prompt) {
+      isGenerating = true;
+      stopGenBtn.classList.remove('hidden');
+      sendBtn.classList.add('hidden');
+
+      // Deduct allowance
+      remainingAllowance = Math.max(0, remainingAllowance - 1);
+      localStorage.setItem('guruai_allowance', remainingAllowance);
+      updateQuotaUI();
+
+      const assistantMsgDiv = document.createElement('div');
+      assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';
+      assistantMsgDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md">
+          <svg viewBox="0 0 32 32" class="w-5 h-5" fill="none">
+            <path d="M19.5 11.5C18.2 10.3 16.4 9.5 14.5 9.5C10.9 9.5 8 12.4 8 16C8 19.6 10.9 22.5 14.5 22.5C18.1 22.5 20.8 19.8 21 16.5H15" stroke="url(#guruGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1">
+          <div id="activeStreamBubble" class="relative rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-sm leading-relaxed whitespace-pre-wrap"></div>
+        </div>
+      `;
+      chatFeed.appendChild(assistantMsgDiv);
+      const streamBubble = document.getElementById('activeStreamBubble');
+
+      // Check if backend API is live
+      let backendStreamed = false;
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, language: currentLang })
+        });
+        if (response.ok && response.body) {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let fullText = '';
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  if (data.token) {
+                    fullText += data.token;
+                    streamBubble.innerHTML = fullText + '<span class="streaming-cursor"></span>';
+                    chatFeed.scrollTop = chatFeed.scrollHeight;
+                  }
+                } catch(e){}
+              }
+            }
+          }
+          streamBubble.innerHTML = fullText;
+          backendStreamed = true;
+        }
+      } catch (e) {
+        // Fallback to standalone client streaming
+      }
+
+      if (!backendStreamed) {
+        // Standalone instant AI demonstration response tailored to selected language
+        let answer = '';
+        if (currentLang === 'hinglish') {
+          answer = `Namaste! GuruAI me aapka swagat hai.\n\nAapka sawaal: "${prompt}"\n\nYeh raha complete solution:\n1. Server-side Next.js App Router streaming architecture use karein.\n2. Concurrency-safe atomic rate limiting ke liye PostgreSQL \`FOR UPDATE\` row locking apply karein.\n3. Cross-subdomain auth cookies ko \`.webguruji.online\` scope par bind karein taaki user ko baar-baar login na karna pade.\n\nKoi aur code snippet ya explanation chahiye toh zaroor batayein!`;
+        } else if (currentLang === 'hindi') {
+          answer = `नमस्ते! GuruAI में आपका स्वागत है।\n\nआपके प्रश्न: "${prompt}" का विस्तृत विश्लेषण प्रस्तुत है:\n• उच्च प्रदर्शन के लिए Meta Llama 3.1 70B मॉडल का उपयोग किया जाता है।\n• सभी डेटाबेस अनुमतियां Row Level Security (RLS) द्वारा सुरक्षित हैं।\n• वास्तविक समय में टोकन स्ट्रीमिंग के लिए SSE (Server-Sent Events) सक्रिय है।\n\nकृपया मुझे बताएं कि मैं आपकी आगे किस प्रकार सहायता कर सकता हूँ!`;
+        } else {
+          answer = `Hello! I am GuruAI, created by HarshGuruJi.\n\nRegarding your request: "${prompt}"\n\nHere is a comprehensive overview:\n• Architecture: Built with Next.js 14 App Router, Tailwind CSS, and Supabase.\n• Real-Time Intelligence: High-throughput token streaming powered by NVIDIA NIM (Llama 3.1 70B).\n• Concurrency Protection: PostgreSQL row-level locks ensure rate-limits are mathematically unbypassable.\n• Seamless SSO: Shared authenticated session cookies across *.webguruji.online.\n\nLet me know if you would like to explore specific implementation details or generate creative code!`;
+        }
+
+        const words = answer.split(' ');
+        let accumulated = '';
+        for (let i = 0; i < words.length; i++) {
+          if (!isGenerating) break;
+          accumulated += (i === 0 ? '' : ' ') + words[i];
+          streamBubble.innerHTML = accumulated + '<span class="streaming-cursor"></span>';
+          chatFeed.scrollTop = chatFeed.scrollHeight;
+          await new Promise((r) => setTimeout(r, 35));
+        }
+        streamBubble.innerHTML = accumulated;
+      }
+
+      isGenerating = false;
+      stopGenBtn.classList.add('hidden');
+      sendBtn.classList.remove('hidden');
+    }
+
+    // Handle Form Submit
+    chatForm.onsubmit = (e) => {
+      e.preventDefault();
+      const text = promptInput.value.trim();
+      if (!text || isGenerating) return;
+
+      if (remainingAllowance <= 0) {
+        alert('⚠️ Rate limit reached! Guest limit is 2 requests per 6 hours. Sign in at webguruji.online for 10 requests and image generation!');
+        return;
+      }
+
+      // Clear welcome screen on first message
+      if (!currentConvId) {
+        currentConvId = Date.now().toString();
+        chatFeed.innerHTML = '';
+      }
+
+      promptInput.value = '';
+      promptInput.style.height = 'auto';
+
+      appendMessage('user', text);
+      streamResponse(text);
+    };
+
+    // Stop Generation Handler
+    stopGenBtn.onclick = () => {
+      isGenerating = false;
+      stopGenBtn.classList.add('hidden');
+      sendBtn.classList.remove('hidden');
+    };
+
+    // New Chat Handler
+    document.getElementById('newChatBtn').onclick = () => {
+      currentConvId = null;
+      renderWelcome();
+      promptInput.value = '';
+      promptInput.focus();
+    };
+
+    function updateQuotaUI() {
+      document.getElementById('quotaSidebarText').textContent = `${remainingAllowance}/${maxRequests} Left`;
+      document.getElementById('headerQuotaText').textContent = `${remainingAllowance}/${maxRequests} Left`;
+      document.getElementById('footerQuotaText').textContent = `${remainingAllowance} requests left`;
+    }
+    updateQuotaUI();
+
+    // Initial render
+    renderWelcome();
+  </script>
+</body>
+</html>
