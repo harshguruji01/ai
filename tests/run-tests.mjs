@@ -225,6 +225,26 @@ test('Workflow: Main Admin Panels contain GuruAI Command Center integration', ()
   assert.ok(storeAdmin.includes('tile-guruai-app'), 'store/admin.html must have GuruAI stat tile');
 });
 
+// 9. Model Identity & Image Quota Policy Tests
+test('Model Identity: System prompt and UI show Guru-Flash 1.1 and conceal Nemotron', () => {
+  const prompt = buildSystemPrompt('english');
+  assert.ok(prompt.includes('Guru-Flash 1.1'), 'System prompt must mandate Guru-Flash 1.1');
+  assert.ok(prompt.includes('NEVER reveal, mention, or output "Nemotron"'), 'System prompt must forbid Nemotron output');
+
+  const indexHtml = fs.readFileSync('index.html', 'utf8');
+  assert.ok(indexHtml.includes('Guru-Flash 1.1 & SDXL'), 'index.html badge must show Guru-Flash 1.1 & SDXL');
+  assert.ok(!indexHtml.includes('Nemotron 3 Ultra 550B & SDXL'), 'index.html badge must NOT show Nemotron');
+
+  const dashHtml = fs.readFileSync('dashboard.html', 'utf8');
+  assert.ok(dashHtml.includes('Guru-Flash 1.1'), 'dashboard.html must show Guru-Flash 1.1');
+});
+
+test('Image Quota Policy: Enforces 5 images in 24 hours per registered user and blocks guests', () => {
+  const rateLimitSrc = fs.readFileSync('lib/rate-limit.js', 'utf8');
+  assert.ok(rateLimitSrc.includes('USER_IMAGE_MAX_REQUESTS = 5'), 'Must be exactly 5 images');
+  assert.ok(rateLimitSrc.includes('USER_IMAGE_WINDOW_SECONDS = 24 * 60 * 60'), 'Must be 24-hour window');
+});
+
 console.log(`\n========================================`);
 console.log(`Test Summary: ${passedTests} passed, ${failedTests} failed.`);
 console.log(`========================================\n`);

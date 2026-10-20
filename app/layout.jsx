@@ -7,15 +7,14 @@ export const metadata = {
     template: '%s | GuruAI',
   },
   description:
-    'Experience intelligent conversation with NVIDIA Nemotron 3 Ultra 550B and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI by HarshGuruJi.',
+    'Experience intelligent conversation with Guru-Flash 1.1 and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI by HarshGuruJi.',
   keywords: [
     'GuruAI',
     'Guru AI Chatbot',
     'HarshGuruJi AI',
     'AI Assistant India',
-    'NVIDIA Nemotron 3 Ultra 550B',
+    'Guru-Flash 1.1',
     'Stable Diffusion XL',
-    'NVIDIA NIM AI',
     'Hinglish AI Chatbot',
     'Generative AI Platform',
   ],
@@ -42,7 +41,7 @@ export const metadata = {
     url: 'https://ai.webguruji.online',
     title: 'GuruAI — AI Chat Assistant',
     description:
-      'Supercharge your productivity with GuruAI: intelligent conversational AI powered by NVIDIA Nemotron 3 Ultra 550B and high-resolution Stable Diffusion XL image generation by HarshGuruJi.',
+      'Supercharge your productivity with GuruAI: intelligent conversational AI powered by Guru-Flash 1.1 and high-resolution Stable Diffusion XL image generation by HarshGuruJi.',
     siteName: 'GuruAI',
     images: [
       {
@@ -57,7 +56,7 @@ export const metadata = {
     card: 'summary',
     title: 'GuruAI — AI Chat Assistant',
     description:
-      'Chat with NVIDIA Nemotron 3 Ultra 550B and generate high-resolution art with Stable Diffusion XL on GuruAI.',
+      'Chat with Guru-Flash 1.1 and generate high-resolution art with Stable Diffusion XL on GuruAI.',
     creator: '@harshguruji',
     images: ['/logo.png'],
   },

@@ -91,7 +91,7 @@ export default function ChatWindow({
                 GuruAI
               </span>
               <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hidden sm:inline-block">
-                Nemotron 3 Ultra 550B & SDXL
+                Guru-Flash 1.1 & SDXL
               </span>
             </div>
           </div>

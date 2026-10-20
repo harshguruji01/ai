@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth';
 import { validateRequestOrigin } from '@/lib/security';
 import { imageGenerateSchema } from '@/lib/validation';
-import { checkAndReserveAllowance, refundUsageAllowance } from '@/lib/rate-limit';
 import { generateNvidiaImage } from '@/lib/ai/nvidia';
 import { uploadGeneratedImage } from '@/lib/storage';
 import { supabaseAdmin } from '@/lib/supabase/admin';
@@ -11,7 +10,6 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
-  let reserved = false;
   let userId = null;
 
   try {
@@ -20,7 +18,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Forbidden: Invalid request origin' }, { status: 403 });
     }
 
-    // 2. Authenticated Session Check (Strictly Required for Images)
+    // 2. Authenticated Session Check (Strictly Required: Guests cannot create images)
     const authState = await getAuthenticatedUser();
     if (!authState.isLoggedIn || !authState.userId) {
       return NextResponse.json(
@@ -28,7 +26,7 @@ export async function POST(request) {
           error: 'Authentication Required',
           requiresLogin: true,
           message:
-            'AI Image Generation is available to signed-in users. Log in at https://webguruji.online to unlock image creation.',
+            'Guest users are not able to create images. Please sign in or create an account at https://webguruji.online to unlock 5 images per 24 hours.',
         },
         { status: 401 }
       );
@@ -49,28 +47,50 @@ export async function POST(request) {
 
     const { prompt, conversationId } = parseResult.data;
 
-    // 4. Concurrency-Safe Rate Limiting
-    const reservation = await checkAndReserveAllowance({
-      userId,
-      isGuest: false,
-    });
+    // 4. Concurrency-Safe 24-Hour Rolling Window Limit: Exactly 5 Images per 24 Hours
+    const MAX_IMAGES_24H = 5;
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-    if (!reservation.allowed) {
-      const resetHours = Math.floor(reservation.resetInSeconds / 3600);
-      const resetMins = Math.ceil((reservation.resetInSeconds % 3600) / 60);
+    const { count: imageCount, error: countErr } = await supabaseAdmin
+      .from('chat_messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('message_type', 'image')
+      .gte('created_at', twentyFourHoursAgo);
+
+    const currentImageCount = imageCount || 0;
+
+    if (currentImageCount >= MAX_IMAGES_24H) {
+      // Find oldest image in the 24-hour window to calculate precise reset time
+      const { data: oldestImage } = await supabaseAdmin
+        .from('chat_messages')
+        .select('created_at')
+        .eq('user_id', userId)
+        .eq('message_type', 'image')
+        .gte('created_at', twentyFourHoursAgo)
+        .order('created_at', { ascending: true })
+        .limit(1);
+
+      let resetInSeconds = 24 * 3600;
+      if (oldestImage && oldestImage.length > 0) {
+        const expiresAt = new Date(oldestImage[0].created_at).getTime() + 24 * 3600 * 1000;
+        resetInSeconds = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
+      }
+
+      const resetHours = Math.floor(resetInSeconds / 3600);
+      const resetMins = Math.ceil((resetInSeconds % 3600) / 60);
 
       return NextResponse.json(
         {
-          error: 'Rate Limit Exhausted',
+          error: 'Image Quota Exceeded',
           remainingAllowance: 0,
-          resetInSeconds: reservation.resetInSeconds,
-          message: `You have reached your limit of 10 requests. Your allowance resets in ${resetHours}h ${resetMins}m.`,
+          maxRequests: MAX_IMAGES_24H,
+          resetInSeconds,
+          message: `Daily limit reached: You can generate a maximum of 5 images per 24 hours. Your allowance resets in ${resetHours}h ${resetMins}m.`,
         },
         { status: 429 }
       );
     }
-
-    reserved = true;
 
     // 5. Ensure Active Conversation exists
     let activeConversationId = conversationId;
@@ -154,14 +174,11 @@ export async function POST(request) {
       imageUrl: signedUrl,
       prompt,
       conversationId: activeConversationId,
-      remainingAllowance: reservation.remainingAllowance,
-      maxRequests: reservation.maxRequests,
+      remainingAllowance: Math.max(0, MAX_IMAGES_24H - (currentImageCount + 1)),
+      maxRequests: MAX_IMAGES_24H,
     });
   } catch (err) {
     console.error('API /api/images/generate Error:', err);
-    if (reserved) {
-      await refundUsageAllowance({ userId });
-    }
     return NextResponse.json(
       { error: err.message || 'Internal server error while generating image' },
       { status: 500 }

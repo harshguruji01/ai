@@ -304,7 +304,7 @@ export default function DashboardPage() {
                 <p className="text-xs sm:text-sm text-slate-400 font-mono truncate">{displayEmail}</p>
 
                 <div className="flex items-center gap-3 pt-1 text-[11px] text-slate-400 flex-wrap">
-                  <span>● Active Engine: <strong className="text-cyan-400">NVIDIA Nemotron 3 Ultra 550B</strong></span>
+                  <span>● Active Engine: <strong className="text-cyan-400">Guru-Flash 1.1</strong></span>
                   <span className="text-slate-600">|</span>
                   <span>Image Engine: <strong className="text-purple-400">SDXL Lightning</strong></span>
                 </div>
