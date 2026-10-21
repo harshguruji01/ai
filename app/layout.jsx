@@ -79,6 +79,8 @@ export default function RootLayout({ children }) {
       </head>
       <body className="antialiased selection:bg-blue-500 selection:text-white">
         {children}
+        {/* Hostinger Reach Onsite Tracking */}
+        <script src="https://cdn-reach.hostinger.com/js/embed.js" async></script>
       </body>
     </html>
   );
