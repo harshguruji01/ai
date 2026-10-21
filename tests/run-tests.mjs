@@ -245,6 +245,38 @@ test('Image Quota Policy: Enforces 5 images in 24 hours per registered user and 
   assert.ok(rateLimitSrc.includes('USER_IMAGE_WINDOW_SECONDS = 24 * 60 * 60'), 'Must be 24-hour window');
 });
 
+// 10. Admin Gate Security & Clean Route Mirroring Tests
+test('Admin Gate Security: Enforces master credentials, anti-bruteforce, and required placeholders', () => {
+  const adminHtml = fs.readFileSync('admin.html', 'utf8');
+  assert.ok(adminHtml.includes('placeholder="enter your private mail"'), 'Must have placeholder "enter your private mail"');
+  assert.ok(adminHtml.includes('placeholder="your Secret ID"'), 'Must have placeholder "your Secret ID"');
+  assert.ok(adminHtml.includes('harshguruji01@gmail.com'), 'Must verify against harshguruji01@gmail.com');
+  assert.ok(adminHtml.includes('2547277654'), 'Must verify against Secret ID 2547277654');
+  assert.ok(adminHtml.includes('MAX_GATE_ATTEMPTS = 3'), 'Must have 3 max attempts before lockout');
+  assert.ok(adminHtml.includes('15 * 60 * 1000'), 'Must have 15-minute anti-bruteforce lock');
+  assert.ok(adminHtml.includes('60 * 60 * 1000'), 'Must have 1-hour session duration');
+});
+
+test('Clean Routing: 404 smart routing and login page exist with directory mirroring in CI/CD', () => {
+  assert.ok(fs.existsSync('login.html'), 'login.html must exist at repository root');
+  assert.ok(fs.existsSync('404.html'), '404.html must exist at repository root');
+  assert.ok(fs.existsSync('public/login.html'), 'public/login.html must exist');
+  assert.ok(fs.existsSync('public/404.html'), 'public/404.html must exist');
+
+  const router404 = fs.readFileSync('404.html', 'utf8');
+  assert.ok(router404.includes('/login'), '404.html must handle /login route');
+  assert.ok(router404.includes('/dashboard'), '404.html must handle /dashboard route');
+  assert.ok(router404.includes('/admin'), '404.html must handle /admin route');
+
+  const workflow = fs.readFileSync('.github/workflows/nextjs.yml', 'utf8');
+  assert.ok(workflow.includes('./out/login'), 'CI/CD must mirror ./out/login');
+  assert.ok(workflow.includes('./out/dashboard'), 'CI/CD must mirror ./out/dashboard');
+  assert.ok(workflow.includes('./out/admin'), 'CI/CD must mirror ./out/admin');
+  assert.ok(workflow.includes('./out/login/index.html'), 'CI/CD must mirror login index.html');
+  assert.ok(workflow.includes('./out/dashboard/index.html'), 'CI/CD must mirror dashboard index.html');
+  assert.ok(workflow.includes('./out/admin/index.html'), 'CI/CD must mirror admin index.html');
+});
+
 console.log(`\n========================================`);
 console.log(`Test Summary: ${passedTests} passed, ${failedTests} failed.`);
 console.log(`========================================\n`);
@@ -252,4 +284,5 @@ console.log(`========================================\n`);
 if (failedTests > 0) {
   process.exit(1);
 }
+
 

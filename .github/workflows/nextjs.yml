@@ -86,6 +86,9 @@ jobs:
           mkdir -p ./out
           cp index.html ./out/index.html
           cp admin.html ./out/admin.html
+          cp dashboard.html ./out/dashboard.html
+          cp login.html ./out/login.html
+          cp 404.html ./out/404.html
           cp logo.png ./out/logo.png
           cp robots.txt ./out/robots.txt
           cp sitemap.xml ./out/sitemap.xml
@@ -94,6 +97,11 @@ jobs:
           if [ -d "./public" ]; then
             cp -r ./public/* ./out/ || true
           fi
+          # Create clean URL mirrors so paths without .html never 404
+          mkdir -p ./out/login ./out/dashboard ./out/admin
+          cp login.html ./out/login/index.html
+          cp dashboard.html ./out/dashboard/index.html
+          cp admin.html ./out/admin/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

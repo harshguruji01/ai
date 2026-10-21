@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Sign In to GuruAI — AI Chat & Creative Studio</title>
+  <meta name="description" content="Sign in to your GuruAI account by HarshGuruJi to unlock 10 daily conversation requests, 5 SDXL image creations, and persistent chat history." />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="canonical" href="https://ai.webguruji.online/login.html" />
+
+  <!-- Google Fonts: Inter, Outfit, Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            cyanAccent: '#06b6d4',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            heading: ['Outfit', 'Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg-primary: #030712;
+      --bg-secondary: #090e17;
+      --bg-surface: #0f172a;
+      --border-color: rgba(51, 65, 85, 0.6);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #6366f1;
+      --accent-secondary: #06b6d4;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.18;
+    }
+    .glow-1 { top: -100px; left: -100px; background: #6366f1; }
+    .glow-2 { bottom: -100px; right: -100px; background: #06b6d4; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Glow Blobs -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Top Navigation -->
+  <header class="fixed top-0 inset-x-0 h-16 border-b border-slate-800/80 bg-[#090e17]/80 backdrop-blur-md z-30 px-4 sm:px-8 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2.5 group">
+      <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform overflow-hidden flex-shrink-0">
+        <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
+      </div>
+      <div>
+        <span class="font-bold text-sm text-white tracking-wide font-heading">GuruAI</span>
+        <span class="text-[10px] text-slate-400 block -mt-0.5">by HarshGuruJi</span>
+      </div>
+    </a>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <a href="index.html" class="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white text-xs font-semibold transition flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <span>Back to Chat</span>
+      </a>
+      <a href="dashboard.html" class="px-3.5 py-1.5 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-indigo-300 hover:text-white text-xs font-semibold transition">
+        <span>Dashboard ↗</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Auth Card Container -->
+  <main class="w-full max-w-md pt-20 pb-8 z-10 relative">
+    <div class="rounded-3xl bg-[#0d121f]/90 border border-slate-800 shadow-2xl p-6 sm:p-8 backdrop-blur-xl relative overflow-hidden">
+      
+      <!-- Top Brand Icon -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 shadow-xl shadow-indigo-500/25 mb-3 overflow-hidden p-1.5">
+          <img src="logo.png" alt="GuruAI" class="w-full h-full object-cover rounded-xl" />
+        </div>
+        <h1 id="authTitle" class="text-2xl font-extrabold font-heading text-white tracking-tight">Sign In to GuruAI</h1>
+        <p id="authSubtitle" class="text-xs text-slate-400 mt-1.5 leading-relaxed">Unlock 10 requests / 12h, chat history & 5 SDXL image creations / 24h</p>
+      </div>
+
+      <!-- Alerts -->
+      <div id="authAlertError" class="mb-4 p-3 rounded-xl bg-rose-950/60 border border-rose-800/80 flex items-start gap-2.5 text-xs text-rose-300 hidden">
+        <svg class="w-4 h-4 flex-shrink-0 text-rose-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span id="authAlertErrorText" class="leading-relaxed"></span>
+      </div>
+
+      <div id="authAlertSuccess" class="mb-4 p-3 rounded-xl bg-emerald-950/60 border border-emerald-800/80 flex items-start gap-2.5 text-xs text-emerald-300 hidden">
+        <svg class="w-4 h-4 flex-shrink-0 text-emerald-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span id="authAlertSuccessText" class="leading-relaxed"></span>
+      </div>
+
+      <!-- 1. SIGN IN FORM -->
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Email Address</label>
+          <div class="relative">
+            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <input id="loginEmail" type="email" required placeholder="name@example.com" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-xs font-semibold text-slate-300">Password</label>
+            <button type="button" id="btnGoToForgot" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium transition">Forgot password?</button>
+          </div>
+          <div class="relative">
+            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+          <span>Sign In</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+
+        <div class="relative my-3">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
+          <div class="relative flex justify-center text-xs"><span class="bg-[#0d121f] px-3 text-slate-500 uppercase tracking-wider font-semibold text-[10px]">Or continue with</span></div>
+        </div>
+
+        <button type="button" class="googleSignInBtn w-full py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 font-semibold text-sm flex items-center justify-center gap-3 transition shadow-sm group">
+          <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="pt-2 text-center text-xs text-slate-400">
+          Don't have an account? <button type="button" id="btnGoToRegister" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Create Account</button>
+        </div>
+      </form>
+
+      <!-- 2. REGISTER FORM -->
+      <form id="registerForm" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Email Address</label>
+          <div class="relative">
+            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <input id="registerEmail" type="email" required placeholder="name@example.com" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Password (Minimum 6 characters)</label>
+          <div class="relative">
+            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <input id="registerPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Confirm Password</label>
+          <div class="relative">
+            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <input id="registerConfirmPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <button type="submit" id="btnRegisterSubmit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+          <span>Create Account</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+
+        <div class="relative my-3">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
+          <div class="relative flex justify-center text-xs"><span class="bg-[#0d121f] px-3 text-slate-500 uppercase tracking-wider font-semibold text-[10px]">Or continue with</span></div>
+        </div>
+
+        <button type="button" class="googleSignInBtn w-full py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 font-semibold text-sm flex items-center justify-center gap-3 transition shadow-sm group">
+          <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="pt-2 text-center text-xs text-slate-400">
+          Already have an account? <button type="button" id="btnGoToLoginFromReg" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Sign In</button>
+        </div>
+      </form>
+
+      <!-- 3. FORGOT PASSWORD FORM -->
+      <div id="forgotSection" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Registered Email Address</label>
+          <div class="relative">
+            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <input id="forgotEmail" type="email" required placeholder="name@example.com" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+          </div>
+        </div>
+
+        <button type="button" id="btnSendResetCode" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md transition flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <span id="sendResetCodeText">Send Code to Mail</span>
+        </button>
+
+        <form id="verifyOtpResetForm" class="pt-3 border-t border-slate-800 space-y-3 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Enter Code from Email</label>
+            <input id="resetOtpCode" type="text" required placeholder="123456" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-cyan-300 font-mono tracking-widest focus:outline-none focus:border-cyan-400" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">New Password</label>
+            <input id="resetNewPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Confirm New Password</label>
+            <input id="resetConfirmPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          </div>
+
+          <button type="submit" id="btnVerifyReset" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold text-sm shadow-md transition flex items-center justify-center gap-2">
+            <span>Verify Code & Reset Password</span>
+          </button>
+        </form>
+
+        <div class="pt-2 text-center text-xs text-slate-400">
+          Remember your password? <button type="button" id="btnForgotBackToLogin" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Back to Sign In</button>
+        </div>
+      </div>
+
+      <!-- 4. ALREADY LOGGED IN VIEW -->
+      <div id="alreadyLoggedInView" class="space-y-4 hidden text-center">
+        <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+          <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-lg" id="loggedInAvatar">U</div>
+          <div class="text-sm font-semibold text-slate-200" id="loggedInEmail">user@example.com</div>
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold">Active Member</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <a href="index.html" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-bold text-xs shadow-md transition text-center flex items-center justify-center gap-1.5">
+            <span>Continue to AI Chat</span>
+          </a>
+          <a href="dashboard.html" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition text-center flex items-center justify-center gap-1.5">
+            <span>User Dashboard</span>
+          </a>
+        </div>
+
+        <button type="button" id="btnSignOutCurrent" class="w-full py-2 px-4 rounded-xl bg-rose-950/50 hover:bg-rose-900/60 border border-rose-800/60 text-rose-300 font-semibold text-xs transition">Sign Out</button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-6 text-center text-xs text-slate-500 z-10 relative">
+    GuruAI by HarshGuruJi • <a href="https://webguruji.online" target="_blank" class="text-slate-400 hover:text-slate-300 underline">webguruji.online</a>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80';
+    
+    let supabase = null;
+    if (window.supabase && window.supabase.createClient) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    const authTitle = document.getElementById('authTitle');
+    const authSubtitle = document.getElementById('authSubtitle');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const forgotSection = document.getElementById('forgotSection');
+    const alreadyLoggedInView = document.getElementById('alreadyLoggedInView');
+    const authAlertError = document.getElementById('authAlertError');
+    const authAlertErrorText = document.getElementById('authAlertErrorText');
+    const authAlertSuccess = document.getElementById('authAlertSuccess');
+    const authAlertSuccessText = document.getElementById('authAlertSuccessText');
+
+    function showAlert(type, msg) {
+      authAlertError.classList.add('hidden');
+      authAlertSuccess.classList.add('hidden');
+      if (type === 'error') {
+        authAlertErrorText.textContent = msg;
+        authAlertError.classList.remove('hidden');
+      } else if (type === 'success') {
+        authAlertSuccessText.textContent = msg;
+        authAlertSuccess.classList.remove('hidden');
+      }
+    }
+
+    function setMode(mode) {
+      showAlert('clear', '');
+      loginForm.classList.add('hidden');
+      registerForm.classList.add('hidden');
+      forgotSection.classList.add('hidden');
+      alreadyLoggedInView.classList.add('hidden');
+
+      if (mode === 'register') {
+        registerForm.classList.remove('hidden');
+        authTitle.textContent = 'Create GuruAI Account';
+        authSubtitle.textContent = 'Join with your email to unlock all AI tools & persistent history';
+      } else if (mode === 'forgot') {
+        forgotSection.classList.remove('hidden');
+        authTitle.textContent = 'Reset Password';
+        authSubtitle.textContent = 'Enter your email to receive a verification code';
+      } else if (mode === 'logged_in') {
+        alreadyLoggedInView.classList.remove('hidden');
+        authTitle.textContent = 'Welcome Back';
+        authSubtitle.textContent = 'You are currently authenticated with GuruAI';
+      } else {
+        loginForm.classList.remove('hidden');
+        authTitle.textContent = 'Sign In to GuruAI';
+        authSubtitle.textContent = 'Unlock 10 requests / 12h, chat history & 5 SDXL image creations / 24h';
+      }
+    }
+
+    document.getElementById('btnGoToRegister').onclick = () => setMode('register');
+    document.getElementById('btnGoToLoginFromReg').onclick = () => setMode('login');
+    document.getElementById('btnGoToForgot').onclick = () => setMode('forgot');
+    document.getElementById('btnForgotBackToLogin').onclick = () => setMode('login');
+
+    // Google Sign-In
+    document.querySelectorAll('.googleSignInBtn').forEach(btn => {
+      btn.onclick = async () => {
+        if (!supabase) return showAlert('error', 'Supabase client failed to initialize');
+        showAlert('clear', '');
+        const redirectTo = window.location.origin + '/';
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo }
+        });
+        if (error) showAlert('error', error.message);
+      };
+    });
+
+    // Email / Password Login
+    loginForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!supabase) return showAlert('error', 'Supabase not initialized');
+
+      const submitBtn = document.getElementById('btnLoginSubmit');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Signing in...</span>';
+
+      try {
+        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error && error.message.toLowerCase().includes('email not confirmed')) {
+          try {
+            await fetch('/api/auth/signup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+            });
+            const retry = await supabase.auth.signInWithPassword({ email, password });
+            data = retry.data;
+            error = retry.error;
+          } catch (_) {}
+        }
+        if (error) throw error;
+        showAlert('success', 'Sign in successful! Redirecting...');
+        setTimeout(() => { window.location.href = 'index.html'; }, 600);
+      } catch (err) {
+        showAlert('error', err.message || 'Login failed.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Sign In</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+      }
+    };
+
+    // Register Form
+    registerForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+      if (password !== confirmPassword) return showAlert('error', 'Passwords do not match');
+      if (password.length < 6) return showAlert('error', 'Password must be at least 6 characters');
+      if (!supabase) return showAlert('error', 'Supabase not initialized');
+
+      const submitBtn = document.getElementById('btnRegisterSubmit');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Creating account...</span>';
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: email.split('@')[0] },
+            emailRedirectTo: window.location.origin
+          }
+        });
+        if (error) throw error;
+        if (data?.session) {
+          showAlert('success', 'Account created! Redirecting to chat...');
+          setTimeout(() => { window.location.href = 'index.html'; }, 600);
+        } else {
+          showAlert('success', 'Account created! Please check your email to verify, then sign in.');
+          setMode('login');
+          document.getElementById('loginEmail').value = email;
+        }
+      } catch (err) {
+        showAlert('error', err.message || 'Registration failed.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+      }
+    };
+
+    // Forgot Password Send Code
+    document.getElementById('btnSendResetCode').onclick = async () => {
+      const email = document.getElementById('forgotEmail').value.trim();
+      if (!email || !email.includes('@')) return showAlert('error', 'Enter a valid email address');
+      const btn = document.getElementById('btnSendResetCode');
+      btn.disabled = true;
+      document.getElementById('sendResetCodeText').textContent = 'Sending code...';
+
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.href.split('#')[0] + '?reset_password=true'
+        });
+        if (error) throw error;
+        showAlert('success', 'Verification code & link sent to your mail! Check your inbox.');
+        document.getElementById('verifyOtpResetForm').classList.remove('hidden');
+      } catch (err) {
+        showAlert('error', err.message || 'Failed to send reset code.');
+      } finally {
+        btn.disabled = false;
+        document.getElementById('sendResetCodeText').textContent = 'Send Code to Mail';
+      }
+    };
+
+    // Verify OTP & Reset Password
+    document.getElementById('verifyOtpResetForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value.trim();
+      const token = document.getElementById('resetOtpCode').value.trim();
+      const newPassword = document.getElementById('resetNewPassword').value;
+      const confirmPassword = document.getElementById('resetConfirmPassword').value;
+
+      if (!token) return showAlert('error', 'Enter the verification code from your mail');
+      if (newPassword.length < 6) return showAlert('error', 'Password must be at least 6 characters');
+      if (newPassword !== confirmPassword) return showAlert('error', 'Passwords do not match');
+
+      const submitBtn = document.getElementById('btnVerifyReset');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Resetting password...</span>';
+
+      try {
+        const { data, error: otpError } = await supabase.auth.verifyOtp({ email, token, type: 'recovery' });
+        if (otpError) throw otpError;
+
+        const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+        if (updateError) throw updateError;
+
+        showAlert('success', 'Password reset successfully! Redirecting...');
+        setTimeout(() => { window.location.href = 'index.html'; }, 800);
+      } catch (err) {
+        showAlert('error', err.message || 'Verification failed. Try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Verify Code & Reset Password</span>';
+      }
+    };
+
+    // Sign out button
+    document.getElementById('btnSignOutCurrent').onclick = async () => {
+      if (supabase) await supabase.auth.signOut();
+      window.location.reload();
+    };
+
+    // Check existing session
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          document.getElementById('loggedInEmail').textContent = session.user.email;
+          document.getElementById('loggedInAvatar').textContent = (session.user.email || 'U')[0].toUpperCase();
+          setMode('logged_in');
+        } else {
+          setMode('login');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

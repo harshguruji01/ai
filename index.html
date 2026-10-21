@@ -15,7 +15,7 @@
   <meta property="og:description" content="Experience intelligent conversation with Guru-Flash 1.1 and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI by HarshGuruJi." />
   <meta property="og:image" content="https://ai.webguruji.online/logo.png" />
   <!-- Twitter -->
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="GuruAI — AI Chat Assistant & Creative Studio" />
   <meta name="twitter:description" content="Experience intelligent conversation with Guru-Flash 1.1 and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI." />
   <meta name="twitter:image" content="https://ai.webguruji.online/logo.png" />
@@ -59,67 +59,57 @@
   <style>
     /* Design Tokens */
     :root {
-      /* Theme A: Dark Slate (Default) */
-      --bg-primary: #030712;
-      --bg-secondary: #090e17;
-      --bg-surface: #0f172a;
-      --border-color: rgba(51, 65, 85, 0.6);
+      /* Theme A: Dark Slate (Default - Gemini/ChatGPT Sleek Dark) */
+      --bg-primary: #070913;
+      --bg-secondary: #0d111d;
+      --bg-surface: #131929;
+      --border-color: rgba(51, 65, 85, 0.55);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --accent-primary: #6366f1;
       --accent-secondary: #06b6d4;
-      --composer-bg: rgba(9, 14, 23, 0.95);
-      --bubble-assistant: rgba(15, 23, 42, 0.9);
+      --composer-bg: rgba(13, 17, 29, 0.95);
+      --bubble-assistant: rgba(19, 25, 41, 0.85);
       --bubble-user: #4f46e5;
       --bubble-border: rgba(51, 65, 85, 0.5);
     }
 
-    /* Theme B: Daylight Light Mode (Solid deep black text for crystal clear daylight readability) */
+    /* Theme B: Daylight Light Mode */
     body.theme-light {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f8fafc;
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
       --bg-surface: #ffffff;
       --border-color: #cbd5e1;
-      --text-primary: #000000;
-      --text-secondary: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
       --accent-primary: #4338ca;
       --accent-secondary: #0284c7;
-      --composer-bg: #ffffff;
+      --composer-bg: rgba(255, 255, 255, 0.96);
       --bubble-assistant: #ffffff;
       --bubble-user: #4338ca;
       --bubble-border: #cbd5e1;
     }
 
-    /* Daylight high-contrast text overrides */
     body.theme-light .text-white,
     body.theme-light .text-slate-100,
-    body.theme-light .text-slate-200,
-    body.theme-light .text-slate-300 {
-      color: #000000 !important;
+    body.theme-light .text-slate-200 {
+      color: #0f172a !important;
     }
-
-    body.theme-light .text-slate-400,
-    body.theme-light .text-slate-500 {
-      color: #1e293b !important;
+    body.theme-light .text-slate-300,
+    body.theme-light .text-slate-400 {
+      color: #334155 !important;
     }
-
     body.theme-light .bg-slate-950,
     body.theme-light .bg-slate-900,
     body.theme-light .bg-slate-800 {
       background-color: #f1f5f9 !important;
-      color: #000000 !important;
+      color: #0f172a !important;
       border-color: #cbd5e1 !important;
     }
-
     body.theme-light input,
     body.theme-light textarea {
-      color: #000000 !important;
+      color: #0f172a !important;
       background-color: #ffffff !important;
-    }
-
-    body.theme-light input::placeholder,
-    body.theme-light textarea::placeholder {
-      color: #475569 !important;
     }
 
     /* Theme C: Matrix / Cyberpunk */
@@ -160,12 +150,82 @@
     .streaming-cursor {
       display: inline-block;
       width: 6px;
-      height: 14px;
+      height: 15px;
       background-color: var(--accent-secondary);
       margin-left: 3px;
       vertical-align: middle;
       border-radius: 2px;
       animation: cursorBlink 0.9s infinite;
+    }
+
+    /* Custom Prose Styles for Markdown Rendering */
+    .prose-ai {
+      line-height: 1.65;
+    }
+    .prose-ai p {
+      margin-bottom: 0.75rem;
+    }
+    .prose-ai p:last-child {
+      margin-bottom: 0;
+    }
+    .prose-ai h1, .prose-ai h2, .prose-ai h3, .prose-ai h4 {
+      color: var(--text-primary);
+      font-weight: 700;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+      font-family: 'Outfit', Inter, sans-serif;
+    }
+    .prose-ai h1 { font-size: 1.35rem; }
+    .prose-ai h2 { font-size: 1.2rem; }
+    .prose-ai h3 { font-size: 1.05rem; }
+    .prose-ai ul {
+      list-style-type: disc;
+      padding-left: 1.35rem;
+      margin-bottom: 0.75rem;
+    }
+    .prose-ai ol {
+      list-style-type: decimal;
+      padding-left: 1.35rem;
+      margin-bottom: 0.75rem;
+    }
+    .prose-ai li {
+      margin-bottom: 0.35rem;
+    }
+    .prose-ai blockquote {
+      border-left: 3px solid var(--accent-primary);
+      padding-left: 0.85rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .prose-ai code.inline-code {
+      background: rgba(99, 102, 241, 0.15);
+      color: #06b6d4;
+      font-family: 'Fira Code', monospace;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      border: 1px solid rgba(99, 102, 241, 0.25);
+    }
+    .prose-ai table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .prose-ai th, .prose-ai td {
+      border: 1px solid var(--border-color);
+      padding: 0.45rem 0.75rem;
+      text-align: left;
+    }
+    .prose-ai th {
+      background: rgba(99, 102, 241, 0.1);
+      font-weight: 600;
+    }
+    .prose-ai tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
     }
 
     ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -176,14 +236,17 @@
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col font-sans-mode text-size-medium select-none">
 
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
   <!-- APP SHELL -->
   <div class="flex h-full w-full overflow-hidden">
     
     <!-- MOBILE BACKDROP -->
-    <div id="mobileBackdrop" class="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm hidden md:hidden"></div>
+    <div id="mobileBackdrop" class="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm hidden md:hidden transition-opacity"></div>
 
-    <!-- 1. LEFT SIDEBAR -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col justify-between transition-transform duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0">
+    <!-- 1. LEFT SIDEBAR (COLLAPSIBLE LIKE CHATGPT & GEMINI) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col justify-between transition-all duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0">
       
       <!-- Top Header & New Chat -->
       <div class="p-3.5 space-y-3 border-b border-[var(--border-color)] flex-shrink-0">
@@ -199,34 +262,41 @@
             </div>
           </a>
 
-          <button id="closeSidebarBtn" class="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
+          <div class="flex items-center gap-1">
+            <!-- Collapse sidebar toggle (Desktop) -->
+            <button id="collapseSidebarBtn" class="hidden md:flex p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition" title="Collapse Sidebar (Ctrl+[)">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+            </button>
+            <button id="closeSidebarBtn" class="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
         </div>
 
-        <!-- New Chat Button -->
-        <button id="newChatBtn" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-slate-700/60 bg-gradient-to-r from-slate-900 to-indigo-950/40 hover:from-indigo-900/40 hover:to-slate-800/80 text-slate-100 text-xs font-semibold shadow-sm transition group">
+        <!-- New Chat Button (Prominent pill like ChatGPT "+ New chat") -->
+        <button id="newChatBtn" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/60 to-slate-900 hover:from-indigo-900/60 hover:to-slate-800 text-slate-100 text-xs font-semibold shadow-sm transition group active:scale-[0.99]">
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-cyan-400 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            <span>New Conversation</span>
+            <span>New Chat</span>
           </div>
-          <span class="text-[10px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">Clear</span>
+          <span class="text-[10px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/60">Ctrl+K</span>
         </button>
 
-        <!-- Search History -->
+        <!-- Search History Filter -->
         <div class="relative">
           <svg class="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input id="searchInput" type="text" placeholder="Search history..." class="w-full bg-slate-950/70 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-indigo-500" />
+          <input id="searchInput" type="text" placeholder="Search past conversations..." class="w-full bg-slate-950/70 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition" />
         </div>
       </div>
 
-      <!-- History List (Scrollable) -->
-      <div id="historyList" class="flex-1 overflow-y-auto px-2 py-2 space-y-2">
+      <!-- History List (Scrollable, grouped chronologically) -->
+      <div id="historyList" class="flex-1 overflow-y-auto px-2 py-2 space-y-1">
         <!-- Rendered dynamically -->
       </div>
 
       <!-- Footer User Panel -->
       <div class="p-3 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] space-y-2.5 flex-shrink-0">
+        
         <!-- User Dashboard Link (shown only when logged in) -->
         <a href="dashboard.html" id="sidebarDashboardLink" class="hidden flex items-center justify-between p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 text-xs font-semibold transition group">
           <div class="flex items-center gap-2">
@@ -236,9 +306,7 @@
           <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-200">dashboard.html</span>
         </a>
 
-
-
-        <!-- Allowance Indicator -->
+        <!-- Allowance & Tier Indicator -->
         <div class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between text-xs">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -249,7 +317,7 @@
 
         <div class="flex items-center justify-between pt-1">
           <!-- User Profile / Guest Button -->
-          <div id="userProfileBtn" class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition group" title="Account & Sign In">
+          <div id="userProfileBtn" class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition group" title="Account & Profile">
             <div class="w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold group-hover:bg-indigo-600/30 group-hover:text-cyan-300 transition" id="userAvatar">G</div>
             <div class="leading-tight min-w-0 max-w-[120px]">
               <div class="font-semibold text-slate-300 group-hover:text-white truncate transition" id="userNameLabel">Guest Visitor</div>
@@ -267,7 +335,7 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             </button>
             <!-- Auth Link/Button -->
-            <button id="openAuthBtn" title="Sign In with Email" class="p-1.5 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-slate-800 transition">
+            <button id="openAuthBtn" title="Sign In with Email or Google" class="p-1.5 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-slate-800 transition">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
             </button>
           </div>
@@ -275,18 +343,23 @@
       </div>
     </aside>
 
-    <!-- 2. MAIN WORKSPACE -->
+    <!-- 2. MAIN WORKSPACE CANVAS -->
     <main class="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative bg-[var(--bg-primary)]">
       
       <!-- Top Navigation Header -->
       <header class="h-14 border-b border-[var(--border-color)] px-4 flex items-center justify-between bg-[var(--bg-secondary)]/80 backdrop-blur-md z-10 flex-shrink-0">
         <div class="flex items-center gap-3">
-          <button id="openSidebarBtn" aria-label="Open menu" class="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+          <button id="openSidebarBtn" aria-label="Open menu" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
+          
+          <!-- Model Selector Pill (ChatGPT & Gemini Style) -->
           <div class="flex items-center gap-2">
-            <span class="font-bold text-sm tracking-wide text-white font-heading">GuruAI</span>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hidden sm:inline-block">Guru-Flash 1.1 & SDXL</span>
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-700/80 hover:border-indigo-500/60 transition cursor-pointer shadow-sm group" id="modelSelectorBadge" title="AI Model: Guru-Flash 1.1">
+              <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+              <span class="font-bold text-xs tracking-wide text-white font-heading">Guru-Flash 1.1</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hidden sm:inline">Guru-Flash 1.1 & SDXL</span>
+            </div>
           </div>
         </div>
 
@@ -326,35 +399,59 @@
         </div>
       </header>
 
-      <!-- Chat Messages Container (Scrolls independently while input remains pinned) -->
+      <!-- Chat Messages Container -->
       <div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
         <!-- Rendered dynamically -->
       </div>
 
-      <!-- Bottom Chat Composer (Permanently fixed at the bottom with zero shifting) -->
+      <!-- Attachment Preview Chip (Above composer when file attached) -->
+      <div id="attachmentChipContainer" class="hidden max-w-4xl w-full mx-auto px-4 pb-1">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-indigo-500/40 text-xs text-slate-200">
+          <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+          <span id="attachmentFileName" class="truncate max-w-xs font-mono">image.png</span>
+          <button type="button" id="removeAttachmentBtn" class="text-slate-400 hover:text-rose-400 p-0.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Chat Composer (Permanently docked, ChatGPT/Gemini floating capsule) -->
       <div class="w-full p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/95 backdrop-blur-md flex-shrink-0 z-20">
         <div class="w-full max-w-4xl mx-auto space-y-2">
           
           <form id="chatForm" class="relative rounded-2xl border transition-all duration-200 bg-[var(--composer-bg)] backdrop-blur-md shadow-xl border-[var(--border-color)] focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/25">
-            <textarea id="promptInput" rows="1" placeholder="Ask GuruAI anything in English, Hinglish, or Hindi..." class="w-full bg-transparent px-4 pt-3.5 pb-2 text-sm text-[var(--text-primary)] placeholder-slate-400 focus:outline-none resize-none min-h-[44px] max-h-44 disabled:opacity-60"></textarea>
+            <textarea id="promptInput" rows="1" placeholder="Ask GuruAI anything in English, Hinglish, or Hindi..." class="w-full bg-transparent px-4 pt-3.5 pb-2 text-sm text-[var(--text-primary)] placeholder-slate-400 focus:outline-none resize-none min-h-[46px] max-h-44 disabled:opacity-60"></textarea>
 
             <div class="flex items-center justify-between px-3 pb-2.5 pt-1">
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Image Studio Mode Toggle -->
-                <button type="button" id="imageModeBtn" class="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold transition-all duration-200 bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80">
+                <button type="button" id="imageModeBtn" class="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold transition-all duration-200 bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80" title="Toggle AI Image Generation Mode">
                   <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                   <span>Image Studio</span>
                   <svg id="imageLockIcon" class="w-3 h-3 text-amber-400 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                 </button>
-                <span class="text-[11px] text-slate-400 hidden sm:inline">Enter to send, Shift + Enter for new line</span>
+
+                <!-- File Attachment Input & Button -->
+                <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
+                <button type="button" id="attachFileBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition" title="Attach image or document">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                </button>
+
+                <!-- Voice Dictation / Speech-to-Text Button -->
+                <button type="button" id="voiceDictationBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition" title="Voice Input (Speech-to-Text)">
+                  <svg id="micIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                </button>
               </div>
 
               <div class="flex items-center gap-2">
-                <button type="button" id="stopGenBtn" class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition">
+                <!-- Stop Generation Button -->
+                <button type="button" id="stopGenBtn" class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition">
                   <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
                   <span>Stop</span>
                 </button>
-                <button type="submit" id="sendBtn" class="p-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-md shadow-indigo-600/25 transition">
+
+                <!-- Send Button -->
+                <button type="submit" id="sendBtn" class="p-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-md shadow-indigo-600/25 transition active:scale-95" title="Send Message">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
                 </button>
               </div>
@@ -362,7 +459,7 @@
           </form>
 
           <div class="flex items-center justify-between px-2 text-[11px] text-slate-400">
-            <span>GuruAI can make mistakes. Verify critical facts and code.</span>
+            <span>GuruAI can make mistakes. Verify important facts and code. • Model: <strong class="text-indigo-400">Guru-Flash 1.1</strong></span>
             <span id="footerQuotaText" class="font-mono">2 requests left</span>
           </div>
 
@@ -372,17 +469,29 @@
 
   </div>
 
-  <!-- 3. SETTINGS MODAL -->
+  <!-- 3. PREFERENCES / SETTINGS MODAL -->
   <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm hidden">
     <div class="relative w-full max-w-lg rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-2xl overflow-hidden text-[var(--text-primary)]">
       <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)]">
-        <h2 class="text-sm font-bold tracking-wide text-white font-heading">GuruAI Preferences</h2>
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <h2 class="text-sm font-bold tracking-wide text-white font-heading">GuruAI Preferences</h2>
+        </div>
         <button id="closeSettingsBtn" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
       <div class="p-6 space-y-5">
+        <!-- Model Identity Info -->
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-200">Active AI Model</div>
+            <div class="text-[11px] text-cyan-400 font-mono">Guru-Flash 1.1</div>
+          </div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">High Performance</span>
+        </div>
+
         <!-- Theme Selection -->
         <div>
           <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 block">Theme</label>
@@ -401,6 +510,18 @@
             <button onclick="setLanguage('hinglish')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 text-slate-300 text-xs font-semibold">Hinglish</button>
             <button onclick="setLanguage('hindi')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 text-slate-300 text-xs font-semibold">Hindi</button>
           </div>
+        </div>
+
+        <!-- Data & History Actions -->
+        <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+          <button onclick="clearAllConversations()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <span>Clear All History</span>
+          </button>
+          <button onclick="exportAllChats()" class="text-xs text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span>Export Chats (JSON)</span>
+          </button>
         </div>
       </div>
 
@@ -560,7 +681,7 @@
         </div>
       </form>
 
-      <!-- 3. FORGOT PASSWORD (SEND CODE TO MAIL & RESET) -->
+      <!-- 3. FORGOT PASSWORD -->
       <div id="forgotSection" class="space-y-4 hidden">
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1.5">Account Email Address</label>
@@ -570,46 +691,34 @@
           </div>
         </div>
 
-        <!-- SEND CODE TO MAIL BUTTON -->
         <button type="button" id="sendCodeToMailBtn" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
           <span id="sendCodeBtnText">Send Code to Mail</span>
         </button>
 
-        <!-- CODE VERIFY & PASSWORD RESET (Visible after code is sent) -->
         <form id="verifyOtpResetForm" class="pt-3 border-t border-slate-800 space-y-3 hidden">
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Enter Verification Code from Mail</label>
-            <div class="relative">
-              <svg class="w-4 h-4 absolute left-3 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-              <input id="resetOtpCode" type="text" required placeholder="e.g. 123456" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-sm text-cyan-300 font-mono tracking-widest focus:outline-none focus:border-cyan-400" />
-            </div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Enter Verification Code</label>
+            <input id="resetOtpCode" type="text" required placeholder="123456" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-cyan-300 font-mono tracking-widest focus:outline-none focus:border-cyan-400" />
           </div>
 
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">New Password</label>
-            <div class="relative">
-              <svg class="w-4 h-4 absolute left-3 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-              <input id="resetNewPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
-            </div>
+            <input id="resetNewPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
           </div>
 
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Confirm New Password</label>
-            <div class="relative">
-              <svg class="w-4 h-4 absolute left-3 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-              <input id="resetConfirmPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
-            </div>
+            <input id="resetConfirmPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
           </div>
 
           <button type="submit" id="verifyAndResetBtn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-500 text-white font-semibold text-sm shadow-lg flex items-center justify-center gap-2 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <span>Verify Code & Reset Password</span>
           </button>
         </form>
 
         <div class="pt-2 text-center text-xs text-slate-400">
-          Remember your password? <button type="button" id="forgotBackToLoginBtn" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Back to Sign In</button>
+          Remember password? <button type="button" id="forgotBackToLoginBtn" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Back to Sign In</button>
         </div>
       </div>
 
@@ -621,21 +730,18 @@
           <div id="loggedInRoleBadge" class="inline-block px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[11px] font-semibold">Active Member • 10 requests / 12h</div>
         </div>
 
-        <div class="space-y-2">
-          <!-- User Dashboard Link -->
-          <a href="https://webguruji.online" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 via-indigo-600 to-indigo-700 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition group">
-            <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-5a1 1 0 011-1h4a1 1 0 011 1v9a1 1 0 01-1 1h-4a1 1 0 01-1-1v-9z"/></svg>
-            <span>Open User Dashboard (webguruji.online)</span>
+        <div class="grid grid-cols-2 gap-2">
+          <a href="dashboard.html" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 text-white font-bold text-xs shadow-md transition text-center flex items-center justify-center gap-1.5">
+            <span>Dashboard ↗</span>
           </a>
+          <button type="button" id="logoutBtn" class="py-2.5 px-3 rounded-xl bg-rose-900/60 hover:bg-rose-800/80 border border-rose-700/50 text-rose-200 font-semibold text-xs transition">Sign Out</button>
         </div>
-
-        <button type="button" id="logoutBtn" class="w-full py-2.5 px-4 rounded-xl bg-rose-900/60 hover:bg-rose-800/80 border border-rose-700/50 text-rose-200 font-semibold text-sm transition">Sign Out</button>
       </div>
 
     </div>
   </div>
 
-  <!-- JAVASCRIPT APP LOGIC -->
+  <!-- JAVASCRIPT APPLICATION CORE -->
   <script>
     // 1. Supabase Initialization
     const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
@@ -652,10 +758,14 @@
     let conversationHistory = [];
     let isGenerating = false;
     let isImageMode = false;
+    let attachedFile = null;
     let currentTheme = localStorage.getItem('guruai_theme') || 'dark';
     let currentLang = localStorage.getItem('guruai_lang') || 'english';
     let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '2', 10);
     let maxRequests = 2;
+    let speechRecognition = null;
+    let isListening = false;
+    let currentUtterance = null;
 
     // DOM Elements
     const chatFeed = document.getElementById('chatFeed');
@@ -672,33 +782,274 @@
     const userTierLabel = document.getElementById('userTierLabel');
     const headerTierText = document.getElementById('headerTierText');
     const imageLockIcon = document.getElementById('imageLockIcon');
+    const historyList = document.getElementById('historyList');
+    const searchInput = document.getElementById('searchInput');
+    const toastContainer = document.getElementById('toastContainer');
+    const headerDashboardBtn = document.getElementById('headerDashboardBtn');
+    const sidebarDashboardLink = document.getElementById('sidebarDashboardLink');
 
-    // Auth Modal DOM Elements
-    const authModal = document.getElementById('authModal');
-    const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
-    const openAuthBtn = document.getElementById('openAuthBtn');
-    const userProfileBtn = document.getElementById('userProfileBtn');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const forgotSection = document.getElementById('forgotSection');
-    const loggedInView = document.getElementById('loggedInView');
-    const switchToRegisterBtn = document.getElementById('switchToRegisterBtn');
-    const switchToLoginBtn = document.getElementById('switchToLoginBtn');
-    const switchToForgotBtn = document.getElementById('switchToForgotBtn');
-    const forgotBackToLoginBtn = document.getElementById('forgotBackToLoginBtn');
-    const sendCodeToMailBtn = document.getElementById('sendCodeToMailBtn');
-    const sendCodeBtnText = document.getElementById('sendCodeBtnText');
-    const verifyOtpResetForm = document.getElementById('verifyOtpResetForm');
-    const authAlertError = document.getElementById('authAlertError');
-    const authAlertErrorText = document.getElementById('authAlertErrorText');
-    const authAlertSuccess = document.getElementById('authAlertSuccess');
-    const authAlertSuccessText = document.getElementById('authAlertSuccessText');
-    const logoutBtn = document.getElementById('logoutBtn');
+    // Toast Notification Utility
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-2.5 rounded-xl shadow-xl text-xs font-semibold flex items-center gap-2 border pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0 ${
+        type === 'success' ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/40' :
+        type === 'error' ? 'bg-rose-950/90 text-rose-300 border-rose-500/40' :
+        'bg-slate-900/90 text-cyan-300 border-indigo-500/40'
+      }`;
+      toast.innerHTML = `<span>${message}</span>`;
+      toastContainer.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
 
-    let resendTimer = null;
-    let resendCountdown = 0;
+    // Markdown Formatter (Converts AI markdown to styled HTML safely)
+    function formatMarkdown(text = '') {
+      if (!text) return '';
 
-    // Initialize Theme
+      // 1. Extract and format code blocks first
+      const codeBlocks = [];
+      let processed = text.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+        const id = 'code-' + Math.random().toString(36).substring(2, 9);
+        const language = lang || 'code';
+        const cleanCode = code.trim();
+        const safeCode = cleanCode.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        
+        codeBlocks.push({
+          id,
+          html: `
+            <div class="my-3 rounded-xl border border-slate-700/80 bg-[#070913] overflow-hidden text-xs shadow-md">
+              <div class="flex items-center justify-between px-3.5 py-1.5 bg-slate-900/90 border-b border-slate-800 text-[11px] font-mono text-slate-400">
+                <span class="font-bold text-cyan-400 uppercase tracking-wider">${language}</span>
+                <button type="button" onclick="copyCodeBlock('${id}')" class="flex items-center gap-1.5 px-2 py-0.5 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <span id="${id}-btn">Copy code</span>
+                </button>
+              </div>
+              <pre class="p-3.5 overflow-x-auto font-mono text-[11.5px] leading-relaxed text-slate-200"><code id="${id}-src">${safeCode}</code></pre>
+            </div>
+          `
+        });
+        return `__CODE_BLOCK_${codeBlocks.length - 1}__`;
+      });
+
+      // 2. Escape HTML characters in remaining text
+      processed = processed
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      // 3. Headings
+      processed = processed.replace(/^### (.*$)/gim, '<h3 class="text-base font-bold text-white mt-3 mb-1 font-heading">$1</h3>');
+      processed = processed.replace(/^## (.*$)/gim, '<h2 class="text-lg font-bold text-white mt-3 mb-1 font-heading">$1</h2>');
+      processed = processed.replace(/^# (.*$)/gim, '<h1 class="text-xl font-bold text-white mt-4 mb-2 font-heading">$1</h1>');
+
+      // 4. Blockquotes
+      processed = processed.replace(/^\> (.*$)/gim, '<blockquote class="border-l-4 border-indigo-500 pl-3 my-2 text-slate-300 italic">$1</blockquote>');
+
+      // 5. Bold & Italic & Strikethrough
+      processed = processed.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+      processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-100">$1</strong>');
+      processed = processed.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+      processed = processed.replace(/~~(.*?)~~/g, '<del class="line-through text-slate-500">$1</del>');
+
+      // 6. Inline code
+      processed = processed.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+      // 7. Bullet lists & Numbered lists
+      processed = processed.replace(/^\s*[-*•]\s+(.*)$/gim, '<li class="ml-4 list-disc">$1</li>');
+      processed = processed.replace(/^\s*(\d+)\.\s+(.*)$/gim, '<li class="ml-4 list-decimal">$2</li>');
+
+      // 8. Paragraphs / Linebreaks
+      processed = processed.replace(/\n\n/g, '<div class="h-2"></div>');
+      processed = processed.replace(/\n/g, '<br/>');
+
+      // 9. Reinsert Code Blocks
+      codeBlocks.forEach((item, index) => {
+        processed = processed.replace(`__CODE_BLOCK_${index}__`, item.html);
+      });
+
+      return processed;
+    }
+
+    // 1-Click Code Copier
+    window.copyCodeBlock = function(id) {
+      const el = document.getElementById(id + '-src');
+      const btn = document.getElementById(id + '-btn');
+      if (el) {
+        navigator.clipboard.writeText(el.innerText || el.textContent);
+        if (btn) btn.textContent = 'Copied!';
+        showToast('Code copied to clipboard!', 'success');
+        setTimeout(() => {
+          if (btn) btn.textContent = 'Copy code';
+        }, 2000);
+      }
+    };
+
+    // Text to Speech (Read aloud assistant response)
+    window.speakText = function(text) {
+      if (!('speechSynthesis' in window)) {
+        showToast('Text-to-speech not supported in this browser.', 'error');
+        return;
+      }
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        showToast('Speech stopped');
+        return;
+      }
+      // Clean markdown tags for natural speech
+      const clean = text
+        .replace(/```[\s\S]*?```/g, 'Code snippet omitted.')
+        .replace(/[#*`_~>]/g, '')
+        .trim();
+
+      const utterance = new SpeechSynthesisUtterance(clean);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.lang = currentLang === 'hindi' ? 'hi-IN' : 'en-US';
+      window.speechSynthesis.speak(utterance);
+      showToast('Reading response aloud... Click again to stop.', 'info');
+    };
+
+    // Copy Raw Message Text
+    window.copyMessageText = function(btn, text) {
+      navigator.clipboard.writeText(text);
+      showToast('Response copied to clipboard!', 'success');
+      btn.innerHTML = `<svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="text-emerald-400">Copied</span>`;
+      setTimeout(() => {
+        btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg><span>Copy</span>`;
+      }, 2000);
+    };
+
+    // Feedback Thumbs Up / Down
+    window.recordFeedback = function(btn, type) {
+      showToast(type === 'up' ? 'Thanks for the positive feedback!' : 'Feedback received. We will refine future responses.', 'success');
+      btn.classList.add(type === 'up' ? 'text-emerald-400' : 'text-rose-400');
+    };
+
+    // Speech-to-Text / Microphone dictation
+    const voiceDictationBtn = document.getElementById('voiceDictationBtn');
+    const micIcon = document.getElementById('micIcon');
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      speechRecognition = new SpeechRec();
+      speechRecognition.continuous = false;
+      speechRecognition.interimResults = true;
+      speechRecognition.lang = currentLang === 'hindi' ? 'hi-IN' : 'en-US';
+
+      speechRecognition.onstart = () => {
+        isListening = true;
+        voiceDictationBtn.classList.add('text-rose-400', 'bg-rose-950/40', 'animate-pulse');
+        showToast('Listening... Speak now.', 'info');
+      };
+
+      speechRecognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript) {
+          promptInput.value = transcript;
+          promptInput.dispatchEvent(new Event('input'));
+        }
+      };
+
+      speechRecognition.onend = () => {
+        isListening = false;
+        voiceDictationBtn.classList.remove('text-rose-400', 'bg-rose-950/40', 'animate-pulse');
+      };
+
+      speechRecognition.onerror = () => {
+        isListening = false;
+        voiceDictationBtn.classList.remove('text-rose-400', 'bg-rose-950/40', 'animate-pulse');
+      };
+
+      voiceDictationBtn.onclick = () => {
+        if (isListening) {
+          speechRecognition.stop();
+        } else {
+          speechRecognition.lang = currentLang === 'hindi' ? 'hi-IN' : 'en-US';
+          speechRecognition.start();
+        }
+      };
+    } else {
+      voiceDictationBtn.onclick = () => {
+        showToast('Microphone dictation is not supported by your current browser.', 'error');
+      };
+    }
+
+    // File Attachment Handler
+    const fileAttachmentInput = document.getElementById('fileAttachmentInput');
+    const attachFileBtn = document.getElementById('attachFileBtn');
+    const attachmentChipContainer = document.getElementById('attachmentChipContainer');
+    const attachmentFileName = document.getElementById('attachmentFileName');
+    const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
+
+    attachFileBtn.onclick = () => fileAttachmentInput.click();
+    fileAttachmentInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      attachedFile = file;
+      attachmentFileName.textContent = file.name;
+      attachmentChipContainer.classList.remove('hidden');
+      showToast(`Attached: ${file.name}`, 'info');
+    };
+    removeAttachmentBtn.onclick = () => {
+      attachedFile = null;
+      fileAttachmentInput.value = '';
+      attachmentChipContainer.classList.add('hidden');
+    };
+
+    // Sidebar Toggles
+    const collapseSidebarBtn = document.getElementById('collapseSidebarBtn');
+    let isCollapsed = localStorage.getItem('guruai_sidebar_collapsed') === 'true';
+    function setSidebarCollapsed(collapsed) {
+      isCollapsed = collapsed;
+      localStorage.setItem('guruai_sidebar_collapsed', collapsed ? 'true' : 'false');
+      if (collapsed) {
+        sidebar.classList.add('md:w-0', 'md:overflow-hidden', 'md:border-none');
+        sidebar.classList.remove('md:w-72');
+      } else {
+        sidebar.classList.remove('md:w-0', 'md:overflow-hidden', 'md:border-none');
+        sidebar.classList.add('md:w-72');
+      }
+    }
+    if (collapseSidebarBtn) {
+      collapseSidebarBtn.onclick = () => setSidebarCollapsed(!isCollapsed);
+    }
+    setSidebarCollapsed(isCollapsed);
+
+    document.getElementById('openSidebarBtn').onclick = () => {
+      if (window.innerWidth >= 768) {
+        setSidebarCollapsed(!isCollapsed);
+      } else {
+        sidebar.classList.remove('-translate-x-full');
+        mobileBackdrop.classList.remove('hidden');
+      }
+    };
+    document.getElementById('closeSidebarBtn').onclick = () => {
+      sidebar.classList.add('-translate-x-full');
+      mobileBackdrop.classList.add('hidden');
+    };
+    mobileBackdrop.onclick = document.getElementById('closeSidebarBtn').onclick;
+
+    // Keyboard Shortcuts (Ctrl+K = New Chat, Ctrl+[ = Toggle Sidebar)
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        document.getElementById('newChatBtn').click();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === '[') {
+        e.preventDefault();
+        setSidebarCollapsed(!isCollapsed);
+      }
+    });
+
+    // Theme Management
     function setTheme(theme) {
       currentTheme = theme;
       localStorage.setItem('guruai_theme', theme);
@@ -716,10 +1067,11 @@
       localStorage.setItem('guruai_lang', lang);
       document.getElementById('currentLangDisplay').textContent = lang;
       toggleModal(false);
+      showToast(`Language updated to ${lang}`, 'info');
     }
     document.getElementById('currentLangDisplay').textContent = currentLang;
 
-    // Settings Modal
+    // Preferences Modal
     function toggleModal(open) {
       document.getElementById('settingsModal').classList.toggle('hidden', !open);
     }
@@ -727,21 +1079,11 @@
     document.getElementById('langBadgeBtn').onclick = () => toggleModal(true);
     document.getElementById('closeSettingsBtn').onclick = () => toggleModal(false);
 
-    // Sidebar Toggles
-    document.getElementById('openSidebarBtn').onclick = () => {
-      sidebar.classList.remove('-translate-x-full');
-      mobileBackdrop.classList.remove('hidden');
-    };
-    document.getElementById('closeSidebarBtn').onclick = () => {
-      sidebar.classList.add('-translate-x-full');
-      mobileBackdrop.classList.add('hidden');
-    };
-    mobileBackdrop.onclick = document.getElementById('closeSidebarBtn').onclick;
-
     // Quick Theme Cycle
     document.getElementById('quickThemeBtn').onclick = () => {
       const cycle = { dark: 'light', light: 'cyberpunk', cyberpunk: 'dark' };
       setTheme(cycle[currentTheme] || 'dark');
+      showToast(`Theme switched to ${cycle[currentTheme]}`, 'info');
     };
 
     // Auto-Resize Textarea
@@ -757,816 +1099,368 @@
       }
     });
 
-    // 2. Auth Modal UI Handler
-    function showAuthAlert(type, message) {
-      if (type === 'error') {
-        authAlertErrorText.textContent = message;
-        authAlertError.classList.remove('hidden');
-        authAlertSuccess.classList.add('hidden');
-      } else if (type === 'success') {
-        authAlertSuccessText.textContent = message;
-        authAlertSuccess.classList.remove('hidden');
-        authAlertError.classList.add('hidden');
-      } else {
-        authAlertError.classList.add('hidden');
-        authAlertSuccess.classList.add('hidden');
-      }
-    }
-
-    function setAuthModalMode(mode) {
-      showAuthAlert('clear', '');
-      loginForm.classList.add('hidden');
-      registerForm.classList.add('hidden');
-      forgotSection.classList.add('hidden');
-      loggedInView.classList.add('hidden');
-
-      const title = document.getElementById('authModalTitle');
-      const subtitle = document.getElementById('authModalSubtitle');
-
-      if (currentUser && mode === 'profile') {
-        loggedInView.classList.remove('hidden');
-        title.textContent = 'Account Profile';
-        subtitle.textContent = 'Signed in with GuruAI';
-        document.getElementById('loggedInEmailText').textContent = currentUser.email;
-        document.getElementById('loggedInAvatarLarge').textContent = (currentUser.email || 'U')[0].toUpperCase();
-      } else if (mode === 'register') {
-        registerForm.classList.remove('hidden');
-        title.textContent = 'Create Your Account';
-        subtitle.textContent = 'Join GuruAI by HarshGuruJi with your email';
-      } else if (mode === 'forgot') {
-        forgotSection.classList.remove('hidden');
-        title.textContent = 'Reset Password';
-        subtitle.textContent = 'Receive verification code on your email';
-      } else {
-        loginForm.classList.remove('hidden');
-        title.textContent = 'Sign In to GuruAI';
-        subtitle.textContent = 'Unlock 10 requests / 12h, chat history & image studio';
-      }
-    }
-
-    function openAuthModal(mode = 'login') {
-      if (currentUser && mode !== 'forgot') {
-        setAuthModalMode('profile');
-      } else {
-        setAuthModalMode(mode);
-      }
-      authModal.classList.remove('hidden');
-    }
-
-    function closeAuthModal() {
-      authModal.classList.add('hidden');
-    }
-
-    const headerSignInBtn = document.getElementById('headerSignInBtn');
-    if (headerSignInBtn) {
-      headerSignInBtn.onclick = () => openAuthModal(currentUser ? 'profile' : 'login');
-    }
-    const headerQuotaBadge = document.getElementById('headerQuotaBadge');
-    if (headerQuotaBadge) {
-      headerQuotaBadge.onclick = () => openAuthModal(currentUser ? 'profile' : 'login');
-    }
-
-    openAuthBtn.onclick = () => openAuthModal(currentUser ? 'profile' : 'login');
-    userProfileBtn.onclick = () => openAuthModal(currentUser ? 'profile' : 'login');
-    closeAuthModalBtn.onclick = closeAuthModal;
-
-    switchToRegisterBtn.onclick = () => setAuthModalMode('register');
-    switchToLoginBtn.onclick = () => setAuthModalMode('login');
-    switchToForgotBtn.onclick = () => setAuthModalMode('forgot');
-    forgotBackToLoginBtn.onclick = () => setAuthModalMode('login');
-
-    // Cross-Domain Auth Redirect Tracking (Prevents Supabase OAuth from getting stuck on dashboard.html)
-    function setCrossDomainAuthRedirect(url) {
-      try {
-        sessionStorage.setItem('hg_auth_redirect', url);
-        localStorage.setItem('hg_auth_redirect', url);
-        const isWebGuruji = window.location.hostname === 'webguruji.online' || window.location.hostname.endsWith('.webguruji.online');
-        const domainStr = isWebGuruji ? '; domain=.webguruji.online' : '';
-        const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
-        document.cookie = `hg_auth_redirect=${encodeURIComponent(url)}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
-      } catch (e) {}
-    }
-
-    // Google Sign-In Buttons Handler
-    function initGoogleAuthButtons() {
-      document.querySelectorAll('.googleOAuthBtn').forEach((btn) => {
-        btn.onclick = async () => {
-          if (!supabaseClient) {
-            showAuthAlert('error', 'Supabase client not loaded.');
-            return;
-          }
-          showAuthAlert('clear', '');
-          const currentUrl = window.location.href.split('#')[0];
-          setCrossDomainAuthRedirect(currentUrl);
-
-          const returnUrl =
-            (window.location.protocol === 'file:' || !window.location.origin || window.location.origin === 'null')
-              ? 'https://ai.webguruji.online/'
-              : (window.location.origin + window.location.pathname);
-
-          const { error } = await supabaseClient.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-              redirectTo: returnUrl,
-            },
-          });
-          if (error) {
-            showAuthAlert('error', error.message);
-          }
-        };
-      });
-    }
-    initGoogleAuthButtons();
-
-    // Track User (Google or Email) into Database
-    async function trackUserInDb(user) {
-      if (!user) return;
-      try {
-        // 1. Try Next.js server tracking API
-        fetch('/api/auth/track', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user }),
-        }).catch(() => {});
-
-        // 2. Direct Supabase Client fallback (for static hosting)
-        if (supabaseClient) {
-          const now = new Date().toISOString();
-          const fullName =
-            user.user_metadata?.full_name ||
-            user.user_metadata?.name ||
-            user.email.split('@')[0];
-          const avatarUrl =
-            user.user_metadata?.avatar_url ||
-            user.user_metadata?.picture ||
-            null;
-          const provider =
-            user.app_metadata?.provider ||
-            (user.identities && user.identities[0]?.provider) ||
-            'google';
-
-          await supabaseClient.from('profiles').upsert(
-            {
-              id: user.id,
-              email: user.email.toLowerCase(),
-              display_name: fullName,
-              avatar_url: avatarUrl,
-              updated_at: now,
-            },
-            { onConflict: 'id' }
-          );
-
-          await supabaseClient.from('users').upsert(
-            {
-              id: user.id,
-              email: user.email.toLowerCase(),
-              name: fullName,
-              full_name: fullName,
-              avatar_url: avatarUrl,
-              provider: provider,
-              last_login_at: now,
-              updated_at: now,
-              is_active: true,
-            },
-            { onConflict: 'id' }
-          );
-        }
-      } catch (trackErr) {
-        console.warn('Track user in DB error:', trackErr);
-      }
-    }
-
-    // Check & Apply Admin Status
-    async function checkAdminStatus(user) {
-      const sidebarAdminLink = document.getElementById('sidebarAdminLink');
-      const loggedInRoleBadge = document.getElementById('loggedInRoleBadge');
-      if (!user) {
-        if (sidebarAdminLink) sidebarAdminLink.classList.add('hidden');
-        return;
-      }
-
-      let isAdmin = user.email === 'harshguruji01@gmail.com';
-
-      if (supabaseClient) {
-        try {
-          const { data } = await supabaseClient
-            .from('profiles')
-            .select('is_admin, role')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          if (data?.is_admin || data?.role === 'admin' || data?.role === 'ADMIN') {
-            isAdmin = true;
-          }
-        } catch (e) {}
-      }
-
-      if (isAdmin) {
-        userStatusLabel.textContent = 'Admin Master';
-        userStatusLabel.className = 'text-[10px] text-amber-400 font-bold';
-        headerTierText.textContent = 'Admin';
-        headerTierText.className =
-          'text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 ml-0.5';
-        if (loggedInRoleBadge) {
-          loggedInRoleBadge.className =
-            'inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-bold';
-          loggedInRoleBadge.innerHTML =
-            '<svg class="w-3 h-3 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M10 2l2.5 5 5 .5-3.8 3.5 1 5-4.7-2.5-4.7 2.5 1-5-3.8-3.5 5-.5L10 2z"/></svg> Master Admin • Unlimited';
-        }
-      }
-    }
-
-    // Initialize & Track Quota Rolling Windows (10 requests / 12h for Member, 2 requests / 6h for Guest)
-    function initUserQuota(user) {
-      const now = Date.now();
-      if (user) {
-        maxRequests = 10;
-        const windowDuration = 12 * 60 * 60 * 1000; // 12 hours
-        const key = 'guruai_quota_user_' + user.id;
-        let stored = null;
-        try {
-          stored = JSON.parse(localStorage.getItem(key));
-        } catch (e) {}
-
-        if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = {
-            remaining: 10,
-            windowStart: now,
-          };
-          localStorage.setItem(key, JSON.stringify(stored));
-        }
-        remainingAllowance = stored.remaining;
-      } else {
-        maxRequests = 2;
-        const windowDuration = 6 * 60 * 60 * 1000; // 6 hours
-        const key = 'guruai_quota_guest';
-        let stored = null;
-        try {
-          stored = JSON.parse(localStorage.getItem(key));
-        } catch (e) {}
-
-        if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = {
-            remaining: 2,
-            windowStart: now,
-          };
-          localStorage.setItem(key, JSON.stringify(stored));
-        }
-        remainingAllowance = stored.remaining;
-      }
-      updateQuotaUI();
-      syncUsageFromServer(user);
-    }
-
-    async function syncUsageFromServer(user) {
-      try {
-        const res = await fetch('/api/usage');
-        if (res.ok) {
-          const data = await res.json();
-          if (typeof data.remainingAllowance === 'number') {
-            remainingAllowance = data.remainingAllowance;
-            maxRequests = data.maxRequests || (user ? 10 : 2);
-            if (user) {
-              const key = 'guruai_quota_user_' + user.id;
-              localStorage.setItem(key, JSON.stringify({
-                remaining: remainingAllowance,
-                windowStart: Date.now() - (data.resetInSeconds ? (12 * 3600 - data.resetInSeconds) * 1000 : 0),
-              }));
-            }
-            updateQuotaUI();
-          }
-        }
-      } catch (e) {}
-    }
-
-    function deductAllowance() {
-      const now = Date.now();
-      if (currentUser) {
-        const key = 'guruai_quota_user_' + currentUser.id;
-        let stored = null;
-        try {
-          stored = JSON.parse(localStorage.getItem(key));
-        } catch (e) {}
-        const prev = (stored && typeof stored.remaining === 'number') ? stored.remaining : remainingAllowance;
-        const rem = Math.max(0, prev - 1);
-        remainingAllowance = rem;
-        localStorage.setItem(key, JSON.stringify({
-          remaining: rem,
-          windowStart: stored?.windowStart || now,
-        }));
-      } else {
-        const key = 'guruai_quota_guest';
-        let stored = null;
-        try {
-          stored = JSON.parse(localStorage.getItem(key));
-        } catch (e) {}
-        const prev = (stored && typeof stored.remaining === 'number') ? stored.remaining : remainingAllowance;
-        const rem = Math.max(0, prev - 1);
-        remainingAllowance = rem;
-        localStorage.setItem(key, JSON.stringify({
-          remaining: rem,
-          windowStart: stored?.windowStart || now,
-        }));
-      }
-      updateQuotaUI();
-    }
-
-    // Sync User Session State
-    function updateUserState(user) {
-      currentUser = user;
-      const headerDashboardBtn = document.getElementById('headerDashboardBtn');
-      const sidebarDashboardLink = document.getElementById('sidebarDashboardLink');
-
-      if (user) {
-        initUserQuota(user);
-
-        // Show Dashboard logo icon and sidebar link ONLY for logged in user
-        if (headerDashboardBtn) {
-          headerDashboardBtn.classList.remove('hidden');
-          const initial = document.getElementById('headerDashboardAvatarInitial');
-          const img = document.getElementById('headerDashboardAvatarImg');
-          const nameEl = document.getElementById('headerDashboardUserName');
-          const uName = user.user_metadata?.full_name || (user.email ? user.email.split('@')[0] : 'User');
-          if (nameEl) nameEl.textContent = uName;
-          if (user.user_metadata?.avatar_url) {
-            if (img) {
-              img.src = user.user_metadata.avatar_url;
-              img.classList.remove('hidden');
-            }
-            if (initial) initial.classList.add('hidden');
-          } else {
-            if (initial) {
-              initial.textContent = (user.email || 'U')[0].toUpperCase();
-              initial.classList.remove('hidden');
-            }
-            if (img) img.classList.add('hidden');
-          }
-        }
-        if (sidebarDashboardLink) sidebarDashboardLink.classList.remove('hidden');
-
-        userAvatar.textContent = (user.email || 'U')[0].toUpperCase();
-        userAvatar.className =
-          'w-7 h-7 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 border border-indigo-400 flex items-center justify-center text-white text-xs font-bold';
-        userNameLabel.textContent = (user.user_metadata?.full_name || user.email.split('@')[0]);
-        userStatusLabel.textContent = 'Member (10 req/12h)';
-        userStatusLabel.className = 'text-[10px] text-emerald-400 font-semibold';
-        userTierLabel.textContent = 'Member Allowance';
-        headerTierText.textContent = 'Member';
-        headerTierText.className =
-          'text-[10px] font-mono px-1 py-0.2 rounded bg-indigo-900/60 text-cyan-300 ml-0.5';
-        if (imageLockIcon) imageLockIcon.classList.add('hidden');
-        if (headerSignInBtn) {
-          headerSignInBtn.classList.add('hidden');
-        }
-
-        // Track in DB & verify Admin rights
-        trackUserInDb(user);
-        checkAdminStatus(user);
-      } else {
-        initUserQuota(null);
-
-        // Hide Dashboard icon and sidebar link for guests
-        if (headerDashboardBtn) headerDashboardBtn.classList.add('hidden');
-        if (sidebarDashboardLink) sidebarDashboardLink.classList.add('hidden');
-
-        userAvatar.textContent = 'G';
-        userAvatar.className =
-          'w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold';
-        userNameLabel.textContent = 'Guest Visitor';
-        userStatusLabel.textContent = 'Click to Sign In';
-        userStatusLabel.className = 'text-[10px] text-cyan-400 group-hover:underline';
-        userTierLabel.textContent = 'Guest Allowance';
-        headerTierText.textContent = 'Guest';
-        headerTierText.className =
-          'text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5';
-        if (imageLockIcon) imageLockIcon.classList.remove('hidden');
-        if (headerSignInBtn) {
-          headerSignInBtn.classList.remove('hidden');
-          headerSignInBtn.className =
-            'flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95';
-          headerSignInBtn.innerHTML = `
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-            <span>Sign In</span>
-          `;
-        }
-        checkAdminStatus(null);
-      }
-      updateQuotaUI();
-    }
-
-    // Toggle Image Mode
+    // Image Mode Toggle
     imageModeBtn.onclick = () => {
       if (!currentUser) {
         openAuthModal('login');
+        showToast('Please sign in to unlock Image Studio (SDXL). Registered users get 5 images/24h!', 'info');
         return;
       }
       isImageMode = !isImageMode;
-      imageModeBtn.classList.toggle('bg-purple-600', isImageMode);
-      imageModeBtn.classList.toggle('text-white', isImageMode);
-      promptInput.placeholder = isImageMode
-        ? 'Describe the image you want Stable Diffusion XL to create...'
-        : 'Ask GuruAI anything in English, Hinglish, or Hindi...';
+      if (isImageMode) {
+        imageModeBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition';
+        promptInput.placeholder = 'Describe the image you want GuruAI to create in 1024×1024 HD...';
+        showToast('Image Studio mode enabled (Eden AI SDXL)', 'success');
+      } else {
+        imageModeBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80 transition';
+        promptInput.placeholder = 'Ask GuruAI anything in English, Hinglish, or Hindi...';
+      }
     };
 
-    // 3. Supabase Auth Actions
-    if (supabaseClient) {
-      // Check active session
-      supabaseClient.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          updateUserState(session.user);
-        }
-      });
-
-      // Listen for auth state change & password recovery
-      supabaseClient.auth.onAuthStateChange((event, session) => {
-        updateUserState(session?.user || null);
-
-        // Smoothly clean OAuth tokens from address bar without reloading or jumping pages
-        if (session?.user && typeof window !== 'undefined') {
-          try {
-            sessionStorage.removeItem('hg_auth_redirect');
-            localStorage.removeItem('hg_auth_redirect');
-            const isWebGuruji = window.location.hostname === 'webguruji.online' || window.location.hostname.endsWith('.webguruji.online');
-        const domainStr = isWebGuruji ? '; domain=.webguruji.online' : '';
-            document.cookie = `hg_auth_redirect=; path=/; max-age=0${domainStr}; SameSite=Lax`;
-          } catch(e) {}
-
-          const hash = window.location.hash || '';
-          const search = window.location.search || '';
-          if (hash.includes('access_token') || search.includes('code=')) {
-            try {
-              if (window.history && window.history.replaceState) {
-                window.history.replaceState(null, document.title, window.location.pathname);
-              }
-            } catch (e) {}
-          }
-        }
-
-        if (event === 'PASSWORD_RECOVERY') {
-          openAuthModal('forgot');
-          verifyOtpResetForm.classList.remove('hidden');
-          showAuthAlert(
-            'success',
-            'Recovery link accepted! Please enter your new password below.'
-          );
-        }
-      });
+    // Conversation History Management
+    function saveConversationsToStorage() {
+      localStorage.setItem('guruai_local_conversations', JSON.stringify(conversations));
+      renderHistoryList();
     }
 
-    // A. Handle Sign In
-    loginForm.onsubmit = async (e) => {
-      e.preventDefault();
-      showAuthAlert('clear', '');
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-
-      if (!supabaseClient) {
-        showAuthAlert('error', 'Supabase client not loaded.');
+    function renderHistoryList(filterQuery = '') {
+      historyList.innerHTML = '';
+      if (!conversations.length) {
+        historyList.innerHTML = `
+          <div class="p-4 text-center text-xs text-slate-500">
+            <span>No conversations yet.</span><br/>
+            <span class="text-[10px]">Start chatting to save history!</span>
+          </div>
+        `;
         return;
       }
 
-      const submitBtn = document.getElementById('loginSubmitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `<span>Signing in...</span>`;
+      const q = filterQuery.toLowerCase().trim();
+      const filtered = q
+        ? conversations.filter(c => c.title.toLowerCase().includes(q))
+        : conversations;
 
-      try {
-        let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error && error.message && error.message.toLowerCase().includes('email not confirmed')) {
-          try {
-            await fetch('/api/auth/signup', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, password })
-            });
-            const retry = await supabaseClient.auth.signInWithPassword({ email, password });
-            data = retry.data;
-            error = retry.error;
-          } catch (_) {}
-        }
-        if (error) throw error;
-        showAuthAlert('success', 'Signed in successfully!');
-        updateUserState(data.user);
-        setTimeout(() => closeAuthModal(), 700);
-      } catch (err) {
-        showAuthAlert('error', err.message || 'Login failed. Check your credentials.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<span>Sign In</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
-      }
-    };
-
-    // B. Handle Sign Up
-    registerForm.onsubmit = async (e) => {
-      e.preventDefault();
-      showAuthAlert('clear', '');
-      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
-      const password = document.getElementById('registerPassword').value;
-      const confirmPassword = document.getElementById('registerConfirmPassword').value;
-
-      if (password !== confirmPassword) {
-        showAuthAlert('error', 'Passwords do not match.');
+      if (!filtered.length) {
+        historyList.innerHTML = `<div class="p-3 text-center text-xs text-slate-500">No matching conversations found.</div>`;
         return;
       }
 
-      if (password.length < 6) {
-        showAuthAlert('error', 'Password must be at least 6 characters.');
-        return;
-      }
+      // Chronological Grouping
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      const groups = {
+        today: [],
+        yesterday: [],
+        previous7Days: [],
+        older: []
+      };
 
-      if (!supabaseClient) {
-        showAuthAlert('error', 'Supabase client not loaded.');
-        return;
-      }
+      filtered.forEach(conv => {
+        const diff = now - (conv.timestamp || now);
+        if (diff < oneDay) groups.today.push(conv);
+        else if (diff < 2 * oneDay) groups.yesterday.push(conv);
+        else if (diff < 7 * oneDay) groups.previous7Days.push(conv);
+        else groups.older.push(conv);
+      });
 
-      const submitBtn = document.getElementById('registerSubmitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `<span>Creating account...</span>`;
+      function renderGroup(title, items) {
+        if (!items.length) return;
+        const groupHeader = document.createElement('div');
+        groupHeader.className = 'text-[10px] font-bold uppercase tracking-wider text-slate-500 px-2 pt-2.5 pb-1';
+        groupHeader.textContent = title;
+        historyList.appendChild(groupHeader);
 
-      try {
-        const displayName = email.split('@')[0];
+        items.forEach(conv => {
+          const isActive = conv.id === currentConvId;
+          const itemDiv = document.createElement('div');
+          itemDiv.className = `group flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition cursor-pointer ${
+            isActive
+              ? 'bg-indigo-600/20 border border-indigo-500/40 text-cyan-300 font-semibold'
+              : 'hover:bg-slate-800/60 text-slate-300 border border-transparent'
+          }`;
 
-        // Step 1: Try backend auto-confirmed signup first
-        try {
-          const resp = await fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, name: displayName })
-          });
-          const respJson = await resp.json().catch(() => ({}));
-          if (resp.status === 409 || (respJson.error && respJson.error.toLowerCase().includes('already registered'))) {
-            showAuthAlert('error', 'This email is already registered. Please sign in with your password.');
-            openAuthModal('login');
-            const loginEmailInput = document.getElementById('loginEmail');
-            if (loginEmailInput) loginEmailInput.value = email;
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
-            return;
-          }
-        } catch (_) {}
-
-        // Step 2: Supabase client signUp
-        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: displayName,
-              name: displayName
-            },
-            emailRedirectTo: window.location.origin
-          }
+          itemDiv.innerHTML = `
+            <div class="flex items-center gap-2 min-w-0 flex-1" onclick="switchConversation('${conv.id}')">
+              <svg class="w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-slate-500'} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+              <span class="truncate">${conv.title}</span>
+            </div>
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onclick="renameConversation('${conv.id}', event)" class="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-white" title="Rename title">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <button onclick="deleteConversation('${conv.id}', event)" class="p-1 rounded hover:bg-rose-900/60 text-slate-400 hover:text-rose-300" title="Delete chat">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          `;
+          historyList.appendChild(itemDiv);
         });
+      }
 
-        if (signUpError) {
-          if (
-            signUpError.message?.toLowerCase().includes('already registered') ||
-            signUpError.message?.toLowerCase().includes('already exists')
-          ) {
-            showAuthAlert('error', 'This email is already registered. Please sign in instead.');
-            openAuthModal('login');
-            const loginEmailInput = document.getElementById('loginEmail');
-            if (loginEmailInput) loginEmailInput.value = email;
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
-            return;
-          }
-          throw signUpError;
-        }
+      renderGroup('Today', groups.today);
+      renderGroup('Yesterday', groups.yesterday);
+      renderGroup('Previous 7 Days', groups.previous7Days);
+      renderGroup('Older', groups.older);
+    }
 
-        // Supabase returns error: null but identities: [] if the email is already in auth.users
-        if (signUpData?.user && Array.isArray(signUpData.user.identities) && signUpData.user.identities.length === 0) {
-          showAuthAlert('error', 'This email is already registered. Please sign in with your password or Google.');
-          openAuthModal('login');
-          const loginEmailInput = document.getElementById('loginEmail');
-          if (loginEmailInput) loginEmailInput.value = email;
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = `<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
-          return;
-        }
+    searchInput.addEventListener('input', (e) => {
+      renderHistoryList(e.target.value);
+    });
 
-        // Case A: User has an active session immediately
-        if (signUpData?.session) {
-          showAuthAlert('success', 'Account created and signed in successfully!');
-          updateUserState(signUpData.user);
-          setTimeout(() => closeAuthModal(), 600);
-          return;
-        }
-
-        // Case B: Try signing in immediately with the new password
-        try {
-          const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-          });
-
-          if (!signInError && signInData?.user) {
-            showAuthAlert('success', 'Account created and signed in successfully!');
-            updateUserState(signInData.user);
-            setTimeout(() => closeAuthModal(), 600);
-            return;
-          }
-        } catch (_) {}
-
-        // Case C: Email confirmation is pending
-        showAuthAlert('success', 'Account created! Please check your email to verify your account, then sign in.');
-        openAuthModal('login');
-        const loginEmailInput = document.getElementById('loginEmail');
-        if (loginEmailInput) loginEmailInput.value = email;
-      } catch (err) {
-        showAuthAlert('error', err.message || 'Sign up failed.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+    window.switchConversation = function(id) {
+      const conv = conversations.find(c => c.id === id);
+      if (!conv) return;
+      currentConvId = conv.id;
+      conversationHistory = conv.messages || [];
+      renderConversationMessages();
+      renderHistoryList(searchInput.value);
+      if (window.innerWidth < 768) {
+        document.getElementById('closeSidebarBtn').click();
       }
     };
 
-    // C. Handle Send Code to Mail Button
-    sendCodeToMailBtn.onclick = async () => {
-      showAuthAlert('clear', '');
-      const email = document.getElementById('forgotEmail').value.trim();
-      if (!email || !email.includes('@')) {
-        showAuthAlert('error', 'Please enter a valid email address.');
-        return;
-      }
-
-      if (!supabaseClient) {
-        showAuthAlert('error', 'Supabase client not loaded.');
-        return;
-      }
-
-      sendCodeToMailBtn.disabled = true;
-      sendCodeBtnText.textContent = 'Sending code...';
-
-      try {
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.href.split('#')[0] + '?reset_password=true'
-        });
-        if (error) throw error;
-
-        showAuthAlert('success', 'Verification code & reset link sent to your mail! Check your inbox.');
-        verifyOtpResetForm.classList.remove('hidden');
-
-        // Start 60s cooldown
-        resendCountdown = 60;
-        sendCodeBtnText.textContent = `Resend Code in ${resendCountdown}s`;
-        if (resendTimer) clearInterval(resendTimer);
-        resendTimer = setInterval(() => {
-          resendCountdown--;
-          if (resendCountdown <= 0) {
-            clearInterval(resendTimer);
-            sendCodeToMailBtn.disabled = false;
-            sendCodeBtnText.textContent = 'Send Code to Mail';
-          } else {
-            sendCodeBtnText.textContent = `Resend Code in ${resendCountdown}s`;
-          }
-        }, 1000);
-      } catch (err) {
-        sendCodeToMailBtn.disabled = false;
-        sendCodeBtnText.textContent = 'Send Code to Mail';
-        showAuthAlert('error', err.message || 'Failed to send reset code.');
+    window.renameConversation = function(id, event) {
+      if (event) event.stopPropagation();
+      const conv = conversations.find(c => c.id === id);
+      if (!conv) return;
+      const newTitle = prompt('Enter new conversation title:', conv.title);
+      if (newTitle && newTitle.trim()) {
+        conv.title = newTitle.trim();
+        saveConversationsToStorage();
+        showToast('Conversation renamed', 'success');
       }
     };
 
-    // D. Verify Code & Reset Password
-    verifyOtpResetForm.onsubmit = async (e) => {
-      e.preventDefault();
-      showAuthAlert('clear', '');
-      const email = document.getElementById('forgotEmail').value.trim();
-      const code = document.getElementById('resetOtpCode').value.trim();
-      const newPassword = document.getElementById('resetNewPassword').value;
-      const confirmPassword = document.getElementById('resetConfirmPassword').value;
-
-      if (!code) {
-        showAuthAlert('error', 'Please enter the verification code sent to your email.');
-        return;
+    window.deleteConversation = function(id, event) {
+      if (event) event.stopPropagation();
+      if (!confirm('Are you sure you want to delete this conversation?')) return;
+      conversations = conversations.filter(c => c.id !== id);
+      if (currentConvId === id) {
+        currentConvId = null;
+        conversationHistory = [];
+        renderWelcome();
       }
-
-      if (newPassword.length < 6) {
-        showAuthAlert('error', 'Password must be at least 6 characters.');
-        return;
-      }
-
-      if (newPassword !== confirmPassword) {
-        showAuthAlert('error', 'Passwords do not match.');
-        return;
-      }
-
-      const verifyBtn = document.getElementById('verifyAndResetBtn');
-      verifyBtn.disabled = true;
-      verifyBtn.innerHTML = `<span>Verifying & Resetting...</span>`;
-
-      try {
-        // Verify OTP token sent to mail
-        const { data, error: otpError } = await supabaseClient.auth.verifyOtp({
-          email,
-          token: code,
-          type: 'recovery'
-        });
-        if (otpError) throw otpError;
-
-        // Update password for verified session
-        const { error: updateError } = await supabaseClient.auth.updateUser({
-          password: newPassword
-        });
-        if (updateError) throw updateError;
-
-        showAuthAlert('success', 'Password reset successfully! You are now logged in.');
-        updateUserState(data.user);
-        setTimeout(() => {
-          closeAuthModal();
-          verifyOtpResetForm.reset();
-          verifyOtpResetForm.classList.add('hidden');
-        }, 1200);
-      } catch (err) {
-        showAuthAlert('error', err.message || 'Verification failed. Please check the code or request a new one.');
-      } finally {
-        verifyBtn.disabled = false;
-        verifyBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Verify Code & Reset Password</span>`;
-      }
+      saveConversationsToStorage();
+      showToast('Conversation deleted', 'info');
     };
 
-    // E. Handle Sign Out
-    logoutBtn.onclick = async () => {
-      if (supabaseClient) {
-        await supabaseClient.auth.signOut();
-      }
-      updateUserState(null);
-      closeAuthModal();
+    window.clearAllConversations = function() {
+      if (!confirm('Are you sure you want to clear all conversation history? This cannot be undone.')) return;
+      conversations = [];
+      currentConvId = null;
+      conversationHistory = [];
+      saveConversationsToStorage();
+      renderWelcome();
+      toggleModal(false);
+      showToast('All chat history cleared', 'info');
     };
 
-    // Render Welcome Screen
+    window.exportAllChats = function() {
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(conversations, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', 'guruai-chat-export-' + Date.now() + '.json');
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Chat history exported successfully!', 'success');
+    };
+
+    // Render Welcome Screen (Gemini & ChatGPT Empty State)
     function renderWelcome() {
+      const displayName = currentUser ? (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]) : null;
+      const greeting = displayName ? `Hello, ${displayName}` : 'What can I help you with today?';
+
       chatFeed.innerHTML = `
-        <div class="h-full flex flex-col items-center justify-center text-center space-y-7 my-auto py-8">
-          <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30 overflow-hidden flex-shrink-0">
-            <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
+        <div class="h-full flex flex-col items-center justify-center text-center space-y-7 my-auto py-8 animate-in fade-in duration-300">
+          
+          <div class="space-y-3 max-w-xl mx-auto">
+            <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mx-auto overflow-hidden flex-shrink-0 mb-4 p-1.5">
+              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-xl" />
+            </div>
+            
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-cyan-400 bg-clip-text text-transparent font-heading">
+              ${greeting}
+            </h1>
+            <p class="text-xs md:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
+              Powered by <strong class="text-indigo-300">Guru-Flash 1.1</strong> • Instant answers, deep reasoning, coding assistance, and creative image generation.
+            </p>
           </div>
 
-          <div class="space-y-2 max-w-lg">
-            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white font-heading">What can I help you with today?</h1>
-            <p class="text-xs md:text-sm text-slate-400 leading-relaxed">Ask questions, explore ideas, write code, solve problems, or create images with GuruAI.</p>
-          </div>
-
+          <!-- 4 Interactive Prompt Cards (Gemini & ChatGPT style) -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl text-left pt-2">
-            <button onclick="usePrompt('How do I implement concurrency-safe atomic rate limiting in PostgreSQL with row-level locks?')" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 transition text-left space-y-1">
-              <span class="text-[11px] font-semibold text-cyan-400 uppercase tracking-wider block">Programming & Debugging</span>
-              <div class="text-xs font-semibold text-slate-200">Atomic PostgreSQL rate limiting with FOR UPDATE locks</div>
+            
+            <!-- Card 1: Code -->
+            <button onclick="usePrompt('Create a responsive, beautiful navigation bar with dark mode in Tailwind CSS and vanilla JavaScript.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                  Coding & Debug
+                </span>
+                <span class="text-slate-500 group-hover:text-cyan-400 transition-colors">↗</span>
+              </div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Responsive navigation bar with dark mode in Tailwind CSS</div>
             </button>
 
-            <button onclick="usePrompt('Next.js 14 App Router vs Pages Router ke architectural differences Hinglish mein samjhao.')" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 transition text-left space-y-1">
-              <span class="text-[11px] font-semibold text-indigo-400 uppercase tracking-wider block">Learning & Explanations</span>
-              <div class="text-xs font-semibold text-slate-200">App Router vs Pages Router explained in Hinglish</div>
+            <!-- Card 2: Brainstorm -->
+            <button onclick="usePrompt('Brainstorm 5 innovative, high-impact software startup ideas leveraging modern AI in 2026.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                  Ideation & Brainstorm
+                </span>
+                <span class="text-slate-500 group-hover:text-indigo-400 transition-colors">↗</span>
+              </div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">5 high-impact AI startup concepts with business models</div>
             </button>
 
-            <button onclick="usePrompt('Explain how cross-subdomain cookies work between ai.webguruji.online and webguruji.online securely.')" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 transition text-left space-y-1">
-              <span class="text-[11px] font-semibold text-purple-400 uppercase tracking-wider block">Web Architecture</span>
-              <div class="text-xs font-semibold text-slate-200">Cross-subdomain cookie security & SSO guide</div>
+            <!-- Card 3: Image Studio -->
+            <button onclick="triggerImagePrompt('Cinematic 8K portrait of a futuristic cyberpunk samurai standing in neon rain in Tokyo, hyper-detailed, masterpiece.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/10 transition-all text-left space-y-1.5 group">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  Image Studio (SDXL)
+                </span>
+                <span class="text-slate-500 group-hover:text-purple-400 transition-colors">🎨</span>
+              </div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Cinematic cyberpunk samurai in neon rain 8K</div>
             </button>
 
-            <button onclick="usePrompt('Draft a clean, professional software architecture proposal for a scalable cloud platform.')" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 transition text-left space-y-1">
-              <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">Engineering Design</span>
-              <div class="text-xs font-semibold text-slate-200">Professional architecture proposal draft</div>
+            <!-- Card 4: Writing & Explanations -->
+            <button onclick="usePrompt('Explain how large language models and transformers work under the hood in simple terms with everyday analogies.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                  Deep Explanations
+                </span>
+                <span class="text-slate-500 group-hover:text-emerald-400 transition-colors">↗</span>
+              </div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">How transformers & LLMs work with analogies</div>
             </button>
+
           </div>
         </div>
       `;
     }
 
-    function usePrompt(p) {
+    window.usePrompt = function(p) {
       promptInput.value = p;
       promptInput.dispatchEvent(new Event('input'));
       promptInput.focus();
+    };
+
+    window.triggerImagePrompt = function(p) {
+      if (!currentUser) {
+        openAuthModal('login');
+        showToast('Please sign in to generate images with Eden AI SDXL!', 'info');
+        return;
+      }
+      if (!isImageMode) {
+        imageModeBtn.click();
+      }
+      usePrompt(p);
+    };
+
+    // Render Active Conversation Messages
+    function renderConversationMessages() {
+      chatFeed.innerHTML = '';
+      if (!conversationHistory.length) {
+        renderWelcome();
+        return;
+      }
+      conversationHistory.forEach(msg => {
+        if (msg.role === 'user') {
+          appendUserBubble(msg.content);
+        } else {
+          appendAssistantBubble(msg.content, msg.reasoning || null, msg.imageUrl || null);
+        }
+      });
+      chatFeed.scrollTop = chatFeed.scrollHeight;
     }
 
-    // Message Bubble Renderer
-    function appendMessage(role, text) {
-      const isUser = role === 'user';
+    function appendUserBubble(text) {
       const msgDiv = document.createElement('div');
-      msgDiv.className = `flex gap-3 md:gap-4 transition-all duration-200 ${isUser ? 'justify-end' : 'justify-start'}`;
-
-      const avatar = isUser
-        ? `<div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 font-bold text-xs flex-shrink-0 mt-0.5">${currentUser ? (currentUser.email || 'U')[0].toUpperCase() : 'U'}</div>`
-        : `<div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
-            <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
-          </div>`;
-
-      const bubbleClass = isUser
-        ? 'bg-[var(--bubble-user)] text-white rounded-br-none shadow-md'
-        : 'bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-sm';
+      msgDiv.className = 'flex gap-3 md:gap-4 justify-end transition-all duration-200';
+      const userInitial = currentUser ? (currentUser.email || 'U')[0].toUpperCase() : 'U';
 
       msgDiv.innerHTML = `
-        ${!isUser ? avatar : ''}
-        <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1">
-          <div class="relative rounded-2xl px-4 py-3.5 shadow-sm text-sm ${bubbleClass} leading-relaxed whitespace-pre-wrap">${text}</div>
+        <div class="max-w-[85%] md:max-w-[75%] flex flex-col space-y-1">
+          <div class="rounded-2xl px-4 py-3 shadow-md text-sm bg-[var(--bubble-user)] text-white rounded-br-none leading-relaxed whitespace-pre-wrap select-text">${text}</div>
         </div>
-        ${isUser ? avatar : ''}
+        <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 font-bold text-xs flex-shrink-0 mt-0.5">${userInitial}</div>
       `;
-
       chatFeed.appendChild(msgDiv);
       chatFeed.scrollTop = chatFeed.scrollHeight;
     }
 
-    // Streaming AI Response (NVIDIA Nemotron 3 Ultra 550B via Supabase Edge Function & /api/chat)
+    function appendAssistantBubble(text, reasoning = null, imageUrl = null) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'flex gap-3 md:gap-4 justify-start transition-all duration-200';
+
+      const formatted = formatMarkdown(text);
+      let reasoningHtml = '';
+      if (reasoning) {
+        const safeReasoning = reasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        reasoningHtml = `
+          <details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono">
+            <summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+              <span>Thought Process</span>
+            </summary>
+            <div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div>
+          </details>
+        `;
+      }
+
+      let imageHtml = '';
+      if (imageUrl) {
+        imageHtml = `
+          <div class="my-3 rounded-xl overflow-hidden border border-slate-700/80 bg-black/60 shadow-lg cursor-pointer" onclick="openLightbox('${imageUrl}', 'Artwork')">
+            <img src="${imageUrl}" alt="Artwork" class="w-full max-w-sm rounded-xl object-cover hover:scale-105 transition-transform duration-300" />
+          </div>
+        `;
+      }
+
+      msgDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden mt-0.5">
+          <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
+        </div>
+        <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1.5 min-w-0">
+          <div class="flex items-center gap-2 text-[11px] text-slate-400">
+            <span class="font-bold text-white font-heading">GuruAI</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Guru-Flash 1.1</span>
+          </div>
+
+          <div class="rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none leading-relaxed select-text prose-ai">
+            ${reasoningHtml}
+            ${imageHtml}
+            ${formatted}
+          </div>
+
+          <!-- Bottom Action Bar (Copy, Speak, Feedback, Share) -->
+          <div class="flex items-center gap-3 pt-1 text-xs text-slate-400">
+            <button onclick="copyMessageText(this, ${JSON.stringify(text)})" class="flex items-center gap-1 hover:text-white transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              <span>Copy</span>
+            </button>
+            <button onclick="speakText(${JSON.stringify(text)})" class="flex items-center gap-1 hover:text-cyan-300 transition" title="Listen aloud">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+              <span>Listen</span>
+            </button>
+            <button onclick="recordFeedback(this, 'up')" class="hover:text-emerald-400 transition" title="Good response">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
+            </button>
+            <button onclick="recordFeedback(this, 'down')" class="hover:text-rose-400 transition" title="Bad response">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76 1.04m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+      chatFeed.appendChild(msgDiv);
+      chatFeed.scrollTop = chatFeed.scrollHeight;
+    }
+
+    // Streaming AI Response (NVIDIA Nemotron 3 Ultra 550B branded as Guru-Flash 1.1)
     async function streamResponse(prompt) {
       isGenerating = true;
       stopGenBtn.classList.remove('hidden');
@@ -1574,15 +1468,21 @@
 
       deductAllowance();
 
-      const bubbleId = 'stream-bubble-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+      const bubbleId = 'stream-bubble-' + Date.now();
       const assistantMsgDiv = document.createElement('div');
       assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';
       assistantMsgDiv.innerHTML = `
-        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
+        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden mt-0.5">
           <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
         </div>
-        <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1">
-          <div id="${bubbleId}" class="relative rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-sm leading-relaxed whitespace-pre-wrap"><span class="streaming-cursor"></span></div>
+        <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1.5 min-w-0">
+          <div class="flex items-center gap-2 text-[11px] text-slate-400">
+            <span class="font-bold text-white font-heading">GuruAI</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Guru-Flash 1.1</span>
+          </div>
+          <div id="${bubbleId}" class="rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none leading-relaxed select-text prose-ai">
+            <span class="streaming-cursor"></span>
+          </div>
         </div>
       `;
       chatFeed.appendChild(assistantMsgDiv);
@@ -1611,20 +1511,15 @@
                 const reasoning = data.reasoning || data.choices?.[0]?.delta?.reasoning_content || '';
                 const token = data.token || data.choices?.[0]?.delta?.content || '';
 
-                if (reasoning) {
-                  fullReasoning += reasoning;
-                }
-                if (token) {
-                  fullText += token;
-                }
+                if (reasoning) fullReasoning += reasoning;
+                if (token) fullText += token;
 
                 let renderHtml = '';
                 if (fullReasoning) {
                   const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                   renderHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono" ${fullText ? '' : 'open'}><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thinking Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
                 }
-                const safeText = fullText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                renderHtml += safeText;
+                renderHtml += formatMarkdown(fullText);
                 if (streamBubble) {
                   streamBubble.innerHTML = renderHtml + '<span class="streaming-cursor"></span>';
                 }
@@ -1634,19 +1529,41 @@
           }
         }
 
-        let finalHtml = '';
-        if (fullReasoning) {
-          const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          finalHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono"><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thought Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
-        }
-        const safeText = fullText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        finalHtml += safeText;
         if (streamBubble) {
-          streamBubble.innerHTML = finalHtml || 'Completed.';
+          let finalHtml = '';
+          if (fullReasoning) {
+            const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            finalHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono"><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thought Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
+          }
+          finalHtml += formatMarkdown(fullText || 'Completed.');
+          streamBubble.innerHTML = finalHtml;
           streamBubble.removeAttribute('id');
+
+          // Append action bar
+          const actionDiv = document.createElement('div');
+          actionDiv.className = 'flex items-center gap-3 pt-1 text-xs text-slate-400';
+          actionDiv.innerHTML = `
+            <button onclick="copyMessageText(this, ${JSON.stringify(fullText)})" class="flex items-center gap-1 hover:text-white transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              <span>Copy</span>
+            </button>
+            <button onclick="speakText(${JSON.stringify(fullText)})" class="flex items-center gap-1 hover:text-cyan-300 transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+              <span>Listen</span>
+            </button>
+            <button onclick="recordFeedback(this, 'up')" class="hover:text-emerald-400 transition" title="Good response">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
+            </button>
+            <button onclick="recordFeedback(this, 'down')" class="hover:text-rose-400 transition" title="Bad response">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76 1.04m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg>
+            </button>
+          `;
+          assistantMsgDiv.querySelector('.max-w-\\[85\\%\\]').appendChild(actionDiv);
         }
+
         if (fullText) {
-          conversationHistory.push({ role: 'assistant', content: fullText });
+          conversationHistory.push({ role: 'assistant', content: fullText, reasoning: fullReasoning });
+          updateCurrentConversation(prompt, fullText);
         }
         return fullText.length > 0;
       }
@@ -1670,7 +1587,7 @@
         }
       } catch (e) {}
 
-      // 2. Fallback to live Supabase Edge Function (works on GitHub Pages & static hosting)
+      // 2. Fallback to Supabase Edge Function
       if (!backendStreamed) {
         try {
           const edgeRes = await fetch('https://wumdbpyhpblvgjttsbpv.supabase.co/functions/v1/chat', {
@@ -1685,12 +1602,10 @@
           if (edgeRes.ok && edgeRes.body) {
             backendStreamed = await readSseStream(edgeRes);
           }
-        } catch (edgeErr) {
-          console.warn('Edge function fallback error:', edgeErr);
-        }
+        } catch (edgeErr) {}
       }
 
-      // 3. Fallback on network disconnection
+      // 3. Fallback on network disconnection / Offline Knowledge
       if (!backendStreamed) {
         const lowerPrompt = prompt.toLowerCase();
         const isCreatorQuery = [
@@ -1699,31 +1614,49 @@
           'kiska ai', 'developer kaun', 'owner detail', 'owner link', 'तुम्हें किसने बनाया', 'तुम्हारा मालिक'
         ].some(k => lowerPrompt.includes(k));
 
+        let answer = '';
         if (isCreatorQuery) {
-          let answer = '';
           if (currentLang === 'hinglish') {
-            answer = `Mujhe **HarshGuruJi** (Harsh Patel) ne banaya aur engineer kiya hai! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Biography & Details**: https://webguruji.online/owner.html`;
+            answer = `Mujhe **HarshGuruJi** (Harsh Patel) ne banaya aur develop kiya hai! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Biography**: https://webguruji.online/owner.html`;
           } else if (currentLang === 'hindi') {
             answer = `मुझे **HarshGuruJi** (Harsh Patel) ने बनाया और विकसित किया है! 🚀\n\n• **निर्माता एवं मालिक**: HarshGuruJi (Harsh Patel)\n• **आधिकारिक मुख्य वेबसाइट**: https://webguruji.online\n• **आधिकारिक AI डोमेन**: https://ai.webguruji.online\n• **मालिक का विवरण**: https://webguruji.online/owner.html`;
           } else {
             answer = `I am GuruAI, proudly created and developed by **HarshGuruJi** (Harsh Patel)! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://webguruji.online\n• **Official AI Domain**: https://ai.webguruji.online\n• **Owner Details**: https://webguruji.online/owner.html`;
           }
-          if (streamBubble) {
-            streamBubble.innerHTML = answer.replace(/\n/g, '<br/>');
-            streamBubble.removeAttribute('id');
-          }
-          conversationHistory.push({ role: 'assistant', content: answer });
         } else {
-          if (streamBubble) {
-            streamBubble.innerHTML = `<span class="text-rose-400 font-medium">⚠️ Connection error: AI server is temporarily unreachable. Please check your internet connection and retry.</span>`;
-            streamBubble.removeAttribute('id');
-          }
+          answer = `I am ready to help you with research, coding, writing, and problem-solving. (Note: AI endpoint is currently connecting via offline standby. Please ensure network connectivity for live cloud queries.)`;
         }
+
+        if (streamBubble) {
+          streamBubble.innerHTML = formatMarkdown(answer);
+          streamBubble.removeAttribute('id');
+        }
+        conversationHistory.push({ role: 'assistant', content: answer });
+        updateCurrentConversation(prompt, answer);
       }
 
       isGenerating = false;
       stopGenBtn.classList.add('hidden');
       sendBtn.classList.remove('hidden');
+    }
+
+    // Save and Update Active Conversation
+    function updateCurrentConversation(firstPrompt, lastAnswer) {
+      if (!currentConvId) currentConvId = Date.now().toString();
+      let conv = conversations.find(c => c.id === currentConvId);
+      if (!conv) {
+        conv = {
+          id: currentConvId,
+          title: firstPrompt.slice(0, 32) + (firstPrompt.length > 32 ? '...' : ''),
+          timestamp: Date.now(),
+          messages: conversationHistory
+        };
+        conversations.unshift(conv);
+      } else {
+        conv.messages = conversationHistory;
+        conv.timestamp = Date.now();
+      }
+      saveConversationsToStorage();
     }
 
     // Lightbox Controls
@@ -1743,10 +1676,11 @@
       if (lightbox) lightbox.classList.add('hidden');
     };
 
-    // AI Image Studio Generation Flow (Cloudflare Workers AI / Flux / SDXL)
+    // AI Image Studio Generation Flow (Eden AI / SDXL / Flux)
     async function generateImageResponse(prompt) {
       if (!currentUser) {
         openAuthModal('login');
+        showToast('Only signed-in users can create images with Eden AI SDXL (5 images / 24h).', 'info');
         return;
       }
 
@@ -1756,22 +1690,22 @@
 
       deductAllowance();
 
+      const bubbleId = 'img-bubble-' + Date.now();
       const assistantMsgDiv = document.createElement('div');
       assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';
-      const bubbleId = 'img-bubble-' + Date.now();
       assistantMsgDiv.innerHTML = `
-        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden">
+        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden mt-0.5">
           <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
         </div>
         <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-2">
           <div id="${bubbleId}" class="relative rounded-2xl p-4 bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-md">
-            <div class="flex items-center gap-2.5 text-xs text-purple-400 mb-2">
+            <div class="flex items-center gap-2 text-xs text-purple-400 mb-2 font-semibold">
               <span class="w-2 h-2 rounded-full bg-purple-500 animate-ping"></span>
-              <span class="font-semibold">AI Image Studio • Stable Diffusion XL / Flux</span>
+              <span>AI Image Studio • Stable Diffusion XL / Flux</span>
             </div>
             <div class="w-72 sm:w-80 h-72 sm:h-80 rounded-xl bg-slate-900/90 border border-purple-500/30 flex flex-col items-center justify-center text-center p-4 space-y-3 animate-pulse">
               <div class="w-10 h-10 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
-              <div class="text-xs text-slate-300 font-medium">Generating high-resolution artwork...</div>
+              <div class="text-xs text-slate-300 font-medium">Synthesizing high-resolution artwork...</div>
               <div class="text-[11px] text-purple-300/80 line-clamp-2 max-w-xs font-mono">"${prompt.replace(/"/g, '&quot;')}"</div>
             </div>
           </div>
@@ -1798,13 +1732,13 @@
         }
       } catch (err) {}
 
-      // 2. Direct Fallback to Free High-Res Cloudflare / Flux Model Engine (matching free-image-generation-api)
+      // 2. Fallback to free high-res engine
       if (!finalImageUrl) {
         const seed = Math.floor(Math.random() * 1000000);
         finalImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}&model=flux`;
       }
 
-      // Preload image so it renders cleanly
+      // Preload image
       const imgTest = new Image();
       imgTest.src = finalImageUrl;
       imgTest.onload = () => {
@@ -1817,7 +1751,7 @@
                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 <span class="font-bold text-xs text-purple-400">Stable Diffusion XL • 1024×1024</span>
               </div>
-              <span class="text-[10px] text-slate-400 font-mono">AI Studio</span>
+              <span class="text-[10px] text-slate-400 font-mono">Eden AI Studio</span>
             </div>
             <div class="relative group rounded-xl overflow-hidden border border-slate-700/80 bg-black/60 shadow-lg cursor-pointer" onclick="openLightbox('${finalImageUrl}', '${safePrompt}')">
               <img src="${finalImageUrl}" alt="${safePrompt}" class="w-full max-w-sm rounded-xl object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
@@ -1830,13 +1764,13 @@
               <span class="text-purple-400 font-semibold">Prompt:</span> "${safePrompt}"
             </div>
             <div class="flex items-center gap-2 pt-1">
-              <a href="${finalImageUrl}" download="guruai-image-${Date.now()}.jpg" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition">
+              <a href="${finalImageUrl}" download="guruai-artwork-${Date.now()}.jpg" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <span>Download Artwork</span>
+                <span>Download HD</span>
               </a>
               <button onclick="openLightbox('${finalImageUrl}', '${safePrompt}')" class="flex items-center gap-1 py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                <span>Full View</span>
+                <span>Zoom</span>
               </button>
             </div>
           </div>
@@ -1845,6 +1779,8 @@
         isGenerating = false;
         stopGenBtn.classList.add('hidden');
         sendBtn.classList.remove('hidden');
+        conversationHistory.push({ role: 'assistant', content: `[Artwork: ${prompt}]`, imageUrl: finalImageUrl });
+        updateCurrentConversation(prompt, `[Artwork: ${prompt}]`);
       };
 
       imgTest.onerror = () => {
@@ -1856,7 +1792,7 @@
       };
     }
 
-    // Handle Form Submit
+    // Form Submit Handler
     chatForm.onsubmit = (e) => {
       e.preventDefault();
       const text = promptInput.value.trim();
@@ -1864,10 +1800,10 @@
 
       if (remainingAllowance <= 0) {
         openAuthModal('login');
+        showToast('Daily allowance exhausted. Please sign in to increase your limits!', 'error');
         return;
       }
 
-      // Clear welcome screen on first message
       if (!currentConvId) {
         currentConvId = Date.now().toString();
         conversationHistory = [];
@@ -1877,8 +1813,14 @@
       promptInput.value = '';
       promptInput.style.height = 'auto';
 
-      appendMessage('user', text);
+      appendUserBubble(text);
       conversationHistory.push({ role: 'user', content: text });
+
+      if (attachedFile) {
+        attachedFile = null;
+        fileAttachmentInput.value = '';
+        attachmentChipContainer.classList.add('hidden');
+      }
 
       if (isImageMode) {
         generateImageResponse(text);
@@ -1887,31 +1829,374 @@
       }
     };
 
-    // Stop Generation Handler
+    // Stop Generation
     stopGenBtn.onclick = () => {
       isGenerating = false;
       stopGenBtn.classList.add('hidden');
       sendBtn.classList.remove('hidden');
+      showToast('Generation cancelled', 'info');
     };
 
-    // New Chat Handler
+    // New Chat
     document.getElementById('newChatBtn').onclick = () => {
       currentConvId = null;
       conversationHistory = [];
       renderWelcome();
       promptInput.value = '';
       promptInput.focus();
+      renderHistoryList(searchInput.value);
     };
+
+    // Quota Allowance System (10 requests / 12h for Member, 2 requests / 6h for Guest)
+    function initUserQuota(user) {
+      const now = Date.now();
+      if (user) {
+        maxRequests = 10;
+        const windowDuration = 12 * 60 * 60 * 1000;
+        const key = 'guruai_quota_user_' + user.id;
+        let stored = null;
+        try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
+
+        if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
+          stored = { remaining: 10, windowStart: now };
+          localStorage.setItem(key, JSON.stringify(stored));
+        }
+        remainingAllowance = stored.remaining;
+      } else {
+        maxRequests = 2;
+        const windowDuration = 6 * 60 * 60 * 1000;
+        const key = 'guruai_quota_guest';
+        let stored = null;
+        try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
+
+        if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
+          stored = { remaining: 2, windowStart: now };
+          localStorage.setItem(key, JSON.stringify(stored));
+        }
+        remainingAllowance = stored.remaining;
+      }
+      updateQuotaUI();
+    }
+
+    function deductAllowance() {
+      if (remainingAllowance > 0) {
+        remainingAllowance--;
+        if (currentUser) {
+          const key = 'guruai_quota_user_' + currentUser.id;
+          let stored = null;
+          try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
+          if (stored) {
+            stored.remaining = remainingAllowance;
+            localStorage.setItem(key, JSON.stringify(stored));
+          }
+        } else {
+          const key = 'guruai_quota_guest';
+          let stored = null;
+          try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
+          if (stored) {
+            stored.remaining = remainingAllowance;
+            localStorage.setItem(key, JSON.stringify(stored));
+          }
+        }
+        updateQuotaUI();
+      }
+    }
 
     function updateQuotaUI() {
       document.getElementById('quotaSidebarText').textContent = `${remainingAllowance}/${maxRequests} Left`;
       document.getElementById('headerQuotaText').textContent = `${remainingAllowance}/${maxRequests} Left`;
       document.getElementById('footerQuotaText').textContent = `${remainingAllowance} requests left`;
     }
-    updateQuotaUI();
+
+    // User Authentication State
+    function updateUserState(user) {
+      currentUser = user;
+      initUserQuota(user);
+
+      if (user) {
+        const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+        const initial = (name || user.email)[0].toUpperCase();
+        userNameLabel.textContent = name;
+        userStatusLabel.textContent = user.email;
+        userAvatar.textContent = initial;
+        userTierLabel.textContent = 'Member (10/12h)';
+        headerTierText.textContent = 'Member';
+
+        imageLockIcon.classList.add('hidden');
+
+        // Show Dashboard Buttons for logged-in user
+        if (headerDashboardBtn) {
+          headerDashboardBtn.classList.remove('hidden');
+          const headerDashboardUserName = document.getElementById('headerDashboardUserName');
+          if (headerDashboardUserName) headerDashboardUserName.textContent = name;
+          const initialEl = document.getElementById('headerDashboardAvatarInitial');
+          if (initialEl) initialEl.textContent = initial;
+        }
+        if (sidebarDashboardLink) {
+          sidebarDashboardLink.classList.remove('hidden');
+        }
+
+        const headerSignInBtn = document.getElementById('headerSignInBtn');
+        if (headerSignInBtn) {
+          document.getElementById('headerSignInBtnText').textContent = 'Profile';
+        }
+      } else {
+        userNameLabel.textContent = 'Guest Visitor';
+        userStatusLabel.textContent = 'Click to Sign In';
+        userAvatar.textContent = 'G';
+        userTierLabel.textContent = 'Guest Allowance';
+        headerTierText.textContent = 'Guest';
+
+        imageLockIcon.classList.remove('hidden');
+
+        // Hide Dashboard Buttons for guests
+        if (headerDashboardBtn) {
+          headerDashboardBtn.classList.add('hidden');
+        }
+        if (sidebarDashboardLink) {
+          sidebarDashboardLink.classList.add('hidden');
+        }
+
+        const headerSignInBtn = document.getElementById('headerSignInBtn');
+        if (headerSignInBtn) {
+          document.getElementById('headerSignInBtnText').textContent = 'Sign In';
+        }
+      }
+    }
+
+    // Auth Modal Handlers
+    const authModal = document.getElementById('authModal');
+    const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
+    const openAuthBtn = document.getElementById('openAuthBtn');
+    const userProfileBtn = document.getElementById('userProfileBtn');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const forgotSection = document.getElementById('forgotSection');
+    const loggedInView = document.getElementById('loggedInView');
+    const authAlertError = document.getElementById('authAlertError');
+    const authAlertErrorText = document.getElementById('authAlertErrorText');
+    const authAlertSuccess = document.getElementById('authAlertSuccess');
+    const authAlertSuccessText = document.getElementById('authAlertSuccessText');
+
+    function showAuthAlert(type, msg) {
+      authAlertError.classList.add('hidden');
+      authAlertSuccess.classList.add('hidden');
+      if (type === 'error') {
+        authAlertErrorText.textContent = msg;
+        authAlertError.classList.remove('hidden');
+      } else if (type === 'success') {
+        authAlertSuccessText.textContent = msg;
+        authAlertSuccess.classList.remove('hidden');
+      }
+    }
+
+    function setAuthModalMode(mode) {
+      showAuthAlert('clear', '');
+      loginForm.classList.add('hidden');
+      registerForm.classList.add('hidden');
+      forgotSection.classList.add('hidden');
+      loggedInView.classList.add('hidden');
+
+      const title = document.getElementById('authModalTitle');
+      const subtitle = document.getElementById('authModalSubtitle');
+
+      if (currentUser && mode === 'profile') {
+        loggedInView.classList.remove('hidden');
+        title.textContent = 'Account Profile';
+        subtitle.textContent = 'Logged into GuruAI Creative Studio';
+        document.getElementById('loggedInEmailText').textContent = currentUser.email;
+        document.getElementById('loggedInAvatarLarge').textContent = (currentUser.email || 'U')[0].toUpperCase();
+      } else if (mode === 'register') {
+        registerForm.classList.remove('hidden');
+        title.textContent = 'Create GuruAI Account';
+        subtitle.textContent = 'Unlock 10 requests / 12h & 5 SDXL image creations';
+      } else if (mode === 'forgot') {
+        forgotSection.classList.remove('hidden');
+        title.textContent = 'Reset Password';
+        subtitle.textContent = 'Enter email to receive your recovery code';
+      } else {
+        loginForm.classList.remove('hidden');
+        title.textContent = 'Sign In to GuruAI';
+        subtitle.textContent = 'Unlock 10 requests / 12h, chat history & image studio';
+      }
+    }
+
+    function openAuthModal(mode = 'login') {
+      setAuthModalMode(currentUser ? 'profile' : mode);
+      authModal.classList.remove('hidden');
+    }
+    function closeAuthModal() {
+      authModal.classList.add('hidden');
+    }
+
+    openAuthBtn.onclick = () => openAuthModal('login');
+    userProfileBtn.onclick = () => openAuthModal('login');
+    closeAuthModalBtn.onclick = closeAuthModal;
+    document.getElementById('headerSignInBtn').onclick = () => openAuthModal('login');
+    document.getElementById('headerQuotaBadge').onclick = () => openAuthModal('login');
+
+    document.getElementById('switchToRegisterBtn').onclick = () => setAuthModalMode('register');
+    document.getElementById('switchToLoginBtn').onclick = () => setAuthModalMode('login');
+    document.getElementById('switchToForgotBtn').onclick = () => setAuthModalMode('forgot');
+    document.getElementById('forgotBackToLoginBtn').onclick = () => setAuthModalMode('login');
+
+    // Google Sign-In
+    document.querySelectorAll('.googleOAuthBtn').forEach(btn => {
+      btn.onclick = async () => {
+        if (!supabaseClient) return showAuthAlert('error', 'Supabase not initialized');
+        showAuthAlert('clear', '');
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.origin + '/' }
+        });
+        if (error) showAuthAlert('error', error.message);
+      };
+    });
+
+    // Login Form
+    loginForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!supabaseClient) return showAuthAlert('error', 'Supabase not loaded');
+
+      const submitBtn = document.getElementById('loginSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Signing in...</span>';
+
+      try {
+        let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        showAuthAlert('success', 'Signed in successfully!');
+        updateUserState(data.user);
+        setTimeout(() => closeAuthModal(), 600);
+      } catch (err) {
+        showAuthAlert('error', err.message || 'Login failed.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Sign In</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+      }
+    };
+
+    // Register Form
+    registerForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+      if (password !== confirmPassword) return showAuthAlert('error', 'Passwords do not match');
+      if (password.length < 6) return showAuthAlert('error', 'Password must be at least 6 characters');
+      if (!supabaseClient) return showAuthAlert('error', 'Supabase not loaded');
+
+      const submitBtn = document.getElementById('registerSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Creating account...</span>';
+
+      try {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: email.split('@')[0] }, emailRedirectTo: window.location.origin }
+        });
+        if (error) throw error;
+        if (data?.session) {
+          showAuthAlert('success', 'Account created & signed in!');
+          updateUserState(data.user);
+          setTimeout(() => closeAuthModal(), 600);
+        } else {
+          showAuthAlert('success', 'Account created! Please check your email to verify, then sign in.');
+          setAuthModalMode('login');
+          document.getElementById('loginEmail').value = email;
+        }
+      } catch (err) {
+        showAuthAlert('error', err.message || 'Registration failed.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Create Account</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+      }
+    };
+
+    // Forgot Password Send Code
+    document.getElementById('sendCodeToMailBtn').onclick = async () => {
+      const email = document.getElementById('forgotEmail').value.trim();
+      if (!email || !email.includes('@')) return showAuthAlert('error', 'Enter a valid email address');
+      const btn = document.getElementById('sendCodeToMailBtn');
+      btn.disabled = true;
+      document.getElementById('sendCodeBtnText').textContent = 'Sending code...';
+
+      try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.href.split('#')[0] + '?reset_password=true'
+        });
+        if (error) throw error;
+        showAuthAlert('success', 'Verification code & link sent to your mail! Check your inbox.');
+        document.getElementById('verifyOtpResetForm').classList.remove('hidden');
+      } catch (err) {
+        showAuthAlert('error', err.message || 'Failed to send reset code.');
+      } finally {
+        btn.disabled = false;
+        document.getElementById('sendCodeBtnText').textContent = 'Send Code to Mail';
+      }
+    };
+
+    // Verify OTP & Reset
+    document.getElementById('verifyOtpResetForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value.trim();
+      const token = document.getElementById('resetOtpCode').value.trim();
+      const newPassword = document.getElementById('resetNewPassword').value;
+      const confirmPassword = document.getElementById('resetConfirmPassword').value;
+
+      if (!token) return showAuthAlert('error', 'Enter the verification code from your mail');
+      if (newPassword.length < 6) return showAuthAlert('error', 'Password must be at least 6 characters');
+      if (newPassword !== confirmPassword) return showAuthAlert('error', 'Passwords do not match');
+
+      const submitBtn = document.getElementById('verifyAndResetBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Resetting password...</span>';
+
+      try {
+        const { data, error: otpError } = await supabaseClient.auth.verifyOtp({ email, token, type: 'recovery' });
+        if (otpError) throw otpError;
+
+        const { error: updateError } = await supabaseClient.auth.updateUser({ password: newPassword });
+        if (updateError) throw updateError;
+
+        showAuthAlert('success', 'Password reset successfully! Logged in.');
+        updateUserState(data.user);
+        setTimeout(() => closeAuthModal(), 800);
+      } catch (err) {
+        showAuthAlert('error', err.message || 'Verification failed. Try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Verify Code & Reset Password</span>';
+      }
+    };
+
+    // Sign out
+    document.getElementById('logoutBtn').onclick = async () => {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      updateUserState(null);
+      closeAuthModal();
+      showToast('Signed out successfully', 'info');
+    };
+
+    // Session Listener
+    if (supabaseClient) {
+      supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        updateUserState(session?.user || null);
+      });
+      supabaseClient.auth.onAuthStateChange((event, session) => {
+        updateUserState(session?.user || null);
+      });
+    } else {
+      updateUserState(null);
+    }
 
     // Initial render
     renderWelcome();
+    renderHistoryList();
   </script>
 </body>
 </html>

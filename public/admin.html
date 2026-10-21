@@ -85,26 +85,79 @@
   <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
-    <!-- 0. ACCESS BLOCKED / 403 RESTRICTED (VISIBLE WHEN DIRECT ACCESS OR UNAUTHORIZED) -->
+    <!-- 0. ADMIN GATE PASS VERIFICATION (WHEN GATE IS NOT YET UNLOCKED) -->
+    <section id="gatePassSection" class="hidden rounded-3xl bg-[#0c101d] border border-amber-500/30 p-8 sm:p-10 text-center space-y-6 max-w-lg mx-auto my-12 shadow-2xl relative overflow-hidden">
+      <div class="w-16 h-16 rounded-2xl bg-amber-950/70 border border-amber-500/40 text-amber-400 mx-auto flex items-center justify-center shadow-lg shadow-amber-500/20 text-3xl">
+        🔐
+      </div>
+      <div class="space-y-2">
+        <span class="text-[11px] font-mono px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold uppercase tracking-widest">Master Security Gate</span>
+        <h2 class="text-2xl font-bold font-heading text-white">GuruAI Admin Command Gate</h2>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+          Yeh panel sirf verified platform owner ke liye arakshit hai. Apne Master credentials se gate unlock karein.
+        </p>
+      </div>
+
+      <form id="gatePassForm" class="space-y-4 text-left max-w-sm mx-auto" onsubmit="handleGatePassSubmit(event)">
+        <div id="gateAlert" class="hidden p-3 rounded-xl text-xs border font-medium"></div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Private Email</label>
+          <input 
+            type="email" 
+            id="gateEmailInput" 
+            placeholder="enter your private mail" 
+            required 
+            autocomplete="email"
+            class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-sm text-white placeholder-slate-500 outline-none transition" 
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Secret Pass ID</label>
+          <input 
+            type="password" 
+            id="gateSecretInput" 
+            placeholder="your Secret ID" 
+            required 
+            autocomplete="current-password"
+            class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-sm text-white placeholder-slate-500 outline-none transition" 
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          id="gateSubmitBtn"
+          class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>Unlock Admin Gateway</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+
+        <div class="pt-2 flex items-center justify-between text-xs text-slate-400">
+          <a href="https://webguruji.online/admin.html" class="hover:text-amber-400 transition">👑 Master Portal</a>
+          <a href="index.html" class="hover:text-slate-200 transition">Return to Chat</a>
+        </div>
+      </form>
+    </section>
+
+    <!-- 0B. ACCESS BLOCKED / 403 RESTRICTED (VISIBLE WHEN EXPLICITLY REJECTED) -->
     <section id="accessBlockedSection" class="hidden rounded-3xl bg-[#0c101d] border border-rose-500/30 p-8 sm:p-10 text-center space-y-6 max-w-xl mx-auto my-12 shadow-2xl relative overflow-hidden">
       <div class="w-16 h-16 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-400 mx-auto flex items-center justify-center shadow-lg shadow-rose-500/20 text-3xl">
         🛡️
       </div>
       <div class="space-y-2">
         <span class="text-[11px] font-mono px-3 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold uppercase tracking-widest">403 Restricted Area</span>
-        <h2 class="text-2xl font-bold font-heading text-white">GuruAI Admin Console is Restricted</h2>
+        <h2 class="text-2xl font-bold font-heading text-white">Access Temporarily Locked</h2>
         <p id="accessBlockReason" class="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-          Yeh page public users ke liye uplabdh nahi hai. Direct URL ya public link se is console ko access karna blocked hai.
-        </p>
-        <p class="text-xs text-slate-400 max-w-md mx-auto">
-          GuruAI administrative controls sirf authorized platform administrator ke liye <strong class="text-amber-300">https://webguruji.online/admin.html</strong> par uplabdh hain.
+          Yeh console suraksha uddeshyon ke liye band kar di gayi hai.
         </p>
       </div>
 
       <div class="pt-2 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-        <a href="https://webguruji.online/admin.html" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-lg transition text-center flex items-center justify-center gap-1.5">
-          <span>👑 Open Master Admin (webguruji.online)</span>
-        </a>
+        <button onclick="retryAdminGate()" class="flex-1 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg transition text-center cursor-pointer">
+          Try Again
+        </button>
         <a href="index.html" class="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-xs transition text-center flex items-center justify-center">
           Return to GuruAI Chat
         </a>
@@ -269,22 +322,42 @@
 
     const MASTER_ADMIN_EMAIL = 'harshguruji01@gmail.com';
     const MASTER_GATE_KEY = '2547277654';
+    const MAX_GATE_ATTEMPTS = 3;
+    const LOCKOUT_MS = 15 * 60 * 1000; // 15 mins anti-bruteforce lock
+    const GATE_SESSION_DURATION_MS = 60 * 60 * 1000; // 1 hour session duration
 
     let currentSessionUser = null;
     let allUsersList = [];
 
-    // Gate Verification: Only accessible via Master Admin Portal (webguruji.online/admin.html)
+    function getGateLockoutInfo() {
+      const lockoutUntil = parseInt(localStorage.getItem('guru_admin_lockout_until') || '0', 10);
+      const attempts = parseInt(localStorage.getItem('guru_admin_attempts') || '0', 10);
+      const isLocked = lockoutUntil > Date.now();
+      return { isLocked, lockoutUntil, attempts };
+    }
+
+    // Gate Verification: Master Admin Portal or Verified Pass ID
     function isGateUnlocked() {
       try {
+        const unlockExpiry = parseInt(localStorage.getItem('admin_gate_unlocked_until') || '0', 10);
+        if (unlockExpiry > Date.now()) return true;
+        if (sessionStorage.getItem('admin_gate_unlocked') === 'true') return true;
+
         const params = new URLSearchParams(window.location.search);
         const gate = params.get('gate');
         const key = params.get('key');
-        if (gate === 'master_admin' && (key === MASTER_GATE_KEY || !key)) return true;
+        if (gate === 'master_admin' && (key === MASTER_GATE_KEY || !key)) {
+          localStorage.setItem('admin_gate_unlocked_until', String(Date.now() + GATE_SESSION_DURATION_MS));
+          sessionStorage.setItem('admin_gate_unlocked', 'true');
+          return true;
+        }
 
         // Check if embedded in iframe from authorized domain
         const inIframe = window.self !== window.top;
         const ref = document.referrer || '';
         if (inIframe && (ref.includes('webguruji.online') || ref.includes('localhost') || ref.includes('127.0.0.1'))) {
+          localStorage.setItem('admin_gate_unlocked_until', String(Date.now() + GATE_SESSION_DURATION_MS));
+          sessionStorage.setItem('admin_gate_unlocked', 'true');
           return true;
         }
       } catch (e) {}
@@ -294,6 +367,11 @@
     // DOM References
     const headerAuthDot = document.getElementById('headerAuthDot');
     const headerAuthText = document.getElementById('headerAuthText');
+    const gatePassSection = document.getElementById('gatePassSection');
+    const gateEmailInput = document.getElementById('gateEmailInput');
+    const gateSecretInput = document.getElementById('gateSecretInput');
+    const gateAlert = document.getElementById('gateAlert');
+    const gateSubmitBtn = document.getElementById('gateSubmitBtn');
     const accessBlockedSection = document.getElementById('accessBlockedSection');
     const accessBlockReason = document.getElementById('accessBlockReason');
     const loginPromptSection = document.getElementById('loginPromptSection');
@@ -303,6 +381,70 @@
     const adminSignOutBtn = document.getElementById('adminSignOutBtn');
     const userSearchInput = document.getElementById('userSearchInput');
     const usersTableBody = document.getElementById('usersTableBody');
+
+    // Gate Pass Interactive Handlers
+    function showGateAlert(msg, type = 'error') {
+      if (!gateAlert) return;
+      gateAlert.className = `p-3 rounded-xl text-xs border font-medium ${
+        type === 'error' 
+          ? 'bg-rose-950/70 border-rose-800/80 text-rose-300' 
+          : 'bg-emerald-950/70 border-emerald-800/80 text-emerald-300'
+      }`;
+      gateAlert.textContent = msg;
+      gateAlert.classList.remove('hidden');
+    }
+
+    function checkLockoutState() {
+      const { isLocked, lockoutUntil } = getGateLockoutInfo();
+      if (isLocked) {
+        const remainingSec = Math.ceil((lockoutUntil - Date.now()) / 1000);
+        const mins = Math.floor(remainingSec / 60);
+        const secs = remainingSec % 60;
+        showGateAlert(`Anti-bruteforce lock active! Too many incorrect attempts. Please wait ${mins}m ${secs}s.`, 'error');
+        if (gateSubmitBtn) gateSubmitBtn.disabled = true;
+        return true;
+      }
+      if (gateSubmitBtn) gateSubmitBtn.disabled = false;
+      return false;
+    }
+
+    function handleGatePassSubmit(e) {
+      if (e) e.preventDefault();
+      if (checkLockoutState()) return;
+
+      const email = gateEmailInput ? gateEmailInput.value.trim().toLowerCase() : '';
+      const secret = gateSecretInput ? gateSecretInput.value.trim() : '';
+
+      if (email === MASTER_ADMIN_EMAIL.toLowerCase() && secret === MASTER_GATE_KEY) {
+        // Successful verification
+        localStorage.removeItem('guru_admin_attempts');
+        localStorage.removeItem('guru_admin_lockout_until');
+        localStorage.setItem('admin_gate_unlocked_until', String(Date.now() + GATE_SESSION_DURATION_MS));
+        sessionStorage.setItem('admin_gate_unlocked', 'true');
+        showGateAlert('Master Pass verified! Unlocking admin console...', 'success');
+        setTimeout(() => {
+          updateAdminHeader(currentSessionUser);
+        }, 500);
+      } else {
+        let attempts = parseInt(localStorage.getItem('guru_admin_attempts') || '0', 10) + 1;
+        localStorage.setItem('guru_admin_attempts', String(attempts));
+
+        if (attempts >= MAX_GATE_ATTEMPTS) {
+          const lockoutUntil = Date.now() + LOCKOUT_MS;
+          localStorage.setItem('guru_admin_lockout_until', String(lockoutUntil));
+          showGateAlert(`3 incorrect attempts! Gate locked for 15 minutes.`, 'error');
+          if (gateSubmitBtn) gateSubmitBtn.disabled = true;
+        } else {
+          showGateAlert(`Invalid credentials. Attempt ${attempts} of ${MAX_GATE_ATTEMPTS}. Please check your private email & Secret ID.`, 'error');
+        }
+      }
+    }
+
+    function retryAdminGate() {
+      if (accessBlockedSection) accessBlockedSection.classList.add('hidden');
+      if (gatePassSection) gatePassSection.classList.remove('hidden');
+      checkLockoutState();
+    }
 
     // Stats
     const statTotalUsers = document.getElementById('statTotalUsers');
@@ -587,68 +729,73 @@
           headerAuthDot.className = 'w-2 h-2 rounded-full bg-rose-500';
           headerAuthText.textContent = `Access Denied (${user.email})`;
 
-          if (loginPromptSection) loginPromptSection.classList.add('hidden');
-          if (adminContentSection) adminContentSection.classList.add('hidden');
-          if (accessBlockedSection) {
-            accessBlockedSection.classList.remove('hidden');
-            if (accessBlockReason) {
-              accessBlockReason.innerHTML = `Aapka account (<strong class="text-rose-300">${user.email}</strong>) is console ke liye authorized nahi hai. Yeh page sirf Master Administrator (<strong class="text-amber-300">${MASTER_ADMIN_EMAIL}</strong>) ke liye arakshit hai.`;
-            }
-          }
-          return;
-        }
-
-        // Master Admin authenticated
-        headerAuthDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-        headerAuthText.textContent = `${user.email} (Master Admin)`;
-
-        if (accessBlockedSection) accessBlockedSection.classList.add('hidden');
+        if (gatePassSection) gatePassSection.classList.add('hidden');
         if (loginPromptSection) loginPromptSection.classList.add('hidden');
-        if (adminContentSection) adminContentSection.classList.remove('hidden');
-
-        const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
-        const nameEl = document.getElementById('adminUserName');
-        const emailEl = document.getElementById('adminUserEmail');
-        if (nameEl) nameEl.textContent = name;
-        if (emailEl) emailEl.textContent = user.email;
-
-        const avatarEl = document.getElementById('adminUserAvatar');
-        if (avatarEl) {
-          if (user.user_metadata?.avatar_url || user.user_metadata?.picture) {
-            avatarEl.innerHTML = `<img src="${user.user_metadata.avatar_url || user.user_metadata.picture}" alt="${name}" class="w-full h-full object-cover" />`;
-          } else {
-            avatarEl.textContent = name[0].toUpperCase();
+        if (adminContentSection) adminContentSection.classList.add('hidden');
+        if (accessBlockedSection) {
+          accessBlockedSection.classList.remove('hidden');
+          if (accessBlockReason) {
+            accessBlockReason.innerHTML = `Aapka account (<strong class="text-rose-300">${user.email}</strong>) is console ke liye authorized nahi hai. Yeh page sirf Master Administrator (<strong class="text-amber-300">${MASTER_ADMIN_EMAIL}</strong>) ke liye arakshit hai.`;
           }
         }
+        return;
+      }
 
-        const isGoogle = user.app_metadata?.provider === 'google' || user.email.endsWith('@gmail.com');
-        const badgeEl = document.getElementById('adminProviderBadge');
-        if (badgeEl) badgeEl.textContent = isGoogle ? 'Google Account' : 'Email Account';
+      // Master Admin authenticated
+      headerAuthDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+      headerAuthText.textContent = `${user.email} (Master Admin)`;
 
-        const roleBadge = document.getElementById('adminRoleBadge');
-        const roleText = document.getElementById('adminRoleText');
-        if (roleBadge) roleBadge.classList.remove('hidden');
-        if (roleText) roleText.textContent = 'Master Admin';
+      if (gatePassSection) gatePassSection.classList.add('hidden');
+      if (accessBlockedSection) accessBlockedSection.classList.add('hidden');
+      if (loginPromptSection) loginPromptSection.classList.add('hidden');
+      if (adminContentSection) adminContentSection.classList.remove('hidden');
 
-      } else {
-        // Not logged in
-        if (gateOpen) {
-          // Gate is unlocked from webguruji.online/admin.html -> Show login prompt
-          headerAuthDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-          headerAuthText.textContent = 'Admin Gate (Sign-in required)';
-          if (accessBlockedSection) accessBlockedSection.classList.add('hidden');
-          if (loginPromptSection) loginPromptSection.classList.remove('hidden');
-          if (adminContentSection) adminContentSection.classList.add('hidden');
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+      const nameEl = document.getElementById('adminUserName');
+      const emailEl = document.getElementById('adminUserEmail');
+      if (nameEl) nameEl.textContent = name;
+      if (emailEl) emailEl.textContent = user.email;
+
+      const avatarEl = document.getElementById('adminUserAvatar');
+      if (avatarEl) {
+        if (user.user_metadata?.avatar_url || user.user_metadata?.picture) {
+          avatarEl.innerHTML = `<img src="${user.user_metadata.avatar_url || user.user_metadata.picture}" alt="${name}" class="w-full h-full object-cover" />`;
         } else {
-          // Direct public access attempted without gate -> BLOCK ACCESS
-          headerAuthDot.className = 'w-2 h-2 rounded-full bg-rose-500';
-          headerAuthText.textContent = 'Restricted 403 (Public Blocked)';
-          if (loginPromptSection) loginPromptSection.classList.add('hidden');
-          if (adminContentSection) adminContentSection.classList.add('hidden');
-          if (accessBlockedSection) accessBlockedSection.classList.remove('hidden');
+          avatarEl.textContent = name[0].toUpperCase();
         }
       }
+
+      const isGoogle = user.app_metadata?.provider === 'google' || user.email.endsWith('@gmail.com');
+      const badgeEl = document.getElementById('adminProviderBadge');
+      if (badgeEl) badgeEl.textContent = isGoogle ? 'Google Account' : 'Email Account';
+
+      const roleBadge = document.getElementById('adminRoleBadge');
+      const roleText = document.getElementById('adminRoleText');
+      if (roleBadge) roleBadge.classList.remove('hidden');
+      if (roleText) roleText.textContent = 'Master Admin';
+
+    } else {
+      // Not logged in
+      if (gateOpen) {
+        // Gate is unlocked -> Show login prompt
+        headerAuthDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        headerAuthText.textContent = 'Admin Gate (Sign-in required)';
+        if (gatePassSection) gatePassSection.classList.add('hidden');
+        if (accessBlockedSection) accessBlockedSection.classList.add('hidden');
+        if (loginPromptSection) loginPromptSection.classList.remove('hidden');
+        if (adminContentSection) adminContentSection.classList.add('hidden');
+      } else {
+        // Direct access -> Show Master Security Gate verification form
+        headerAuthDot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+        headerAuthText.textContent = 'Master Gate Pass Required';
+        if (loginPromptSection) loginPromptSection.classList.add('hidden');
+        if (adminContentSection) adminContentSection.classList.add('hidden');
+        if (accessBlockedSection) accessBlockedSection.classList.add('hidden');
+        if (gatePassSection) gatePassSection.classList.remove('hidden');
+        checkLockoutState();
+      }
     }
+  }
 
     // Initialize Auth Session
     if (supabase) {
