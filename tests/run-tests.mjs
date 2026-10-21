@@ -277,6 +277,21 @@ test('Clean Routing: 404 smart routing and login page exist with directory mirro
   assert.ok(workflow.includes('./out/admin/index.html'), 'CI/CD must mirror admin index.html');
 });
 
+// 11. Hostinger Mail MCP Integration Tests
+test('Hostinger Mail: Mailbox configuration, send utility and MCP server exist', () => {
+  assert.ok(fs.existsSync('lib/mail.js'), 'lib/mail.js must exist');
+  assert.ok(fs.existsSync('app/api/mail/send/route.js'), 'app/api/mail/send/route.js must exist');
+  const mailLib = fs.readFileSync('lib/mail.js', 'utf8');
+  assert.ok(mailLib.includes('info@webguruji.online'), 'Default sender must be info@webguruji.online');
+  assert.ok(mailLib.includes('AC955bc6c100d79999a2c5613002ee'), 'Mailbox resource ID must match');
+  assert.ok(mailLib.includes('api.mail.hostinger.com'), 'Must use api.mail.hostinger.com endpoint');
+
+  const mcpConfigFile = 'C:/Users/harsh/.gemini/config/mcp_config.json';
+  assert.ok(fs.existsSync(mcpConfigFile), 'mcp_config.json must exist');
+  const mcpConfig = JSON.parse(fs.readFileSync(mcpConfigFile, 'utf8'));
+  assert.ok(mcpConfig.mcpServers['hostinger-mail'], 'hostinger-mail server must be registered in mcp_config.json');
+});
+
 console.log(`\n========================================`);
 console.log(`Test Summary: ${passedTests} passed, ${failedTests} failed.`);
 console.log(`========================================\n`);
