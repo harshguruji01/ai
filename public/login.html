@@ -486,7 +486,9 @@
           showAlert('success', 'Welcome back, ' + (verifyData.displayName || 'User') + '! 👋 Redirecting...');
         }
 
-        setTimeout(() => { window.location.href = 'index.html'; }, 600);
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetRedirect = urlParams.get('redirect') || urlParams.get('return_to') || 'index.html';
+        setTimeout(() => { window.location.href = targetRedirect; }, 600);
       } catch (err) {
         showAlert('error', err.message || 'Failed to verify code.');
       } finally {
