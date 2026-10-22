@@ -1165,6 +1165,10 @@
       processed = processed.replace(/^\s*[-*•]\s+(.*)$/gim, '<li class="ml-4 list-disc">$1</li>');
       processed = processed.replace(/^\s*(\d+)\.\s+(.*)$/gim, '<li class="ml-4 list-decimal">$2</li>');
 
+      // 7.4 Strictly Sanitize webguruji URLs (never output https://www.webguruji.online)
+      processed = processed.replace(/https?:\/\/www\.webguruji\.online/gi, 'https://webguruji.online');
+      processed = processed.replace(/(^|[^\/])www\.webguruji\.online(?!\/owner\.html|[a-zA-Z0-9_\-\.])/gi, '$1https://webguruji.online');
+
       // 7.5 Links
       processed = processed.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-cyan-400 underline hover:text-cyan-300 font-semibold">$1</a>');
       processed = processed.replace(/(^|[^"'])(https:\/\/webguruji\.online\/owner\.html)/g, '$1<a href="https://webguruji.online/owner.html" target="_blank" rel="noopener noreferrer" class="text-cyan-400 underline hover:text-cyan-300 font-semibold">https://webguruji.online/owner.html</a>');

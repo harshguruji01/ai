@@ -5,7 +5,7 @@ import {
   userPreferencesSchema,
   conversationCreateSchema,
 } from '../lib/validation.js';
-import { buildSystemPrompt, isImageIntent, isCreatorIntent } from '../lib/ai/nvidia.js';
+import { buildSystemPrompt, isImageIntent, isCreatorIntent, isModelIntent } from '../lib/ai/nvidia.js';
 import { generateGuestKeyHash, extractClientIp } from '../lib/security.js';
 
 console.log('🚀 Running HarshGuruJi AI Automated Test Suite...\n');
@@ -99,23 +99,34 @@ test('AI Intent: Accurately detects creator and owner queries', () => {
   assert.strictEqual(isCreatorIntent('Write a quicksort in JavaScript'), false);
 });
 
+test('AI Intent: Accurately detects Guru-Flash 1.1 and model queries', () => {
+  assert.strictEqual(isModelIntent('what is guru flash 1.1?'), true);
+  assert.strictEqual(isModelIntent('guru flash 1.1 kya hai?'), true);
+  assert.strictEqual(isModelIntent('ye kis model par chal raha hai?'), true);
+  assert.strictEqual(isModelIntent('which model are you running on?'), true);
+  assert.strictEqual(isModelIntent('tell me a joke about dogs'), false);
+});
+
 // 3. System Prompt Construction Tests
 test('System Prompt: Hindi Devanagari instructions included', () => {
   const prompt = buildSystemPrompt('hindi');
   assert.ok(prompt.includes('Devanagari'));
   assert.ok(prompt.includes('GuruAI'));
   assert.ok(prompt.includes('HarshGuruJi'));
+  assert.ok(prompt.includes('Guru-Flash 1.1'));
 });
 
 test('System Prompt: Hinglish conversational rules included', () => {
   const prompt = buildSystemPrompt('hinglish');
   assert.ok(prompt.includes('Hinglish'));
   assert.ok(prompt.includes('Latin/English script'));
+  assert.ok(prompt.includes('Guru-Flash 1.1'));
 });
 
 test('System Prompt: English default rules included', () => {
   const prompt = buildSystemPrompt('english');
   assert.ok(prompt.includes('English'));
+  assert.ok(prompt.includes('Guru-Flash 1.1'));
 });
 
 test('System Prompt: Permanent Creator Memory includes Owner, Domains & Biography Link', () => {
@@ -124,6 +135,8 @@ test('System Prompt: Permanent Creator Memory includes Owner, Domains & Biograph
   assert.ok(prompt.includes('https://webguruji.online'));
   assert.ok(prompt.includes('https://ai.webguruji.online'));
   assert.ok(prompt.includes('https://webguruji.online/owner.html'));
+  assert.ok(prompt.includes('FORBIDDEN URL RULES'));
+  assert.ok(prompt.includes('everyday life'));
 });
 
 // 4. Guest Anti-Abuse Key Hash Tests
