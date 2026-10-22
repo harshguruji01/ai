@@ -2331,6 +2331,16 @@
     }
 
     function openAuthModal(mode = 'login') {
+      try {
+        const hostname = window.location.hostname;
+        let domainStr = (hostname === 'webguruji.online' || hostname.endsWith('.webguruji.online')) ? '; domain=.webguruji.online' : '';
+        const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
+        document.cookie = `hg_auth_redirect=${encodeURIComponent('https://ai.webguruji.online/')}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
+      } catch(e) {}
+      if (!currentUser && (mode === 'login' || mode === 'register')) {
+        window.location.href = 'https://login.webguruji.online/?redirect=' + encodeURIComponent('https://ai.webguruji.online/') + '&source=ai';
+        return;
+      }
       setAuthModalMode(currentUser ? 'profile' : mode);
       authModal.classList.remove('hidden');
     }
@@ -2354,9 +2364,15 @@
       btn.onclick = async () => {
         if (!supabaseClient) return showAuthAlert('error', 'Supabase not initialized');
         showAuthAlert('clear', '');
+        try {
+          const hostname = window.location.hostname;
+          let domainStr = (hostname === 'webguruji.online' || hostname.endsWith('.webguruji.online')) ? '; domain=.webguruji.online' : '';
+          const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
+          document.cookie = `hg_auth_redirect=${encodeURIComponent('https://ai.webguruji.online/')}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
+        } catch(e) {}
         const { error } = await supabaseClient.auth.signInWithOAuth({
           provider: 'google',
-          options: { redirectTo: window.location.origin + '/' }
+          options: { redirectTo: 'https://ai.webguruji.online/' }
         });
         if (error) showAuthAlert('error', error.message);
       };
@@ -2493,6 +2509,26 @@
 
     // Session Listener
     if (supabaseClient) {
+      if (window.location.hash && window.location.hash.includes('access_token=')) {
+        try {
+          const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+          const access_token = hashParams.get('access_token');
+          const refresh_token = hashParams.get('refresh_token');
+          if (access_token && refresh_token) {
+            supabaseClient.auth.setSession({ access_token, refresh_token }).then(({ data, error }) => {
+              if (!error && data?.session) {
+                updateUserState(data.session.user);
+                showToast('Logged in successfully!', 'success');
+              }
+            });
+            const cleanUrl = window.location.pathname + window.location.search;
+            history.replaceState(null, document.title, cleanUrl);
+          }
+        } catch (e) {
+          console.warn('Error ingesting hash tokens:', e);
+        }
+      }
+
       supabaseClient.auth.getSession().then(({ data: { session } }) => {
         updateUserState(session?.user || null);
       });

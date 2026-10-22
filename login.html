@@ -390,7 +390,13 @@
       btn.onclick = async () => {
         if (!supabase) return showAlert('error', 'Supabase client failed to initialize');
         showAlert('clear', '');
-        const redirectTo = window.location.origin + '/';
+        try {
+          const hostname = window.location.hostname;
+          let domainStr = (hostname === 'webguruji.online' || hostname.endsWith('.webguruji.online')) ? '; domain=.webguruji.online' : '';
+          const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
+          document.cookie = `hg_auth_redirect=${encodeURIComponent('https://ai.webguruji.online/')}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
+        } catch(e) {}
+        const redirectTo = 'https://ai.webguruji.online/';
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: { redirectTo }
@@ -487,7 +493,10 @@
         }
 
         const urlParams = new URLSearchParams(window.location.search);
-        const targetRedirect = urlParams.get('redirect') || urlParams.get('return_to') || 'index.html';
+        let targetRedirect = urlParams.get('redirect') || urlParams.get('return_to') || 'index.html';
+        if (targetRedirect.includes('login.html') || targetRedirect === 'https://webguruji.online/dashboard.html') {
+          targetRedirect = 'index.html';
+        }
         setTimeout(() => { window.location.href = targetRedirect; }, 600);
       } catch (err) {
         showAlert('error', err.message || 'Failed to verify code.');
