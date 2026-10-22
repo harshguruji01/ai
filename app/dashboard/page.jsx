@@ -612,7 +612,7 @@ export default function DashboardPage() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-[#0c101d] px-4 py-4 text-center text-xs text-slate-500 mt-auto">
-        <span>GuruAI Studio Dashboard &copy; 2026 HarshGuruJi. All rights reserved.</span>
+        <span>GuruAI Studio Dashboard &copy; 2026 <img src="https://webguruji.online/logo.png" alt="HarshGuruJi Logo" style={{ height: '1.1em', width: '1.1em', borderRadius: '3px', verticalAlign: 'middle', display: 'inline-block', marginRight: '3px' }} />HarshGuruJi. All rights reserved.</span>
       </footer>
     </div>
   );

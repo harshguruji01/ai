@@ -886,7 +886,7 @@ function LoginContent() {
 
       {/* Footer */}
       <footer className="py-4 text-center text-xs text-slate-400 border-t border-slate-800/80">
-        GuruAI by HarshGuruJi &bull; Secure Authentication powered by Supabase &bull;{' '}
+        GuruAI by <img src="https://webguruji.online/logo.png" alt="HarshGuruJi Logo" style={{ height: '1.1em', width: '1.1em', borderRadius: '3px', verticalAlign: 'middle', display: 'inline-block', marginRight: '3px' }} />HarshGuruJi &bull; Secure Authentication powered by Supabase &bull;{' '}
         <a href="https://webguruji.online" target="_blank" className="text-cyan-400 hover:underline">
           webguruji.online
         </a>
