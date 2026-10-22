@@ -292,6 +292,60 @@ test('Hostinger Mail: Mailbox configuration, send utility and MCP server exist',
   assert.ok(mcpConfig.mcpServers['hostinger-mail'], 'hostinger-mail server must be registered in mcp_config.json');
 });
 
+test('Welcome Email: HTML template generation and CORS support in mail route', () => {
+  const mailLib = fs.readFileSync('lib/mail.js', 'utf8');
+  assert.ok(mailLib.includes('generateWelcomeEmailHtml'), 'Must export generateWelcomeEmailHtml');
+  assert.ok(mailLib.includes('sendWelcomeEmail'), 'Must export sendWelcomeEmail');
+
+  const routeSrc = fs.readFileSync('app/api/mail/send/route.js', 'utf8');
+  assert.ok(routeSrc.includes('OPTIONS'), 'Must implement OPTIONS preflight method');
+  assert.ok(routeSrc.includes('Access-Control-Allow-Origin'), 'Must include CORS headers');
+  assert.ok(routeSrc.includes('sendWelcomeEmail'), 'Must support welcome email dispatch');
+});
+
+test('Task 1 & 2: Welcome Email template reflects login source (AI Hub vs Main Site)', () => {
+  const mailLib = fs.readFileSync('lib/mail.js', 'utf8');
+  assert.ok(mailLib.includes("source === 'ai'"), 'Must distinguish between AI and Main source');
+  assert.ok(mailLib.includes('GuruAI by HarshGuruJi'), 'Must include GuruAI brand for AI login');
+  assert.ok(mailLib.includes('HarshGuruJi <info@webguruji.online>'), 'Must include HarshGuruJi sender for main login');
+  assert.ok(mailLib.includes('ai.webguruji.online'), 'Must link to AI domain');
+  assert.ok(mailLib.includes('www.webguruji.online'), 'Must link to Main site domain');
+});
+
+test('Task 3: 6-Digit Email Verification Code generation and API routes exist', () => {
+  const mailLib = fs.readFileSync('lib/mail.js', 'utf8');
+  assert.ok(mailLib.includes('generateVerificationCodeHtml'), 'Must export generateVerificationCodeHtml');
+  assert.ok(mailLib.includes('sendVerificationCodeEmail'), 'Must export sendVerificationCodeEmail');
+  assert.ok(mailLib.includes('info@webguruji.online'), 'Must send OTP from info@webguruji.online');
+
+  assert.ok(fs.existsSync('app/api/auth/send-login-code/route.js'), 'send-login-code API route must exist');
+  const sendRoute = fs.readFileSync('app/api/auth/send-login-code/route.js', 'utf8');
+  assert.ok(sendRoute.includes('sendVerificationCodeEmail'), 'send-login-code must call sendVerificationCodeEmail');
+  assert.ok(sendRoute.includes('Access-Control-Allow-Origin'), 'send-login-code must have CORS support');
+
+  assert.ok(fs.existsSync('app/api/auth/verify-login-code/route.js'), 'verify-login-code API route must exist');
+  const verifyRoute = fs.readFileSync('app/api/auth/verify-login-code/route.js', 'utf8');
+  assert.ok(verifyRoute.includes('createHmac'), 'verify-login-code must use HMAC signature validation');
+  assert.ok(verifyRoute.includes('sendWelcomeEmail'), 'verify-login-code must send welcome email for new users');
+});
+
+test('Task 3: Client login portals (site and ai) implement email verification code flow', () => {
+  const siteAuth = fs.readFileSync('c:/Users/harsh/OneDrive/Desktop/site/js/auth.js', 'utf8');
+  assert.ok(siteAuth.includes('sendLoginVerificationCode'), 'site/js/auth.js must export sendLoginVerificationCode');
+  assert.ok(siteAuth.includes('verifyLoginCode'), 'site/js/auth.js must export verifyLoginCode');
+  assert.ok(!siteAuth.includes('const userEmail = (user.email || \'\').toLowerCase();\n    const isOwner'), 'Duplicate userEmail must be eliminated');
+
+  const siteLogin = fs.readFileSync('c:/Users/harsh/OneDrive/Desktop/site/login.html', 'utf8');
+  assert.ok(siteLogin.includes('sendLoginVerificationCode'), 'site login.html must use sendLoginVerificationCode');
+  assert.ok(siteLogin.includes('verifyLoginCode'), 'site login.html must use verifyLoginCode');
+
+  const aiLogin = fs.readFileSync('login.html', 'utf8');
+  assert.ok(aiLogin.includes('send-login-code'), 'ai login.html must invoke send-login-code');
+  assert.ok(aiLogin.includes('verify-login-code'), 'ai login.html must invoke verify-login-code');
+  assert.ok(aiLogin.includes('loginOtpSection'), 'ai login.html must have loginOtpSection');
+});
+
+
 console.log(`\n========================================`);
 console.log(`Test Summary: ${passedTests} passed, ${failedTests} failed.`);
 console.log(`========================================\n`);

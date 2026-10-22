@@ -130,47 +130,76 @@
 
       <!-- 1. SIGN IN FORM -->
       <form id="loginForm" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Email Address</label>
-          <div class="relative">
-            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            <input id="loginEmail" type="email" required placeholder="name@example.com" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+        <!-- Credentials Step -->
+        <div id="loginCredentialsSection" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Email Address</label>
+            <div class="relative">
+              <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <input id="loginEmail" type="email" required placeholder="name@example.com" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="text-xs font-semibold text-slate-300">Password</label>
+              <button type="button" id="btnGoToForgot" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium transition">Forgot password?</button>
+            </div>
+            <div class="relative">
+              <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+            </div>
+          </div>
+
+          <button type="submit" id="btnLoginSubmit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+            <span>Sign In</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+
+          <div class="relative my-3">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
+            <div class="relative flex justify-center text-xs"><span class="bg-[#0d121f] px-3 text-slate-500 uppercase tracking-wider font-semibold text-[10px]">Or continue with</span></div>
+          </div>
+
+          <button type="button" class="googleSignInBtn w-full py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 font-semibold text-sm flex items-center justify-center gap-3 transition shadow-sm group">
+            <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <div class="pt-2 text-center text-xs text-slate-400">
+            Don't have an account? <button type="button" id="btnGoToRegister" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Create Account</button>
           </div>
         </div>
 
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="text-xs font-semibold text-slate-300">Password</label>
-            <button type="button" id="btnGoToForgot" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium transition">Forgot password?</button>
+        <!-- 6-Digit Email Verification Code Step (Task 3) -->
+        <div id="loginOtpSection" class="space-y-4 hidden">
+          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-indigo-500/30 text-xs text-slate-300">
+            <div class="flex items-center gap-2 font-semibold text-cyan-400 mb-1">
+              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <span>Security Code Dispatched</span>
+            </div>
+            <p class="leading-relaxed">A 6-digit login verification code was sent from <strong class="text-white">info@webguruji.online</strong> to <span id="loginDisplayEmail" class="text-cyan-400 font-bold"></span>.</p>
           </div>
-          <div class="relative">
-            <svg class="w-4 h-4 absolute left-3.5 top-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-            <input id="loginPassword" type="password" required placeholder="••••••••" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition" />
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Enter 6-Digit Verification Code</label>
+            <input id="loginEmailOtp" type="text" maxlength="6" placeholder="123456" class="w-full bg-slate-950/90 border border-indigo-500/60 rounded-xl px-4 py-3 text-center text-2xl font-mono tracking-[0.4em] text-cyan-400 placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition shadow-inner" />
           </div>
-        </div>
 
-        <button type="submit" id="btnLoginSubmit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition active:scale-[0.99]">
-          <span>Sign In</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-        </button>
+          <button type="button" id="btnLoginVerifyOtp" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+            <span>Verify Code & Sign In</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
 
-        <div class="relative my-3">
-          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
-          <div class="relative flex justify-center text-xs"><span class="bg-[#0d121f] px-3 text-slate-500 uppercase tracking-wider font-semibold text-[10px]">Or continue with</span></div>
-        </div>
-
-        <button type="button" class="googleSignInBtn w-full py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 font-semibold text-sm flex items-center justify-center gap-3 transition shadow-sm group">
-          <svg class="w-4 h-4 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-          </svg>
-          <span>Continue with Google</span>
-        </button>
-
-        <div class="pt-2 text-center text-xs text-slate-400">
-          Don't have an account? <button type="button" id="btnGoToRegister" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Create Account</button>
+          <div class="flex items-center justify-between text-xs pt-1">
+            <button type="button" id="btnBackToCredentials" class="text-slate-400 hover:text-slate-200 transition font-medium">← Back to Email / Password</button>
+            <button type="button" id="btnResendLoginOtp" class="text-cyan-400 hover:text-cyan-300 font-semibold transition">Resend Code</button>
+          </div>
         </div>
       </form>
 
@@ -370,39 +399,134 @@
       };
     });
 
-    // Email / Password Login
+    // Email / Password Login State for Verification Code (Task 3)
+    let pendingLoginEmail = '';
+    let pendingLoginPassword = '';
+    let pendingLoginToken = '';
+
+    // Step 1: User submits email & password -> Send 6-digit OTP from info@webguruji.online
     loginForm.onsubmit = async (e) => {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim();
+      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
       const password = document.getElementById('loginPassword').value;
       if (!supabase) return showAlert('error', 'Supabase not initialized');
 
       const submitBtn = document.getElementById('btnLoginSubmit');
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Signing in...</span>';
+      submitBtn.innerHTML = '<span>Verifying credentials...</span>';
 
       try {
-        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error && error.message.toLowerCase().includes('email not confirmed')) {
-          try {
-            await fetch('/api/auth/signup', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, password })
-            });
-            const retry = await supabase.auth.signInWithPassword({ email, password });
-            data = retry.data;
-            error = retry.error;
-          } catch (_) {}
+        const res = await fetch('/api/auth/send-login-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, source: 'ai' })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Login verification failed.');
         }
-        if (error) throw error;
-        showAlert('success', 'Sign in successful! Redirecting...');
-        setTimeout(() => { window.location.href = 'index.html'; }, 600);
+
+        pendingLoginEmail = email;
+        pendingLoginPassword = password;
+        pendingLoginToken = data.token;
+
+        // Transition to OTP verification step
+        document.getElementById('loginCredentialsSection').classList.add('hidden');
+        document.getElementById('loginOtpSection').classList.remove('hidden');
+        document.getElementById('loginDisplayEmail').textContent = email;
+        const otpInput = document.getElementById('loginEmailOtp');
+        otpInput.value = '';
+        otpInput.focus();
+
+        showAlert('success', '6-digit verification code sent to ' + email + ' from info@webguruji.online! Please check your inbox or spam.');
       } catch (err) {
         showAlert('error', err.message || 'Login failed.');
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<span>Sign In</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+      }
+    };
+
+    // Step 2: Verify 6-digit OTP code & complete login
+    document.getElementById('btnLoginVerifyOtp').onclick = async () => {
+      const code = document.getElementById('loginEmailOtp').value.trim();
+      if (!code) return showAlert('error', 'Please enter the 6-digit verification code.');
+      if (code.length < 6) return showAlert('error', 'Code must be 6 digits.');
+
+      const verifyBtn = document.getElementById('btnLoginVerifyOtp');
+      verifyBtn.disabled = true;
+      verifyBtn.innerHTML = '<span>Verifying code...</span>';
+
+      try {
+        const res = await fetch('/api/auth/verify-login-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: pendingLoginEmail,
+            code,
+            token: pendingLoginToken,
+            source: 'ai'
+          })
+        });
+        const verifyData = await res.json();
+        if (!res.ok) {
+          throw new Error(verifyData.error || 'Verification code failed.');
+        }
+
+        // Complete sign in with Supabase
+        const { error: signInErr } = await supabase.auth.signInWithPassword({
+          email: pendingLoginEmail,
+          password: pendingLoginPassword
+        });
+        if (signInErr) throw signInErr;
+
+        if (verifyData.isNewUser) {
+          showAlert('success', 'Welcome to GuruAI! 🎉 Welcome email sent from info@webguruji.online. Redirecting...');
+        } else {
+          showAlert('success', 'Welcome back, ' + (verifyData.displayName || 'User') + '! 👋 Redirecting...');
+        }
+
+        setTimeout(() => { window.location.href = 'index.html'; }, 600);
+      } catch (err) {
+        showAlert('error', err.message || 'Failed to verify code.');
+      } finally {
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = '<span>Verify Code & Sign In</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+      }
+    };
+
+    // Back to email/password credentials
+    document.getElementById('btnBackToCredentials').onclick = () => {
+      document.getElementById('loginOtpSection').classList.add('hidden');
+      document.getElementById('loginCredentialsSection').classList.remove('hidden');
+      showAlert('clear', '');
+    };
+
+    // Resend login verification code
+    document.getElementById('btnResendLoginOtp').onclick = async () => {
+      const resendBtn = document.getElementById('btnResendLoginOtp');
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('/api/auth/send-login-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: pendingLoginEmail,
+            password: pendingLoginPassword,
+            source: 'ai'
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to resend code.');
+        pendingLoginToken = data.token;
+        showAlert('success', 'New verification code sent to ' + pendingLoginEmail);
+      } catch (err) {
+        showAlert('error', err.message || 'Failed to resend code.');
+      } finally {
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Resend Code';
       }
     };
 
@@ -422,20 +546,39 @@
       submitBtn.innerHTML = '<span>Creating account...</span>';
 
       try {
+        const displayName = email.split('@')[0];
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { full_name: email.split('@')[0] },
+            data: { full_name: displayName, name: displayName, welcome_email_sent: true },
             emailRedirectTo: window.location.origin
           }
         });
         if (error) throw error;
+
+        // Send Welcome email automatically via Hostinger Mail API
+        try {
+          await fetch('/api/mail/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'welcome',
+              to: email,
+              name: displayName,
+              source: 'ai'
+            })
+          });
+          localStorage.setItem('hg_welcome_sent_' + (data?.user?.id || email), 'true');
+        } catch (mErr) {
+          console.warn('Welcome email notice:', mErr);
+        }
+
         if (data?.session) {
-          showAlert('success', 'Account created! Redirecting to chat...');
+          showAlert('success', 'Account created! Welcome email dispatched from info@webguruji.online. Redirecting...');
           setTimeout(() => { window.location.href = 'index.html'; }, 600);
         } else {
-          showAlert('success', 'Account created! Please check your email to verify, then sign in.');
+          showAlert('success', 'Account created! Welcome email sent from info@webguruji.online. Please sign in.');
           setMode('login');
           document.getElementById('loginEmail').value = email;
         }
@@ -511,16 +654,44 @@
 
     // Check existing session
     if (supabase) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
+      supabase.auth.getSession().then(async ({ data: { session } }) => {
         if (session?.user) {
-          document.getElementById('loggedInEmail').textContent = session.user.email;
-          document.getElementById('loggedInAvatar').textContent = (session.user.email || 'U')[0].toUpperCase();
+          const user = session.user;
+          const userEmail = (user.email || '').toLowerCase();
+          const displayName = user.user_metadata?.full_name || user.user_metadata?.name || userEmail.split('@')[0] || 'User';
+
+          document.getElementById('loggedInEmail').textContent = user.email;
+          document.getElementById('loggedInAvatar').textContent = (user.email || 'U')[0].toUpperCase();
           setMode('logged_in');
+
+          // Check if welcome email has been sent
+          const welcomeAlreadySent = user.user_metadata?.welcome_email_sent === true || localStorage.getItem('hg_welcome_sent_' + user.id) === 'true';
+          if (!welcomeAlreadySent && userEmail) {
+            try {
+              localStorage.setItem('hg_welcome_sent_' + user.id, 'true');
+              await supabase.auth.updateUser({
+                data: { welcome_email_sent: true, welcome_sent_at: new Date().toISOString() }
+              });
+              await fetch('/api/mail/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'welcome',
+                  to: userEmail,
+                  name: displayName,
+                  source: 'ai'
+                })
+              });
+            } catch (err) {
+              console.warn('Welcome mail check notice:', err);
+            }
+          }
         } else {
           setMode('login');
         }
       });
     }
+  </script>
   <!-- Hostinger Reach Onsite Tracking -->
   <script src="https://cdn-reach.hostinger.com/js/embed.js"></script>
 </body>
