@@ -308,8 +308,8 @@ test('Task 1 & 2: Welcome Email template reflects login source (AI Hub vs Main S
   assert.ok(mailLib.includes("source === 'ai'"), 'Must distinguish between AI and Main source');
   assert.ok(mailLib.includes('GuruAI by HarshGuruJi'), 'Must include GuruAI brand for AI login');
   assert.ok(mailLib.includes('HarshGuruJi <info@webguruji.online>'), 'Must include HarshGuruJi sender for main login');
-  assert.ok(mailLib.includes('ai.webguruji.online'), 'Must link to AI domain');
-  assert.ok(mailLib.includes('www.webguruji.online'), 'Must link to Main site domain');
+  assert.ok(mailLib.includes('https://webguruji.online'), 'Must link to Main site domain');
+  assert.ok(!mailLib.includes('www.webguruji.online'), 'Must not link to www.webguruji.online');
 });
 
 test('Task 3: 6-Digit Email Verification Code generation and API routes exist', () => {
