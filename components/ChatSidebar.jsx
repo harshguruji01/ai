@@ -21,6 +21,7 @@ import {
   Terminal,
   ShieldCheck,
   Calendar,
+  Sparkles,
 } from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 
@@ -73,6 +74,7 @@ export default function ChatSidebar({
   currentTheme = 'dark',
   onQuickThemeToggle,
   onOpenAuth,
+  onOpenUpgrade,
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingId, setEditingId] = useState(null);
@@ -380,21 +382,31 @@ export default function ChatSidebar({
         {/* Footer Area */}
         <div className="p-3 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] space-y-2.5 flex-shrink-0">
           {!isCollapsed && (
-            <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    remainingAllowance > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'
-                  }`}
-                />
-                <span className="text-slate-300 font-medium">
-                  {user ? 'Member Allowance' : 'Guest Allowance'}
+            <>
+              <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      remainingAllowance > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'
+                    }`}
+                  />
+                  <span className="text-slate-300 font-medium">
+                    {user ? 'Member Allowance' : 'Guest Allowance'}
+                  </span>
+                </div>
+                <span className="font-mono text-[11px] font-bold text-cyan-400">
+                  {remainingAllowance}/{maxRequests}
                 </span>
               </div>
-              <span className="font-mono text-[11px] font-bold text-cyan-400">
-                {remainingAllowance}/{maxRequests}
-              </span>
-            </div>
+              <button
+                type="button"
+                onClick={onOpenUpgrade}
+                className="w-full py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-amber-500/20 border border-indigo-500/40 hover:border-amber-400/60 text-amber-300 hover:text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>Upgrade Context &amp; Limits</span>
+              </button>
+            </>
           )}
 
           {/* Dashboard Link for Logged In User */}

@@ -28,6 +28,7 @@ export default function SettingsPanel({
   remainingAllowance = 2,
   maxRequests = 2,
   onOpenAuth,
+  onOpenUpgrade,
 }) {
   const [theme, setTheme] = useState(preferences.theme || 'dark');
   const [fontSize, setFontSize] = useState(preferences.font_size || 'medium');
@@ -259,7 +260,7 @@ export default function SettingsPanel({
                       <div className="font-semibold text-slate-200">{user?.email}</div>
                       <div className="text-emerald-400 text-[11px] flex items-center gap-1">
                         <Shield className="w-3.5 h-3.5" />
-                        <span>Verified WebGuruJi Member</span>
+                        <span>Verified HarshGuruJi Member</span>
                       </div>
                     </div>
                     <a
@@ -277,22 +278,34 @@ export default function SettingsPanel({
                   <div className="space-y-1">
                     <div className="text-amber-300 font-semibold">Guest Visitor</div>
                     <p className="text-slate-400 text-[11px]">
-                      Sign in with your WebGuruJi account to persist chats and unlock SDXL image creation.
+                      Sign in with your HarshGuruJi account to persist chats and unlock SDXL image creation.
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                <div>
-                  <div className="font-semibold text-slate-300">Remaining Quota</div>
-                  <div className="text-[11px] text-slate-400">
-                    {isLoggedIn ? '12-hour rolling window' : '6-hour rolling window'}
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-slate-300">Remaining Quota</div>
+                    <div className="text-[11px] text-slate-400">
+                      {isLoggedIn ? '12-hour rolling window' : '6-hour rolling window'}
+                    </div>
+                  </div>
+                  <div className="font-mono text-cyan-400 font-bold text-sm">
+                    {remainingAllowance} / {maxRequests} Left
                   </div>
                 </div>
-                <div className="font-mono text-cyan-400 font-bold text-sm">
-                  {remainingAllowance} / {maxRequests} Left
-                </div>
+                {onOpenUpgrade && (
+                  <button
+                    type="button"
+                    onClick={onOpenUpgrade}
+                    className="w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-amber-500/20 to-purple-500/20 border border-amber-500/40 text-amber-300 hover:text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                  >
+                    <span>⭐</span>
+                    <span>Upgrade Context &amp; Daily Limits</span>
+                  </button>
+                )}
               </div>
             </div>
           )}

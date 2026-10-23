@@ -1258,6 +1258,30 @@
 
   <!-- JAVASCRIPT APPLICATION CORE -->
   <script>
+    // --- GURUAI UPGRADE & CONTEXT LIMIT CONTROLLER ---
+    window.openUpgradeModal = function() {
+      const modal = document.getElementById('upgradeModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeUpgradeModal = function() {
+      const modal = document.getElementById('upgradeModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.handlePlanBuy = function(planName, contextLimit, price) {
+      const email = currentUser?.email || '';
+      const params = new URLSearchParams({
+        subject: 'ai_upgrade',
+        plan: planName,
+        context: contextLimit,
+        price: price,
+        email: email
+      });
+      const url = `https://webguruji.online/contact.html?${params.toString()}`;
+      window.open(url, '_blank');
+    };
+
     // 1. Supabase Initialization
     const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80';

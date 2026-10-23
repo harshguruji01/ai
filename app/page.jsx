@@ -9,6 +9,7 @@ import ChatInput from '@/components/ChatInput';
 import SettingsPanel from '@/components/SettingsPanel';
 import ImagePreview from '@/components/ImagePreview';
 import AuthModal from '@/components/AuthModal';
+import UpgradeModal from '@/components/UpgradeModal';
 
 export default function GuruAiApp() {
   const [supabase] = useState(() => createClient());
@@ -22,6 +23,7 @@ export default function GuruAiApp() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login');
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [previewImageData, setPreviewImageData] = useState(null);
 
   // Conversation & Chat State
@@ -660,6 +662,7 @@ export default function GuruAiApp() {
         currentTheme={preferences.theme}
         onQuickThemeToggle={handleQuickThemeToggle}
         onOpenAuth={handleOpenAuth}
+        onOpenUpgrade={() => setUpgradeModalOpen(true)}
       />
 
       {/* 2. Main Chat Center Workspace */}
@@ -682,6 +685,7 @@ export default function GuruAiApp() {
           cooldownMessage={quota.cooldownMessage}
           aiLanguage={preferences.ai_language}
           onOpenAuth={handleOpenAuth}
+          onOpenUpgrade={() => setUpgradeModalOpen(true)}
         />
 
         {/* 3. Bottom Composer */}
@@ -715,6 +719,10 @@ export default function GuruAiApp() {
           setSettingsOpen(false);
           handleOpenAuth(mode || 'login');
         }}
+        onOpenUpgrade={() => {
+          setSettingsOpen(false);
+          setUpgradeModalOpen(true);
+        }}
       />
 
       {/* 5. Image Lightbox */}
@@ -735,6 +743,13 @@ export default function GuruAiApp() {
           setUser(authenticatedUser);
           refreshUsageStatus(authenticatedUser);
         }}
+      />
+
+      {/* 7. Upgrade Modal (GuruAI Context & Quota Limits) */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        user={user}
       />
     </div>
   );

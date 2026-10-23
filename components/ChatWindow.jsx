@@ -38,6 +38,7 @@ export default function ChatWindow({
   cooldownMessage = null,
   aiLanguage = 'english',
   onOpenAuth,
+  onOpenUpgrade,
 }) {
   const scrollRef = useRef(null);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
@@ -114,8 +115,19 @@ export default function ChatWindow({
             maxRequests={maxRequests}
             isLoggedIn={!!user}
             resetInSeconds={resetInSeconds}
-            onClick={onOpenSettings}
+            onClick={onOpenUpgrade || onOpenSettings}
           />
+
+          {/* Upgrade Plan Button */}
+          <button
+            type="button"
+            onClick={onOpenUpgrade}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all duration-200 bg-gradient-to-r from-amber-500/20 to-purple-500/20 border-amber-500/40 text-amber-300 hover:from-amber-500/30 hover:to-purple-500/30 shadow-sm shadow-amber-500/10 cursor-pointer"
+            title="Upgrade context and daily limits"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Upgrade</span>
+          </button>
 
           {/* Settings Trigger */}
           <button
@@ -139,9 +151,11 @@ export default function ChatWindow({
             <div className="flex items-center gap-2">
               {/* User Dashboard Link (only for logged-in user) */}
               <a
-                href="/dashboard.html"
+                href={`${mainSiteUrl}/dashboard.html`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-full bg-slate-900/90 border border-indigo-500/50 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 text-slate-200 transition-all group active:scale-95"
-                title="User AI Dashboard (dashboard.html)"
+                title="User AI Dashboard"
               >
                 <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 border border-indigo-300/60 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
                   {user.user_metadata?.avatar_url ? (
@@ -302,18 +316,27 @@ export default function ChatWindow({
       {/* Cooldown Alert Banner */}
       {cooldownMessage && (
         <div className="max-w-3xl mx-auto w-full px-4 mb-2 flex-shrink-0 animate-fade-in">
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-2">
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2 min-w-0">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-              <span>{cooldownMessage}</span>
+              <span className="truncate">{cooldownMessage}</span>
             </div>
-            {!user && (
-              <a
-                href={mainSiteUrl}
-                className="px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 transition text-xs"
+            {user ? (
+              <button
+                type="button"
+                onClick={onOpenUpgrade || (() => window.open(`${mainSiteUrl}/contact.html?subject=ai_upgrade`, '_blank'))}
+                className="flex-shrink-0 px-3 py-1 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-bold hover:from-indigo-500 hover:to-cyan-500 transition text-xs cursor-pointer shadow-sm"
+              >
+                Upgrade Plan
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onOpenAuth?.('login')}
+                className="flex-shrink-0 px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 transition text-xs"
               >
                 Sign In
-              </a>
+              </button>
             )}
           </div>
         </div>
