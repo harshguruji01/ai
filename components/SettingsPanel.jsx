@@ -314,7 +314,7 @@ export default function SettingsPanel({
         {/* Footer */}
         <div className="px-6 py-4 bg-[var(--bg-primary)] border-t border-[var(--border-color)] flex items-center justify-between">
           <span className="text-[11px] text-slate-400">
-            Powered by NVIDIA NIM & Supabase
+            By HarshGuruJi
           </span>
           <div className="flex items-center gap-2">
             <button

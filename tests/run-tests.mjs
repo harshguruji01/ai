@@ -245,6 +245,12 @@ test('Workflow: React components render Dashboard only for logged-in user withou
   assert.ok(authModal.includes('window.location.pathname'), 'AuthModal must return user to AI page');
 });
 
+test('Branding: Settings footer credits HarshGuruJi instead of infrastructure providers', () => {
+  const settingsPanel = fs.readFileSync('components/SettingsPanel.jsx', 'utf8');
+  assert.ok(settingsPanel.includes('By HarshGuruJi'), 'Settings footer must credit HarshGuruJi');
+  assert.ok(!settingsPanel.includes('Powered by NVIDIA'), 'Settings footer must not expose provider attribution');
+});
+
 // 8. AI Dashboard & Admin Panel Integration Tests
 test('Workflow: dashboard.html and Next.js route exist with complete settings & quota analytics', () => {
   const dashHtml = fs.readFileSync('dashboard.html', 'utf8');
