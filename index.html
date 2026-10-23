@@ -63,6 +63,23 @@
 
   <style>
     /* Design Tokens */
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+    }
+
+    body.h-screen {
+      height: 100vh;
+      height: 100dvh;
+    }
+
     :root {
       /* Theme A: Dark Slate (Default - Gemini/ChatGPT Sleek Dark) */
       --bg-primary: #070913;
@@ -319,7 +336,7 @@
 
     <!-- 1. LEFT SIDEBAR (COLLAPSIBLE LIKE CHATGPT & GEMINI) -->
     <aside id="sidebar"
-      class="fixed inset-y-0 left-0 z-50 w-72 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col justify-between transition-all duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0">
+      class="fixed inset-y-0 left-0 z-50 w-72 min-h-0 overflow-hidden bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col justify-between transition-all duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0">
 
       <!-- Top Header & New Chat -->
       <div class="p-3.5 space-y-3 border-b border-[var(--border-color)] flex-shrink-0">
@@ -465,7 +482,7 @@
     </aside>
 
     <!-- 2. MAIN WORKSPACE CANVAS -->
-    <main class="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative bg-[var(--bg-primary)]">
+    <main id="mainWorkspace" class="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative bg-[var(--bg-primary)]">
 
       <!-- Top Navigation Header -->
       <header
@@ -1600,7 +1617,8 @@
     function setTheme(theme) {
       currentTheme = theme;
       localStorage.setItem('guruai_theme', theme);
-      document.body.className = `theme-${theme} font-sans-mode text-size-medium select-none`;
+      document.body.classList.remove('theme-dark', 'theme-light', 'theme-cyberpunk');
+      document.body.classList.add(`theme-${theme}`);
       if (theme === 'dark' || theme === 'cyberpunk') {
         document.documentElement.classList.add('dark');
       } else {

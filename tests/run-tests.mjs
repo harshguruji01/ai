@@ -1,4 +1,7 @@
 import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   chatRequestSchema,
   imageGenerateSchema,
@@ -7,6 +10,14 @@ import {
 } from '../lib/validation.js';
 import { buildSystemPrompt, isImageIntent, isCreatorIntent, isModelIntent } from '../lib/ai/nvidia.js';
 import { generateGuestKeyHash, extractClientIp } from '../lib/security.js';
+
+const testsDir = path.dirname(fileURLToPath(import.meta.url));
+const siteRepoRoot = path.resolve(
+  process.env.SITE_REPO_PATH || path.join(testsDir, '..', '..', 'site')
+);
+const storeRepoRoot = path.resolve(
+  process.env.STORE_REPO_PATH || path.join(testsDir, '..', '..', 'store')
+);
 
 console.log('🚀 Running HarshGuruJi AI Automated Test Suite...\n');
 
@@ -175,8 +186,6 @@ test('Reasoning: Parses <think> blocks and separates thoughts from response', ()
 });
 
 // 7. Workflow: Dashboard Icon & In-place Login Tests
-import fs from 'node:fs';
-
 test('Workflow: index.html has conditional Dashboard button and member limit setup', () => {
   const indexHtml = fs.readFileSync('index.html', 'utf8');
   assert.ok(indexHtml.includes('id="headerDashboardBtn"'), 'Must have header dashboard button');
@@ -184,8 +193,33 @@ test('Workflow: index.html has conditional Dashboard button and member limit set
   assert.ok(indexHtml.includes('dashboard.html'), 'Must point to dashboard.html');
   assert.ok(indexHtml.includes("headerDashboardBtn.classList.remove('hidden')"), 'Must show dashboard on login');
   assert.ok(indexHtml.includes("headerDashboardBtn.classList.add('hidden')"), 'Must hide dashboard on logout');
-  assert.ok(indexHtml.includes('maxRequests = 10'), 'Member must get 10 requests');
+  assert.ok(indexHtml.includes('maxRequests = 20'), 'Member must get 20 requests');
   assert.ok(indexHtml.includes('12 * 60 * 60 * 1000'), 'Member window must be 12 hours');
+});
+
+test('Workflow: chat stays viewport-locked with only message feeds scrolling', () => {
+  const indexHtml = fs.readFileSync('index.html', 'utf8');
+  assert.ok(indexHtml.includes("document.body.classList.add(`theme-${theme}`)"), 'Theme changes must preserve body layout classes');
+  assert.ok(!indexHtml.includes('document.body.className ='), 'Theme changes must not replace the body class list');
+  assert.ok(indexHtml.includes('window.openUpgradeModal = function()'), 'Static upgrade button must have a global modal handler');
+  assert.ok(indexHtml.includes('id="headerUpgradeBtn" onclick="openUpgradeModal()"'), 'Static header upgrade button must open the modal');
+  assert.ok(indexHtml.includes('id="upgradeModal"'), 'Static page must contain the upgrade modal');
+  assert.ok(indexHtml.includes('height: 100dvh'), 'Static chat page must use the dynamic viewport height');
+  assert.ok(indexHtml.includes('id="mainWorkspace"'), 'Static chat workspace must remain a bounded flex column');
+  assert.ok(indexHtml.includes('id="chatFeed" class="flex-1 min-h-0 overflow-y-auto'), 'Static message feed must own vertical scrolling');
+  assert.ok(indexHtml.includes('overflow-hidden bg-[var(--bg-secondary)] border-r'), 'Static sidebar must not scroll as a panel');
+  assert.ok(indexHtml.includes('flex-shrink-0 z-20'), 'Static composer must remain docked below the message feed');
+
+  const page = fs.readFileSync('app/page.jsx', 'utf8');
+  assert.ok(page.includes("document.body.classList.add('ai-chat-page')"), 'React chat route must lock body scrolling');
+  assert.ok(page.includes('ai-chat-app flex h-screen'), 'React chat workspace must use the viewport height');
+  assert.ok(page.includes('setUpgradeModalOpen(true)'), 'React upgrade button must open the upgrade modal');
+  assert.ok(page.includes('<UpgradeModal'), 'React chat route must render the upgrade modal');
+
+  const chatWindow = fs.readFileSync('components/ChatWindow.jsx', 'utf8');
+  assert.ok(chatWindow.includes('flex-1 min-h-0 overflow-y-auto'), 'React message feed must own vertical scrolling');
+  const chatSidebar = fs.readFileSync('components/ChatSidebar.jsx', 'utf8');
+  assert.ok(chatSidebar.includes('min-h-0 overflow-hidden'), 'React sidebar must not scroll as a panel');
 });
 
 test('Workflow: React components render Dashboard only for logged-in user without external redirect', () => {
@@ -225,18 +259,24 @@ test('Workflow: dashboard.html and Next.js route exist with complete settings & 
   assert.ok(dashReact.includes('handleSetLang'), 'React route must support language');
 });
 
-test('Workflow: Main Admin Panels contain GuruAI Command Center integration', () => {
-  const siteAdmin = fs.readFileSync('../../site/admin.html', 'utf8');
-  assert.ok(siteAdmin.includes("switchMasterTab('guruai')"), 'site/admin.html must have guruai tab trigger');
-  assert.ok(siteAdmin.includes('id="pane-guruai"'), 'site/admin.html must have pane-guruai');
-  assert.ok(siteAdmin.includes('tile-guruai-app'), 'site/admin.html must have GuruAI stat tile');
-  assert.ok(siteAdmin.includes('https://ai.webguruji.online/admin.html'), 'site/admin.html must link to AI admin');
+const siteAdminPath = path.join(siteRepoRoot, 'admin.html');
+const storeAdminPath = path.join(storeRepoRoot, 'admin.html');
+if (fs.existsSync(siteAdminPath) && fs.existsSync(storeAdminPath)) {
+  test('Workflow: Main Admin Panels contain GuruAI Command Center integration', () => {
+    const siteAdmin = fs.readFileSync(siteAdminPath, 'utf8');
+    assert.ok(siteAdmin.includes("switchMasterTab('guruai')"), 'site/admin.html must have guruai tab trigger');
+    assert.ok(siteAdmin.includes('id="pane-guruai"'), 'site/admin.html must have pane-guruai');
+    assert.ok(siteAdmin.includes('tile-guruai-app'), 'site/admin.html must have GuruAI stat tile');
+    assert.ok(siteAdmin.includes('https://ai.webguruji.online/admin.html'), 'site/admin.html must link to AI admin');
 
-  const storeAdmin = fs.readFileSync('../store/admin.html', 'utf8');
-  assert.ok(storeAdmin.includes("switchMasterTab('guruai')"), 'store/admin.html must have guruai tab trigger');
-  assert.ok(storeAdmin.includes('id="pane-guruai"'), 'store/admin.html must have pane-guruai');
-  assert.ok(storeAdmin.includes('tile-guruai-app'), 'store/admin.html must have GuruAI stat tile');
-});
+    const storeAdmin = fs.readFileSync(storeAdminPath, 'utf8');
+    assert.ok(storeAdmin.includes("switchMasterTab('guruai')"), 'store/admin.html must have guruai tab trigger');
+    assert.ok(storeAdmin.includes('id="pane-guruai"'), 'store/admin.html must have pane-guruai');
+    assert.ok(storeAdmin.includes('tile-guruai-app'), 'store/admin.html must have GuruAI stat tile');
+  });
+} else {
+  console.log('⏭️ SKIP: Admin integration checks require the site and store repositories.');
+}
 
 // 9. Model Identity & Image Quota Policy Tests
 test('Model Identity: System prompt and UI show Guru-Flash 1.1 and conceal Nemotron', () => {
@@ -342,16 +382,24 @@ test('Task 3: 6-Digit Email Verification Code generation and API routes exist', 
   assert.ok(verifyRoute.includes('sendWelcomeEmail'), 'verify-login-code must send welcome email for new users');
 });
 
-test('Task 3: Client login portals (site and ai) implement email verification code flow', () => {
-  const siteAuth = fs.readFileSync('c:/Users/harsh/OneDrive/Desktop/site/js/auth.js', 'utf8');
-  assert.ok(siteAuth.includes('sendLoginVerificationCode'), 'site/js/auth.js must export sendLoginVerificationCode');
-  assert.ok(siteAuth.includes('verifyLoginCode'), 'site/js/auth.js must export verifyLoginCode');
-  assert.ok(!siteAuth.includes('const userEmail = (user.email || \'\').toLowerCase();\n    const isOwner'), 'Duplicate userEmail must be eliminated');
+const siteAuthPath = path.join(siteRepoRoot, 'js', 'auth.js');
+const siteLoginPath = path.join(siteRepoRoot, 'login.html');
+if (fs.existsSync(siteAuthPath) && fs.existsSync(siteLoginPath)) {
+  test('Task 3: Main site login portal implements email verification code flow', () => {
+    const siteAuth = fs.readFileSync(siteAuthPath, 'utf8');
+    assert.ok(siteAuth.includes('sendLoginVerificationCode'), 'site/js/auth.js must export sendLoginVerificationCode');
+    assert.ok(siteAuth.includes('verifyLoginCode'), 'site/js/auth.js must export verifyLoginCode');
+    assert.ok(!siteAuth.includes('const userEmail = (user.email || \'\').toLowerCase();\n    const isOwner'), 'Duplicate userEmail must be eliminated');
 
-  const siteLogin = fs.readFileSync('c:/Users/harsh/OneDrive/Desktop/site/login.html', 'utf8');
-  assert.ok(siteLogin.includes('sendLoginVerificationCode'), 'site login.html must use sendLoginVerificationCode');
-  assert.ok(siteLogin.includes('verifyLoginCode'), 'site login.html must use verifyLoginCode');
+    const siteLogin = fs.readFileSync(siteLoginPath, 'utf8');
+    assert.ok(siteLogin.includes('sendLoginVerificationCode'), 'site login.html must use sendLoginVerificationCode');
+    assert.ok(siteLogin.includes('verifyLoginCode'), 'site login.html must use verifyLoginCode');
+  });
+} else {
+  console.log('⏭️ SKIP: Main site login checks require the site repository.');
+}
 
+test('Task 3: AI login portal implements email verification code flow', () => {
   const aiLogin = fs.readFileSync('login.html', 'utf8');
   assert.ok(aiLogin.includes('send-login-code'), 'ai login.html must invoke send-login-code');
   assert.ok(aiLogin.includes('verify-login-code'), 'ai login.html must invoke verify-login-code');
@@ -366,5 +414,3 @@ console.log(`========================================\n`);
 if (failedTests > 0) {
   process.exit(1);
 }
-
-

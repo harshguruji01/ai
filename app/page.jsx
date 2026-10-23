@@ -57,6 +57,16 @@ export default function GuruAiApp() {
 
   const mainSiteUrl = process.env.NEXT_PUBLIC_MAIN_SITE_URL || 'https://webguruji.online';
 
+  useEffect(() => {
+    document.documentElement.classList.add('ai-chat-page');
+    document.body.classList.add('ai-chat-page');
+
+    return () => {
+      document.documentElement.classList.remove('ai-chat-page');
+      document.body.classList.remove('ai-chat-page');
+    };
+  }, []);
+
   // 1. Initialize Client Fingerprint for privacy-conscious guest tracking
   useEffect(() => {
     async function initFingerprint() {
@@ -641,7 +651,7 @@ export default function GuruAiApp() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    <div className="ai-chat-app flex h-screen w-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
       {/* 1. Left Collapsible Sidebar */}
       <ChatSidebar
         isOpen={sidebarOpen}
