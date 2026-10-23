@@ -18,8 +18,21 @@ export async function GET(request) {
     const isLoggedIn = authState.isLoggedIn;
     const userId = authState.userId;
 
-    const maxRequests = isLoggedIn ? USER_MAX_REQUESTS : GUEST_MAX_REQUESTS;
+    let maxRequests = isLoggedIn ? USER_MAX_REQUESTS : GUEST_MAX_REQUESTS;
     const windowSeconds = isLoggedIn ? USER_WINDOW_SECONDS : GUEST_WINDOW_SECONDS;
+
+    if (isLoggedIn && userId) {
+      try {
+        const { data: customRow } = await supabaseAdmin
+          .from('user_ai_limits')
+          .select('max_requests, context_limit')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (customRow && typeof customRow.max_requests === 'number' && customRow.max_requests > 0) {
+          maxRequests = customRow.max_requests;
+        }
+      } catch (e) {}
+    }
 
     let query = supabaseAdmin.from('usage_limits').select('*');
 

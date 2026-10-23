@@ -210,12 +210,12 @@
         <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 flex flex-col justify-between">
           <div class="flex items-center justify-between text-xs text-slate-400">
             <span>Remaining Requests</span>
-            <span id="quotaCapLabel" class="font-mono text-cyan-400 font-bold">10 Max</span>
+            <span id="quotaCapLabel" class="font-mono text-cyan-400 font-bold">20 Max</span>
           </div>
           <div class="my-2">
             <div class="flex items-baseline gap-2">
-              <span id="remainingQuotaNum" class="text-3xl font-extrabold font-heading text-white">10</span>
-              <span class="text-xs text-slate-400">/ <span id="maxQuotaNum">10</span> left</span>
+              <span id="remainingQuotaNum" class="text-3xl font-extrabold font-heading text-white">20</span>
+              <span class="text-xs text-slate-400">/ <span id="maxQuotaNum">20</span> left</span>
             </div>
             <!-- Progress Bar -->
             <div class="w-full h-2 rounded-full bg-slate-800 mt-2 overflow-hidden">
@@ -499,7 +499,7 @@
     const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
     let currentUser = null;
-    let maxAllowance = 2;
+    let maxAllowance = 8;
     let remainingAllowance = 2;
     let resetTimerInterval = null;
 
@@ -534,6 +534,21 @@
       }
 
       calculateQuota();
+
+      // Check for Live Custom Admin Quotas
+      if (supabase && currentUser) {
+        const emailQuery = currentUser.email ? `,email.ilike.${currentUser.email.toLowerCase().trim()}` : '';
+        supabase.from('user_ai_limits').select('*').or(`user_id.eq.${currentUser.id}${emailQuery}`).maybeSingle().then(({ data }) => {
+          if (data && data.max_requests > 0) {
+            maxAllowance = data.max_requests;
+            document.getElementById('maxQuotaNum').textContent = maxAllowance;
+            document.getElementById('quotaCapLabel').textContent = `${maxAllowance} Max`;
+            if (data.plan_name) document.getElementById('tierBadgeText').textContent = data.plan_name;
+            const pct = Math.max(0, Math.min(100, (remainingAllowance / maxAllowance) * 100));
+            document.getElementById('quotaProgressBar').style.width = pct + '%';
+          }
+        }).catch(() => {});
+      }
     }
 
     function renderUserProfile(user) {
@@ -577,21 +592,21 @@
       let stored = null;
 
       if (currentUser) {
-        maxAllowance = 10;
+        maxAllowance = 20;
         windowDuration = 12 * 3600 * 1000; // 12h for member
         const key = 'guruai_quota_user_' + currentUser.id;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 10, windowStart: now };
+          stored = { remaining: 20, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
       } else {
-        maxAllowance = 2;
+        maxAllowance = 8;
         windowDuration = 6 * 3600 * 1000;
         const key = 'guruai_quota_guest';
         try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 2, windowStart: now };
+          stored = { remaining: 8, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
       }
@@ -606,6 +621,16 @@
 
       const pct = Math.max(0, Math.min(100, (remainingAllowance / maxAllowance) * 100));
       document.getElementById('quotaProgressBar').style.width = pct + '%';
+
+      
+      try {
+        const quotaBc = new BroadcastChannel('guruai_quota_channel');
+        quotaBc.onmessage = (e) => {
+          if (e.data && e.data.type === 'QUOTA_UPDATED') {
+            calculateQuota();
+          }
+        };
+      } catch(e) {}
 
       // Start Countdown Timer
       startResetCountdown(stored.windowStart, windowDuration);

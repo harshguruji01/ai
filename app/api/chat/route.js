@@ -84,8 +84,9 @@ export async function POST(request) {
           resetInSeconds: reservation.resetInSeconds,
           windowExpiresAt: reservation.windowExpiresAt,
           message: isLoggedIn
-            ? `You have reached your limit of 10 requests. Your allowance resets in ${resetHours}h ${resetMins}m.`
-            : `Guest limit of 2 requests reached. Please log in at webguruji.online for 10 requests and image generation, or wait ${resetHours}h ${resetMins}m.`,
+            ? `You have reached your limit of ${reservation.maxRequests || 20} requests. Upgrade your plan at https://webguruji.online/contact.html for higher context and unlimited usage, or wait ${resetHours}h ${resetMins}m.`
+            : `Guest limit of 8 requests reached. Please log in at webguruji.online for 20 requests and image generation, or upgrade your plan.`,
+          upgradeUrl: 'https://webguruji.online/contact.html?subject=ai_upgrade',
         },
         { status: 429 }
       );

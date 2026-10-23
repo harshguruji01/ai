@@ -409,8 +409,13 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span class="text-slate-300 font-medium text-[11px]" id="userTierLabel">Guest Allowance</span>
           </div>
-          <span class="font-mono text-[11px] font-bold text-cyan-400" id="quotaSidebarText">2/2 Left</span>
+          <span class="font-mono text-[11px] font-bold text-cyan-400" id="quotaSidebarText">8/8 Left</span>
         </div>
+        <button onclick="openUpgradeModal()" class="w-full mt-2 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-amber-500/20 border border-indigo-500/40 hover:border-amber-400/60 text-amber-300 hover:text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition shadow-sm">
+          <span>⭐</span>
+          <span>Upgrade Context &amp; Limits</span>
+        </button>
+        
 
         <div class="flex items-center justify-between pt-1">
           <!-- User Profile / Guest Button -->
@@ -493,6 +498,14 @@
             <span class="capitalize text-[11px] font-medium" id="currentLangDisplay">English</span>
           </button>
 
+          
+          <!-- Upgrade Plan Button -->
+          <button id="headerUpgradeBtn" onclick="openUpgradeModal()"
+            class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all duration-200 bg-gradient-to-r from-amber-500/20 to-purple-500/20 border-amber-500/40 text-amber-300 hover:from-amber-500/30 hover:to-purple-500/30 shadow-sm shadow-amber-500/10">
+            <span>⭐</span>
+            <span>Upgrade</span>
+          </button>
+        
           <!-- Usage Allowance Badge -->
           <button id="headerQuotaBadge"
             class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 bg-indigo-500/10 border-indigo-500/30 text-cyan-400 hover:bg-indigo-500/20">
@@ -500,7 +513,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
             </svg>
-            <span id="headerQuotaText">2/2 Left</span>
+            <span id="headerQuotaText">8/8 Left</span>
             <span class="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5"
               id="headerTierText">Guest</span>
           </button>
@@ -638,7 +651,7 @@
           <div class="flex items-center justify-between px-2 text-[11px] text-slate-400">
             <span>GuruAI can make mistakes. Verify important facts and code. • Model: <strong
                 class="text-indigo-400">Guru-Flash 1.1</strong></span>
-            <span id="footerQuotaText" class="font-mono">2 requests left</span>
+            <span id="footerQuotaText" class="font-mono">8 requests left</span>
           </div>
 
         </div>
@@ -787,7 +800,7 @@
         <h2 id="authModalTitle"
           class="text-xl md:text-2xl font-bold font-heading bg-gradient-to-r from-white via-indigo-100 to-cyan-300 bg-clip-text text-transparent">
           Sign In to GuruAI</h2>
-        <p id="authModalSubtitle" class="text-xs text-slate-400 mt-1">Unlock 10 requests / 12h, chat history & image
+        <p id="authModalSubtitle" class="text-xs text-slate-400 mt-1">Unlock 20 requests / 12h, chat history & image
           studio</p>
       </div>
 
@@ -1026,7 +1039,7 @@
           <div class="text-sm font-semibold text-slate-200" id="loggedInEmailText">user@example.com</div>
           <div id="loggedInRoleBadge"
             class="inline-block px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[11px] font-semibold">
-            Active Member • 10 requests / 12h</div>
+            Active Member • 20 requests / 12h</div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -1038,6 +1051,206 @@
             class="py-2.5 px-3 rounded-xl bg-rose-900/60 hover:bg-rose-800/80 border border-rose-700/50 text-rose-200 font-semibold text-xs transition">Sign
             Out</button>
         </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+  <!-- 6. GURUAI PREMIUM CONTEXT & QUOTA UPGRADE MODAL -->
+  <div id="upgradeModal"
+    class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden animate-in fade-in duration-200">
+    <div
+      class="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl bg-slate-900/95 border border-slate-800 shadow-2xl shadow-indigo-950/70 p-5 sm:p-8 text-slate-100">
+      
+      <!-- Close Button -->
+      <button onclick="closeUpgradeModal()"
+        class="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+        aria-label="Close Upgrade Modal">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="text-center max-w-2xl mx-auto mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-purple-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
+          <span>⭐</span> GuruAI Premium Upgrade &amp; Context Expansion
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold font-heading bg-gradient-to-r from-white via-indigo-100 to-cyan-300 bg-clip-text text-transparent">
+          Upgrade Your Context &amp; Daily Limits
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+          Free tier includes <strong>8 requests</strong> (guest) and <strong>20 requests</strong> (members). Upgrade to unlock continuous multi-turn memory, massive token context windows, and priority inference.
+        </p>
+      </div>
+
+      <!-- 3 Tier Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+        
+        <!-- Tier 1: Starter Pro ($5) -->
+        <div class="rounded-2xl bg-slate-950/90 border border-slate-800 p-5 sm:p-6 flex flex-col justify-between hover:border-slate-700 transition relative">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Starter Pro</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-xs text-slate-200 font-mono font-bold">$5 / mo</span>
+            </div>
+            <div class="mb-4">
+              <div class="text-3xl font-extrabold text-white font-heading">50,000</div>
+              <div class="text-xs text-cyan-400 font-semibold tracking-wide">Tokens Context Limit</div>
+            </div>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>100 Daily Chats</strong> (12h cycle)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>50,000 Token Memory Buffer</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Fast GPU processing speed</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Full homework &amp; coding tutorials</span>
+              </li>
+            </ul>
+          </div>
+          <button onclick="handlePlanBuy('Starter Pro ($5)', 50000, 5)"
+            class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
+            <span>Upgrade to Starter ($5)</span> ➔
+          </button>
+        </div>
+
+        <!-- Tier 2: Power Scholar ($15 - Recommended / Best Value) -->
+        <div class="rounded-2xl bg-gradient-to-b from-indigo-950/50 via-slate-950 to-slate-950 border-2 border-indigo-500/70 p-5 sm:p-6 flex flex-col justify-between hover:border-indigo-400 transition relative shadow-2xl shadow-indigo-950/60">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-500 to-cyan-400 text-slate-950 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-wider shadow">
+            🔥 Best Value • 3.5x Context
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Power Scholar</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-xs text-cyan-300 font-mono font-bold">$15 / mo</span>
+            </div>
+            <div class="mb-4">
+              <div class="text-3xl font-extrabold text-white font-heading">175,000</div>
+              <div class="text-xs text-indigo-300 font-semibold tracking-wide">Tokens Context Limit</div>
+            </div>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>350 Daily Chats</strong> (12h cycle)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>175,000 Token Memory</strong> (3.5x Starter)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Multi-document analysis &amp; PDF digest</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Deep chain-of-thought problem solving</span>
+              </li>
+            </ul>
+          </div>
+          <button onclick="handlePlanBuy('Power Scholar ($15)', 175000, 15)"
+            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/40 hover:opacity-95 transition flex items-center justify-center gap-1.5">
+            <span>Upgrade to Scholar ($15)</span> ➔
+          </button>
+        </div>
+
+        <!-- Tier 3: Grandmaster Enterprise ($25) -->
+        <div class="rounded-2xl bg-slate-950/90 border border-slate-800 p-5 sm:p-6 flex flex-col justify-between hover:border-slate-700 transition relative">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Grandmaster</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-xs text-purple-300 font-mono font-bold">$25 / mo</span>
+            </div>
+            <div class="mb-4">
+              <div class="text-3xl font-extrabold text-white font-heading">325,000</div>
+              <div class="text-xs text-purple-300 font-semibold tracking-wide">Tokens Context Limit</div>
+            </div>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>Unlimited Priority Chats</strong> (24h)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>325,000 Token Massive Context</strong></span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Full textbook &amp; codebase ingestion</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Dedicated GPU channel &amp; new models early access</span>
+              </li>
+            </ul>
+          </div>
+          <button onclick="handlePlanBuy('Grandmaster Enterprise ($25)', 325000, 25)"
+            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
+            <span>Upgrade to Grandmaster ($25)</span> ➔
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Compare With Less Cost Breakdown -->
+      <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-4 sm:p-5 mb-6">
+        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <span>📊</span> Value Comparison: Why Higher Tiers Cost Less Per Token
+        </h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="pb-2 font-semibold">Tier Plan</th>
+                <th class="pb-2 font-semibold">Monthly Cost</th>
+                <th class="pb-2 font-semibold">Context Limit</th>
+                <th class="pb-2 font-semibold">Cost Per 10K Tokens</th>
+                <th class="pb-2 font-semibold">Comparative Advantage</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+              <tr>
+                <td class="py-2.5 font-semibold text-slate-200">Starter Pro</td>
+                <td class="py-2.5 font-mono">$5</td>
+                <td class="py-2.5 text-cyan-400 font-mono">50,000</td>
+                <td class="py-2.5 font-mono">$1.00 / 10k</td>
+                <td class="py-2.5 text-slate-400">Standard Baseline</td>
+              </tr>
+              <tr class="bg-indigo-950/20">
+                <td class="py-2.5 font-bold text-indigo-300">Power Scholar</td>
+                <td class="py-2.5 font-mono font-bold">$15</td>
+                <td class="py-2.5 text-cyan-300 font-mono font-bold">175,000</td>
+                <td class="py-2.5 font-mono text-emerald-400 font-bold">$0.85 / 10k</td>
+                <td class="py-2.5 text-emerald-400 font-semibold">+15% Cheaper &amp; 3.5x Context Volume</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-purple-300">Grandmaster</td>
+                <td class="py-2.5 font-mono font-bold">$25</td>
+                <td class="py-2.5 text-purple-300 font-mono font-bold">325,000</td>
+                <td class="py-2.5 font-mono text-emerald-400 font-bold">$0.76 / 10k</td>
+                <td class="py-2.5 text-emerald-400 font-semibold">+24% Cheaper &amp; 6.5x Context Volume</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Activation Notice -->
+      <div class="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/50 text-xs text-indigo-200 flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🛡️</span>
+          <span>Clicking any plan redirects to <strong>webguruji.online/contact.html</strong>. Once your request is submitted, HarshGuruJi Admin activates your new limit live!</span>
+        </div>
+        <span class="text-[11px] font-mono text-cyan-300 bg-slate-900 px-2 py-1 rounded">Live Admin Sync</span>
       </div>
 
     </div>
@@ -1063,7 +1276,7 @@
     let attachedFile = null;
     let currentTheme = localStorage.getItem('guruai_theme') || 'dark';
     let currentLang = localStorage.getItem('guruai_lang') || 'english';
-    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '2', 10);
+    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '8', 10);
     let maxRequests = 2;
     let speechRecognition = null;
     let isListening = false;
@@ -2108,8 +2321,8 @@
       if (!text || isGenerating) return;
 
       if (remainingAllowance <= 0) {
-        openAuthModal('login');
-        showToast('Daily allowance exhausted. Please sign in to increase your limits!', 'error');
+        openUpgradeModal();
+        showToast('Chat allowance exhausted. Upgrade your plan for higher limits & up to 325,000 context!', 'warning');
         return;
       }
 
@@ -2156,30 +2369,86 @@
       renderHistoryList(searchInput.value);
     };
 
-    // Quota Allowance System (10 requests / 12h for Member, 2 requests / 6h for Guest)
+    // Quota Allowance System (20 requests / 12h for Member, 8 requests / 6h for Guest)
     function initUserQuota(user) {
       const now = Date.now();
       if (user) {
-        maxRequests = 10;
+        maxRequests = 20;
         const windowDuration = 12 * 60 * 60 * 1000;
         const key = 'guruai_quota_user_' + user.id;
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
 
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 10, windowStart: now };
+          stored = { remaining: 20, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
         remainingAllowance = stored.remaining;
+
+        // Check for Live Custom Admin Quotas (lookup by user_id OR email)
+        if (supabaseClient) {
+          const emailQuery = user.email ? `,email.ilike.${user.email.toLowerCase().trim()}` : '';
+          supabaseClient.from('user_ai_limits').select('*').or(`user_id.eq.${user.id}${emailQuery}`).maybeSingle().then(({ data }) => {
+            if (data && typeof data.max_requests === 'number' && data.max_requests > 0) {
+              maxRequests = data.max_requests;
+              if (stored.remaining < maxRequests) {
+                // If admin upgraded user, expand their remaining quota immediately
+                stored.remaining = maxRequests;
+                localStorage.setItem(key, JSON.stringify(stored));
+              }
+              remainingAllowance = stored.remaining;
+              updateQuotaUI();
+              if (userTierLabel) userTierLabel.textContent = data.plan_name || `Member (${maxRequests}/12h)`;
+              if (headerTierText) headerTierText.textContent = data.plan_tier || (data.plan_name ? data.plan_name.replace(' Enterprise', '') : 'Pro');
+            }
+          }).catch(() => {});
+
+          // Supabase Realtime table listener for instant cross-device live effect
+          try {
+            supabaseClient.channel('guruai_live_limits_' + user.id)
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'user_ai_limits' }, payload => {
+                const row = payload.new;
+                if (row && (row.user_id === user.id || (row.email && user.email && row.email.toLowerCase() === user.email.toLowerCase()))) {
+                  maxRequests = row.max_requests || 20;
+                  remainingAllowance = maxRequests;
+                  localStorage.setItem(key, JSON.stringify({ remaining: maxRequests, windowStart: Date.now() }));
+                  updateQuotaUI();
+                  if (typeof showToast === 'function') {
+                    showToast(`⚡ Live Admin Upgrade: ${maxRequests} requests & ${Number(row.context_limit).toLocaleString()} context tokens!`, 'success');
+                  }
+                }
+              })
+              .subscribe();
+          } catch (e) {}
+        }
+
+        // BroadcastChannel listener for instant cross-tab live effect
+        try {
+          const quotaBc = new BroadcastChannel('guruai_quota_channel');
+          quotaBc.onmessage = (event) => {
+            const msg = event.data;
+            if (msg && msg.type === 'QUOTA_UPDATED') {
+              if (user && ((msg.userId && msg.userId === user.id) || (msg.email && user.email && msg.email.toLowerCase() === user.email.toLowerCase()))) {
+                maxRequests = msg.max_requests || 20;
+                remainingAllowance = maxRequests;
+                localStorage.setItem(key, JSON.stringify({ remaining: maxRequests, windowStart: Date.now() }));
+                updateQuotaUI();
+                if (typeof showToast === 'function') {
+                  showToast(`⚡ Plan updated live: ${maxRequests} requests & ${Number(msg.context_limit).toLocaleString()} context!`, 'success');
+                }
+              }
+            }
+          };
+        } catch (e) {}
       } else {
-        maxRequests = 2;
+        maxRequests = 8;
         const windowDuration = 6 * 60 * 60 * 1000;
         const key = 'guruai_quota_guest';
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
 
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 2, windowStart: now };
+          stored = { remaining: 8, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
         remainingAllowance = stored.remaining;
@@ -2228,7 +2497,7 @@
         userNameLabel.textContent = name;
         userStatusLabel.textContent = user.email;
         userAvatar.textContent = initial;
-        userTierLabel.textContent = 'Member (10/12h)';
+        userTierLabel.textContent = 'Member (20/12h)';
         headerTierText.textContent = 'Member';
 
         imageLockIcon.classList.add('hidden');
@@ -2318,7 +2587,7 @@
       } else if (mode === 'register') {
         registerForm.classList.remove('hidden');
         title.textContent = 'Create GuruAI Account';
-        subtitle.textContent = 'Unlock 10 requests / 12h & 5 SDXL image creations';
+        subtitle.textContent = 'Unlock 20 requests / 12h & 5 SDXL image creations';
       } else if (mode === 'forgot') {
         forgotSection.classList.remove('hidden');
         title.textContent = 'Reset Password';
@@ -2326,7 +2595,7 @@
       } else {
         loginForm.classList.remove('hidden');
         title.textContent = 'Sign In to GuruAI';
-        subtitle.textContent = 'Unlock 10 requests / 12h, chat history & image studio';
+        subtitle.textContent = 'Unlock 20 requests / 12h, chat history & image studio';
       }
     }
 
@@ -2352,7 +2621,7 @@
     userProfileBtn.onclick = () => openAuthModal('login');
     closeAuthModalBtn.onclick = closeAuthModal;
     document.getElementById('headerSignInBtn').onclick = () => openAuthModal('login');
-    document.getElementById('headerQuotaBadge').onclick = () => openAuthModal('login');
+    document.getElementById('headerQuotaBadge').onclick = () => openUpgradeModal();
 
     document.getElementById('switchToRegisterBtn').onclick = () => setAuthModalMode('register');
     document.getElementById('switchToLoginBtn').onclick = () => setAuthModalMode('login');
