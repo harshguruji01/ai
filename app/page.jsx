@@ -651,7 +651,7 @@ export default function GuruAiApp() {
   };
 
   return (
-    <div className="ai-chat-app flex h-screen w-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    <div className="ai-chat-app flex h-[100dvh] min-h-0 w-full min-w-0 overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
       {/* 1. Left Collapsible Sidebar */}
       <ChatSidebar
         isOpen={sidebarOpen}
@@ -676,7 +676,7 @@ export default function GuruAiApp() {
       />
 
       {/* 2. Main Chat Center Workspace */}
-      <main className="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative">
+      <main className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <ChatWindow
           messages={messages}
           streamingContent={streamingContent}
@@ -699,7 +699,7 @@ export default function GuruAiApp() {
         />
 
         {/* 3. Bottom Composer */}
-        <div className="w-full p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/95 backdrop-blur-md flex-shrink-0 z-20">
+        <div className="z-20 w-full flex-shrink-0 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] backdrop-blur-md sm:p-3.5 sm:pb-[calc(0.875rem+env(safe-area-inset-bottom,0px))] md:p-4">
           <ChatInput
             inputPrompt={inputPrompt}
             setInputPrompt={setInputPrompt}

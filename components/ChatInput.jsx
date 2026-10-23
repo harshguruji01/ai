@@ -43,7 +43,7 @@ export default function ChatInput({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-2">
+    <div className="mx-auto w-full min-w-0 max-w-4xl space-y-2">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -134,11 +134,11 @@ export default function ChatInput({
       </form>
 
       {/* Footer Meta */}
-      <div className="flex items-center justify-between px-2 text-[11px] text-slate-400">
-        <span>
+      <div className="flex flex-col gap-1 px-2 text-[11px] text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <span className="min-w-0">
           GuruAI can make mistakes. Verify critical facts and code.
         </span>
-        <span className="font-mono">
+        <span className="shrink-0 font-mono sm:text-right">
           {remainingAllowance > 0 ? `${remainingAllowance} requests left` : 'Limit reached'}
         </span>
       </div>

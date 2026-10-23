@@ -74,10 +74,10 @@ export default function ChatWindow({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden bg-[var(--bg-primary)] relative">
+    <div className="relative flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden bg-[var(--bg-primary)]">
       {/* Top Header */}
-      <header className="h-14 border-b border-[var(--border-color)] px-4 flex items-center justify-between bg-[var(--bg-secondary)]/80 backdrop-blur-md z-10 flex-shrink-0">
-        <div className="flex items-center gap-3">
+      <header className="z-10 flex h-auto min-h-14 flex-shrink-0 flex-wrap items-center justify-between gap-y-2 border-b border-[var(--border-color)] bg-[var(--bg-secondary)]/80 px-2 py-2 backdrop-blur-md sm:h-14 sm:flex-nowrap sm:px-4 sm:py-0">
+        <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:gap-3">
           <button
             onClick={onOpenSidebar}
             aria-label="Toggle navigation drawer"
@@ -98,11 +98,11 @@ export default function ChatWindow({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-1.5 sm:w-auto sm:flex-nowrap sm:justify-end sm:gap-2 md:gap-3">
           {/* Output Language Indicator */}
           <button
             onClick={onOpenSettings}
-            className="text-xs px-2.5 py-1 rounded-full bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 flex items-center gap-1.5 transition"
+            className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-slate-700/80 bg-slate-900/80 px-2 py-1 text-xs text-slate-300 transition hover:border-indigo-500/60 sm:px-2.5"
             title="Current AI Output Language"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
@@ -122,7 +122,7 @@ export default function ChatWindow({
           <button
             type="button"
             onClick={onOpenUpgrade}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all duration-200 bg-gradient-to-r from-amber-500/20 to-purple-500/20 border-amber-500/40 text-amber-300 hover:from-amber-500/30 hover:to-purple-500/30 shadow-sm shadow-amber-500/10 cursor-pointer"
+            className="flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-purple-500/20 px-2 py-1 text-xs font-bold text-amber-300 shadow-sm shadow-amber-500/10 transition-all duration-200 hover:from-amber-500/30 hover:to-purple-500/30 sm:px-3"
             title="Upgrade context and daily limits"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
@@ -142,7 +142,8 @@ export default function ChatWindow({
           {!user ? (
             <button
               onClick={() => onOpenAuth?.('login')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95"
+              type="button"
+              className="flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/20 transition hover:from-indigo-500 hover:to-cyan-500 active:scale-95 sm:px-3"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Sign In</span>
@@ -178,7 +179,7 @@ export default function ChatWindow({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto"
+        className="mx-auto w-full min-w-0 max-w-4xl flex-1 space-y-6 overflow-y-auto overscroll-y-contain px-3 py-4 sm:px-4 sm:py-6 md:px-8"
       >
         {messages.length === 0 && !streamingContent ? (
           /* Welcome Screen Hero */

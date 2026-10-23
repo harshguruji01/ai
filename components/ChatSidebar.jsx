@@ -127,7 +127,7 @@ export default function ChatSidebar({
 
       {/* Sidebar Shell */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 min-h-0 overflow-hidden bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col justify-between transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-[min(18rem,100vw)] min-h-0 flex-shrink-0 flex-col justify-between overflow-hidden border-r border-[var(--border-color)] bg-[var(--bg-secondary)] transition-all duration-300 ease-in-out md:relative md:h-full md:w-72 md:translate-x-0 ${
           isOpen ? 'translate-x-0 shadow-2xl w-72' : '-translate-x-full md:translate-x-0'
         } ${isCollapsed ? 'md:w-16' : 'md:w-72'}`}
       >
@@ -226,7 +226,7 @@ export default function ChatSidebar({
         </div>
 
         {/* Conversation List */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-2 py-2 space-y-3">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-y-contain px-2 py-2">
           {!isCollapsed ? (
             user ? (
               filteredConversations.length > 0 ? (

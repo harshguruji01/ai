@@ -212,14 +212,17 @@ test('Workflow: chat stays viewport-locked with only message feeds scrolling', (
 
   const page = fs.readFileSync('app/page.jsx', 'utf8');
   assert.ok(page.includes("document.body.classList.add('ai-chat-page')"), 'React chat route must lock body scrolling');
-  assert.ok(page.includes('ai-chat-app flex h-screen'), 'React chat workspace must use the viewport height');
+  assert.ok(page.includes('ai-chat-app flex h-[100dvh]'), 'React chat workspace must use the dynamic viewport height');
   assert.ok(page.includes('setUpgradeModalOpen(true)'), 'React upgrade button must open the upgrade modal');
   assert.ok(page.includes('<UpgradeModal'), 'React chat route must render the upgrade modal');
 
   const chatWindow = fs.readFileSync('components/ChatWindow.jsx', 'utf8');
-  assert.ok(chatWindow.includes('flex-1 min-h-0 overflow-y-auto'), 'React message feed must own vertical scrolling');
+  assert.ok(chatWindow.includes('overflow-y-auto overscroll-y-contain'), 'React message feed must own vertical scrolling');
+  assert.ok(chatWindow.includes('w-full min-w-0 flex-wrap items-center justify-between'), 'Mobile header actions must wrap instead of overflowing');
+  assert.ok(chatWindow.includes('whitespace-nowrap'), 'Sign In must remain fully visible on narrow screens');
   const chatSidebar = fs.readFileSync('components/ChatSidebar.jsx', 'utf8');
-  assert.ok(chatSidebar.includes('min-h-0 overflow-hidden'), 'React sidebar must not scroll as a panel');
+  assert.ok(chatSidebar.includes('min-h-0 flex-shrink-0 flex-col justify-between overflow-hidden'), 'React sidebar must remain a fixed non-scrolling panel');
+  assert.ok(chatSidebar.includes('overflow-y-auto overscroll-y-contain'), 'Conversation history must scroll inside the fixed sidebar');
 });
 
 test('Workflow: React components render Dashboard only for logged-in user without external redirect', () => {
