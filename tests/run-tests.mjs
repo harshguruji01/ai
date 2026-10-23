@@ -339,11 +339,17 @@ test('Hostinger Mail: Mailbox configuration, send utility and MCP server exist',
   assert.ok(mailLib.includes('AC955bc6c100d79999a2c5613002ee'), 'Mailbox resource ID must match');
   assert.ok(mailLib.includes('api.mail.hostinger.com'), 'Must use api.mail.hostinger.com endpoint');
 
-  const mcpConfigFile = 'C:/Users/harsh/.gemini/config/mcp_config.json';
-  assert.ok(fs.existsSync(mcpConfigFile), 'mcp_config.json must exist');
-  const mcpConfig = JSON.parse(fs.readFileSync(mcpConfigFile, 'utf8'));
-  assert.ok(mcpConfig.mcpServers['hostinger-mail'], 'hostinger-mail server must be registered in mcp_config.json');
 });
+
+const mcpConfigFile = process.env.MCP_CONFIG_PATH || 'C:/Users/harsh/.gemini/config/mcp_config.json';
+if (fs.existsSync(mcpConfigFile)) {
+  test('Hostinger MCP: local configuration registers the mail server', () => {
+    const mcpConfig = JSON.parse(fs.readFileSync(mcpConfigFile, 'utf8'));
+    assert.ok(mcpConfig.mcpServers['hostinger-mail'], 'hostinger-mail server must be registered in mcp_config.json');
+  });
+} else {
+  console.log('⏭️ SKIP: Local Hostinger MCP config is not available on this runner.');
+}
 
 test('Welcome Email: HTML template generation and CORS support in mail route', () => {
   const mailLib = fs.readFileSync('lib/mail.js', 'utf8');
