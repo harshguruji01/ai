@@ -15,6 +15,10 @@ import {
   ExternalLink,
   LogIn,
   LayoutDashboard,
+  Database,
+  Trash2,
+  Download,
+  Keyboard,
 } from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 
@@ -24,6 +28,8 @@ export default function SettingsPanel({
   isLoggedIn,
   user,
   preferences,
+  messages = [],
+  onClearMessages,
   onSavePreferences,
   remainingAllowance = 2,
   maxRequests = 2,
@@ -37,6 +43,7 @@ export default function SettingsPanel({
   const [activeTab, setActiveTab] = useState('appearance');
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [clearedNotice, setClearedNotice] = useState(false);
   const mainSiteUrl = process.env.NEXT_PUBLIC_MAIN_SITE_URL || 'https://webguruji.online';
 
   useEffect(() => {
@@ -47,6 +54,29 @@ export default function SettingsPanel({
   }, [preferences, isOpen]);
 
   if (!isOpen) return null;
+
+  const handleExportJson = () => {
+    if (!messages || messages.length === 0) {
+      alert('No messages in active conversation to export.');
+      return;
+    }
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(messages, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', `harshguruji_chat_${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  const handleClearCurrent = () => {
+    if (!messages || messages.length === 0) return;
+    if (confirm('Are you sure you want to clear the active conversation screen?')) {
+      onClearMessages?.();
+      setClearedNotice(true);
+      setTimeout(() => setClearedNotice(false), 2000);
+    }
+  };
 
   const handleSave = async () => {
     if (!isLoggedIn) return;
@@ -85,7 +115,7 @@ export default function SettingsPanel({
             <GuruLogo size={28} />
             <div>
               <h2 className="text-sm font-bold tracking-wide text-white">GuruAI Preferences</h2>
-              <span className="text-[10px] text-slate-400">Customization & Account</span>
+              <span className="text-[10px] text-slate-400">Customization &amp; Controls</span>
             </div>
           </div>
           <button
@@ -98,10 +128,11 @@ export default function SettingsPanel({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-[var(--border-color)] px-6 pt-2 gap-4 text-xs font-semibold">
+        <div className="flex border-b border-[var(--border-color)] px-6 pt-2 gap-3 text-xs font-semibold overflow-x-auto">
           {[
             { id: 'appearance', label: 'Appearance', icon: Moon },
             { id: 'ai', label: 'AI Language', icon: Globe },
+            { id: 'data', label: 'Data & Privacy', icon: Database },
             { id: 'account', label: 'Account', icon: User },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -110,7 +141,7 @@ export default function SettingsPanel({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 pb-2.5 border-b-2 transition-colors ${
+                className={`flex items-center gap-1.5 pb-2.5 border-b-2 transition-colors whitespace-nowrap ${
                   isActive
                     ? 'border-indigo-500 text-white font-bold'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -247,7 +278,73 @@ export default function SettingsPanel({
             </div>
           )}
 
-          {/* TAB 3: ACCOUNT & QUOTA */}
+          {/* TAB 3: DATA & PRIVACY */}
+          {activeTab === 'data' && (
+            <div className="space-y-4 animate-fade-in text-xs">
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-slate-200">Export Current Conversation</div>
+                    <div className="text-[11px] text-slate-400">
+                      Download messages as a standard JSON archive for offline backup.
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleExportJson}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/40 text-indigo-300 hover:text-white hover:bg-indigo-600/30 font-medium transition cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Export</span>
+                  </button>
+                </div>
+
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-rose-300">Clear Active Screen</div>
+                    <div className="text-[11px] text-slate-400">
+                      Clears current session messages from your active window.
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleClearCurrent}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 hover:text-white hover:bg-rose-500/20 font-medium transition cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Clear</span>
+                  </button>
+                </div>
+                {clearedNotice && (
+                  <p className="text-[11px] text-emerald-400 font-semibold">Active window cleared.</p>
+                )}
+              </div>
+
+              {/* Keyboard Shortcuts Reference */}
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
+                <div className="flex items-center gap-1.5 font-semibold text-slate-300 text-[11px] uppercase tracking-wider">
+                  <Keyboard className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Keyboard Shortcuts</span>
+                </div>
+                <div className="space-y-1.5 text-[11px]">
+                  <div className="flex justify-between items-center py-0.5 border-b border-slate-900">
+                    <span className="text-slate-400">Focus Chatbar / New Chat</span>
+                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 font-mono text-[10px]">Ctrl + K</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-0.5 border-b border-slate-900">
+                    <span className="text-slate-400">Send Prompt</span>
+                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 font-mono text-[10px]">Enter</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-0.5">
+                    <span className="text-slate-400">Multi-line Break</span>
+                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 font-mono text-[10px]">Shift + Enter</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: ACCOUNT & QUOTA */}
           {activeTab === 'account' && (
             <div className="space-y-4 animate-fade-in text-xs">
               <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">

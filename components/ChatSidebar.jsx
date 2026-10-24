@@ -134,52 +134,55 @@ export default function ChatSidebar({
         {/* Header */}
         <div className="p-3.5 space-y-3 flex-shrink-0 border-b border-[var(--border-color)]">
           <div className="flex items-center justify-between">
-            <a
-              href={mainSiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2.5 group overflow-hidden"
-              title="GuruAI by HarshGuruJi"
-            >
-              <GuruLogo size={32} />
-              {!isCollapsed && (
-                <div className="leading-tight truncate">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-sm tracking-wide text-white group-hover:text-cyan-400 transition">
-                      GuruAI
-                    </span>
-                    <span className="text-[10px] font-mono uppercase bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-1 py-0.2 rounded">
-                      Pro
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 truncate block">
-                    by HarshGuruJi
-                  </span>
-                </div>
-              )}
-            </a>
-
-            {/* Desktop Collapse & Mobile Close */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2 min-w-0">
+              {/* Arrow toggle to the left of Logo & Name */}
               <button
                 onClick={onToggleCollapse}
                 aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                className="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition"
+                className="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/70 transition flex-shrink-0"
+                title={isCollapsed ? 'Expand sidebar (Ctrl+[)' : 'Collapse sidebar (Ctrl+[)'}
               >
                 {isCollapsed ? (
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 text-cyan-400" />
                 ) : (
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-4 h-4 text-cyan-400" />
                 )}
               </button>
-              <button
-                onClick={onClose}
-                aria-label="Close menu"
-                className="md:hidden p-1.5 text-slate-400 hover:text-white"
+
+              <a
+                href={mainSiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 group overflow-hidden"
+                title="GuruAI by HarshGuruJi"
               >
-                <X className="w-5 h-5" />
-              </button>
+                <GuruLogo size={32} />
+                {!isCollapsed && (
+                  <div className="leading-tight truncate">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-sm tracking-wide text-white group-hover:text-cyan-400 transition">
+                        GuruAI
+                      </span>
+                      <span className="text-[10px] font-mono uppercase bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 px-1 py-0.2 rounded">
+                        Pro
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 truncate block">
+                      by HarshGuruJi
+                    </span>
+                  </div>
+                )}
+              </a>
             </div>
+
+            {/* Mobile Close Button */}
+            <button
+              onClick={onClose}
+              aria-label="Close menu"
+              className="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/60"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* New Chat Button */}

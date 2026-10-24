@@ -27,6 +27,8 @@ export default function ChatWindow({
   isGenerating = false,
   isImageMode = false,
   onOpenSidebar,
+  isSidebarCollapsed = false,
+  onToggleSidebarCollapse,
   onOpenSettings,
   onPromptSelect,
   onImageClick,
@@ -78,6 +80,7 @@ export default function ChatWindow({
       {/* Top Header */}
       <header className="z-10 flex h-auto min-h-14 flex-shrink-0 flex-wrap items-center justify-between gap-y-2 border-b border-[var(--border-color)] bg-[var(--bg-secondary)]/80 px-2 py-2 backdrop-blur-md sm:h-14 sm:flex-nowrap sm:px-4 sm:py-0">
         <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:gap-3">
+          {/* Mobile Drawer Toggle */}
           <button
             onClick={onOpenSidebar}
             aria-label="Toggle navigation drawer"
@@ -85,6 +88,19 @@ export default function ChatWindow({
           >
             <Menu className="w-5 h-5" />
           </button>
+
+          {/* Desktop Left Expand Button (when sidebar is collapsed) */}
+          {isSidebarCollapsed && (
+            <button
+              onClick={onToggleSidebarCollapse}
+              aria-label="Expand sidebar"
+              className="hidden md:flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              title="Expand sidebar (Ctrl+[)"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
+
           <div className="flex items-center gap-2.5">
             <GuruLogo size={24} />
             <div className="flex items-center gap-2">

@@ -684,6 +684,8 @@ export default function GuruAiApp() {
           isGenerating={isGenerating}
           isImageMode={isImageMode}
           onOpenSidebar={() => setSidebarOpen(true)}
+          isSidebarCollapsed={isSidebarCollapsed}
+          onToggleSidebarCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           onOpenSettings={() => setSettingsOpen(true)}
           onPromptSelect={handlePromptSelect}
           onImageClick={(imgUrl, prompt) => setPreviewImageData({ url: imgUrl, prompt })}
@@ -711,6 +713,7 @@ export default function GuruAiApp() {
             isLoggedIn={!!user}
             remainingAllowance={quota.remainingAllowance}
             onOpenLoginPrompt={() => handleOpenAuth('login')}
+            onOpenSettings={() => setSettingsOpen(true)}
           />
         </div>
       </main>
@@ -722,6 +725,8 @@ export default function GuruAiApp() {
         isLoggedIn={!!user}
         user={user}
         preferences={preferences}
+        messages={messages}
+        onClearMessages={() => setMessages([])}
         onSavePreferences={handleSavePreferences}
         remainingAllowance={quota.remainingAllowance}
         maxRequests={quota.maxRequests}
