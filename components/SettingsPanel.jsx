@@ -106,11 +106,11 @@ export default function SettingsPanel({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-2xl overflow-hidden text-[var(--text-primary)]"
+        className="relative w-full max-w-lg max-h-[92vh] flex flex-col rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-2xl overflow-hidden text-[var(--text-primary)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)] flex-shrink-0">
           <div className="flex items-center gap-3">
             <GuruLogo size={28} />
             <div>
@@ -128,7 +128,7 @@ export default function SettingsPanel({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-[var(--border-color)] px-6 pt-2 gap-3 text-xs font-semibold overflow-x-auto">
+        <div className="flex border-b border-[var(--border-color)] px-6 pt-2 gap-3 text-xs font-semibold overflow-x-auto flex-shrink-0">
           {[
             { id: 'appearance', label: 'Appearance', icon: Moon },
             { id: 'ai', label: 'AI Language', icon: Globe },
@@ -156,7 +156,7 @@ export default function SettingsPanel({
 
         {/* Guest Lock Banner */}
         {!isLoggedIn && (
-          <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2.5 flex items-center justify-between">
+          <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2.5 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2 text-amber-300 text-xs font-medium">
               <Lock className="w-3.5 h-3.5 flex-shrink-0" />
               <span>Settings sync is locked for Guest users</span>
@@ -172,7 +172,7 @@ export default function SettingsPanel({
         )}
 
         {/* Settings Body */}
-        <div className={`p-6 space-y-5 ${!isLoggedIn && activeTab !== 'account' ? 'opacity-70' : ''}`}>
+        <div className={`p-6 space-y-5 overflow-y-auto flex-1 overscroll-contain ${!isLoggedIn && activeTab !== 'account' ? 'opacity-70' : ''}`}>
           {/* TAB 1: APPEARANCE */}
           {activeTab === 'appearance' && (
             <div className="space-y-5 animate-fade-in">
@@ -409,7 +409,7 @@ export default function SettingsPanel({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-[var(--bg-primary)] border-t border-[var(--border-color)] flex items-center justify-between">
+        <div className="px-6 py-4 bg-[var(--bg-primary)] border-t border-[var(--border-color)] flex items-center justify-between flex-shrink-0">
           <span className="text-[11px] text-slate-400">
             By HarshGuruJi
           </span>

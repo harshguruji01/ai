@@ -210,7 +210,7 @@ export default function ChatInput({
             <button
               type="button"
               onClick={handleImageToggle}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
                 isImageMode
                   ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 ring-1 ring-purple-300'
                   : 'bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-700/80 border border-slate-700/40'
@@ -223,9 +223,10 @@ export default function ChatInput({
                   : 'Sign in to unlock AI Image Studio'
               }
             >
-              <ImageIcon className="w-3.5 h-3.5 text-purple-300" />
-              <span>Image Studio</span>
-              {!isLoggedIn && <Lock className="w-3 h-3 text-amber-400 ml-0.5" />}
+              <ImageIcon className="w-3.5 h-3.5 text-purple-300 flex-shrink-0" />
+              <span className="hidden xs:inline sm:inline">Image Studio</span>
+              <span className="xs:hidden sm:hidden">Studio</span>
+              {!isLoggedIn && <Lock className="w-3 h-3 text-amber-400 ml-0.5 flex-shrink-0" />}
             </button>
 
             {/* Settings Quick Access Pill */}
