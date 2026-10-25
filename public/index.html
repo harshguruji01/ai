@@ -63,36 +63,53 @@
 
   <style>
     /* Design Tokens */
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+    }
+
+    body.h-screen {
+      height: 100vh;
+      height: 100dvh;
+    }
+
     :root {
-      /* Theme A: Dark Slate (Default - Gemini/ChatGPT Sleek Dark) */
-      --bg-primary: #070913;
-      --bg-secondary: #0d111d;
-      --bg-surface: #131929;
-      --border-color: rgba(51, 65, 85, 0.55);
+      /* Theme A: Dark Slate (Gemini Sleek Charcoal & Navy) */
+      --bg-primary: #0b0f19;
+      --bg-secondary: #0f1422;
+      --bg-surface: #141b2d;
+      --border-color: rgba(255, 255, 255, 0.08);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --accent-primary: #6366f1;
       --accent-secondary: #06b6d4;
-      --composer-bg: rgba(13, 17, 29, 0.95);
-      --bubble-assistant: rgba(19, 25, 41, 0.85);
-      --bubble-user: #4f46e5;
-      --bubble-border: rgba(51, 65, 85, 0.5);
+      --composer-bg: rgba(15, 20, 34, 0.95);
+      --bubble-assistant: transparent;
+      --bubble-user: #1e2434;
+      --bubble-border: transparent;
     }
 
-    /* Theme B: Daylight Light Mode */
+    /* Theme B: Daylight Light Mode (Gemini Clean Light) */
     body.theme-light {
-      --bg-primary: #f8fafc;
-      --bg-secondary: #ffffff;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
       --bg-surface: #ffffff;
-      --border-color: #cbd5e1;
+      --border-color: rgba(0, 0, 0, 0.08);
       --text-primary: #0f172a;
       --text-secondary: #475569;
       --accent-primary: #4338ca;
       --accent-secondary: #0284c7;
-      --composer-bg: rgba(255, 255, 255, 0.96);
-      --bubble-assistant: #ffffff;
-      --bubble-user: #4338ca;
-      --bubble-border: #cbd5e1;
+      --composer-bg: rgba(248, 250, 252, 0.96);
+      --bubble-assistant: transparent;
+      --bubble-user: #f1f5f9;
+      --bubble-border: transparent;
     }
 
     body.theme-light .text-white,
@@ -319,7 +336,7 @@
 
     <!-- 1. LEFT SIDEBAR (COLLAPSIBLE LIKE CHATGPT & GEMINI) -->
     <aside id="sidebar"
-      class="fixed inset-y-0 left-0 z-50 w-72 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col justify-between transition-all duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0">
+      class="fixed inset-y-0 left-0 z-50 w-72 min-h-0 overflow-hidden bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col justify-between transition-all duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0">
 
       <!-- Top Header & New Chat -->
       <div class="p-3.5 space-y-3 border-b border-[var(--border-color)] flex-shrink-0">
@@ -409,8 +426,13 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span class="text-slate-300 font-medium text-[11px]" id="userTierLabel">Guest Allowance</span>
           </div>
-          <span class="font-mono text-[11px] font-bold text-cyan-400" id="quotaSidebarText">2/2 Left</span>
+          <span class="font-mono text-[11px] font-bold text-cyan-400" id="quotaSidebarText">8/8 Left</span>
         </div>
+        <button onclick="openUpgradeModal()" class="w-full mt-2 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-amber-500/20 border border-indigo-500/40 hover:border-amber-400/60 text-amber-300 hover:text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition shadow-sm">
+          <span>⭐</span>
+          <span>Upgrade Context &amp; Limits</span>
+        </button>
+        
 
         <div class="flex items-center justify-between pt-1">
           <!-- User Profile / Guest Button -->
@@ -460,7 +482,7 @@
     </aside>
 
     <!-- 2. MAIN WORKSPACE CANVAS -->
-    <main class="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative bg-[var(--bg-primary)]">
+    <main id="mainWorkspace" class="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative bg-[var(--bg-primary)]">
 
       <!-- Top Navigation Header -->
       <header
@@ -493,6 +515,14 @@
             <span class="capitalize text-[11px] font-medium" id="currentLangDisplay">English</span>
           </button>
 
+          
+          <!-- Upgrade Plan Button -->
+          <button id="headerUpgradeBtn" onclick="openUpgradeModal()"
+            class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all duration-200 bg-gradient-to-r from-amber-500/20 to-purple-500/20 border-amber-500/40 text-amber-300 hover:from-amber-500/30 hover:to-purple-500/30 shadow-sm shadow-amber-500/10">
+            <span>⭐</span>
+            <span>Upgrade</span>
+          </button>
+        
           <!-- Usage Allowance Badge -->
           <button id="headerQuotaBadge"
             class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 bg-indigo-500/10 border-indigo-500/30 text-cyan-400 hover:bg-indigo-500/20">
@@ -500,7 +530,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
             </svg>
-            <span id="headerQuotaText">2/2 Left</span>
+            <span id="headerQuotaText">8/8 Left</span>
             <span class="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-300 ml-0.5"
               id="headerTierText">Guest</span>
           </button>
@@ -541,7 +571,7 @@
       </header>
 
       <!-- Chat Messages Container -->
-      <div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
+      <div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto pb-44 px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
         <!-- Rendered dynamically -->
       </div>
 
@@ -562,21 +592,120 @@
         </div>
       </div>
 
-      <!-- Bottom Chat Composer (Permanently docked, ChatGPT/Gemini floating capsule) -->
+      <!-- Floating Fixed Chat Composer (Gemini-Style Floating Capsule) -->
       <div
-        class="w-full p-3.5 md:p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/95 backdrop-blur-md flex-shrink-0 z-20">
-        <div class="w-full max-w-4xl mx-auto space-y-2">
+        class="absolute bottom-0 left-0 right-0 z-20 pointer-events-none pb-3 sm:pb-5 px-3 md:px-4 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent pt-8 flex-shrink-0 z-20">
+        <div class="w-full max-w-4xl mx-auto space-y-2 pointer-events-auto">
 
           <form id="chatForm"
-            class="relative rounded-2xl border transition-all duration-200 bg-[var(--composer-bg)] backdrop-blur-md shadow-xl border-[var(--border-color)] focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/25">
+            class="relative rounded-3xl border transition-all duration-200 bg-[var(--composer-bg)] backdrop-blur-md shadow-xl border-[var(--border-color)] focus-within:border-indigo-500/70 focus-within:ring-2 focus-within:ring-indigo-500/20">
             <textarea id="promptInput" rows="1" placeholder="Ask GuruAI anything in English, Hinglish, or Hindi..."
-              class="w-full bg-transparent px-4 pt-3.5 pb-2 text-sm text-[var(--text-primary)] placeholder-slate-400 focus:outline-none resize-none min-h-[46px] max-h-44 disabled:opacity-60"></textarea>
+              class="w-full bg-transparent px-5 pt-4 pb-2 text-[14.5px] leading-relaxed text-[var(--text-primary)] placeholder-slate-400 focus:outline-none resize-none min-h-[46px] max-h-44 disabled:opacity-60"></textarea>
 
-            <div class="flex items-center justify-between px-3 pb-2.5 pt-1">
+            <div class="flex items-center justify-between px-3.5 pb-2.5 pt-0.5">
               <div class="flex items-center gap-1.5 sm:gap-2">
+                <!-- Model Selector Dropdown in Chatbar -->
+                <div class="relative inline-block text-left" id="composerModelSelectorWrap">
+                  <button type="button" id="composerModelBtn"
+                    class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/60 shadow-sm"
+                    title="Select AI Model">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                    <span id="composerActiveModelName" class="font-heading font-bold text-white text-[11px] sm:text-xs">Guru-Flash 1.1</span>
+                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  <!-- Dropdown Menu (6 Models) -->
+                  <div id="composerModelMenu" class="hidden absolute bottom-full left-0 mb-2 w-72 sm:w-80 rounded-2xl bg-slate-900/95 border border-slate-700/80 shadow-2xl backdrop-blur-xl p-2 z-50 space-y-1">
+                    <div class="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-slate-400 border-b border-slate-800 flex items-center justify-between">
+                      <span>GuruAI Models</span>
+                      <span class="text-indigo-400 font-mono">Select Engine</span>
+                    </div>
+
+                    <!-- 1. Guru-Flash 1.1 (Free / Unlocked) -->
+                    <button type="button" onclick="selectAiModel('guru-flash-1.1', 'Guru-Flash 1.1', false)"
+                      class="w-full flex items-start gap-2.5 p-2 rounded-xl text-left hover:bg-slate-800/80 transition group cursor-pointer">
+                      <div class="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 text-xs font-bold flex-shrink-0 mt-0.5">⚡</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                          <span class="font-bold text-xs text-white group-hover:text-cyan-400 transition">Guru-Flash 1.1</span>
+                          <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Unlocked</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">Balanced intelligence &amp; everyday tasks</p>
+                      </div>
+                    </button>
+
+                    <!-- 2. Guru-Flash 1.2 (Free / Unlocked) -->
+                    <button type="button" onclick="selectAiModel('guru-flash-1.2', 'Guru-Flash 1.2', false)"
+                      class="w-full flex items-start gap-2.5 p-2 rounded-xl text-left hover:bg-slate-800/80 transition group cursor-pointer">
+                      <div class="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-xs font-bold flex-shrink-0 mt-0.5">⚡</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                          <span class="font-bold text-xs text-white group-hover:text-cyan-400 transition">Guru-Flash 1.2</span>
+                          <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Unlocked</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">Ultra-fast Groq Qwen-27B engine</p>
+                      </div>
+                    </button>
+
+                    <!-- 3. Guru-Flash 1.3 Pro (Locked) -->
+                    <button type="button" onclick="selectAiModel('guru-flash-1.3', 'Guru-Flash 1.3 Pro', true, 'Starter Pro')"
+                      class="w-full flex items-start gap-2.5 p-2 rounded-xl text-left hover:bg-slate-800/80 transition group opacity-85 hover:opacity-100 cursor-pointer">
+                      <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs font-bold flex-shrink-0 mt-0.5">🔒</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                          <span class="font-bold text-xs text-slate-300 group-hover:text-amber-300 transition">Guru-Flash 1.3 Pro</span>
+                          <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Starter $5</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">Expanded 50K context &amp; instruction precision</p>
+                      </div>
+                    </button>
+
+                    <!-- 4. Guru-Flash 1.5 Pro (Locked) -->
+                    <button type="button" onclick="selectAiModel('guru-flash-1.5', 'Guru-Flash 1.5 Pro', true, 'Starter Pro')"
+                      class="w-full flex items-start gap-2.5 p-2 rounded-xl text-left hover:bg-slate-800/80 transition group opacity-85 hover:opacity-100 cursor-pointer">
+                      <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs font-bold flex-shrink-0 mt-0.5">🔒</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                          <span class="font-bold text-xs text-slate-300 group-hover:text-amber-300 transition">Guru-Flash 1.5 Pro</span>
+                          <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Starter $5</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">Deep logic reasoning &amp; analysis</p>
+                      </div>
+                    </button>
+
+                    <!-- 5. Guru-Vision 1.9 (Locked) -->
+                    <button type="button" onclick="selectAiModel('guru-vision-1.9', 'Guru-Vision 1.9', true, 'Power Scholar')"
+                      class="w-full flex items-start gap-2.5 p-2 rounded-xl text-left hover:bg-slate-800/80 transition group opacity-85 hover:opacity-100 cursor-pointer">
+                      <div class="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xs font-bold flex-shrink-0 mt-0.5">🔒</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                          <span class="font-bold text-xs text-slate-300 group-hover:text-purple-300 transition">Guru-Vision 1.9</span>
+                          <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">Power $15</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">High-definition vision synthesis &amp; multimodal</p>
+                      </div>
+                    </button>
+
+                    <!-- 6. Guru-Ultra 2.0 (Locked) -->
+                    <button type="button" onclick="selectAiModel('guru-ultra-2.0', 'Guru-Ultra 2.0', true, 'Grandmaster')"
+                      class="w-full flex items-start gap-2.5 p-2 rounded-xl text-left hover:bg-slate-800/80 transition group opacity-85 hover:opacity-100 cursor-pointer">
+                      <div class="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-300 text-xs font-bold flex-shrink-0 mt-0.5">👑</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                          <span class="font-bold text-xs text-white group-hover:text-amber-300 transition">Guru-Ultra 2.0</span>
+                          <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500/30 to-purple-500/30 text-amber-200 border border-amber-500/40">VIP $25</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">Flagship 120B reasoning &amp; code engine</p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
                 <!-- Image Studio Mode Toggle -->
                 <button type="button" id="imageModeBtn"
-                  class="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold transition-all duration-200 bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80"
                   title="Toggle AI Image Generation Mode">
                   <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -593,7 +722,7 @@
                 <!-- File Attachment Input & Button -->
                 <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
                 <button type="button" id="attachFileBtn"
-                  class="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition"
+                  class="p-2 rounded-full text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition"
                   title="Attach image or document">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -603,7 +732,7 @@
 
                 <!-- Voice Dictation / Speech-to-Text Button -->
                 <button type="button" id="voiceDictationBtn"
-                  class="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition"
+                  class="p-2 rounded-full text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition"
                   title="Voice Input (Speech-to-Text)">
                   <svg id="micIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -615,7 +744,7 @@
               <div class="flex items-center gap-2">
                 <!-- Stop Generation Button -->
                 <button type="button" id="stopGenBtn"
-                  class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition">
+                  class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition">
                   <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                     <rect x="6" y="6" width="12" height="12" rx="2" />
                   </svg>
@@ -624,7 +753,7 @@
 
                 <!-- Send Button -->
                 <button type="submit" id="sendBtn"
-                  class="p-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-md shadow-indigo-600/25 transition active:scale-95"
+                  class="p-2.5 rounded-full bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-md shadow-indigo-600/25 transition active:scale-95"
                   title="Send Message">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -638,7 +767,7 @@
           <div class="flex items-center justify-between px-2 text-[11px] text-slate-400">
             <span>GuruAI can make mistakes. Verify important facts and code. • Model: <strong
                 class="text-indigo-400">Guru-Flash 1.1</strong></span>
-            <span id="footerQuotaText" class="font-mono">2 requests left</span>
+            <span id="footerQuotaText" class="font-mono">8 requests left</span>
           </div>
 
         </div>
@@ -787,7 +916,7 @@
         <h2 id="authModalTitle"
           class="text-xl md:text-2xl font-bold font-heading bg-gradient-to-r from-white via-indigo-100 to-cyan-300 bg-clip-text text-transparent">
           Sign In to GuruAI</h2>
-        <p id="authModalSubtitle" class="text-xs text-slate-400 mt-1">Unlock 10 requests / 12h, chat history & image
+        <p id="authModalSubtitle" class="text-xs text-slate-400 mt-1">Unlock 20 requests / 12h, chat history & image
           studio</p>
       </div>
 
@@ -1026,7 +1155,7 @@
           <div class="text-sm font-semibold text-slate-200" id="loggedInEmailText">user@example.com</div>
           <div id="loggedInRoleBadge"
             class="inline-block px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[11px] font-semibold">
-            Active Member • 10 requests / 12h</div>
+            Active Member • 20 requests / 12h</div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -1043,8 +1172,299 @@
     </div>
   </div>
 
+  
+  <!-- 6. GURUAI PREMIUM CONTEXT & QUOTA UPGRADE MODAL -->
+  <div id="upgradeModal"
+    class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden animate-in fade-in duration-200">
+    <div
+      class="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl bg-slate-900/95 border border-slate-800 shadow-2xl shadow-indigo-950/70 p-5 sm:p-8 text-slate-100">
+      
+      <!-- Close Button -->
+      <button onclick="closeUpgradeModal()"
+        class="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+        aria-label="Close Upgrade Modal">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="text-center max-w-2xl mx-auto mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-purple-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
+          <span>⭐</span> GuruAI Premium Upgrade &amp; Context Expansion
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold font-heading bg-gradient-to-r from-white via-indigo-100 to-cyan-300 bg-clip-text text-transparent">
+          Upgrade Your Context &amp; Daily Limits
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+          Free tier includes <strong>8 requests</strong> (guest) and <strong>20 requests</strong> (members). Upgrade to unlock continuous multi-turn memory, massive token context windows, and priority inference.
+        </p>
+      </div>
+
+      <!-- 3 Tier Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+        
+        <!-- Tier 1: Starter Pro ($5) -->
+        <div class="rounded-2xl bg-slate-950/90 border border-slate-800 p-5 sm:p-6 flex flex-col justify-between hover:border-slate-700 transition relative">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Starter Pro</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-xs text-slate-200 font-mono font-bold">$5 / mo</span>
+            </div>
+            <div class="mb-4">
+              <div class="text-3xl font-extrabold text-white font-heading">50,000</div>
+              <div class="text-xs text-cyan-400 font-semibold tracking-wide">Tokens Context Limit</div>
+            </div>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>100 Daily Chats</strong> (12h cycle)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>50,000 Token Memory Buffer</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Fast GPU processing speed</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Full homework &amp; coding tutorials</span>
+              </li>
+            </ul>
+          </div>
+          <button onclick="handlePlanBuy('Starter Pro ($5)', 50000, 5)"
+            class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
+            <span>Upgrade to Starter ($5)</span> ➔
+          </button>
+        </div>
+
+        <!-- Tier 2: Power Scholar ($15 - Recommended / Best Value) -->
+        <div class="rounded-2xl bg-gradient-to-b from-indigo-950/50 via-slate-950 to-slate-950 border-2 border-indigo-500/70 p-5 sm:p-6 flex flex-col justify-between hover:border-indigo-400 transition relative shadow-2xl shadow-indigo-950/60">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-500 to-cyan-400 text-slate-950 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-wider shadow">
+            🔥 Best Value • 3.5x Context
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Power Scholar</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-xs text-cyan-300 font-mono font-bold">$15 / mo</span>
+            </div>
+            <div class="mb-4">
+              <div class="text-3xl font-extrabold text-white font-heading">175,000</div>
+              <div class="text-xs text-indigo-300 font-semibold tracking-wide">Tokens Context Limit</div>
+            </div>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>350 Daily Chats</strong> (12h cycle)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>175,000 Token Memory</strong> (3.5x Starter)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Multi-document analysis &amp; PDF digest</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Deep chain-of-thought problem solving</span>
+              </li>
+            </ul>
+          </div>
+          <button onclick="handlePlanBuy('Power Scholar ($15)', 175000, 15)"
+            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/40 hover:opacity-95 transition flex items-center justify-center gap-1.5">
+            <span>Upgrade to Scholar ($15)</span> ➔
+          </button>
+        </div>
+
+        <!-- Tier 3: Grandmaster Enterprise ($25) -->
+        <div class="rounded-2xl bg-slate-950/90 border border-slate-800 p-5 sm:p-6 flex flex-col justify-between hover:border-slate-700 transition relative">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Grandmaster</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-xs text-purple-300 font-mono font-bold">$25 / mo</span>
+            </div>
+            <div class="mb-4">
+              <div class="text-3xl font-extrabold text-white font-heading">325,000</div>
+              <div class="text-xs text-purple-300 font-semibold tracking-wide">Tokens Context Limit</div>
+            </div>
+            <ul class="text-xs text-slate-300 space-y-2.5 mb-6">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>Unlimited Priority Chats</strong> (24h)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span><strong>325,000 Token Massive Context</strong></span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Full textbook &amp; codebase ingestion</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-400 font-bold">✔</span>
+                <span>Dedicated GPU channel &amp; new models early access</span>
+              </li>
+            </ul>
+          </div>
+          <button onclick="handlePlanBuy('Grandmaster Enterprise ($25)', 325000, 25)"
+            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
+            <span>Upgrade to Grandmaster ($25)</span> ➔
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Compare With Less Cost Breakdown -->
+      <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-4 sm:p-5 mb-6">
+        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <span>📊</span> Value Comparison: Why Higher Tiers Cost Less Per Token
+        </h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="pb-2 font-semibold">Tier Plan</th>
+                <th class="pb-2 font-semibold">Monthly Cost</th>
+                <th class="pb-2 font-semibold">Context Limit</th>
+                <th class="pb-2 font-semibold">Cost Per 10K Tokens</th>
+                <th class="pb-2 font-semibold">Comparative Advantage</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+              <tr>
+                <td class="py-2.5 font-semibold text-slate-200">Starter Pro</td>
+                <td class="py-2.5 font-mono">$5</td>
+                <td class="py-2.5 text-cyan-400 font-mono">50,000</td>
+                <td class="py-2.5 font-mono">$1.00 / 10k</td>
+                <td class="py-2.5 text-slate-400">Standard Baseline</td>
+              </tr>
+              <tr class="bg-indigo-950/20">
+                <td class="py-2.5 font-bold text-indigo-300">Power Scholar</td>
+                <td class="py-2.5 font-mono font-bold">$15</td>
+                <td class="py-2.5 text-cyan-300 font-mono font-bold">175,000</td>
+                <td class="py-2.5 font-mono text-emerald-400 font-bold">$0.85 / 10k</td>
+                <td class="py-2.5 text-emerald-400 font-semibold">+15% Cheaper &amp; 3.5x Context Volume</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 font-bold text-purple-300">Grandmaster</td>
+                <td class="py-2.5 font-mono font-bold">$25</td>
+                <td class="py-2.5 text-purple-300 font-mono font-bold">325,000</td>
+                <td class="py-2.5 font-mono text-emerald-400 font-bold">$0.76 / 10k</td>
+                <td class="py-2.5 text-emerald-400 font-semibold">+24% Cheaper &amp; 6.5x Context Volume</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Activation Notice -->
+      <div class="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/50 text-xs text-indigo-200 flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🛡️</span>
+          <span>Clicking any plan redirects to <strong>webguruji.online/contact.html</strong>. Once your request is submitted, HarshGuruJi Admin activates your new limit live!</span>
+        </div>
+        <span class="text-[11px] font-mono text-cyan-300 bg-slate-900 px-2 py-1 rounded">Live Admin Sync</span>
+      </div>
+
+    </div>
+  </div>
+
   <!-- JAVASCRIPT APPLICATION CORE -->
   <script>
+    // --- GURUAI UPGRADE & CONTEXT LIMIT CONTROLLER ---
+    window.openUpgradeModal = function() {
+      const modal = document.getElementById('upgradeModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeUpgradeModal = function() {
+      const modal = document.getElementById('upgradeModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    let currentSelectedModel = 'guru-flash-1.1';
+
+    window.selectAiModel = function(modelId, modelName, isLocked, requiredPlan) {
+      const menu = document.getElementById('composerModelMenu');
+      if (menu) menu.classList.add('hidden');
+
+      if (isLocked) {
+        showToast(`🔒 ${modelName} is locked. Upgrade to ${requiredPlan || 'Starter Pro'} to unlock all advanced models!`, 'warning');
+        if (typeof openUpgradeModal === 'function') {
+          openUpgradeModal();
+        }
+        return;
+      }
+
+      currentSelectedModel = modelId;
+      const badge = document.getElementById('composerActiveModelName');
+      if (badge) badge.textContent = modelName;
+      showToast(`⚡ Model switched to ${modelName}`, 'success');
+    };
+
+    window.handlePlanBuy = async function(planName, contextLimit, price) {
+      const email = currentUser?.email || '';
+      if (!email) {
+        showToast('Please sign in first so your upgrade can be linked to your account.', 'warning');
+        if (typeof openAuthModal === 'function') openAuthModal('login');
+        return;
+      }
+
+      const userName = currentUser?.user_metadata?.name || email.split('@')[0];
+      showToast('Submitting upgrade request & generating invoice...', 'info');
+
+      try {
+        // 1. Submit record to Supabase contact_messages table
+        if (supabaseClient) {
+          await supabaseClient.from('contact_messages').insert([{
+            name: userName,
+            email: email,
+            subject: 'AI_UPGRADE',
+            message: `GuruAI Upgrade Request: ${planName} ($${price}). Context Window Limit: ${contextLimit} Tokens. User ID: ${currentUser.id}`,
+            status: 'Pending',
+            created_at: new Date().toISOString()
+          }]);
+        }
+
+        // 2. Dispatch invoice email with QR Code & UPI ID placeholders from info@webguruji.online
+        try {
+          await fetch('/api/mail/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: email,
+              name: userName,
+              type: 'ai_upgrade_invoice',
+              planName: planName,
+              planPrice: price,
+              contextLimit: contextLimit
+            })
+          });
+        } catch (mailErr) {
+          console.warn('Invoice mail error:', mailErr);
+        }
+
+        closeUpgradeModal();
+        showToast(`🎉 Upgrade invoice sent to ${email} with UPI & QR payment instructions!`, 'success');
+
+        const params = new URLSearchParams({
+          subject: 'ai_upgrade',
+          plan: planName,
+          context: contextLimit,
+          price: price,
+          email: email
+        });
+        const url = `https://webguruji.online/contact.html?${params.toString()}`;
+        window.open(url, '_blank');
+      } catch (err) {
+        console.error('Plan buy error:', err);
+        showToast('Request submitted. You can also contact support directly.', 'info');
+      }
+    };
+
     // 1. Supabase Initialization
     const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80';
@@ -1063,7 +1483,7 @@
     let attachedFile = null;
     let currentTheme = localStorage.getItem('guruai_theme') || 'dark';
     let currentLang = localStorage.getItem('guruai_lang') || 'english';
-    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '2', 10);
+    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '8', 10);
     let maxRequests = 2;
     let speechRecognition = null;
     let isListening = false;
@@ -1395,7 +1815,8 @@
     function setTheme(theme) {
       currentTheme = theme;
       localStorage.setItem('guruai_theme', theme);
-      document.body.className = `theme-${theme} font-sans-mode text-size-medium select-none`;
+      document.body.classList.remove('theme-dark', 'theme-light', 'theme-cyberpunk');
+      document.body.classList.add(`theme-${theme}`);
       if (theme === 'dark' || theme === 'cyberpunk') {
         document.documentElement.classList.add('dark');
       } else {
@@ -1487,49 +1908,63 @@
         return;
       }
 
-      // Chronological Grouping
+      // Chronological & Pinned Grouping
       const now = Date.now();
       const oneDay = 24 * 60 * 60 * 1000;
       const groups = {
+        pinned: [],
         today: [],
         yesterday: [],
         previous7Days: [],
+        previous30Days: [],
         older: []
       };
 
       filtered.forEach(conv => {
+        if (conv.pinned) {
+          groups.pinned.push(conv);
+          return;
+        }
         const diff = now - (conv.timestamp || now);
         if (diff < oneDay) groups.today.push(conv);
         else if (diff < 2 * oneDay) groups.yesterday.push(conv);
         else if (diff < 7 * oneDay) groups.previous7Days.push(conv);
+        else if (diff < 30 * oneDay) groups.previous30Days.push(conv);
         else groups.older.push(conv);
       });
 
       function renderGroup(title, items) {
         if (!items.length) return;
         const groupHeader = document.createElement('div');
-        groupHeader.className = 'text-[10px] font-bold uppercase tracking-wider text-slate-500 px-2 pt-2.5 pb-1';
+        groupHeader.className = 'text-[11px] font-semibold tracking-wider text-[var(--text-tertiary)] px-3 pt-3 pb-1';
         groupHeader.textContent = title;
         historyList.appendChild(groupHeader);
 
         items.forEach(conv => {
           const isActive = conv.id === currentConvId;
+          const isPinned = !!conv.pinned;
           const itemDiv = document.createElement('div');
-          itemDiv.className = `group flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition cursor-pointer ${isActive
-              ? 'bg-indigo-600/20 border border-indigo-500/40 text-cyan-300 font-semibold'
-              : 'hover:bg-slate-800/60 text-slate-300 border border-transparent'
+          itemDiv.className = `group flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer select-none ${isActive
+              ? 'bg-[var(--accent-glow)] text-[var(--accent-color)] font-medium'
+              : 'hover:bg-[var(--hover-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`;
 
           itemDiv.innerHTML = `
-            <div class="flex items-center gap-2 min-w-0 flex-1" onclick="switchConversation('${conv.id}')">
-              <svg class="w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-slate-500'} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            <div class="flex items-center gap-2.5 min-w-0 flex-1" onclick="switchConversation('${conv.id}')">
+              ${isPinned 
+                ? '<svg class="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>'
+                : `<svg class="w-3.5 h-3.5 ${isActive ? 'text-[var(--accent-color)]' : 'text-[var(--text-tertiary)]'} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>`
+              }
               <span class="truncate">${conv.title}</span>
             </div>
             <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onclick="renameConversation('${conv.id}', event)" class="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-white" title="Rename title">
+              <button onclick="togglePinConversation('${conv.id}', event)" class="p-1 rounded hover:bg-[var(--hover-bg)] ${isPinned ? 'text-amber-400' : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'}" title="${isPinned ? 'Unpin conversation' : 'Pin conversation'}">
+                <svg class="w-3 h-3" fill="${isPinned ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+              </button>
+              <button onclick="renameConversation('${conv.id}', event)" class="p-1 rounded hover:bg-[var(--hover-bg)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]" title="Rename conversation">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
               </button>
-              <button onclick="deleteConversation('${conv.id}', event)" class="p-1 rounded hover:bg-rose-900/60 text-slate-400 hover:text-rose-300" title="Delete chat">
+              <button onclick="deleteConversation('${conv.id}', event)" class="p-1 rounded hover:bg-rose-500/20 text-[var(--text-tertiary)] hover:text-rose-400" title="Delete chat">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
@@ -1538,9 +1973,11 @@
         });
       }
 
+      renderGroup('Pinned', groups.pinned);
       renderGroup('Today', groups.today);
       renderGroup('Yesterday', groups.yesterday);
       renderGroup('Previous 7 Days', groups.previous7Days);
+      renderGroup('Previous 30 Days', groups.previous30Days);
       renderGroup('Older', groups.older);
     }
 
@@ -1558,6 +1995,15 @@
       if (window.innerWidth < 768) {
         document.getElementById('closeSidebarBtn').click();
       }
+    };
+
+    window.togglePinConversation = function (id, event) {
+      if (event) event.stopPropagation();
+      const conv = conversations.find(c => c.id === id);
+      if (!conv) return;
+      conv.pinned = !conv.pinned;
+      saveConversationsToStorage();
+      showToast(conv.pinned ? 'Conversation pinned' : 'Conversation unpinned', 'success');
     };
 
     window.renameConversation = function (id, event) {
@@ -1610,7 +2056,7 @@
     // Render Welcome Screen (Gemini & ChatGPT Empty State)
     function renderWelcome() {
       const displayName = currentUser ? (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]) : null;
-      const greeting = displayName ? `Hello, ${displayName}` : 'What can I help you with today?';
+      const greeting = displayName ? `Hi ${displayName}, how can I help?` : 'Hi there, how can I help?';
 
       chatFeed.innerHTML = `
         <div class="h-full flex flex-col items-center justify-center text-center space-y-7 my-auto py-8 animate-in fade-in duration-300">
@@ -1624,59 +2070,89 @@
               ${greeting}
             </h1>
             <p class="text-xs md:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
-              Powered by <strong class="text-indigo-300">Guru-Flash 1.1</strong> • Instant answers, deep reasoning, coding assistance, and creative image generation.
+              Ask questions, explore ideas, write code, or create something new.
             </p>
           </div>
 
-          <!-- 4 Interactive Prompt Cards (Gemini & ChatGPT style) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl text-left pt-2">
+          <!-- 6 Interactive Prompt Chips (Gemini style) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-3xl text-left pt-2">
             
-            <!-- Card 1: Code -->
-            <button onclick="usePrompt('Create a responsive, beautiful navigation bar with dark mode in Tailwind CSS and vanilla JavaScript.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
+            <!-- Chip 1: Build Website -->
+            <button onclick="usePrompt('Help me build a modern, responsive website with HTML, Tailwind CSS, and clean interactive JavaScript.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                  Coding & Debug
+                  Coding
                 </span>
                 <span class="text-slate-500 group-hover:text-cyan-400 transition-colors">↗</span>
               </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Responsive navigation bar with dark mode in Tailwind CSS</div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Help me build a website</div>
+              <div class="text-[11px] text-slate-400 line-clamp-1">Responsive layout & interactive UI</div>
             </button>
 
-            <!-- Card 2: Brainstorm -->
-            <button onclick="usePrompt('Brainstorm 5 innovative, high-impact software startup ideas leveraging modern AI in 2026.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
+            <!-- Chip 2: Explain Concept -->
+            <button onclick="usePrompt('Explain how large language models and transformers work under the hood in simple terms with everyday analogies.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                  Ideation & Brainstorm
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                  Learning
                 </span>
                 <span class="text-slate-500 group-hover:text-indigo-400 transition-colors">↗</span>
               </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">5 high-impact AI startup concepts with business models</div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Explain a difficult concept</div>
+              <div class="text-[11px] text-slate-400 line-clamp-1">Transformers & LLMs simplified</div>
             </button>
 
-            <!-- Card 3: Image Studio -->
+            <!-- Chip 3: Debug Code -->
+            <button onclick="usePrompt('Here is a code snippet that has a bug or unexpected behavior. Can you review and debug it step by step?')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-rose-500/60 hover:shadow-lg hover:shadow-rose-500/10 transition-all text-left space-y-1.5 group">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Debug
+                </span>
+                <span class="text-slate-500 group-hover:text-rose-400 transition-colors">↗</span>
+              </div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Debug my code</div>
+              <div class="text-[11px] text-slate-400 line-clamp-1">Root cause analysis & verified fixes</div>
+            </button>
+
+            <!-- Chip 4: Brainstorm Ideas -->
+            <button onclick="usePrompt('Brainstorm 5 innovative, high-impact software startup ideas leveraging modern AI in 2026.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-amber-500/60 hover:shadow-lg hover:shadow-amber-500/10 transition-all text-left space-y-1.5 group">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                  Ideas
+                </span>
+                <span class="text-slate-500 group-hover:text-amber-400 transition-colors">↗</span>
+              </div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Brainstorm new project ideas</div>
+              <div class="text-[11px] text-slate-400 line-clamp-1">5 high-impact AI startup concepts</div>
+            </button>
+
+            <!-- Chip 5: Summarize Text -->
+            <button onclick="usePrompt('Summarize the following text into key bullet points and action items concisely:\n\n')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-emerald-500/60 hover:shadow-lg hover:shadow-emerald-500/10 transition-all text-left space-y-1.5 group">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  Summarize
+                </span>
+                <span class="text-slate-500 group-hover:text-emerald-400 transition-colors">↗</span>
+              </div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Summarize a document</div>
+              <div class="text-[11px] text-slate-400 line-clamp-1">Extract core takeaways & action items</div>
+            </button>
+
+            <!-- Chip 6: Create Image (SDXL) -->
             <button onclick="triggerImagePrompt('Cinematic 8K portrait of a futuristic cyberpunk samurai standing in neon rain in Tokyo, hyper-detailed, masterpiece.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/10 transition-all text-left space-y-1.5 group">
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                  Image Studio (SDXL)
+                  Image Studio
                 </span>
                 <span class="text-slate-500 group-hover:text-purple-400 transition-colors">🎨</span>
               </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Cinematic cyberpunk samurai in neon rain 8K</div>
-            </button>
-
-            <!-- Card 4: Writing & Explanations -->
-            <button onclick="usePrompt('Explain how large language models and transformers work under the hood in simple terms with everyday analogies.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                  Deep Explanations
-                </span>
-                <span class="text-slate-500 group-hover:text-emerald-400 transition-colors">↗</span>
-              </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">How transformers & LLMs work with analogies</div>
+              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Create an image (SDXL)</div>
+              <div class="text-[11px] text-slate-400 line-clamp-1">Cinematic cyberpunk samurai 8K</div>
             </button>
 
           </div>
@@ -1726,9 +2202,9 @@
 
       msgDiv.innerHTML = `
         <div class="max-w-[85%] md:max-w-[75%] flex flex-col space-y-1">
-          <div class="rounded-2xl px-4 py-3 shadow-md text-sm bg-[var(--bubble-user)] text-white rounded-br-none leading-relaxed whitespace-pre-wrap select-text">${text}</div>
+          <div class="rounded-3xl px-5 py-3.5 shadow-sm text-sm bg-[var(--bubble-user)] text-[var(--text-primary)] rounded-br-none border border-[var(--border-color)] leading-relaxed whitespace-pre-wrap select-text">${text}</div>
         </div>
-        <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 font-bold text-xs flex-shrink-0 mt-0.5">${userInitial}</div>
+        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 font-bold text-xs flex-shrink-0 mt-0.5">${userInitial}</div>
       `;
       chatFeed.appendChild(msgDiv);
       chatFeed.scrollTop = chatFeed.scrollHeight;
@@ -1763,7 +2239,7 @@
       }
 
       msgDiv.innerHTML = `
-        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden mt-0.5">
+        <div class="w-8 h-8 rounded-full bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden mt-0.5">
           <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
         </div>
         <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1.5 min-w-0">
@@ -1772,7 +2248,7 @@
             <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Guru-Flash 1.1</span>
           </div>
 
-          <div class="rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none leading-relaxed select-text prose-ai">
+          <div class="rounded-2xl px-1 sm:px-2 py-1 text-sm bg-[var(--bubble-assistant)] text-[var(--text-primary)] leading-relaxed select-text prose-ai">
             ${reasoningHtml}
             ${imageHtml}
             ${formatted}
@@ -1813,7 +2289,7 @@
       const assistantMsgDiv = document.createElement('div');
       assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';
       assistantMsgDiv.innerHTML = `
-        <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden mt-0.5">
+        <div class="w-8 h-8 rounded-full bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden mt-0.5">
           <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
         </div>
         <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1.5 min-w-0">
@@ -1821,7 +2297,7 @@
             <span class="font-bold text-white font-heading">GuruAI</span>
             <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Guru-Flash 1.1</span>
           </div>
-          <div id="${bubbleId}" class="rounded-2xl px-4 py-3.5 shadow-sm text-sm bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none leading-relaxed select-text prose-ai">
+          <div id="${bubbleId}" class="rounded-2xl px-1 sm:px-2 py-1 text-sm bg-[var(--bubble-assistant)] text-[var(--text-primary)] leading-relaxed select-text prose-ai">
             <span class="streaming-cursor"></span>
           </div>
         </div>
@@ -1920,7 +2396,8 @@
             prompt,
             conversationId: currentConvId,
             messages: conversationHistory,
-            language: currentLang
+            language: currentLang,
+            model: currentSelectedModel || 'guru-flash-1.1'
           })
         });
         if (response.ok && response.body) {
@@ -2140,8 +2617,8 @@
       if (!text || isGenerating) return;
 
       if (remainingAllowance <= 0) {
-        openAuthModal('login');
-        showToast('Daily allowance exhausted. Please sign in to increase your limits!', 'error');
+        openUpgradeModal();
+        showToast('Chat allowance exhausted. Upgrade your plan for higher limits & up to 325,000 context!', 'warning');
         return;
       }
 
@@ -2188,30 +2665,86 @@
       renderHistoryList(searchInput.value);
     };
 
-    // Quota Allowance System (10 requests / 12h for Member, 2 requests / 6h for Guest)
+    // Quota Allowance System (20 requests / 12h for Member, 8 requests / 6h for Guest)
     function initUserQuota(user) {
       const now = Date.now();
       if (user) {
-        maxRequests = 10;
+        maxRequests = 20;
         const windowDuration = 12 * 60 * 60 * 1000;
         const key = 'guruai_quota_user_' + user.id;
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
 
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 10, windowStart: now };
+          stored = { remaining: 20, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
         remainingAllowance = stored.remaining;
+
+        // Check for Live Custom Admin Quotas (lookup by user_id OR email)
+        if (supabaseClient) {
+          const emailQuery = user.email ? `,email.ilike.${user.email.toLowerCase().trim()}` : '';
+          supabaseClient.from('user_ai_limits').select('*').or(`user_id.eq.${user.id}${emailQuery}`).maybeSingle().then(({ data }) => {
+            if (data && typeof data.max_requests === 'number' && data.max_requests > 0) {
+              maxRequests = data.max_requests;
+              if (stored.remaining < maxRequests) {
+                // If admin upgraded user, expand their remaining quota immediately
+                stored.remaining = maxRequests;
+                localStorage.setItem(key, JSON.stringify(stored));
+              }
+              remainingAllowance = stored.remaining;
+              updateQuotaUI();
+              if (userTierLabel) userTierLabel.textContent = data.plan_name || `Member (${maxRequests}/12h)`;
+              if (headerTierText) headerTierText.textContent = data.plan_tier || (data.plan_name ? data.plan_name.replace(' Enterprise', '') : 'Pro');
+            }
+          }).catch(() => {});
+
+          // Supabase Realtime table listener for instant cross-device live effect
+          try {
+            supabaseClient.channel('guruai_live_limits_' + user.id)
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'user_ai_limits' }, payload => {
+                const row = payload.new;
+                if (row && (row.user_id === user.id || (row.email && user.email && row.email.toLowerCase() === user.email.toLowerCase()))) {
+                  maxRequests = row.max_requests || 20;
+                  remainingAllowance = maxRequests;
+                  localStorage.setItem(key, JSON.stringify({ remaining: maxRequests, windowStart: Date.now() }));
+                  updateQuotaUI();
+                  if (typeof showToast === 'function') {
+                    showToast(`⚡ Live Admin Upgrade: ${maxRequests} requests & ${Number(row.context_limit).toLocaleString()} context tokens!`, 'success');
+                  }
+                }
+              })
+              .subscribe();
+          } catch (e) {}
+        }
+
+        // BroadcastChannel listener for instant cross-tab live effect
+        try {
+          const quotaBc = new BroadcastChannel('guruai_quota_channel');
+          quotaBc.onmessage = (event) => {
+            const msg = event.data;
+            if (msg && msg.type === 'QUOTA_UPDATED') {
+              if (user && ((msg.userId && msg.userId === user.id) || (msg.email && user.email && msg.email.toLowerCase() === user.email.toLowerCase()))) {
+                maxRequests = msg.max_requests || 20;
+                remainingAllowance = maxRequests;
+                localStorage.setItem(key, JSON.stringify({ remaining: maxRequests, windowStart: Date.now() }));
+                updateQuotaUI();
+                if (typeof showToast === 'function') {
+                  showToast(`⚡ Plan updated live: ${maxRequests} requests & ${Number(msg.context_limit).toLocaleString()} context!`, 'success');
+                }
+              }
+            }
+          };
+        } catch (e) {}
       } else {
-        maxRequests = 2;
+        maxRequests = 8;
         const windowDuration = 6 * 60 * 60 * 1000;
         const key = 'guruai_quota_guest';
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
 
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 2, windowStart: now };
+          stored = { remaining: 8, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
         remainingAllowance = stored.remaining;
@@ -2260,7 +2793,7 @@
         userNameLabel.textContent = name;
         userStatusLabel.textContent = user.email;
         userAvatar.textContent = initial;
-        userTierLabel.textContent = 'Member (10/12h)';
+        userTierLabel.textContent = 'Member (20/12h)';
         headerTierText.textContent = 'Member';
 
         imageLockIcon.classList.add('hidden');
@@ -2350,7 +2883,7 @@
       } else if (mode === 'register') {
         registerForm.classList.remove('hidden');
         title.textContent = 'Create GuruAI Account';
-        subtitle.textContent = 'Unlock 10 requests / 12h & 5 SDXL image creations';
+        subtitle.textContent = 'Unlock 20 requests / 12h & 5 SDXL image creations';
       } else if (mode === 'forgot') {
         forgotSection.classList.remove('hidden');
         title.textContent = 'Reset Password';
@@ -2358,7 +2891,7 @@
       } else {
         loginForm.classList.remove('hidden');
         title.textContent = 'Sign In to GuruAI';
-        subtitle.textContent = 'Unlock 10 requests / 12h, chat history & image studio';
+        subtitle.textContent = 'Unlock 20 requests / 12h, chat history & image studio';
       }
     }
 
@@ -2384,7 +2917,7 @@
     userProfileBtn.onclick = () => openAuthModal('login');
     closeAuthModalBtn.onclick = closeAuthModal;
     document.getElementById('headerSignInBtn').onclick = () => openAuthModal('login');
-    document.getElementById('headerQuotaBadge').onclick = () => openAuthModal('login');
+    document.getElementById('headerQuotaBadge').onclick = () => openUpgradeModal();
 
     document.getElementById('switchToRegisterBtn').onclick = () => setAuthModalMode('register');
     document.getElementById('switchToLoginBtn').onclick = () => setAuthModalMode('login');
@@ -2571,10 +3104,24 @@
       updateUserState(null);
     }
 
+    // Composer Model Menu Toggle Listener
+    const composerModelBtn = document.getElementById('composerModelBtn');
+    const composerModelMenu = document.getElementById('composerModelMenu');
+    if (composerModelBtn && composerModelMenu) {
+      composerModelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        composerModelMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!composerModelMenu.contains(e.target) && !composerModelBtn.contains(e.target)) {
+          composerModelMenu.classList.add('hidden');
+        }
+      });
+    }
+
     // Initial render
     renderWelcome();
     renderHistoryList();
   </script>
 </body>
-
 </html>

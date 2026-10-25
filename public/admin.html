@@ -282,6 +282,7 @@
                 <th class="p-3.5">Provider</th>
                 <th class="p-3.5">Role</th>
                 <th class="p-3.5">Admin Status</th>
+                <th class="p-3.5">AI Quota &amp; Context</th>
                 <th class="p-3.5">Last Active</th>
                 <th class="p-3.5 text-right">Actions</th>
               </tr>
@@ -585,11 +586,30 @@
           if (usersData) {
             usersData.forEach(u => pMap.set(u.id, u.provider || 'email'));
           }
+          // Query live AI limits
+          let limMap = new Map();
+          try {
+            const { data: limitsData } = await supabase.from('user_ai_limits').select('*');
+            if (limitsData) {
+              limitsData.forEach(l => {
+                if (l.email) limMap.set(l.email.toLowerCase(), l);
+                if (l.user_id) limMap.set(l.user_id, l);
+              });
+            }
+          } catch(e) {}
+
           if (profiles) {
-            users = profiles.map(p => ({
-              ...p,
-              provider: pMap.get(p.id) || (p.email?.includes('gmail') ? 'google' : 'email')
-            }));
+            users = profiles.map(p => {
+              const uEmail = (p.email || '').toLowerCase();
+              const lim = limMap.get(uEmail) || (p.id ? limMap.get(p.id) : null);
+              return {
+                ...p,
+                provider: pMap.get(p.id) || (p.email?.includes('gmail') ? 'google' : 'email'),
+                max_requests: lim ? lim.max_requests : 20,
+                context_limit: lim ? lim.context_limit : 32000,
+                plan_name: lim ? lim.plan_name : 'Free'
+              };
+            });
           }
         }
 
@@ -670,10 +690,31 @@
                 </span>
               `}
             </td>
+            <td class="p-3.5">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-bold text-[11px] ${user.max_requests > 20 ? 'text-amber-300' : 'text-slate-300'} font-mono">
+                  ${user.max_requests || 20} chats
+                </span>
+                <span class="text-[10px] text-cyan-400 font-mono">
+                  (${((user.context_limit || 32000) / 1000).toFixed(0)}k ctx)
+                </span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded ${user.plan_name && user.plan_name !== 'Free' ? 'bg-indigo-900/60 text-indigo-300 border border-indigo-700/60' : 'bg-slate-800 text-slate-400'}">
+                  ${user.plan_name || 'Free'}
+                </span>
+              </div>
+            </td>
             <td class="p-3.5 text-slate-400 font-mono text-[11px]">
               ${dateStr}
             </td>
             <td class="p-3.5 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button 
+                  onclick="tuneUserLimits('${user.id}', '${user.email}', ${user.max_requests || 20}, ${user.context_limit || 32000}, '${user.plan_name || 'Free'}')"
+                  class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 transition"
+                  title="Modify Live Chat Quota & Context Limit"
+                >
+                  ⚡ Limits
+                </button>
               ${(user.email && user.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase()) ? `
                 <span class="text-[11px] text-amber-400/80 font-medium px-2 py-1 rounded bg-amber-400/10 border border-amber-400/20">Master Protected</span>
               ` : `
@@ -688,6 +729,7 @@
                   ${isAdmin ? 'Revoke Admin' : 'Make Admin'}
                 </button>
               `}
+              </div>
             </td>
           </tr>
         `;

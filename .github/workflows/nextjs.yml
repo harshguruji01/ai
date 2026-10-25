@@ -78,6 +78,11 @@ jobs:
       - name: Prepare Root Site for GitHub Pages
         run: |
           mkdir -p ./out
+          # Copy public static assets first (favicon, logos, icons)
+          if [ -d "./public" ]; then
+            cp -r ./public/* ./out/ || true
+          fi
+          # Ensure root production HTML files ALWAYS take precedence over any public files
           cp index.html ./out/index.html
           cp admin.html ./out/admin.html
           cp dashboard.html ./out/dashboard.html
@@ -88,9 +93,6 @@ jobs:
           cp sitemap.xml ./out/sitemap.xml
           cp CNAME ./out/CNAME
           touch ./out/.nojekyll
-          if [ -d "./public" ]; then
-            cp -r ./public/* ./out/ || true
-          fi
           # Create clean URL mirrors so paths without .html never 404
           mkdir -p ./out/login ./out/dashboard ./out/admin
           cp login.html ./out/login/index.html
