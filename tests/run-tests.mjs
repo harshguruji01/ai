@@ -194,7 +194,7 @@ test('Workflow: index.html has conditional Dashboard button and member limit set
   assert.ok(indexHtml.includes("headerDashboardBtn.classList.remove('hidden')"), 'Must show dashboard on login');
   assert.ok(indexHtml.includes("headerDashboardBtn.classList.add('hidden')"), 'Must hide dashboard on logout');
   assert.ok(indexHtml.includes('maxRequests = 20'), 'Member must get 20 requests');
-  assert.ok(indexHtml.includes('12 * 60 * 60 * 1000'), 'Member window must be 12 hours');
+  assert.ok(indexHtml.includes('24 * 60 * 60 * 1000'), 'All limits must refresh every 24 hours');
 });
 
 test('Workflow: chat stays viewport-locked with only message feeds scrolling', () => {
