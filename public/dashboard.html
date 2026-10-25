@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>GuruAI Workspace — Unified AI Dashboard & Studio</title>
+  <title>GuruAI Dashboard - HarshGuruJi</title>
   <meta name="description" content="Manage your GuruAI conversation history, image creations, saved prompt library, account usage allowance, and custom AI preferences." />
   <link rel="icon" type="image/png" href="logo.png" />
   <link rel="apple-touch-icon" href="logo.png" />
@@ -333,7 +333,7 @@
             <div class="flex items-center gap-1.5">
               <span id="sidebarUserName" class="text-xs font-semibold text-white truncate block">Member</span>
             </div>
-            <span id="sidebarUserEmail" class="text-[10px] text-slate-400 truncate block">member@webguruji.online</span>
+            <span id="sidebarUserEmail" class="text-[10px] text-slate-400 truncate block">Member@webguruji.online</span>
           </div>
         </div>
 
@@ -386,7 +386,7 @@
         <!-- Main Site Dashboard Link -->
         <a href="https://webguruji.online/dashboard.html" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-semibold transition" title="Open Main HarshGuruJi Portal">
           <img src="https://webguruji.online/logo.png" alt="HarshGuruJi Logo" class="w-3.5 h-3.5 rounded object-contain" />
-          <span>WebGuruJi</span>
+          <span>HarshGuruJi</span>
           <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
 
@@ -1368,29 +1368,45 @@
 
     // DOM Ready
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Initialize Date
-      const d = new Date();
-      document.getElementById('currentDateBadge').textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      // 0. Safety timer to always dismiss the loader within 1.2s
+      setTimeout(() => {
+        const loader = document.getElementById('initialLoader');
+        if (loader) {
+          loader.classList.add('opacity-0');
+          setTimeout(() => { if (loader) loader.remove(); }, 350);
+        }
+      }, 1200);
 
-      // 2. Load Preferences
-      loadPreferences();
+      try {
+        // 1. Initialize Date
+        const d = new Date();
+        const dateEl = document.getElementById('currentDateBadge');
+        if (dateEl) {
+          dateEl.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
 
-      // 3. Authenticate Session
-      await checkAuthAndQuota();
+        // 2. Load Preferences
+        loadPreferences();
 
-      // 4. Setup Events and Tab Navigation
-      setupNavigation();
-      setupEvents();
+        // 3. Authenticate Session
+        await checkAuthAndQuota();
 
-      // 5. Hide Loader smoothly
-      const loader = document.getElementById('initialLoader');
-      if (loader) {
-        loader.classList.add('opacity-0');
-        setTimeout(() => loader.remove(), 350);
+        // 4. Setup Events and Tab Navigation
+        setupNavigation();
+        setupEvents();
+      } catch (err) {
+        console.warn('Dashboard initialization warning:', err);
+      } finally {
+        // 5. Hide Loader smoothly
+        const loader = document.getElementById('initialLoader');
+        if (loader) {
+          loader.classList.add('opacity-0');
+          setTimeout(() => { if (loader) loader.remove(); }, 350);
+        }
       }
     });
 
-    // Check Session & Quotas
+    // Check Session & Quotas with Non-Blocking Guest Support
     async function checkAuthAndQuota() {
       try {
         if (supabase) {
@@ -1411,11 +1427,17 @@
         console.warn('Auth session check notice:', err);
       }
 
-      // Route Protection: If unauthenticated, redirect to login.html
+      // If unauthenticated, provide smooth guest mode without locking screen
       if (!currentUser) {
-        const returnUrl = encodeURIComponent(window.location.href);
-        window.location.href = `login.html?redirect=${returnUrl}`;
-        return;
+        currentUser = {
+          id: 'guest',
+          email: 'guest@webguruji.online',
+          user_metadata: {
+            full_name: 'Guest Explorer',
+            name: 'Guest Explorer'
+          },
+          is_guest: true
+        };
       }
 
       renderUserProfile(currentUser);
@@ -1423,6 +1445,20 @@
       loadConversationsList();
       loadCreationsList();
       loadSavedPromptsList();
+    }
+
+    // Live auth state change listener
+    if (supabase) {
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session && session.user) {
+          currentUser = session.user;
+          renderUserProfile(currentUser);
+          await fetchLiveQuota();
+          loadConversationsList();
+          loadCreationsList();
+          loadSavedPromptsList();
+        }
+      });
     }
 
     function renderUserProfile(user) {
@@ -1459,8 +1495,17 @@
         document.getElementById('profileBigAvatarInitial').textContent = initial;
       }
 
+      if (user.is_guest) {
+        const pill = document.getElementById('sidebarTierPill');
+        if (pill) pill.textContent = 'Guest';
+        const badge = document.getElementById('tierBadgeText');
+        if (badge) badge.textContent = 'Guest Mode';
+        const planBadge = document.getElementById('planTierBadge');
+        if (planBadge) planBadge.textContent = 'GUEST ACCESS (8 FREE REQUESTS)';
+      }
+
       // Check Supabase Profiles table for golden tick and custom admin
-      if (supabase && user.id) {
+      if (supabase && user.id && !user.is_guest) {
         supabase.from('profiles').select('*').eq('id', user.id).maybeSingle().then(({ data }) => {
           if (data) {
             if (data.golden_tick || data.is_golden_tick) {
@@ -1478,7 +1523,7 @@
     }
 
     async function fetchLiveQuota() {
-      let isVerifiedMember = !!currentUser;
+      let isVerifiedMember = currentUser && !currentUser.is_guest;
       maxAllowance = isVerifiedMember ? 20 : 8;
       const windowDuration = (isVerifiedMember ? 12 : 6) * 3600 * 1000;
       const now = Date.now();

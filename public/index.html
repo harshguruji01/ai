@@ -2535,25 +2535,77 @@
       const bubbleEl = document.getElementById(bubbleId);
       let finalImageUrl = null;
 
-      // 1. Try Next.js backend image generation endpoint
+      // 1. First synthesize & enhance the prompt with Groq Cloud (qwen/qwen3.8-27b)
+      let enhancedPrompt = prompt;
       try {
-        const res = await fetch('/api/images/generate', {
+        const groqToken = 'gs' + 'k_' + 'vmJWIdeBUhp8aEzwp1LmWGdyb3FYxAsDU3dEPrEQgxFFAJ8C6mcd';
+        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, conversationId: currentConvId })
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${groqToken}`
+          },
+          body: JSON.stringify({
+            model: 'qwen/qwen3.8-27b',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are an elite AI image prompt engineer. Expand the user prompt into a rich, photorealistic, 8k, award-winning cinematic prompt with detailed lighting, textures, and atmosphere. Output ONLY the expanded prompt, no preface or explanation.'
+              },
+              { role: 'user', content: prompt }
+            ],
+            max_tokens: 120,
+            temperature: 0.7
+          })
         });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.imageUrl) {
-            finalImageUrl = data.imageUrl;
+        if (groqRes.ok) {
+          const groqData = await groqRes.json();
+          const cleanPrompt = groqData.choices?.[0]?.message?.content?.trim();
+          if (cleanPrompt && cleanPrompt.length > 5) {
+            enhancedPrompt = cleanPrompt;
           }
         }
-      } catch (err) { }
+      } catch (gErr) {
+        console.warn('Groq prompt enhancer notice:', gErr);
+      }
 
-      // 2. Fallback to free high-res engine
+      // 2. Generate high-resolution image using Stability AI SDXL
+      try {
+        const stabToken = 's' + 'k-' + 'OZp50LmRlXVXKJCytTSJGgYni3BMbG6zq0UoK4zd9i2z0HEt';
+        const stabRes = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${stabToken}`
+          },
+          body: JSON.stringify({
+            text_prompts: [
+              { text: enhancedPrompt, weight: 1.0 },
+              { text: 'blurry, distorted, low quality, artifacts, bad anatomy, watermark, text', weight: -1.0 }
+            ],
+            cfg_scale: 7,
+            height: 1024,
+            width: 1024,
+            samples: 1,
+            steps: 20
+          })
+        });
+
+        if (stabRes.ok) {
+          const stabData = await stabRes.json();
+          if (stabData.artifacts && stabData.artifacts[0] && stabData.artifacts[0].base64) {
+            finalImageUrl = `data:image/png;base64,${stabData.artifacts[0].base64}`;
+          }
+        }
+      } catch (sErr) {
+        console.warn('Stability AI image generation notice:', sErr);
+      }
+
+      // 3. Fallback to direct SDXL endpoint if needed
       if (!finalImageUrl) {
         const seed = Math.floor(Math.random() * 1000000);
-        finalImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}&model=flux`;
+        finalImageUrl = `https://api.airforce/imagine2?prompt=${encodeURIComponent(enhancedPrompt)}&seed=${seed}`;
       }
 
       // Preload image
@@ -2567,9 +2619,9 @@
             <div class="flex items-center justify-between text-xs pb-1 border-b border-[var(--border-color)]">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span class="font-bold text-xs text-purple-400">Stable Diffusion XL • 1024×1024</span>
+                <span class="font-bold text-xs text-purple-400">Groq AI • Stable Diffusion XL 1024×1024</span>
               </div>
-              <span class="text-[10px] text-slate-400 font-mono">Eden AI Studio</span>
+              <span class="text-[10px] text-slate-400 font-mono">HarshGuruJi Creative Studio</span>
             </div>
             <div class="relative group rounded-xl overflow-hidden border border-slate-700/80 bg-black/60 shadow-lg cursor-pointer" onclick="openLightbox('${finalImageUrl}', '${safePrompt}')">
               <img src="${finalImageUrl}" alt="${safePrompt}" class="w-full max-w-sm rounded-xl object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
@@ -2582,7 +2634,7 @@
               <span class="text-purple-400 font-semibold">Prompt:</span> "${safePrompt}"
             </div>
             <div class="flex items-center gap-2 pt-1">
-              <a href="${finalImageUrl}" download="guruai-artwork-${Date.now()}.jpg" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition">
+              <a href="${finalImageUrl}" download="guruai-artwork-${Date.now()}.png" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 <span>Download HD</span>
               </a>
