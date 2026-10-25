@@ -1200,8 +1200,26 @@
       }
     };
 
+    // Safely extract clean plain text from assistant message bubble without thinking blocks or HTML attributes
+    function extractBubbleText(btn) {
+      const container = btn.closest('.flex-col') || btn.closest('.max-w-\\[85\\%\\]') || btn.parentElement?.parentElement;
+      const bubble = container?.querySelector('.prose-ai');
+      if (!bubble) return '';
+      const clone = bubble.cloneNode(true);
+      clone.querySelectorAll('details').forEach(d => d.remove());
+      return clone.innerText.trim();
+    }
+
     // Text to Speech (Read aloud assistant response)
+    window.speakBubbleText = function (btn) {
+      const text = extractBubbleText(btn);
+      if (text) {
+        window.speakText(text);
+      }
+    };
+
     window.speakText = function (text) {
+      if (!text) return;
       if (!('speechSynthesis' in window)) {
         showToast('Text-to-speech not supported in this browser.', 'error');
         return;
@@ -1226,7 +1244,21 @@
     };
 
     // Copy Raw Message Text
+    window.copyBubbleText = function (btn) {
+      const text = extractBubbleText(btn);
+      if (!text) return;
+      navigator.clipboard.writeText(text);
+      showToast('Response copied to clipboard!', 'success');
+      btn.innerHTML = `<svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="text-emerald-400">Copied</span>`;
+      setTimeout(() => {
+        btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg><span>Copy</span>`;
+      }, 2000);
+    };
+
     window.copyMessageText = function (btn, text) {
+      if (!text) {
+        return window.copyBubbleText(btn);
+      }
       navigator.clipboard.writeText(text);
       showToast('Response copied to clipboard!', 'success');
       btn.innerHTML = `<svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span class="text-emerald-400">Copied</span>`;
@@ -1748,11 +1780,11 @@
 
           <!-- Bottom Action Bar (Copy, Speak, Feedback, Share) -->
           <div class="flex items-center gap-3 pt-1 text-xs text-slate-400">
-            <button onclick="copyMessageText(this, ${JSON.stringify(text)})" class="flex items-center gap-1 hover:text-white transition">
+            <button onclick="copyBubbleText(this)" class="flex items-center gap-1 hover:text-white transition" title="Copy response">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
               <span>Copy</span>
             </button>
-            <button onclick="speakText(${JSON.stringify(text)})" class="flex items-center gap-1 hover:text-cyan-300 transition" title="Listen aloud">
+            <button onclick="speakBubbleText(this)" class="flex items-center gap-1 hover:text-cyan-300 transition" title="Listen aloud">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
               <span>Listen</span>
             </button>
@@ -1852,11 +1884,11 @@
           const actionDiv = document.createElement('div');
           actionDiv.className = 'flex items-center gap-3 pt-1 text-xs text-slate-400';
           actionDiv.innerHTML = `
-            <button onclick="copyMessageText(this, ${JSON.stringify(fullText)})" class="flex items-center gap-1 hover:text-white transition">
+            <button onclick="copyBubbleText(this)" class="flex items-center gap-1 hover:text-white transition" title="Copy response">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
               <span>Copy</span>
             </button>
-            <button onclick="speakText(${JSON.stringify(fullText)})" class="flex items-center gap-1 hover:text-cyan-300 transition">
+            <button onclick="speakBubbleText(this)" class="flex items-center gap-1 hover:text-cyan-300 transition" title="Listen aloud">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
               <span>Listen</span>
             </button>
