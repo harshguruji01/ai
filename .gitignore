@@ -23,7 +23,7 @@ yarn-error.log*
 .env*.local
 .env
 !.env.local.example
-@*.txt
+@*
 
 # Vercel
 .vercel

@@ -17,10 +17,10 @@
     --accent-primary: #6366f1;
     --accent-secondary: #06b6d4;
     --accent-hover: #4f46e5;
-    --composer-bg: rgba(13, 18, 31, 0.85);
-    --bubble-assistant: rgba(20, 27, 45, 0.85);
-    --bubble-user: #4f46e5;
-    --bubble-border: rgba(51, 65, 85, 0.5);
+    --composer-bg: rgba(18, 22, 34, 0.92);
+    --bubble-assistant: transparent;
+    --bubble-user: rgba(99, 102, 241, 0.16);
+    --bubble-border: transparent;
     --ring-glow: rgba(99, 102, 241, 0.25);
   }
 
@@ -38,10 +38,10 @@
     --accent-primary: #4338ca;
     --accent-secondary: #0284c7;
     --accent-hover: #3730a3;
-    --composer-bg: #ffffff;
-    --bubble-assistant: #ffffff;
-    --bubble-user: #4338ca;
-    --bubble-border: #cbd5e1;
+    --composer-bg: #f8fafc;
+    --bubble-assistant: transparent;
+    --bubble-user: #e2e8f0;
+    --bubble-border: transparent;
     --ring-glow: rgba(79, 70, 229, 0.2);
   }
 

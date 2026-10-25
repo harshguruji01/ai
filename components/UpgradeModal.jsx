@@ -1,26 +1,69 @@
 'use client';
 
-import React from 'react';
-import { X, Sparkles, Check, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Sparkles, Check, ArrowRight, QrCode, Mail, CheckCircle2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 export default function UpgradeModal({
   isOpen,
   onClose,
   user,
 }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [submittedPlan, setSubmittedPlan] = useState(null);
+
   if (!isOpen) return null;
 
-  const handlePlanBuy = (planName, contextLimit, price) => {
+  const handlePlanBuy = async (planName, contextLimit, price) => {
     const email = user?.email || '';
-    const params = new URLSearchParams({
-      subject: 'ai_upgrade',
-      plan: planName,
-      context: contextLimit.toString(),
-      price: price.toString(),
-      email: email,
-    });
-    const url = `https://webguruji.online/contact.html?${params.toString()}`;
-    window.open(url, '_blank');
+    if (!email) {
+      alert('Please sign in first so your upgrade can be linked to your registered email account.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // 1. Submit to Supabase contact_messages
+      const supabase = createClient();
+      const userName = user?.user_metadata?.name || email.split('@')[0];
+      await supabase.from('contact_messages').insert([{
+        name: userName,
+        email: email,
+        subject: 'AI_UPGRADE',
+        message: `GuruAI Upgrade Request: ${planName} ($${price}). Context Window Limit: ${contextLimit} Tokens. User ID: ${user.id}`,
+        status: 'Pending',
+        created_at: new Date().toISOString(),
+      }]);
+
+      // 2. Dispatch invoice email with QR and UPI placeholders
+      await fetch('/api/mail/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          name: userName,
+          type: 'ai_upgrade_invoice',
+          planName,
+          planPrice: price,
+          contextLimit,
+        }),
+      });
+
+      setSubmittedPlan({ planName, price, contextLimit, email });
+    } catch (e) {
+      console.warn('Upgrade invoice submission error:', e);
+      // Fallback open contact
+      const params = new URLSearchParams({
+        subject: 'ai_upgrade',
+        plan: planName,
+        context: contextLimit.toString(),
+        price: price.toString(),
+        email: email,
+      });
+      window.open(`https://webguruji.online/contact.html?${params.toString()}`, '_blank');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

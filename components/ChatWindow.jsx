@@ -15,6 +15,10 @@ import {
   Sparkles,
   LogIn,
   LayoutDashboard,
+  Globe,
+  Bug,
+  Lightbulb,
+  FileText,
 } from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 import MessageBubble from '@/components/MessageBubble';
@@ -199,70 +203,76 @@ export default function ChatWindow({
       >
         {messages.length === 0 && !streamingContent ? (
           /* Welcome Screen Hero */
-          <div className="h-full flex flex-col items-center justify-center text-center space-y-7 my-auto py-8 animate-fade-in">
+          <div className="h-full flex flex-col items-center justify-center text-center space-y-6 my-auto py-8 animate-fade-in">
             <div className="relative group">
-              <GuruLogo size={64} className="shadow-2xl shadow-indigo-500/30" />
+              <GuruLogo size={56} className="shadow-2xl shadow-indigo-500/20" />
             </div>
 
             <div className="space-y-2 max-w-lg">
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
-                What can I help you with today?
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+                Hi {user?.user_metadata?.full_name ? user.user_metadata.full_name.split(' ')[0] : (user?.email ? user.email.split('@')[0] : 'there')}, how can I help?
               </h1>
-              <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
-                Ask questions, explore ideas, write code, solve problems, or create images with GuruAI.
+              <p className="text-xs md:text-sm text-[var(--text-secondary)] leading-relaxed">
+                Ask questions, explore ideas, write code, or create something new.
               </p>
             </div>
 
-            {/* Categorized Starter Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl text-left pt-2">
+            {/* 6 Interactive Prompt Chips */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 w-full max-w-3xl text-left pt-2">
               {[
                 {
-                  category: 'Programming & Debugging',
-                  icon: Code,
+                  icon: Globe,
                   iconColor: 'text-cyan-400',
-                  prompt: 'How do I implement concurrency-safe atomic rate limiting in PostgreSQL using row-level locking?',
-                  summary: 'Atomic PostgreSQL rate limiting with FOR UPDATE locks',
+                  title: 'Help me build a website',
+                  prompt: 'Help me plan and build a modern, responsive web application with clean architecture and beautiful UI.',
                 },
                 {
-                  category: 'AI Image Creation',
-                  icon: ImageIcon,
-                  iconColor: 'text-purple-400',
-                  prompt: 'Generate an image of a futuristic cyberpunk city with luminous neon reflections in rainy streets.',
-                  summary: 'Generate high-res cyberpunk artwork via Stable Diffusion XL',
-                },
-                {
-                  category: 'Learning & Explanations',
                   icon: Brain,
                   iconColor: 'text-indigo-400',
-                  prompt: 'Next.js 14 App Router vs Pages Router ke architectural differences Hinglish mein samjhao.',
-                  summary: 'App Router vs Pages Router explained in conversational Hinglish',
+                  title: 'Explain a difficult concept',
+                  prompt: 'Explain how distributed consensus works in simple, clear terms with real-world analogies.',
                 },
                 {
-                  category: 'Writing & Creativity',
-                  icon: PenTool,
+                  icon: Bug,
+                  iconColor: 'text-rose-400',
+                  title: 'Debug my code',
+                  prompt: 'Help me find and fix errors, memory leaks, and performance bottlenecks in my code.',
+                },
+                {
+                  icon: Lightbulb,
+                  iconColor: 'text-amber-400',
+                  title: 'Brainstorm new project ideas',
+                  prompt: 'Brainstorm innovative, high-impact AI SaaS project ideas that solve real user problems.',
+                },
+                {
+                  icon: FileText,
                   iconColor: 'text-emerald-400',
-                  prompt: 'Draft a professional engineering architecture proposal for cross-subdomain authentication.',
-                  summary: 'Draft a clean cross-subdomain authentication proposal',
+                  title: 'Summarize a document',
+                  prompt: 'Summarize key takeaways, action items, and crucial insights from complex technical documents.',
+                },
+                {
+                  icon: ImageIcon,
+                  iconColor: 'text-purple-400',
+                  title: 'Create an image',
+                  prompt: 'Generate a stunning futuristic digital artwork with vibrant lighting and cinematic composition.',
                 },
               ].map((card, idx) => {
                 const IconComponent = card.icon;
                 return (
                   <button
                     key={idx}
+                    type="button"
                     onClick={() => onPromptSelect?.(card.prompt)}
-                    className="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-card)] hover:border-indigo-500/60 hover:bg-slate-800/60 transition-all duration-200 text-left space-y-1.5 group shadow-sm"
+                    className="p-3.5 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/50 hover:bg-[var(--bg-surface)] transition-all duration-200 text-left space-y-1.5 group shadow-sm flex flex-col justify-between"
                   >
                     <div className="flex items-center gap-2">
-                      <IconComponent className={`w-3.5 h-3.5 ${card.iconColor}`} />
-                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                        {card.category}
+                      <IconComponent className={`w-4 h-4 ${card.iconColor}`} />
+                      <span className="text-xs font-semibold text-[var(--text-primary)] group-hover:text-cyan-400 transition-colors">
+                        {card.title}
                       </span>
                     </div>
-                    <div className="text-xs font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors line-clamp-1">
-                      {card.summary}
-                    </div>
-                    <div className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
-                      &ldquo;{card.prompt}&rdquo;
+                    <div className="text-[11px] text-[var(--text-muted)] line-clamp-2 leading-relaxed">
+                      {card.prompt}
                     </div>
                   </button>
                 );

@@ -29,7 +29,7 @@ export async function POST(request) {
       );
     }
 
-    const { prompt, conversationId, messages, fingerprint, isImageMode, language } = parseResult.data;
+    const { prompt, conversationId, messages, fingerprint, isImageMode, language, model } = parseResult.data;
 
     // 2. Identify Authenticated Session
     const authState = await getAuthenticatedUser();
@@ -143,6 +143,7 @@ export async function POST(request) {
       nvidiaStream = await streamNvidiaTextChat({
         messages: formattedMessages,
         language,
+        modelId: model,
       });
     } catch (aiErr) {
       // Refund reserved allowance on upstream provider failure

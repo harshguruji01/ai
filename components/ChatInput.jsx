@@ -13,6 +13,8 @@ import {
   Plus,
   SlidersHorizontal,
   X,
+  ChevronDown,
+  Zap,
 } from 'lucide-react';
 
 export default function ChatInput({
@@ -27,13 +29,26 @@ export default function ChatInput({
   remainingAllowance = 2,
   onOpenLoginPrompt,
   onOpenSettings,
+  activeModel = 'guru-flash-1.1',
+  setActiveModel,
+  onOpenUpgrade,
 }) {
+  const models = [
+    { id: 'guru-flash-1.1', name: 'Guru-Flash 1.1', badge: 'Unlocked', desc: 'Balanced intelligence & fast general tasks', isLocked: false },
+    { id: 'guru-flash-1.2', name: 'Guru-Flash 1.2', badge: 'Unlocked', desc: 'Ultra-fast Groq Qwen-27B engine', isLocked: false },
+    { id: 'guru-flash-1.3', name: 'Guru-Flash 1.3 Pro', badge: 'Starter $5', desc: 'Expanded 50K context & instruction precision', isLocked: true },
+    { id: 'guru-flash-1.5', name: 'Guru-Flash 1.5 Pro', badge: 'Starter $5', desc: 'Deep logic reasoning & analysis', isLocked: true },
+    { id: 'guru-vision-1.9', name: 'Guru-Vision 1.9', badge: 'Power $15', desc: 'High-definition vision synthesis & multimodal', isLocked: true },
+    { id: 'guru-ultra-2.0', name: 'Guru-Ultra 2.0', badge: 'VIP $25', desc: 'Flagship 120B reasoning & code engine', isLocked: true },
+  ];
+
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const [attachedFile, setAttachedFile] = useState(null);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [recognitionInstance, setRecognitionInstance] = useState(null);
+  const [modelMenuOpen, setModelMenuOpen] = useState(false);
 
   // Auto-expand textarea dynamically up to 200px
   useEffect(() => {
@@ -205,6 +220,70 @@ export default function ChatInput({
             >
               <Plus className="w-4 h-4" />
             </button>
+
+            {/* Model Selector Pill */}
+            <div className="relative inline-block text-left">
+              <button
+                type="button"
+                onClick={() => setModelMenuOpen(!modelMenuOpen)}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/60 shadow-sm transition-all"
+                title="Select AI Model"
+              >
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                <span className="font-heading font-bold text-white text-[11px] sm:text-xs">
+                  {models.find((m) => m.id === activeModel)?.name || 'Guru-Flash 1.1'}
+                </span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
+
+              {modelMenuOpen && (
+                <div className="absolute bottom-full left-0 mb-2 w-72 sm:w-80 rounded-2xl bg-slate-900/95 border border-slate-700/80 shadow-2xl backdrop-blur-xl p-2 z-50 space-y-1 animate-fade-in">
+                  <div className="px-2 py-1 text-[10px] uppercase font-bold tracking-wider text-slate-400 border-b border-slate-800 flex items-center justify-between">
+                    <span>GuruAI Models</span>
+                    <span className="text-indigo-400 font-mono">Select Engine</span>
+                  </div>
+
+                  {models.map((mod) => (
+                    <button
+                      key={mod.id}
+                      type="button"
+                      onClick={() => {
+                        setModelMenuOpen(false);
+                        if (mod.isLocked) {
+                          onOpenUpgrade?.();
+                        } else {
+                          setActiveModel?.(mod.id);
+                        }
+                      }}
+                      className="w-full flex items-start gap-2.5 p-2 rounded-xl text-left hover:bg-slate-800/80 transition group cursor-pointer"
+                    >
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 ${
+                        mod.isLocked 
+                          ? 'bg-amber-500/10 border border-amber-500/30 text-amber-400' 
+                          : 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-400'
+                      }`}>
+                        {mod.isLocked ? <Lock className="w-3.5 h-3.5" /> : <Zap className="w-3.5 h-3.5" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-xs text-white group-hover:text-cyan-400 transition">
+                            {mod.name}
+                          </span>
+                          <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+                            mod.isLocked
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                              : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                          }`}>
+                            {mod.badge}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">{mod.desc}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Image Studio Mode Toggle Pill */}
             <button

@@ -35,6 +35,7 @@ export default function GuruAiApp() {
   const [inputPrompt, setInputPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isImageMode, setIsImageMode] = useState(false);
+  const [activeModel, setActiveModel] = useState('guru-flash-1.1');
 
   // AbortController Ref for Cancel/Stop Generation
   const abortControllerRef = useRef(null);
@@ -299,6 +300,13 @@ export default function GuruAiApp() {
     }
   };
 
+  // Toggle Pin Conversation
+  const handleTogglePinConversation = (convId) => {
+    setConversations((prev) =>
+      prev.map((c) => (c.id === convId ? { ...c, pinned: !c.pinned } : c))
+    );
+  };
+
   // Stop active AI text generation
   const handleStopGeneration = () => {
     if (abortControllerRef.current) {
@@ -433,6 +441,7 @@ export default function GuruAiApp() {
             fingerprint,
             isImageMode: false,
             language: preferences.ai_language || 'english',
+            model: activeModel || 'guru-flash-1.1',
           }),
         });
       } catch (e) {
@@ -664,6 +673,7 @@ export default function GuruAiApp() {
         onNewChat={handleNewChat}
         onRenameConversation={handleRenameConversation}
         onDeleteConversation={handleDeleteConversation}
+        onTogglePinConversation={handleTogglePinConversation}
         user={user}
         remainingAllowance={quota.remainingAllowance}
         maxRequests={quota.maxRequests}
@@ -714,6 +724,9 @@ export default function GuruAiApp() {
             remainingAllowance={quota.remainingAllowance}
             onOpenLoginPrompt={() => handleOpenAuth('login')}
             onOpenSettings={() => setSettingsOpen(true)}
+            activeModel={activeModel}
+            setActiveModel={setActiveModel}
+            onOpenUpgrade={() => setUpgradeModalOpen(true)}
           />
         </div>
       </main>

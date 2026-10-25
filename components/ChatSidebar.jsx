@@ -22,15 +22,18 @@ import {
   ShieldCheck,
   Calendar,
   Sparkles,
+  Pin,
 } from 'lucide-react';
 import GuruLogo from '@/components/GuruLogo';
 
 // Date grouping helper
 function groupConversationsByDate(conversations) {
   const groups = {
+    Pinned: [],
     Today: [],
     Yesterday: [],
     'Previous 7 Days': [],
+    'Previous 30 Days': [],
     Older: [],
   };
 
@@ -38,8 +41,13 @@ function groupConversationsByDate(conversations) {
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const yesterdayStart = todayStart - 86400000;
   const sevenDaysStart = todayStart - 7 * 86400000;
+  const thirtyDaysStart = todayStart - 30 * 86400000;
 
   conversations.forEach((conv) => {
+    if (conv.pinned) {
+      groups.Pinned.push(conv);
+      return;
+    }
     const timestamp = new Date(conv.updated_at || conv.created_at).getTime();
     if (timestamp >= todayStart) {
       groups.Today.push(conv);
@@ -47,6 +55,8 @@ function groupConversationsByDate(conversations) {
       groups.Yesterday.push(conv);
     } else if (timestamp >= sevenDaysStart) {
       groups['Previous 7 Days'].push(conv);
+    } else if (timestamp >= thirtyDaysStart) {
+      groups['Previous 30 Days'].push(conv);
     } else {
       groups.Older.push(conv);
     }
@@ -66,6 +76,7 @@ export default function ChatSidebar({
   onNewChat,
   onRenameConversation,
   onDeleteConversation,
+  onTogglePinConversation,
   user,
   remainingAllowance,
   maxRequests,
@@ -312,6 +323,16 @@ export default function ChatSidebar({
                                 </div>
                               ) : (
                                 <>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onTogglePinConversation?.(conv.id);
+                                    }}
+                                    className={`p-1 ${conv.pinned ? 'text-amber-400' : 'text-slate-400 hover:text-white'}`}
+                                    title={conv.pinned ? 'Unpin' : 'Pin'}
+                                  >
+                                    <Pin className="w-3 h-3" />
+                                  </button>
                                   <button
                                     onClick={(e) => startRename(conv, e)}
                                     className="p-1 text-slate-400 hover:text-white"

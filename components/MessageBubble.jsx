@@ -202,14 +202,14 @@ export default function MessageBubble({
       )}
 
       {/* Bubble Container */}
-      <div className="max-w-[88%] md:max-w-[80%] flex flex-col space-y-1">
+      <div className="max-w-[92%] md:max-w-[85%] flex flex-col space-y-1">
         <div
-          className={`relative rounded-2xl px-4 py-3.5 shadow-sm text-sm ${
+          className={`relative text-sm ${
             isUser
-              ? 'bg-[var(--bubble-user)] text-white rounded-br-none shadow-md'
+              ? 'bg-[var(--bubble-user)] text-[var(--text-primary)] border border-indigo-500/20 rounded-3xl px-5 py-3 shadow-sm'
               : isError
-              ? 'bg-rose-950/40 border border-rose-800/60 text-rose-200 rounded-bl-none'
-              : 'bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] text-[var(--text-primary)] rounded-bl-none shadow-sm'
+              ? 'bg-rose-950/40 border border-rose-800/60 text-rose-200 rounded-2xl px-4 py-3'
+              : 'bg-transparent border-0 text-[var(--text-primary)] px-1 py-1 shadow-none'
           }`}
         >
           {/* Image Message */}

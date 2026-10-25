@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
-import { sendHostingerEmail, sendWelcomeEmail, sendVerificationCodeEmail } from '../../../../lib/mail.js';
+import { 
+  sendHostingerEmail, 
+  sendWelcomeEmail, 
+  sendVerificationCodeEmail,
+  sendAiUpgradeInvoiceEmail,
+  sendAiUpgradeApprovedEmail
+} from '../../../../lib/mail.js';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,7 +23,22 @@ export async function OPTIONS() {
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { to, subject, text, html, displayName, type, name, source, code, expiresMinutes } = body;
+    const { 
+      to, 
+      subject, 
+      text, 
+      html, 
+      displayName, 
+      type, 
+      name, 
+      source, 
+      code, 
+      expiresMinutes,
+      planName,
+      planPrice,
+      contextLimit,
+      chatLimit
+    } = body;
 
     if (!to) {
       return NextResponse.json(
@@ -45,6 +66,22 @@ export async function POST(req) {
         code,
         expiresMinutes: expiresMinutes || 10,
         source: source || 'main'
+      });
+    } else if (type === 'ai_upgrade_invoice') {
+      result = await sendAiUpgradeInvoiceEmail({
+        to,
+        name: name || displayName || 'Member',
+        planName: planName || 'Starter Pro',
+        planPrice: planPrice || 5,
+        contextLimit: contextLimit || 50000
+      });
+    } else if (type === 'ai_upgrade_approved') {
+      result = await sendAiUpgradeApprovedEmail({
+        to,
+        name: name || displayName || 'Member',
+        planName: planName || 'Starter Pro',
+        chatLimit: chatLimit || 100,
+        contextLimit: contextLimit || 50000
       });
     } else {
       if (!subject) {
