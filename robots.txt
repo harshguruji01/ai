@@ -2,12 +2,13 @@
 User-agent: *
 Allow: /
 Allow: /login
+Allow: /guruai-chat-assistant.webp
+Allow: /guruji-ai-chat-assistant.webp
 Disallow: /admin*
 Disallow: /api/
 Disallow: /auth/
 
 Sitemap: https://ai.webguruji.online/sitemap.xml
-Sitemap: https://books.webguruji.online/sitemap.xml
-Sitemap: https://chat.webguruji.online/sitemap.xml
-Sitemap: https://store.webguruji.online/sitemap.xml
+Sitemap: https://webguruji.online/sitemap-images.xml
 Sitemap: https://webguruji.online/sitemap.xml
+

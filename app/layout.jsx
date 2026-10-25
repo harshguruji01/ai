@@ -3,14 +3,14 @@ import './globals.css';
 export const metadata = {
   metadataBase: new URL('https://ai.webguruji.online'),
   title: {
-    default: 'GuruAI — AI Chat Assistant',
+    default: 'GuruAI – Free AI Chat Assistant for Students | HarshGuruJi',
     template: '%s | GuruAI',
   },
   description:
-    'Experience intelligent conversation with Guru-Flash 1.1 and hyper-realistic AI image generation powered by Stable Diffusion XL on GuruAI by HarshGuruJi.',
+    'Ask GuruAI anything and get simple, clear answers in Hindi and English. Free AI chat assistant for study, general knowledge and daily questions.',
   keywords: [
     'GuruAI',
-    'Guru AI Chatbot',
+    'GuruAI Chatbot',
     'HarshGuruJi AI',
     'AI Assistant India',
     'Guru-Flash 1.1',
@@ -39,26 +39,26 @@ export const metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://ai.webguruji.online',
-    title: 'GuruAI — AI Chat Assistant',
+    title: 'GuruAI – Free AI Chat Assistant',
     description:
-      'Supercharge your productivity with GuruAI: intelligent conversational AI powered by Guru-Flash 1.1 and high-resolution Stable Diffusion XL image generation by HarshGuruJi.',
+      'Chat with GuruAI for instant, simple answers on study, technology and general knowledge.',
     siteName: 'GuruAI',
     images: [
       {
-        url: '/logo.png',
-        width: 800,
-        height: 800,
-        alt: 'GuruAI Logo',
+        url: 'https://ai.webguruji.online/guruai-chat-assistant.webp',
+        width: 1200,
+        height: 630,
+        alt: 'GuruAI chat assistant interface preview - Free online study and coding assistant in Hindi and English',
       },
     ],
   },
   twitter: {
-    card: 'summary',
-    title: 'GuruAI — AI Chat Assistant',
+    card: 'summary_large_image',
+    title: 'GuruAI – Free AI Chat Assistant',
     description:
-      'Chat with Guru-Flash 1.1 and generate high-resolution art with Stable Diffusion XL on GuruAI.',
+      'Chat with GuruAI for instant, simple answers on study, technology and general knowledge.',
     creator: '@harshguruji',
-    images: ['/logo.png'],
+    images: ['https://ai.webguruji.online/guruai-chat-assistant.webp'],
   },
 };
 

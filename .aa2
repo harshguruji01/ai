@@ -1,0 +1,143 @@
+Tum ek senior SEO + web developer ho. Mere HarshGuruJi website project ke liye Google Images visibility improve karni hai.
+
+Website: https://webguruji.online
+Subdomains:
+1. https://webguruji.online/ → Folder: HarshGuruJi/site/
+2. https://ai.webguruji.online/ → Folder: HarshGuruJi/ai/
+3. https://store.webguruji.online/ → Folder: HarshGuruJi/store/
+4. https://login.webguruji.online/ → Folder: HarshGuruJi/login/
+5. https://chat.webguruji.online/ → Folder: HarshGuruJi/chatbase/
+6. https://books.webguruji.online/ → Folder: HarshGuruJi/books/
+7. https://tube.webguruji.online/ → Folder: C:\Users\harsh\OneDrive\Desktop\dev\GuruTube\
+
+Pehle poora project deeply analyze karo: metadeta.txt, sabhi index.html, HTML pages, Next.js files, public folders, images folders, existing meta tags, AdSense tag, favicon links, CSS/JS references aur current sitemap/robots files.
+
+Phir sirf image SEO ke liye changes implement karo. Existing AdSense verification tag (ca-pub-7706204118195419), favicon, fonts, CSS, JavaScript, layout aur functionality ko bilkul break na karo.
+
+TASKS:
+
+1. Har important page ke liye ek high-quality representative image select/create karo:
+   - Main site: HarshGuruJi tools + learning hub cover image
+   - AI: GuruJi AI chat assistant interface preview
+   - Store: Verified APK/software/games store preview
+   - Login: Simple login screen preview
+   - Chat: Online community chat interface preview
+   - Books: Free NCERT books and study guides preview
+   - Tube: HP Tube video player/streaming interface preview
+
+2. Har image ka SEO-friendly filename do. Example:
+   - harshguruji-home-cover.webp
+   - guruji-ai-chat-assistant.webp
+   - harshguruji-store-apps.webp
+   - harshguruji-books-ncert.webp
+   - hp-tube-video-player.webp
+
+   Generic names jaise IMG1234.jpg, screenshot.png, logo-final.png remove/replace karo.
+
+3. Har important image ko HTML <img> tag me add/update karo, CSS background image me nahi:
+
+   <img
+     src="FULL_IMAGE_URL"
+     alt="Clear descriptive alt text"
+     width="1200"
+     height="630"
+     loading="lazy"
+   >
+
+   Alt text Hindi-English mix me natural aur descriptive ho. Keyword stuffing na karo.
+
+4. Har page ke <head> me Open Graph aur Twitter image tags add/update karo:
+
+   <meta property="og:image" content="FULL_IMAGE_URL">
+   <meta property="og:image:width" content="1200">
+   <meta property="og:image:height" content="630">
+   <meta name="twitter:card" content="summary_large_image">
+   <meta name="twitter:image" content="FULL_IMAGE_URL">
+
+5. Har page ke existing JSON-LD structured data me image field add karo. Agar structured data nahi hai, toh relevant schema add karo:
+   - Main site: WebSite + WebApplication
+   - AI: WebApplication
+   - Store: Product (jahan product listing hai)
+   - Books: Book/Article jahan applicable ho
+   - Tube: WebApplication
+
+   Har schema me high-quality image URL add karo.
+
+6. Root domain par ek image sitemap banayein:
+   https://webguruji.online/sitemap-images.xml
+
+   Isme sabhi important public pages aur unki images include karo. Format image sitemap extension use karna:
+
+   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+           xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+   Har <url> me page URL aur uski image add karo:
+   - <image:loc>
+   - <image:title>
+   - <image:caption>
+
+   Login page ko sitemap me include mat karo ya usse low priority rakho, kyunki login page noindex hai.
+
+7. Existing sitemap.xml ko update karo ya ek sitemap index banayein jisme:
+   - https://webguruji.online/sitemap.xml
+   - https://webguruji.online/sitemap-images.xml
+   dono included hon.
+
+8. robots.txt check karo:
+   - Image folders block na hon
+   - /images/ ya image CDN domain crawlable ho
+   - Login/private folders ko noindex ya disallow logic sahi ho
+
+9. Images optimize karo:
+   - WebP preferred, JPEG/PNG where needed
+   - Max width around 1200px for OG/social preview
+   - File size target: under 200 KB where possible
+   - No blurry, stretched, watermark-heavy or low-quality images
+   - Original/custom screenshots and branded graphics prefer karo
+
+10. Changes ke baad validation karo:
+   - Har page ka title, description, canonical, robots tag verify karo
+   - Har OG image URL browser me open ho raha ho
+   - Koi broken image link na ho
+   - HTML validate karo
+   - Google Rich Results Test / Schema validator se structured data check karo
+   - Image sitemap XML validate karo
+
+11. Last me mujhe ek simple report do:
+   - Kaunsi files change hui
+   - Kaunsi images add/update hui
+   - Har page ka final OG image URL
+   - Image sitemap URL
+   - Google Search Console me kya submit karna hai
+
+Important: Pehle poora analysis karo, phir changes apply karo. Koi bhi existing functionality, AdSense tag, login system, API keys, CSS design ya JavaScript break na ho. Agar koi image missing hai, toh placeholder image folder structure aur recommended image size batao, lekin fake/broken image URL mat add karo.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Always use GuruAI not Guruji AI
+from today rename everywhere from HP Tube to GuruTube
+ab sabhi ko commit and push kar do unke related repo per aur check karo changes huyee yaa nahi 
+kyuki beech me ek baar ruk gaya tha.
+
+
+
+
+
+
+
+
+
