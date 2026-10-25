@@ -419,32 +419,25 @@
 
       const submitBtn = document.getElementById('btnLoginSubmit');
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Verifying credentials...</span>';
+      submitBtn.innerHTML = '<span>Signing in...</span>';
 
       try {
-        const res = await fetch('/api/auth/send-login-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, source: 'ai' })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || 'Login verification failed.');
+        // Direct Supabase authentication
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          let msg = error.message;
+          if (msg.includes('Invalid login credentials')) {
+            msg = "Invalid email or password. Please check your credentials.";
+          }
+          throw new Error(msg);
         }
 
-        pendingLoginEmail = email;
-        pendingLoginPassword = password;
-        pendingLoginToken = data.token;
-
-        // Transition to OTP verification step
-        document.getElementById('loginCredentialsSection').classList.add('hidden');
-        document.getElementById('loginOtpSection').classList.remove('hidden');
-        document.getElementById('loginDisplayEmail').textContent = email;
-        const otpInput = document.getElementById('loginEmailOtp');
-        otpInput.value = '';
-        otpInput.focus();
-
-        showAlert('success', '6-digit verification code sent to ' + email + ' from info@webguruji.online! Please check your inbox or spam.');
+        showAlert('success', 'Signed in successfully! Redirecting to GuruAI...');
+        const urlParams = new URLSearchParams(window.location.search);
+        let redirectTarget = urlParams.get('redirect') || 'dashboard.html';
+        setTimeout(() => {
+          window.location.href = redirectTarget;
+        }, 500);
       } catch (err) {
         showAlert('error', err.message || 'Login failed.');
       } finally {
