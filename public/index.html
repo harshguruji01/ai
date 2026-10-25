@@ -1862,18 +1862,25 @@
       }
     });
 
-    // Image Mode Toggle
+    // Image Mode Toggle (Strict Guest Block & 5/24h Limit for Logged-In Users)
     imageModeBtn.onclick = () => {
-      if (!currentUser) {
+      if (!currentUser || currentUser.is_guest) {
         openAuthModal('login');
-        showToast('Please sign in to unlock Image Studio (SDXL). Registered users get 5 images/24h!', 'info');
+        showToast('Guest users cannot create images. Please sign in to unlock 5 HD images every 24 hours!', 'warning');
+        return;
+      }
+      const imgQuota = getImageQuota();
+      if (!imgQuota.allowed) {
+        const hours = Math.floor(imgQuota.resetInSeconds / 3600);
+        const mins = Math.floor((imgQuota.resetInSeconds % 3600) / 60);
+        showToast(`Daily image limit reached (5/5). Your allowance refreshes in ${hours}h ${mins}m.`, 'warning');
         return;
       }
       isImageMode = !isImageMode;
       if (isImageMode) {
         imageModeBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-purple-600 text-white shadow-md shadow-purple-600/30 transition';
-        promptInput.placeholder = 'Describe the image you want GuruAI to create in 1024×1024 HD...';
-        showToast('Image Studio mode enabled (Eden AI SDXL)', 'success');
+        promptInput.placeholder = `Describe the artwork you want GuruAI to create (${imgQuota.remaining}/5 images left today)...`;
+        showToast(`Image Studio enabled (${imgQuota.remaining}/5 images remaining today)`, 'success');
       } else {
         imageModeBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80 transition';
         promptInput.placeholder = 'Ask GuruAI anything in English, Hinglish, or Hindi...';
@@ -2167,9 +2174,16 @@
     };
 
     window.triggerImagePrompt = function (p) {
-      if (!currentUser) {
+      if (!currentUser || currentUser.is_guest) {
         openAuthModal('login');
-        showToast('Please sign in to generate images with Eden AI SDXL!', 'info');
+        showToast('Guest users cannot create images. Please sign in to unlock 5 HD images every 24 hours!', 'warning');
+        return;
+      }
+      const imgQuota = getImageQuota();
+      if (!imgQuota.allowed) {
+        const hours = Math.floor(imgQuota.resetInSeconds / 3600);
+        const mins = Math.floor((imgQuota.resetInSeconds % 3600) / 60);
+        showToast(`Daily image limit reached (5/5). Refreshes in ${hours}h ${mins}m.`, 'warning');
         return;
       }
       if (!isImageMode) {
@@ -2494,19 +2508,94 @@
       if (lightbox) lightbox.classList.add('hidden');
     };
 
-    // AI Image Studio Generation Flow (Eden AI / SDXL / Flux)
+    // Image Quota System: 5 images / 24 hours for logged-in users only. Guests: 0 images.
+    const IMAGE_DAILY_LIMIT = 5;
+    const IMAGE_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+    function getImageQuota() {
+      if (!currentUser || currentUser.is_guest) {
+        return {
+          allowed: false,
+          remaining: 0,
+          limit: 0,
+          resetInSeconds: 0,
+          isGuest: true
+        };
+      }
+
+      const userId = currentUser.id || currentUser.email;
+      const storageKey = 'guruai_img_quota_' + userId;
+      const now = Date.now();
+      let quota = null;
+
+      try {
+        quota = JSON.parse(localStorage.getItem(storageKey));
+      } catch (e) {}
+
+      // Limits automatically refresh every 24 hours
+      if (!quota || typeof quota.remaining !== 'number' || !quota.windowStart || (now - quota.windowStart) >= IMAGE_WINDOW_MS) {
+        quota = {
+          remaining: IMAGE_DAILY_LIMIT,
+          limit: IMAGE_DAILY_LIMIT,
+          windowStart: now
+        };
+        localStorage.setItem(storageKey, JSON.stringify(quota));
+      }
+
+      const elapsed = now - quota.windowStart;
+      const resetInSeconds = Math.max(0, Math.floor((IMAGE_WINDOW_MS - elapsed) / 1000));
+
+      return {
+        allowed: quota.remaining > 0,
+        remaining: quota.remaining,
+        limit: IMAGE_DAILY_LIMIT,
+        resetInSeconds,
+        isGuest: false
+      };
+    }
+
+    function deductImageQuota() {
+      if (!currentUser || currentUser.is_guest) return false;
+      const userId = currentUser.id || currentUser.email;
+      const storageKey = 'guruai_img_quota_' + userId;
+      const quota = getImageQuota();
+      if (quota.remaining <= 0) return false;
+
+      const now = Date.now();
+      const updated = {
+        remaining: quota.remaining - 1,
+        limit: IMAGE_DAILY_LIMIT,
+        windowStart: now - (IMAGE_WINDOW_MS - (quota.resetInSeconds * 1000))
+      };
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+      return true;
+    }
+
+    // AI Image Studio Generation Flow (Groq Prompt Enhancer + Stability SDXL)
     async function generateImageResponse(prompt) {
-      if (!currentUser) {
+      // 1. Strict Restriction: Guest users CANNOT create images
+      if (!currentUser || currentUser.is_guest) {
         openAuthModal('login');
-        showToast('Only signed-in users can create images with Eden AI SDXL (5 images / 24h).', 'info');
+        showToast('Guest users cannot create images. Please sign in to create images (5 HD images every 24 hours).', 'warning');
         return;
       }
+
+      // 2. Strict Limit: Only 5 images per 24 hours for logged-in users
+      const imgQuota = getImageQuota();
+      if (!imgQuota.allowed) {
+        const hours = Math.floor(imgQuota.resetInSeconds / 3600);
+        const mins = Math.floor((imgQuota.resetInSeconds % 3600) / 60);
+        showToast(`Daily image limit reached (5/5). Your allowance refreshes in ${hours}h ${mins}m.`, 'error');
+        return;
+      }
+
+      // Deduct from 24h quotas
+      deductImageQuota();
+      deductAllowance();
 
       isGenerating = true;
       stopGenBtn.classList.remove('hidden');
       sendBtn.classList.add('hidden');
-
-      deductAllowance();
 
       const bubbleId = 'img-bubble-' + Date.now();
       const assistantMsgDiv = document.createElement('div');
@@ -2668,6 +2757,26 @@
       const text = promptInput.value.trim();
       if (!text || isGenerating) return;
 
+      const isImageIntent = isImageMode || /^\/(image|imagine)\b/i.test(text) || /^(generate|create|draw|make|paint|render)\s+(an?\s+)?(image|photo|picture|artwork|illustration|wallpaper|portrait|drawing|visual|graphic)\b/i.test(text);
+
+      // Strict Rule 1: Guest users CANNOT create images
+      if (isImageIntent && (!currentUser || currentUser.is_guest)) {
+        openAuthModal('login');
+        showToast('🔒 Image Generation is locked for Guests. Please sign in to create images (5 HD images every 24h).', 'warning');
+        return;
+      }
+
+      // Strict Rule 2: Only 5 images per 24 hours for logged-in users
+      if (isImageIntent) {
+        const imgQuota = getImageQuota();
+        if (!imgQuota.allowed) {
+          const hours = Math.floor(imgQuota.resetInSeconds / 3600);
+          const mins = Math.floor((imgQuota.resetInSeconds % 3600) / 60);
+          showToast(`⚠️ Daily Image Limit Reached (5/5). Your allowance refreshes in ${hours}h ${mins}m.`, 'warning');
+          return;
+        }
+      }
+
       if (remainingAllowance <= 0) {
         openUpgradeModal();
         showToast('Chat allowance exhausted. Upgrade your plan for higher limits & up to 325,000 context!', 'warning');
@@ -2692,8 +2801,9 @@
         attachmentChipContainer.classList.add('hidden');
       }
 
-      if (isImageMode) {
-        generateImageResponse(text);
+      if (isImageIntent) {
+        const cleanedPrompt = text.replace(/^\/(image|imagine)\s*/i, '');
+        generateImageResponse(cleanedPrompt);
       } else {
         streamResponse(text);
       }
@@ -2717,12 +2827,12 @@
       renderHistoryList(searchInput.value);
     };
 
-    // Quota Allowance System (20 requests / 12h for Member, 8 requests / 6h for Guest)
+    // Quota Allowance System (20 requests / 24h for Member, 8 requests / 24h for Guest, all refreshing every 24 hours)
     function initUserQuota(user) {
       const now = Date.now();
+      const windowDuration = 24 * 60 * 60 * 1000; // All limits refresh every 24 hours
       if (user) {
         maxRequests = 20;
-        const windowDuration = 12 * 60 * 60 * 1000;
         const key = 'guruai_quota_user_' + user.id;
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
@@ -2746,7 +2856,7 @@
               }
               remainingAllowance = stored.remaining;
               updateQuotaUI();
-              if (userTierLabel) userTierLabel.textContent = data.plan_name || `Member (${maxRequests}/12h)`;
+              if (userTierLabel) userTierLabel.textContent = data.plan_name || `Member (${maxRequests}/24h)`;
               if (headerTierText) headerTierText.textContent = data.plan_tier || (data.plan_name ? data.plan_name.replace(' Enterprise', '') : 'Pro');
             }
           }).catch(() => {});
@@ -2790,7 +2900,6 @@
         } catch (e) {}
       } else {
         maxRequests = 8;
-        const windowDuration = 6 * 60 * 60 * 1000;
         const key = 'guruai_quota_guest';
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
@@ -2845,7 +2954,7 @@
         userNameLabel.textContent = name;
         userStatusLabel.textContent = user.email;
         userAvatar.textContent = initial;
-        userTierLabel.textContent = 'Member (20/12h)';
+        userTierLabel.textContent = 'Member (20 msgs & 5 img / 24h)';
         headerTierText.textContent = 'Member';
 
         imageLockIcon.classList.add('hidden');
@@ -2870,7 +2979,7 @@
         userNameLabel.textContent = 'Guest Visitor';
         userStatusLabel.textContent = 'Click to Sign In';
         userAvatar.textContent = 'G';
-        userTierLabel.textContent = 'Guest Allowance';
+        userTierLabel.textContent = 'Guest (8 msgs / 24h • Images Locked)';
         headerTierText.textContent = 'Guest';
 
         imageLockIcon.classList.remove('hidden');

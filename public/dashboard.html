@@ -1092,7 +1092,7 @@
                 <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
               </summary>
               <p class="mt-2 text-slate-300 leading-relaxed text-[11px]">
-                Registered members receive 20 requests per 12-hour rolling window, while guests receive 8 requests per 6-hour window. Once the window expires, your allowance automatically resets.
+                Registered members receive 20 requests per 24-hour rolling window and 5 high-definition image creations, while guests receive 8 requests per 24-hour window (image generation is exclusive to registered members). Every 24 hours, all limits automatically refresh.
               </p>
             </details>
 
@@ -1525,8 +1525,13 @@
     async function fetchLiveQuota() {
       let isVerifiedMember = currentUser && !currentUser.is_guest;
       maxAllowance = isVerifiedMember ? 20 : 8;
-      const windowDuration = (isVerifiedMember ? 12 : 6) * 3600 * 1000;
+      const windowDuration = 24 * 3600 * 1000; // All limits refresh every 24 hours
       const now = Date.now();
+
+      const quotaDescEl = document.getElementById('quotaWindowDesc');
+      if (quotaDescEl) {
+        quotaDescEl.textContent = isVerifiedMember ? 'Rolling 24-hour member allocation (20 msgs & 5 images)' : 'Rolling 24-hour guest allocation (Images locked)';
+      }
 
       // Check server API /api/usage if accessible
       try {
@@ -1567,6 +1572,28 @@
 
       const pct = Math.max(0, Math.min(100, (remaining / max) * 100));
       document.getElementById('quotaProgressBar').style.width = pct + '%';
+
+      // Live Image Quota (Guest: 0 images, Logged-in: 5 images/24h)
+      const imgCountEl = document.getElementById('imageRemainingCount');
+      const imgBarEl = document.getElementById('imageProgressBar');
+      if (imgCountEl && imgBarEl) {
+        if (!currentUser || currentUser.is_guest) {
+          imgCountEl.textContent = '0';
+          imgBarEl.style.width = '0%';
+        } else {
+          const imgKey = 'guruai_img_quota_' + (currentUser.id || currentUser.email);
+          let imgStored = null;
+          try { imgStored = JSON.parse(localStorage.getItem(imgKey)); } catch(e){}
+          const now = Date.now();
+          if (!imgStored || typeof imgStored.remaining !== 'number' || !imgStored.windowStart || (now - imgStored.windowStart) >= (24 * 3600 * 1000)) {
+            imgStored = { remaining: 5, limit: 5, windowStart: now };
+            localStorage.setItem(imgKey, JSON.stringify(imgStored));
+          }
+          imgCountEl.textContent = imgStored.remaining;
+          const imgPct = Math.max(0, Math.min(100, (imgStored.remaining / 5) * 100));
+          imgBarEl.style.width = imgPct + '%';
+        }
+      }
 
       // Start countdown
       if (resetTimerInterval) clearInterval(resetTimerInterval);
