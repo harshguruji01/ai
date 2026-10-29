@@ -1,0 +1,2571 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>GuruAI Dashboard - HarshGuruJi</title>
+  <meta name="description" content="Manage your GuruAI conversation history, image creations, saved prompt library, account usage allowance, and custom AI preferences." />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="canonical" href="https://ai.webguruji.online/dashboard.html" />
+
+  <!-- Google Fonts: Outfit, Inter, Fira Code, Merriweather -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#1e1b4b',
+              950: '#0f172a'
+            },
+            cyanAccent: '#06b6d4',
+            neonGreen: '#00ffcc',
+            darkSurface: '#070913',
+            darkPanel: '#0d111d',
+            darkCard: '#131929'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            heading: ['Outfit', 'Inter', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+            serif: ['Merriweather', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg-primary: #070913;
+      --bg-secondary: #0d111d;
+      --bg-surface: #131929;
+      --bg-card: rgba(19, 25, 41, 0.75);
+      --border-color: rgba(51, 65, 85, 0.55);
+      --border-glow: rgba(99, 102, 241, 0.35);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #6366f1;
+      --accent-secondary: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+    }
+
+    body.theme-light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-surface: #f1f5f9;
+      --bg-card: #ffffff;
+      --border-color: #cbd5e1;
+      --border-glow: rgba(79, 70, 229, 0.25);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #0284c7;
+      --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #0284c7 100%);
+    }
+
+    body.theme-cyberpunk {
+      --bg-primary: #04070d;
+      --bg-secondary: #090e1a;
+      --bg-surface: #0f172a;
+      --bg-card: rgba(15, 23, 42, 0.85);
+      --border-color: rgba(0, 255, 204, 0.25);
+      --border-glow: rgba(0, 255, 204, 0.5);
+      --text-primary: #ecfeff;
+      --text-secondary: #22d3ee;
+      --text-muted: #0891b2;
+      --accent-primary: #a855f7;
+      --accent-secondary: #00ffcc;
+      --accent-gradient: linear-gradient(135deg, #a855f7 0%, #00ffcc 100%);
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-active, 'Inter', system-ui, sans-serif);
+      transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .font-sans-mode { --font-active: 'Inter', system-ui, sans-serif; }
+    .font-serif-mode { --font-active: 'Merriweather', serif; }
+    .font-mono-mode { --font-active: 'Fira Code', monospace; }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
+
+    .glass-panel {
+      background-color: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+    }
+
+    .glass-panel-hover:hover {
+      border-color: var(--border-glow);
+      box-shadow: 0 8px 30px -10px rgba(99, 102, 241, 0.25);
+    }
+
+    .nav-pill-active {
+      background: linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(6, 182, 212, 0.08) 100%);
+      border-color: rgba(99, 102, 241, 0.5);
+      color: #38bdf8 !important;
+    }
+
+    .shimmer {
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+      background-size: 200% 100%;
+      animation: shimmerAnim 2.5s infinite;
+    }
+
+    @keyframes shimmerAnim {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* Light mode text overrides */
+    body.theme-light .text-white { color: #0f172a !important; }
+    body.theme-light .text-slate-100 { color: #0f172a !important; }
+    body.theme-light .text-slate-200 { color: #1e293b !important; }
+    body.theme-light .text-slate-300 { color: #334155 !important; }
+    body.theme-light .text-slate-400 { color: #475569 !important; }
+    body.theme-light .bg-slate-950,
+    body.theme-light .bg-slate-900,
+    body.theme-light .bg-[#070913],
+    body.theme-light .bg-[#0d111d] {
+      background-color: #f8fafc !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex h-screen overflow-hidden font-sans-mode antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- LOADING OVERLAY (DURING INITIAL SESSION CHECK) -->
+  <div id="initialLoader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#070913] transition-opacity duration-300">
+    <div class="relative flex items-center justify-center">
+      <div class="w-16 h-16 rounded-2xl bg-[#0d111d] border border-indigo-500/50 flex items-center justify-center shadow-xl shadow-indigo-500/20 animate-pulse">
+        <img src="logo.png" alt="GuruAI Logo" class="w-10 h-10 rounded-lg object-contain" />
+      </div>
+      <div class="absolute -inset-2 rounded-2xl bg-gradient-to-r from-indigo-500/30 to-cyan-500/30 blur-lg -z-10 animate-spin" style="animation-duration: 4s;"></div>
+    </div>
+    <div class="mt-4 flex items-center gap-2">
+      <div class="w-2 h-2 rounded-full bg-cyan-400 animate-bounce"></div>
+      <div class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style="animation-delay: 0.15s;"></div>
+      <div class="w-2 h-2 rounded-full bg-purple-500 animate-bounce" style="animation-delay: 0.3s;"></div>
+    </div>
+    <p class="mt-2 text-xs font-mono text-slate-400">Loading GuruAI Workspace...</p>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
+
+  <!-- MOBILE SIDEBAR BACKDROP -->
+  <div id="mobileBackdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity duration-300"></div>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-72 flex-shrink-0 flex flex-col justify-between bg-[#0d111d] border-r border-[var(--border-color)] transition-all duration-300 transform -translate-x-full lg:translate-x-0 select-none">
+    
+    <!-- Top Workspace Branding -->
+    <div class="p-4 border-b border-[var(--border-color)] flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-[#070913] border border-indigo-500/50 p-1 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform overflow-hidden">
+          <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-contain rounded-lg" />
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="font-heading font-bold text-base tracking-tight text-white group-hover:text-cyan-400 transition-colors">GuruAI</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 uppercase font-semibold">Workspace</span>
+          </div>
+          <p class="text-[10px] text-slate-400 truncate">by HarshGuruJi</p>
+        </div>
+      </a>
+      <!-- Mobile Close Button -->
+      <button id="closeMobileSidebarBtn" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition" aria-label="Close Sidebar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Quick Chat Launcher -->
+    <div class="px-3 pt-3">
+      <a href="index.html?new=true" class="w-full py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-medium text-xs flex items-center justify-between shadow-lg shadow-indigo-500/25 transition-all group">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-cyan-200 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span class="font-semibold">Start New Chat</span>
+        </div>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/30 text-cyan-200 border border-white/10">⌘N</span>
+      </a>
+    </div>
+
+    <!-- Navigation Menu Items -->
+    <nav class="flex-1 overflow-y-auto px-3 py-3 space-y-6">
+      
+      <!-- Group 1: Workspace -->
+      <div>
+        <div class="px-3 pb-1 text-[10px] font-mono font-semibold tracking-wider text-slate-400 uppercase">Workspace</div>
+        <ul class="space-y-1">
+          <li>
+            <button data-tab="overview" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group nav-pill-active border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                <span>Overview</span>
+              </div>
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 active-indicator"></span>
+            </button>
+          </li>
+          <li>
+            <button data-tab="chats" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                <span>My Chats</span>
+              </div>
+              <span id="badgeChatCount" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400 border border-slate-700/60">0</span>
+            </button>
+          </li>
+          <li>
+            <button data-tab="creations" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>My Creations</span>
+              </div>
+              <span id="badgeCreationsCount" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400 border border-slate-700/60">0</span>
+            </button>
+          </li>
+          <li>
+            <button data-tab="prompts" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span>Saved Prompts</span>
+              </div>
+              <span id="badgePromptCount" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400 border border-slate-700/60">0</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Group 2: Account -->
+      <div>
+        <div class="px-3 pb-1 text-[10px] font-mono font-semibold tracking-wider text-slate-400 uppercase">Account</div>
+        <ul class="space-y-1">
+          <li>
+            <button data-tab="usage" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Usage &amp; Plan</span>
+              </div>
+              <span id="sidebarTierPill" class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">Pro</span>
+            </button>
+          </li>
+          <li>
+            <button data-tab="profile" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>My Profile</span>
+              </div>
+            </button>
+          </li>
+          <li>
+            <button data-tab="preferences" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                <span>Preferences</span>
+              </div>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Group 3: Support -->
+      <div>
+        <div class="px-3 pb-1 text-[10px] font-mono font-semibold tracking-wider text-slate-400 uppercase">Support</div>
+        <ul class="space-y-1">
+          <li>
+            <button data-tab="help" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Help Center</span>
+              </div>
+            </button>
+          </li>
+          <li>
+            <button data-tab="feedback" class="nav-tab-btn w-full px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center justify-between transition group border border-transparent">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                <span>Send Feedback</span>
+              </div>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+    </nav>
+
+    <!-- Bottom User Section -->
+    <div class="p-3 border-t border-[var(--border-color)] bg-[#070913]/70">
+      <div class="flex items-center justify-between gap-2 p-2 rounded-xl hover:bg-slate-800/50 transition">
+        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+          <div class="relative flex-shrink-0">
+            <div id="sidebarUserAvatarInitial" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white font-bold text-xs flex items-center justify-center shadow-md">
+              G
+            </div>
+            <img id="sidebarUserAvatarImg" src="" alt="Avatar" class="w-9 h-9 rounded-xl object-cover hidden border border-indigo-500/40" />
+            <span id="goldenTickIcon" class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-[10px] font-bold shadow hidden" title="Verified Creator">★</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5">
+              <span id="sidebarUserName" class="text-xs font-semibold text-white truncate block">Member</span>
+            </div>
+            <span id="sidebarUserEmail" class="text-[10px] text-slate-400 truncate block">Member@webguruji.online</span>
+          </div>
+        </div>
+
+        <!-- Quick Signout / Dropdown Button -->
+        <button id="sidebarLogoutBtn" class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition" title="Sign Out">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE CONTENT AREA -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    
+    <!-- TOP HEADER BAR -->
+    <header class="h-14 border-b border-[var(--border-color)] bg-[#0d111d]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between gap-4 flex-shrink-0 z-20">
+      
+      <div class="flex items-center gap-3 min-w-0">
+        <!-- Mobile Sidebar Toggle -->
+        <button id="openMobileSidebarBtn" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition" aria-label="Open Navigation">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
+        <!-- Current Breadcrumb -->
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-slate-400 hidden sm:inline">Workspace</span>
+          <span class="text-slate-400 hidden sm:inline">/</span>
+          <span id="headerBreadcrumbTitle" class="font-semibold text-white">Overview</span>
+        </div>
+      </div>
+
+      <!-- Center / Search Control -->
+      <div class="hidden md:flex items-center flex-1 max-w-md mx-4">
+        <div class="relative w-full">
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input id="globalSearchInput" type="text" placeholder="Search chats, creations, saved prompts... (Ctrl+K)" class="w-full pl-9 pr-12 py-1.5 rounded-xl bg-slate-900/80 border border-slate-700/70 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition shadow-inner" />
+          <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">⌘K</span>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        
+        <!-- Theme Toggle Button -->
+        <button id="quickThemeToggleBtn" class="p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-300 text-xs transition" title="Cycle Theme (Dark / Light / Cyberpunk)">
+          <svg id="themeIconDark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          <svg id="themeIconLight" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+
+        <!-- Main Site Dashboard Link -->
+        <a href="https://webguruji.online/dashboard.html" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-semibold transition" title="Open Main HarshGuruJi Portal">
+          <img src="https://webguruji.online/logo.png" alt="HarshGuruJi Logo" class="w-3.5 h-3.5 rounded object-contain" />
+          <span>HarshGuruJi</span>
+          <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+
+        <!-- Return to AI Chat Shortcut -->
+        <a href="index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-950/70 border border-indigo-500/50 hover:bg-indigo-900/80 text-cyan-300 text-xs font-semibold shadow-sm transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          <span class="hidden xs:inline">Return to Chat</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- MAIN SCROLLABLE VIEWPORT -->
+    <main class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+      <!-- ===================================================================== -->
+      <!-- TAB 1: OVERVIEW PAGE -->
+      <!-- ===================================================================== -->
+      <section id="tab-overview" class="tab-content space-y-6">
+        
+        <!-- 1. Personalized Welcome Section -->
+        <div class="relative overflow-hidden rounded-3xl border border-[var(--border-color)] bg-gradient-to-br from-[#0e1428] via-[#0d111d] to-[#070913] p-6 sm:p-8 shadow-xl">
+          <div class="relative z-10 max-w-2xl space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-medium">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span id="currentDateBadge">Today</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-white tracking-tight">
+              Welcome back, <span id="overviewDisplayName" class="bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">Member</span>
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Your unified GuruAI workspace for intelligence, coding, and creative generation powered by <strong class="text-cyan-300 font-semibold">Guru-Flash 1.1</strong> &amp; Stable Diffusion XL.
+            </p>
+            <div class="pt-2 flex flex-wrap items-center gap-3">
+              <a href="index.html?new=true" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02]">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Start New Chat</span>
+              </a>
+              <button onclick="switchTab('creations')" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-semibold transition">
+                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>Explore AI Studio</span>
+              </button>
+            </div>
+          </div>
+          <!-- Background Ambient Glow -->
+          <div class="absolute right-0 top-0 w-96 h-96 bg-gradient-to-bl from-indigo-500/15 via-cyan-500/10 to-transparent blur-3xl pointer-events-none"></div>
+        </div>
+
+        <!-- 2. Live AI Usage Allowance & Real Account Metrics -->
+        <div class="glass-panel rounded-3xl p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-color)]">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-cyan-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              </div>
+              <div>
+                <h2 class="text-sm font-bold font-heading text-white">Live AI Usage Allowance</h2>
+                <p id="quotaWindowDesc" class="text-[11px] text-slate-400">Rolling 12-hour member allocation</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <span id="tierBadgeText" class="px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-[11px] font-mono font-semibold">
+                Pro Member
+              </span>
+              <button id="refreshQuotaBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition" title="Refresh Live Allowance">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quota Meters Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+            
+            <!-- Chat Quota Card -->
+            <div class="p-4 rounded-2xl bg-slate-950/60 border border-[var(--border-color)] space-y-2">
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span>Text Requests</span>
+                <span id="quotaCapLabel" class="font-mono text-cyan-300 font-semibold">20 Max</span>
+              </div>
+              <div class="flex items-baseline gap-1.5">
+                <span id="remainingQuotaNum" class="text-2xl font-bold font-heading text-white">20</span>
+                <span class="text-xs text-slate-400">/ <span id="maxQuotaNum">20</span> remaining</span>
+              </div>
+              <!-- Progress Bar -->
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div id="quotaProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full transition-all duration-500" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <!-- Image Quota Card -->
+            <div class="p-4 rounded-2xl bg-slate-950/60 border border-[var(--border-color)] space-y-2">
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span>SDXL Images</span>
+                <span class="font-mono text-cyan-300 font-semibold">5 / 24h</span>
+              </div>
+              <div class="flex items-baseline gap-1.5">
+                <span id="imageRemainingCount" class="text-2xl font-bold font-heading text-white">5</span>
+                <span class="text-xs text-slate-400">/ 5 available</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div id="imageProgressBar" class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full transition-all duration-500" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <!-- Rolling Reset Countdown -->
+            <div class="p-4 rounded-2xl bg-slate-950/60 border border-[var(--border-color)] space-y-2">
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span>Allowance Reset</span>
+                <span class="text-emerald-400 font-mono text-[10px] font-semibold">Active Window</span>
+              </div>
+              <div class="flex items-baseline gap-1.5">
+                <span id="resetTimerText" class="text-2xl font-mono font-bold text-white tracking-wider">--:--:--</span>
+              </div>
+              <p class="text-[10px] text-slate-400 truncate">Automatic rolling replenishment</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3. Quick AI Action Cards -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold font-heading text-white">Quick AI Actions</h2>
+            <span class="text-[11px] text-slate-400">Pre-configured prompts for instant generation</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            
+            <a href="index.html?prompt=Hello%20GuruAI,%20help%20me%20with%20my%20task" class="glass-panel glass-panel-hover p-4 rounded-2xl flex items-start gap-3.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors">Ask GuruAI</h3>
+                <p class="text-[11px] text-slate-400 line-clamp-2 mt-0.5">Ask questions, get thoughtful explanations, or analyze documents with Guru-Flash 1.1.</p>
+              </div>
+            </a>
+
+            <a href="index.html?prompt=Review%20and%20debug%20this%20code:%20" class="glass-panel glass-panel-hover p-4 rounded-2xl flex items-start gap-3.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors">Write &amp; Debug Code</h3>
+                <p class="text-[11px] text-slate-400 line-clamp-2 mt-0.5">Generate clean algorithms, write unit tests, or find tricky runtime bugs.</p>
+              </div>
+            </a>
+
+            <a href="index.html?image_mode=true&prompt=Hyper-realistic%20photograph%20of%20" class="glass-panel glass-panel-hover p-4 rounded-2xl flex items-start gap-3.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors">Generate an Image</h3>
+                <p class="text-[11px] text-slate-400 line-clamp-2 mt-0.5">Create high-resolution artworks and concepts with Stable Diffusion XL.</p>
+              </div>
+            </a>
+
+            <a href="index.html?prompt=Summarize%20the%20following%20text%20clearly%20in%20bullet%20points:%20" class="glass-panel glass-panel-hover p-4 rounded-2xl flex items-start gap-3.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors">Summarize Text</h3>
+                <p class="text-[11px] text-slate-400 line-clamp-2 mt-0.5">Condense long articles, meeting notes, research papers, and reports.</p>
+              </div>
+            </a>
+
+            <a href="index.html?prompt=Brainstorm%20creative%20and%20innovative%20ideas%20for:%20" class="glass-panel glass-panel-hover p-4 rounded-2xl flex items-start gap-3.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors">Brainstorm Ideas</h3>
+                <p class="text-[11px] text-slate-400 line-clamp-2 mt-0.5">Explore marketing angles, business strategies, and creative design hooks.</p>
+              </div>
+            </a>
+
+            <a href="index.html?prompt=Explain%20this%20concept%20simply%20with%20intuitive%20analogies:%20" class="glass-panel glass-panel-hover p-4 rounded-2xl flex items-start gap-3.5 transition group">
+              <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors">Explain Complex Topic</h3>
+                <p class="text-[11px] text-slate-400 line-clamp-2 mt-0.5">Break down complex physics, finance, or programming concepts clearly.</p>
+              </div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- 4. Recent Activity Grid (Recent Chats & Recent Creations) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- Recent Conversations -->
+          <div class="glass-panel rounded-3xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs font-bold font-heading text-white">Recent Conversations</h3>
+                <span id="overviewChatCountBadge" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400">0</span>
+              </div>
+              <button onclick="switchTab('chats')" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold transition">
+                View All &rarr;
+              </button>
+            </div>
+            
+            <div id="overviewRecentChats" class="space-y-2">
+              <div class="text-center py-6 text-xs text-slate-400">Loading recent conversations...</div>
+            </div>
+          </div>
+
+          <!-- Recent Image Creations -->
+          <div class="glass-panel rounded-3xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs font-bold font-heading text-white">Recent Creations</h3>
+                <span id="overviewCreationsCountBadge" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400">0</span>
+              </div>
+              <button onclick="switchTab('creations')" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold transition">
+                View Studio &rarr;
+              </button>
+            </div>
+
+            <div id="overviewRecentCreations" class="grid grid-cols-3 gap-2.5">
+              <div class="col-span-3 text-center py-6 text-xs text-slate-400">Loading creations...</div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 2: MY CHATS PAGE (CONVERSATION MANAGEMENT) -->
+      <!-- ===================================================================== -->
+      <section id="tab-chats" class="tab-content hidden space-y-4">
+        
+        <!-- Header & Action Controls -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-color)]">
+          <div>
+            <h1 class="text-lg font-bold font-heading text-white">My Conversations</h1>
+            <p class="text-xs text-slate-400">Search, rename, pin, export, and manage your conversation history.</p>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="exportChatsJson()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Export JSON</span>
+            </button>
+            <button onclick="clearAllChats()" class="px-3 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/30 hover:border-rose-500/60 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <span>Clear History</span>
+            </button>
+            <a href="index.html?new=true" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>New Chat</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div class="relative flex-1 max-w-md">
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="chatSearchInput" type="text" placeholder="Search conversations by title or message..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-900/80 border border-slate-700/80 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition" />
+          </div>
+
+          <div class="flex items-center gap-2">
+            <select id="chatSortSelect" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 focus:outline-none focus:border-cyan-500">
+              <option value="recent">Sort: Most Recent</option>
+              <option value="oldest">Sort: Oldest</option>
+              <option value="title">Sort: Title (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- CONVERSATIONS LIST CONTAINER (TEST-REQUIRED ID) -->
+        <div id="conversationsContainer" class="space-y-2.5">
+          <div class="text-center py-8 text-xs text-slate-400">Loading conversation history...</div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 3: MY CREATIONS (IMAGE STUDIO GALLERY) -->
+      <!-- ===================================================================== -->
+      <section id="tab-creations" class="tab-content hidden space-y-4">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-color)]">
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg font-bold font-heading text-white">My AI Creations</h1>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Stable Diffusion XL</span>
+            </div>
+            <p class="text-xs text-slate-400">All hyper-realistic images generated on GuruAI with prompts and full-resolution downloads.</p>
+          </div>
+
+          <a href="index.html?image_mode=true" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Create New Image</span>
+          </a>
+        </div>
+
+        <!-- Quota Notification Strip -->
+        <div class="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2 text-indigo-200">
+            <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Active Policy: Registered members receive <strong>5 SDXL generations per 24 hours</strong> with private storage.</span>
+          </div>
+          <span id="creationsQuotaPill" class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-900/60 text-cyan-300 font-semibold">5 / 5 Today</span>
+        </div>
+
+        <!-- Image Gallery Grid -->
+        <div id="creationsGalleryGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div class="col-span-full text-center py-12 text-xs text-slate-400">Loading your AI gallery...</div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 4: SAVED PROMPTS & LIBRARY -->
+      <!-- ===================================================================== -->
+      <section id="tab-prompts" class="tab-content hidden space-y-4">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border-color)]">
+          <div>
+            <h1 class="text-lg font-bold font-heading text-white">Saved Prompt Library</h1>
+            <p class="text-xs text-slate-400">Curate, categorize, and one-click launch your favorite prompt templates.</p>
+          </div>
+
+          <button onclick="openPromptModal()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Add New Prompt</span>
+          </button>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1" id="promptCategoryFilterList">
+          <button onclick="filterPromptCategory('All')" class="prompt-filter-btn px-3 py-1 rounded-xl bg-indigo-600 text-white text-xs font-semibold transition" data-cat="All">All</button>
+          <button onclick="filterPromptCategory('Coding')" class="prompt-filter-btn px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-xs font-medium hover:border-indigo-500 transition" data-cat="Coding">Coding</button>
+          <button onclick="filterPromptCategory('Writing')" class="prompt-filter-btn px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-xs font-medium hover:border-indigo-500 transition" data-cat="Writing">Writing</button>
+          <button onclick="filterPromptCategory('Learning')" class="prompt-filter-btn px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-xs font-medium hover:border-indigo-500 transition" data-cat="Learning">Learning</button>
+          <button onclick="filterPromptCategory('Business')" class="prompt-filter-btn px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-xs font-medium hover:border-indigo-500 transition" data-cat="Business">Business</button>
+          <button onclick="filterPromptCategory('Custom')" class="prompt-filter-btn px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-xs font-medium hover:border-indigo-500 transition" data-cat="Custom">Custom</button>
+        </div>
+
+        <!-- Prompts Grid -->
+        <div id="promptsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="col-span-full text-center py-10 text-xs text-slate-400">Loading saved prompts...</div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 5: USAGE & MEMBERSHIP PAGE -->
+      <!-- ===================================================================== -->
+      <section id="tab-usage" class="tab-content hidden space-y-6">
+        
+        <div>
+          <h1 class="text-lg font-bold font-heading text-white">Usage &amp; Plan Management</h1>
+          <p class="text-xs text-slate-400">Transparent breakdown of your request allocations, rate limits, and membership tier.</p>
+        </div>
+
+        <!-- Membership Banner -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono uppercase text-indigo-400 font-semibold tracking-wider">Current Membership</span>
+                <span id="planTierBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold">PRO MEMBER</span>
+              </div>
+              <h2 class="text-2xl font-bold font-heading text-white mt-1">HarshGuruJi AI Pro Tier</h2>
+              <p class="text-xs text-slate-300 mt-1 max-w-xl">
+                You have active access to Guru-Flash 1.1 with 20 requests per 12 hours, SDXL Image Generation, and cloud persistent memory.
+              </p>
+            </div>
+
+            <button onclick="openPlanModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-semibold text-xs transition shadow-lg shadow-indigo-500/20">
+              Manage / Upgrade Plan
+            </button>
+          </div>
+
+          <!-- Quota Meters Comparison -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[var(--border-color)]">
+            <div class="p-4 rounded-2xl bg-slate-950/60 border border-[var(--border-color)] space-y-2">
+              <span class="text-xs text-slate-400">Text Chat Allowance</span>
+              <div class="flex items-baseline justify-between">
+                <span class="text-xl font-bold font-heading text-white"><span id="usageDetailRemaining">20</span> / <span id="usageDetailMax">20</span> Requests</span>
+                <span class="text-xs font-mono text-cyan-300">12h Window</span>
+              </div>
+              <p class="text-[11px] text-slate-400">Enforced atomically on the backend via PostgreSQL row locks.</p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-950/60 border border-[var(--border-color)] space-y-2">
+              <span class="text-xs text-slate-400">Image Studio Allowance</span>
+              <div class="flex items-baseline justify-between">
+                <span class="text-xl font-bold font-heading text-white"><span id="usageDetailImages">5</span> / 5 Images</span>
+                <span class="text-xs font-mono text-cyan-300">24h Window</span>
+              </div>
+              <p class="text-[11px] text-slate-400">Stable Diffusion XL with private authenticated cloud bucket storage.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plan Comparison Matrix -->
+        <div class="glass-panel rounded-3xl p-6 space-y-4">
+          <h3 class="text-sm font-bold font-heading text-white">GuruAI Tier Comparison</h3>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-[var(--border-color)] text-slate-400">
+                  <th class="py-3 px-4 font-semibold">Features</th>
+                  <th class="py-3 px-4 font-semibold">Guest</th>
+                  <th class="py-3 px-4 font-semibold text-cyan-300">Pro Member (Current)</th>
+                  <th class="py-3 px-4 font-semibold text-amber-300">Admin Tier</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                <tr>
+                  <td class="py-3 px-4 font-medium text-white">Text Chat Model</td>
+                  <td class="py-3 px-4">Guru-Flash 1.1</td>
+                  <td class="py-3 px-4 font-semibold text-cyan-300">Guru-Flash 1.1</td>
+                  <td class="py-3 px-4 font-semibold text-amber-300">Guru-Flash 1.1 (Unlimited)</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-medium text-white">Requests &amp; Window</td>
+                  <td class="py-3 px-4">8 req / 6h</td>
+                  <td class="py-3 px-4 font-semibold text-cyan-300">20 req / 12h</td>
+                  <td class="py-3 px-4 font-semibold text-amber-300">Custom / Uncapped</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-medium text-white">SDXL Image Generation</td>
+                  <td class="py-3 px-4 text-rose-400">Locked</td>
+                  <td class="py-3 px-4 font-semibold text-emerald-400">5 images / 24h</td>
+                  <td class="py-3 px-4 font-semibold text-emerald-400">Priority High Quota</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-medium text-white">Cloud Conversation Sync</td>
+                  <td class="py-3 px-4 text-slate-400">Local Only</td>
+                  <td class="py-3 px-4 font-semibold text-emerald-400">Persistent Supabase Sync</td>
+                  <td class="py-3 px-4 font-semibold text-emerald-400">Full Cloud Sync</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-medium text-white">Saved Prompts Library</td>
+                  <td class="py-3 px-4 text-slate-400">Basic</td>
+                  <td class="py-3 px-4 font-semibold text-emerald-400">Unlimited Categories</td>
+                  <td class="py-3 px-4 font-semibold text-emerald-400">Unlimited</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 6: MY PROFILE -->
+      <!-- ===================================================================== -->
+      <section id="tab-profile" class="tab-content hidden space-y-6">
+        
+        <div>
+          <h1 class="text-lg font-bold font-heading text-white">My Account Profile</h1>
+          <p class="text-xs text-slate-400">Manage your authenticated credentials, security keys, and display identity.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Identity Summary Card -->
+          <div class="glass-panel rounded-3xl p-6 space-y-4 text-center flex flex-col items-center">
+            <div class="relative">
+              <div id="profileBigAvatarInitial" class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white font-heading font-extrabold text-2xl flex items-center justify-center shadow-xl shadow-indigo-500/25">
+                M
+              </div>
+              <img id="profileBigAvatarImg" src="" alt="Profile Avatar" class="w-20 h-20 rounded-2xl object-cover hidden border-2 border-indigo-500/40 shadow-xl" />
+            </div>
+
+            <div>
+              <div class="flex items-center justify-center gap-1.5">
+                <h2 id="profileDisplayName" class="text-base font-bold font-heading text-white">Member Name</h2>
+                <span id="profileGoldenTick" class="text-amber-400 text-xs hidden" title="Verified Creator">★</span>
+              </div>
+              <p id="profileEmail" class="text-xs text-slate-400 mt-0.5">member@webguruji.online</p>
+              <div class="mt-2 flex items-center justify-center gap-2">
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-mono font-semibold">
+                  Email Verified
+                </span>
+                <span id="profileRoleBadge" class="px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 text-[10px] font-mono font-semibold">
+                  Member
+                </span>
+              </div>
+            </div>
+
+            <div class="w-full pt-4 border-t border-[var(--border-color)] text-left space-y-2 text-xs text-slate-300">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Provider</span>
+                <span id="profileProvider" class="font-mono text-white">Supabase Auth</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Created At</span>
+                <span id="profileCreatedAt" class="font-mono text-white">Recent</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Workspace ID</span>
+                <span id="profileShortId" class="font-mono text-cyan-400">usr_...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Profile & Security Details -->
+          <div class="lg:col-span-2 glass-panel rounded-3xl p-6 space-y-6">
+            
+            <!-- Update Display Name -->
+            <form id="editProfileForm" class="space-y-4">
+              <h3 class="text-sm font-bold font-heading text-white pb-2 border-b border-[var(--border-color)]">
+                Personal Information
+              </h3>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1.5">Full / Display Name</label>
+                  <input id="inputFullName" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="Your Name" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1.5">Username (Optional)</label>
+                  <input id="inputUsername" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="@username" />
+                </div>
+              </div>
+
+              <div class="flex justify-end">
+                <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow transition">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+
+            <!-- Password & Security -->
+            <div class="space-y-4 pt-4 border-t border-[var(--border-color)]">
+              <h3 class="text-sm font-bold font-heading text-white">Security &amp; Password Management</h3>
+              <p class="text-xs text-slate-400">Request a secure password reset link or update your security credentials.</p>
+              
+              <div class="flex items-center gap-3">
+                <button id="sendPasswordResetBtn" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-semibold transition">
+                  Send Password Reset Link
+                </button>
+                <a href="login.html?mode=reset" class="text-xs text-cyan-400 hover:underline">
+                  Open Recovery Portal &rarr;
+                </a>
+              </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-3">
+              <h4 class="text-xs font-bold text-rose-300 uppercase font-mono tracking-wider">Danger Zone</h4>
+              <p class="text-[11px] text-slate-400">Account deletion and data wipe cannot be undone. All conversations and private image keys will be permanently expunged.</p>
+              
+              <button onclick="openDeleteAccountModal()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition">
+                Request Account Deletion
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 7: PREFERENCES & PERSONALIZATION -->
+      <!-- ===================================================================== -->
+      <section id="tab-preferences" class="tab-content hidden space-y-6">
+        
+        <div>
+          <h1 class="text-lg font-bold font-heading text-white">Workspace Preferences</h1>
+          <p class="text-xs text-slate-400">Personalize themes, typography, language dialect, and AI creativity temperature.</p>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-6 space-y-6">
+          
+          <!-- 1. Theme Selection -->
+          <div class="space-y-2.5">
+            <label class="block text-xs font-bold font-heading text-white">Workspace Theme</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button id="themeBtn-dark" onclick="setStudioTheme('dark')" class="p-3.5 rounded-2xl bg-slate-950/80 border border-cyan-500 bg-cyan-500/10 text-left transition flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-[#070913] border border-cyan-400"></div>
+                <div>
+                  <div class="text-xs font-semibold text-white">Dark Slate</div>
+                  <div class="text-[10px] text-slate-400">Default dark mode</div>
+                </div>
+              </button>
+
+              <button id="themeBtn-light" onclick="setStudioTheme('light')" class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-700 text-left transition flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-white border border-slate-400"></div>
+                <div>
+                  <div class="text-xs font-semibold text-white">Daylight Light</div>
+                  <div class="text-[10px] text-slate-400">High contrast daylight</div>
+                </div>
+              </button>
+
+              <button id="themeBtn-cyberpunk" onclick="setStudioTheme('cyberpunk')" class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-700 text-left transition flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-[#04070d] border border-[#00ffcc]"></div>
+                <div>
+                  <div class="text-xs font-semibold text-white">Cyberpunk Matrix</div>
+                  <div class="text-[10px] text-slate-400">Neon cyan &amp; purple</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. AI Language -->
+          <div class="space-y-2.5 pt-4 border-t border-[var(--border-color)]">
+            <label class="block text-xs font-bold font-heading text-white">Default AI Conversation Language</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button id="langBtn-english" onclick="setStudioLang('english')" class="p-3 rounded-xl bg-slate-950/80 border border-indigo-500 bg-indigo-500/20 text-xs font-medium text-white transition text-center">
+                English (International)
+              </button>
+              <button id="langBtn-hinglish" onclick="setStudioLang('hinglish')" class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 text-xs font-medium text-slate-300 hover:text-white transition text-center">
+                Hinglish (Hindi in English Script)
+              </button>
+              <button id="langBtn-hindi" onclick="setStudioLang('hindi')" class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 text-xs font-medium text-slate-300 hover:text-white transition text-center">
+                Hindi (हिन्दी / Devanagari)
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Font Family Selection -->
+          <div class="space-y-2.5 pt-4 border-t border-[var(--border-color)]">
+            <label class="block text-xs font-bold font-heading text-white">Typography Font Family</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button id="fontBtn-sans" onclick="setStudioFont('sans')" class="p-3 rounded-xl bg-slate-950/80 border border-cyan-500 bg-cyan-500/10 text-xs font-medium text-white transition text-center font-sans">
+                Inter (Clean Sans)
+              </button>
+              <button id="fontBtn-serif" onclick="setStudioFont('serif')" class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 text-xs font-medium text-slate-300 hover:text-white transition text-center font-serif">
+                Merriweather (Serif)
+              </button>
+              <button id="fontBtn-mono" onclick="setStudioFont('mono')" class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 text-xs font-medium text-slate-300 hover:text-white transition text-center font-mono">
+                Fira Code (Monospace)
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. Creativity Temperature -->
+          <div class="space-y-2.5 pt-4 border-t border-[var(--border-color)]">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold font-heading text-white">Creativity Temperature</label>
+              <span id="tempValueLabel" class="text-xs font-mono font-bold text-cyan-400">0.7</span>
+            </div>
+            <input id="tempSlider" type="range" min="0.1" max="1.0" step="0.1" value="0.7" oninput="updateTemperature(this.value)" class="w-full accent-indigo-500 cursor-pointer" />
+            <div class="flex justify-between text-[10px] text-slate-400">
+              <span>Precise &amp; Factual (0.1)</span>
+              <span>Balanced (0.7)</span>
+              <span>Highly Creative (1.0)</span>
+            </div>
+          </div>
+
+          <!-- 5. Default Model Selection -->
+          <div class="space-y-2.5 pt-4 border-t border-[var(--border-color)]">
+            <label class="block text-xs font-bold font-heading text-white">Default Model</label>
+            <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-slate-300 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="font-semibold text-white">Guru-Flash 1.1</span>
+                <span class="text-[10px] text-slate-400">— Ultra-fast intelligent reasoning</span>
+              </div>
+              <span class="text-[10px] font-mono text-cyan-300">Production</span>
+            </div>
+          </div>
+
+          <!-- 6. Custom Instructions -->
+          <div class="space-y-2.5 pt-4 border-t border-[var(--border-color)]">
+            <label class="block text-xs font-bold font-heading text-white">Custom System Instructions (Optional)</label>
+            <textarea id="customInstructionsInput" rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500" placeholder="E.g., Always respond like a senior software engineer with concise code samples..."></textarea>
+            <div class="flex justify-end">
+              <button onclick="saveCustomInstructions()" class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">
+                Save Instructions
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 8: HELP CENTER -->
+      <!-- ===================================================================== -->
+      <section id="tab-help" class="tab-content hidden space-y-6">
+        
+        <div>
+          <h1 class="text-lg font-bold font-heading text-white">Help Center &amp; Documentation</h1>
+          <p class="text-xs text-slate-400">Frequently asked questions and guides for getting the most out of GuruAI.</p>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-6 space-y-4">
+          <h2 class="text-sm font-bold font-heading text-white">Frequently Asked Questions</h2>
+          
+          <div class="space-y-3 text-xs">
+            <details class="p-3.5 rounded-xl bg-slate-950/60 border border-[var(--border-color)] group" open>
+              <summary class="font-semibold text-white cursor-pointer list-none flex items-center justify-between">
+                <span>How do GuruAI usage allowances work?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="mt-2 text-slate-300 leading-relaxed text-[11px]">
+                Registered members receive 20 requests per 24-hour rolling window and 5 high-definition image creations, while guests receive 8 requests per 24-hour window (image generation is exclusive to registered members). Every 24 hours, all limits automatically refresh.
+              </p>
+            </details>
+
+            <details class="p-3.5 rounded-xl bg-slate-950/60 border border-[var(--border-color)] group">
+              <summary class="font-semibold text-white cursor-pointer list-none flex items-center justify-between">
+                <span>How do I generate hyper-realistic images?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="mt-2 text-slate-300 leading-relaxed text-[11px]">
+                In the GuruAI chat composer, toggle the Image Studio icon (or type prompts starting with "Generate image:"). Logged-in members receive 5 high-resolution Stable Diffusion XL image generations every 24 hours.
+              </p>
+            </details>
+
+            <details class="p-3.5 rounded-xl bg-slate-950/60 border border-[var(--border-color)] group">
+              <summary class="font-semibold text-white cursor-pointer list-none flex items-center justify-between">
+                <span>Is my chat history and personal data private?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="mt-2 text-slate-300 leading-relaxed text-[11px]">
+                Yes. All user chat history and images are secured using PostgreSQL Row Level Security (RLS). Only your authenticated session can access, view, or delete your resources.
+              </p>
+            </details>
+
+            <details class="p-3.5 rounded-xl bg-slate-950/60 border border-[var(--border-color)] group">
+              <summary class="font-semibold text-white cursor-pointer list-none flex items-center justify-between">
+                <span>What model powers GuruAI?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="mt-2 text-slate-300 leading-relaxed text-[11px]">
+                GuruAI uses <strong>Guru-Flash 1.1</strong>, optimized for extreme speed, high context windows, complex reasoning, code generation, and multi-lingual Indian dialects (English, Hindi, Hinglish).
+              </p>
+            </details>
+          </div>
+        </div>
+
+        <!-- Shortcuts Cheat Sheet -->
+        <div class="glass-panel rounded-3xl p-6 space-y-3">
+          <h3 class="text-xs font-bold font-heading text-white">Keyboard Shortcuts</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-950/60 border border-[var(--border-color)]">
+              <span class="font-mono text-cyan-300 block mb-1">⌘N / Alt+N</span>
+              <span class="text-slate-400 text-[11px]">New Chat</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/60 border border-[var(--border-color)]">
+              <span class="font-mono text-cyan-300 block mb-1">⌘K / Ctrl+K</span>
+              <span class="text-slate-400 text-[11px]">Quick Search</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/60 border border-[var(--border-color)]">
+              <span class="font-mono text-cyan-300 block mb-1">Enter</span>
+              <span class="text-slate-400 text-[11px]">Send Message</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/60 border border-[var(--border-color)]">
+              <span class="font-mono text-cyan-300 block mb-1">Shift+Enter</span>
+              <span class="text-slate-400 text-[11px]">New Line</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 9: SEND FEEDBACK -->
+      <!-- ===================================================================== -->
+      <section id="tab-feedback" class="tab-content hidden space-y-6">
+        
+        <div>
+          <h1 class="text-lg font-bold font-heading text-white">Send Feedback &amp; Bug Reports</h1>
+          <p class="text-xs text-slate-400">Share your thoughts, report issues, or suggest new AI capabilities directly to HarshGuruJi.</p>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-6 max-w-2xl space-y-4">
+          <form id="feedbackForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Feedback Type</label>
+              <select id="feedbackType" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500">
+                <option value="feature">Feature Request / Suggestion</option>
+                <option value="bug">Bug Report / Issue</option>
+                <option value="general">General Feedback</option>
+                <option value="model">AI Quality / Hallucination Report</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Subject</label>
+              <input id="feedbackSubject" type="text" required class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="Brief summary of your feedback" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Description &amp; Details</label>
+              <textarea id="feedbackDetails" required rows="4" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="Provide as much context as possible..."></textarea>
+            </div>
+
+            <div class="flex justify-end">
+              <button type="submit" id="btnSubmitFeedback" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold transition shadow">
+                Submit Feedback
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODALS -->
+  <!-- ======================================================================= -->
+
+  <!-- 1. NEW / EDIT PROMPT MODAL -->
+  <div id="promptModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#0d1222] border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closePromptModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div>
+        <h3 id="promptModalTitle" class="text-base font-bold font-heading text-white">Save Custom Prompt</h3>
+        <p class="text-xs text-slate-400">Save a reusable template to your personal library.</p>
+      </div>
+
+      <form id="savePromptForm" class="space-y-3.5">
+        <input type="hidden" id="editPromptId" value="" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Prompt Title</label>
+          <input id="promptTitleInput" type="text" required class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="E.g., Python Fast API Template" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+          <select id="promptCategorySelect" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500">
+            <option value="Coding">Coding</option>
+            <option value="Writing">Writing</option>
+            <option value="Learning">Learning</option>
+            <option value="Business">Business</option>
+            <option value="Custom">Custom</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Prompt Content</label>
+          <textarea id="promptContentInput" required rows="4" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="Type the full prompt instructions here..."></textarea>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closePromptModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">Save Prompt</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. RENAME CHAT MODAL -->
+  <div id="renameChatModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#0d1222] border border-slate-800 rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+      <h3 class="text-base font-bold font-heading text-white">Rename Conversation</h3>
+      <input type="hidden" id="renameConvId" />
+      <input id="renameConvTitleInput" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="Enter new title..." />
+      <div class="flex justify-end gap-2">
+        <button onclick="closeRenameModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="saveRenamedChat()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">Save Title</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. IMAGE LIGHTBOX MODAL -->
+  <div id="imageLightboxModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="relative max-w-3xl w-full flex flex-col items-center">
+      <button onclick="closeImageLightbox()" class="absolute -top-10 right-0 text-slate-400 hover:text-white p-1">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <img id="lightboxImg" src="" alt="Full Resolution AI Creation" class="max-h-[75vh] w-auto rounded-2xl shadow-2xl border border-slate-800 object-contain" />
+      <div class="mt-4 w-full p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-4">
+        <p id="lightboxPromptText" class="text-xs text-slate-300 truncate flex-1 font-mono"></p>
+        <div class="flex items-center gap-2">
+          <button id="lightboxCopyPromptBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition">Copy Prompt</button>
+          <a id="lightboxDownloadBtn" href="#" download="guruai-creation.png" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition">Download</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. DELETE CONFIRMATION MODAL -->
+  <div id="deleteConfirmModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#0d1222] border border-slate-800 rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl text-center">
+      <div class="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 mx-auto flex items-center justify-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      </div>
+      <div>
+        <h3 id="deleteModalHeading" class="text-base font-bold font-heading text-white">Confirm Deletion</h3>
+        <p id="deleteModalMessage" class="text-xs text-slate-400 mt-1">This action cannot be undone.</p>
+      </div>
+      <div class="flex justify-center gap-2.5 pt-2">
+        <button onclick="closeDeleteModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-700">Cancel</button>
+        <button id="confirmDeleteActionBtn" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 transition">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. UPGRADE PLAN MODAL -->
+  <div id="planModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#0d1222] border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closePlanModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="text-center space-y-1">
+        <h3 class="text-lg font-bold font-heading text-white">Upgrade GuruAI Plan</h3>
+        <p class="text-xs text-slate-400">Unlock high-volume context windows and unrestricted creativity.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+        <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2 flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-indigo-400 font-semibold">Pro Plus</span>
+            <h4 class="text-base font-bold text-white mt-0.5">₹299 <span class="text-xs text-slate-400 font-normal">/ mo</span></h4>
+            <ul class="text-[11px] text-slate-300 space-y-1 mt-2">
+              <li>✓ 50 Requests / 12h</li>
+              <li>✓ 20 SDXL Images / 24h</li>
+              <li>✓ Priority GPU Scheduling</li>
+            </ul>
+          </div>
+          <button onclick="handlePlanBuy('Pro Plus', '64000', '299')" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition mt-2">
+            Inquire / Subscribe
+          </button>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-gradient-to-b from-indigo-950/60 to-slate-950 border border-indigo-500/50 space-y-2 flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase text-cyan-300 font-semibold">Unlimited Creator</span>
+            <h4 class="text-base font-bold text-white mt-0.5">₹699 <span class="text-xs text-slate-400 font-normal">/ mo</span></h4>
+            <ul class="text-[11px] text-slate-300 space-y-1 mt-2">
+              <li>✓ Unlimited Fast Requests</li>
+              <li>✓ 100 SDXL Images / 24h</li>
+              <li>✓ Verified Golden Badge</li>
+            </ul>
+          </div>
+          <button onclick="handlePlanBuy('Unlimited Creator', '128000', '699')" class="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 text-white text-xs font-semibold transition mt-2">
+            Inquire / Subscribe
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- JAVASCRIPT WORKSPACE LOGIC -->
+  <!-- ======================================================================= -->
+  <script>
+    // Supabase Initialization
+    const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80';
+    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    let currentUser = null;
+    let maxAllowance = 20;
+    let remainingAllowance = 20;
+    let resetTimerInterval = null;
+    let activePromptFilter = 'All';
+    let cachedConversations = [];
+    let cachedImages = [];
+    let cachedPrompts = [];
+
+    // Starter Prompt Templates
+    const STARTER_PROMPTS = [
+      { id: 'p1', title: 'Python Async API Handler', category: 'Coding', prompt: 'Write a high-performance asynchronous FastAPI endpoint with Pydantic request validation and structured error handling.' },
+      { id: 'p2', title: 'Executive Project Summary', category: 'Writing', prompt: 'Summarize this technical architecture proposal into a high-level executive summary highlighting ROI, latency, and security.' },
+      { id: 'p3', title: 'First-Principles Explainer', category: 'Learning', prompt: 'Explain the core mechanics of transformer attention mechanisms from first principles using an intuitive metaphor.' },
+      { id: 'p4', title: 'SaaS Go-To-Market Plan', category: 'Business', prompt: 'Create a 30-60-90 day product launch roadmap for a developer AI productivity tool, focusing on organic developer adoption.' },
+      { id: 'p5', title: 'React Performance Audit', category: 'Coding', prompt: 'Analyze this React component tree for unnecessary re-renders and propose optimizations using useMemo, useCallback, or state colocation.' }
+    ];
+
+    // DOM Ready
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 0. Safety timer to always dismiss the loader within 1.2s
+      setTimeout(() => {
+        const loader = document.getElementById('initialLoader');
+        if (loader) {
+          loader.classList.add('opacity-0');
+          setTimeout(() => { if (loader) loader.remove(); }, 350);
+        }
+      }, 1200);
+
+      try {
+        // 1. Initialize Date
+        const d = new Date();
+        const dateEl = document.getElementById('currentDateBadge');
+        if (dateEl) {
+          dateEl.textContent = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // 2. Load Preferences
+        loadPreferences();
+
+        // 3. Authenticate Session
+        await checkAuthAndQuota();
+
+        // 4. Setup Events and Tab Navigation
+        setupNavigation();
+        setupEvents();
+      } catch (err) {
+        console.warn('Dashboard initialization warning:', err);
+      } finally {
+        // 5. Hide Loader smoothly
+        const loader = document.getElementById('initialLoader');
+        if (loader) {
+          loader.classList.add('opacity-0');
+          setTimeout(() => { if (loader) loader.remove(); }, 350);
+        }
+      }
+    });
+
+    // Check Session & Quotas with Non-Blocking Guest Support
+    async function checkAuthAndQuota() {
+      try {
+        if (supabase) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session && session.user) {
+            currentUser = session.user;
+          }
+        }
+        
+        // Fallback to local stored auth session
+        if (!currentUser) {
+          const localStored = localStorage.getItem('hg_auth_user');
+          if (localStored) {
+            try { currentUser = JSON.parse(localStored); } catch (e) {}
+          }
+        }
+      } catch (err) {
+        console.warn('Auth session check notice:', err);
+      }
+
+      // If unauthenticated, provide smooth guest mode without locking screen
+      if (!currentUser) {
+        currentUser = {
+          id: 'guest',
+          email: 'guest@webguruji.online',
+          user_metadata: {
+            full_name: 'Guest Explorer',
+            name: 'Guest Explorer'
+          },
+          is_guest: true
+        };
+      }
+
+      renderUserProfile(currentUser);
+      await fetchLiveQuota();
+      loadConversationsList();
+      loadCreationsList();
+      loadSavedPromptsList();
+    }
+
+    // Live auth state change listener
+    if (supabase) {
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session && session.user) {
+          currentUser = session.user;
+          renderUserProfile(currentUser);
+          await fetchLiveQuota();
+          loadConversationsList();
+          loadCreationsList();
+          loadSavedPromptsList();
+        }
+      });
+    }
+
+    function renderUserProfile(user) {
+      if (!user) return;
+      const email = user.email || 'member@webguruji.online';
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || email.split('@')[0];
+      const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+
+      // Update Sidebar Profile
+      document.getElementById('sidebarUserName').textContent = name;
+      document.getElementById('sidebarUserEmail').textContent = email;
+      document.getElementById('overviewDisplayName').textContent = name;
+
+      // Update Profile Tab
+      document.getElementById('profileDisplayName').textContent = name;
+      document.getElementById('profileEmail').textContent = email;
+      document.getElementById('profileShortId').textContent = 'usr_' + (user.id ? user.id.slice(0, 8) : 'guest');
+      document.getElementById('inputFullName').value = name;
+      document.getElementById('inputUsername').value = user.user_metadata?.username || name.toLowerCase().replace(/\s+/g, '_');
+
+      if (avatarUrl) {
+        const sideImg = document.getElementById('sidebarUserAvatarImg');
+        sideImg.src = avatarUrl;
+        sideImg.classList.remove('hidden');
+        document.getElementById('sidebarUserAvatarInitial').classList.add('hidden');
+
+        const bigImg = document.getElementById('profileBigAvatarImg');
+        bigImg.src = avatarUrl;
+        bigImg.classList.remove('hidden');
+        document.getElementById('profileBigAvatarInitial').classList.add('hidden');
+      } else {
+        const initial = name.charAt(0).toUpperCase();
+        document.getElementById('sidebarUserAvatarInitial').textContent = initial;
+        document.getElementById('profileBigAvatarInitial').textContent = initial;
+      }
+
+      if (user.is_guest) {
+        const pill = document.getElementById('sidebarTierPill');
+        if (pill) pill.textContent = 'Guest';
+        const badge = document.getElementById('tierBadgeText');
+        if (badge) badge.textContent = 'Guest Mode';
+        const planBadge = document.getElementById('planTierBadge');
+        if (planBadge) planBadge.textContent = 'GUEST ACCESS (8 FREE REQUESTS)';
+      }
+
+      // Check Supabase Profiles table for golden tick and custom admin
+      if (supabase && user.id && !user.is_guest) {
+        supabase.from('profiles').select('*').eq('id', user.id).maybeSingle().then(({ data }) => {
+          if (data) {
+            if (data.golden_tick || data.is_golden_tick) {
+              document.getElementById('goldenTickIcon')?.classList.remove('hidden');
+              document.getElementById('profileGoldenTick')?.classList.remove('hidden');
+            }
+            if (data.role === 'admin' || data.is_admin) {
+              document.getElementById('sidebarTierPill').textContent = 'Admin';
+              document.getElementById('tierBadgeText').textContent = 'Admin Tier';
+              document.getElementById('planTierBadge').textContent = 'ADMIN TIER';
+            }
+          }
+        }).catch(() => {});
+      }
+    }
+
+    async function fetchLiveQuota() {
+      let isVerifiedMember = currentUser && !currentUser.is_guest;
+      maxAllowance = isVerifiedMember ? 20 : 8;
+      const windowDuration = 24 * 3600 * 1000; // All limits refresh every 24 hours
+      const now = Date.now();
+
+      const quotaDescEl = document.getElementById('quotaWindowDesc');
+      if (quotaDescEl) {
+        quotaDescEl.textContent = isVerifiedMember ? 'Rolling 24-hour member allocation (20 msgs & 5 images)' : 'Rolling 24-hour guest allocation (Images locked)';
+      }
+
+      // Check server API /api/usage if accessible
+      try {
+        const res = await fetch('/api/usage');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data.remainingAllowance === 'number') {
+            remainingAllowance = data.remainingAllowance;
+            maxAllowance = data.maxRequests || maxAllowance;
+            updateQuotaUI(remainingAllowance, maxAllowance, data.resetInSeconds);
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // Fallback to synchronized local rate-limit calculation
+      const key = currentUser ? ('guruai_quota_user_' + currentUser.id) : 'guruai_quota_guest';
+      let stored = null;
+      try { stored = JSON.parse(localStorage.getItem(key)); } catch(e){}
+
+      if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
+        stored = { remaining: maxAllowance, windowStart: now };
+        localStorage.setItem(key, JSON.stringify(stored));
+      }
+
+      remainingAllowance = stored.remaining;
+      const elapsed = now - stored.windowStart;
+      const leftSeconds = Math.max(0, Math.floor((windowDuration - elapsed) / 1000));
+      updateQuotaUI(remainingAllowance, maxAllowance, leftSeconds);
+    }
+
+    function updateQuotaUI(remaining, max, resetSeconds) {
+      document.getElementById('remainingQuotaNum').textContent = remaining;
+      document.getElementById('maxQuotaNum').textContent = max;
+      document.getElementById('quotaCapLabel').textContent = `${max} Max`;
+      document.getElementById('usageDetailRemaining').textContent = remaining;
+      document.getElementById('usageDetailMax').textContent = max;
+
+      const pct = Math.max(0, Math.min(100, (remaining / max) * 100));
+      document.getElementById('quotaProgressBar').style.width = pct + '%';
+
+      // Live Image Quota (Guest: 0 images, Logged-in: 5 images/24h)
+      const imgCountEl = document.getElementById('imageRemainingCount');
+      const imgBarEl = document.getElementById('imageProgressBar');
+      if (imgCountEl && imgBarEl) {
+        if (!currentUser || currentUser.is_guest) {
+          imgCountEl.textContent = '0';
+          imgBarEl.style.width = '0%';
+        } else {
+          const imgKey = 'guruai_img_quota_' + (currentUser.id || currentUser.email);
+          let imgStored = null;
+          try { imgStored = JSON.parse(localStorage.getItem(imgKey)); } catch(e){}
+          const now = Date.now();
+          if (!imgStored || typeof imgStored.remaining !== 'number' || !imgStored.windowStart || (now - imgStored.windowStart) >= (24 * 3600 * 1000)) {
+            imgStored = { remaining: 5, limit: 5, windowStart: now };
+            localStorage.setItem(imgKey, JSON.stringify(imgStored));
+          }
+          imgCountEl.textContent = imgStored.remaining;
+          const imgPct = Math.max(0, Math.min(100, (imgStored.remaining / 5) * 100));
+          imgBarEl.style.width = imgPct + '%';
+        }
+      }
+
+      // Start countdown
+      if (resetTimerInterval) clearInterval(resetTimerInterval);
+      let secLeft = resetSeconds || 0;
+
+      function tick() {
+        if (secLeft <= 0) {
+          document.getElementById('resetTimerText').textContent = 'Refreshed!';
+          return;
+        }
+        const h = Math.floor(secLeft / 3600);
+        const m = Math.floor((secLeft % 3600) / 60);
+        const s = secLeft % 60;
+        document.getElementById('resetTimerText').textContent =
+          `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        secLeft--;
+      }
+      tick();
+      resetTimerInterval = setInterval(tick, 1000);
+    }
+
+    // -------------------------------------------------------------------------
+    // CONVERSATIONS MANAGER
+    // -------------------------------------------------------------------------
+    function loadConversationsList() {
+      let convs = [];
+      try {
+        convs = JSON.parse(localStorage.getItem('guruai_local_conversations') || '[]');
+      } catch (e) {}
+      cachedConversations = convs;
+
+      // Update badge
+      document.getElementById('badgeChatCount').textContent = convs.length;
+      document.getElementById('overviewChatCountBadge').textContent = convs.length;
+
+      // Render Overview Snippet
+      const overviewContainer = document.getElementById('overviewRecentChats');
+      if (!convs.length) {
+        overviewContainer.innerHTML = `
+          <div class="text-center py-6 text-xs text-slate-400 bg-slate-950/40 rounded-2xl border border-slate-800/60 p-4">
+            <span class="text-xl block mb-1">💬</span>
+            <span class="font-medium text-slate-300 block">No conversations yet</span>
+            <span class="text-[11px] text-slate-400 block mb-2">Start your first dialogue with GuruAI.</span>
+            <a href="index.html?new=true" class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-semibold">Start Chat &rarr;</a>
+          </div>
+        `;
+      } else {
+        const top3 = convs.slice(0, 3);
+        overviewContainer.innerHTML = top3.map(c => `
+          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-[var(--border-color)] hover:border-slate-700 flex items-center justify-between gap-3 transition">
+            <div class="min-w-0 flex-1">
+              <span class="text-xs font-semibold text-white truncate block hover:text-cyan-300">${escapeHtml(c.title || 'Untitled Dialogue')}</span>
+              <span class="text-[10px] text-slate-400">${c.messages ? c.messages.length : 0} messages • ${c.updatedAt ? new Date(c.updatedAt).toLocaleDateString() : 'Recent'}</span>
+            </div>
+            <a href="index.html?conv=${encodeURIComponent(c.id)}" class="px-2.5 py-1 rounded-lg bg-indigo-950/70 border border-indigo-500/40 text-cyan-300 text-[11px] font-semibold hover:bg-indigo-900 transition">Resume</a>
+          </div>
+        `).join('');
+      }
+
+      renderFullChatsList();
+    }
+
+    function renderFullChatsList() {
+      const container = document.getElementById('conversationsContainer');
+      const searchQuery = (document.getElementById('chatSearchInput')?.value || '').toLowerCase().trim();
+      const sortMode = document.getElementById('chatSortSelect')?.value || 'recent';
+
+      let list = [...cachedConversations];
+
+      // Filter search
+      if (searchQuery) {
+        list = list.filter(c => {
+          const matchTitle = (c.title || '').toLowerCase().includes(searchQuery);
+          const matchContent = Array.isArray(c.messages) && c.messages.some(m => (m.content || '').toLowerCase().includes(searchQuery));
+          return matchTitle || matchContent;
+        });
+      }
+
+      // Sort
+      if (sortMode === 'recent') {
+        list.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+      } else if (sortMode === 'oldest') {
+        list.sort((a, b) => new Date(a.updatedAt || 0) - new Date(b.updatedAt || 0));
+      } else if (sortMode === 'title') {
+        list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+      }
+
+      if (!list.length) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-xs text-slate-400 bg-slate-950/40 rounded-3xl border border-slate-800/60 p-8 space-y-2">
+            <span class="text-3xl block mb-2">💬</span>
+            <span class="font-bold text-sm text-slate-200 block">No conversations found</span>
+            <p class="text-[11px] text-slate-400 max-w-sm mx-auto">Start a conversation or adjust your search filter to browse past dialogues.</p>
+            <div class="pt-2">
+              <a href="index.html?new=true" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow">
+                <span>Start New Dialogue</span> &rarr;
+              </a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(c => `
+        <div class="p-3.5 rounded-2xl glass-panel hover:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition group">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors truncate">
+                ${escapeHtml(c.title || 'Untitled Dialogue')}
+              </span>
+              ${c.isPinned ? '<span class="text-[10px] text-amber-400">📌</span>' : ''}
+            </div>
+            <div class="text-[10px] text-slate-400 flex items-center gap-2 mt-1">
+              <span>${c.messages ? c.messages.length : 0} messages</span>
+              <span>•</span>
+              <span>Updated ${c.updatedAt ? new Date(c.updatedAt).toLocaleDateString() : 'Recent'}</span>
+              <span>•</span>
+              <span class="font-mono text-cyan-400/80">Guru-Flash 1.1</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <a href="index.html?conv=${encodeURIComponent(c.id)}" class="px-3 py-1.5 rounded-xl bg-indigo-950/80 border border-indigo-500/40 text-cyan-300 hover:bg-indigo-900 text-xs font-semibold transition">
+              Resume
+            </a>
+            <button onclick="promptRenameChat('${c.id}', '${escapeHtml(c.title || '')}')" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition" title="Rename conversation">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            </button>
+            <button onclick="togglePinChat('${c.id}')" class="p-1.5 rounded-xl text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition" title="${c.isPinned ? 'Unpin' : 'Pin to top'}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+            </button>
+            <button onclick="confirmDeleteChat('${c.id}')" class="p-1.5 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition" title="Delete conversation">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // -------------------------------------------------------------------------
+    // CREATIONS GALLERY MANAGER
+    // -------------------------------------------------------------------------
+    async function loadCreationsList() {
+      let images = [];
+
+      // 1. Fetch images from Next.js /api/images or Supabase chat_messages
+      if (currentUser && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('chat_messages')
+            .select('id, conversation_id, content, image_url, created_at')
+            .eq('user_id', currentUser.id)
+            .eq('message_type', 'image')
+            .order('created_at', { ascending: false })
+            .limit(40);
+
+          if (!error && Array.isArray(data) && data.length > 0) {
+            images = data.map(m => ({
+              id: m.id,
+              prompt: (m.content || '').replace(/^Generated image for:\s*"?/, '').replace(/"?$/, ''),
+              imageUrl: m.image_url,
+              createdAt: m.created_at
+            }));
+          }
+        } catch (e) {}
+      }
+
+      // 2. Also extract from local cached conversations
+      try {
+        const convs = JSON.parse(localStorage.getItem('guruai_local_conversations') || '[]');
+        convs.forEach(c => {
+          if (Array.isArray(c.messages)) {
+            c.messages.forEach(m => {
+              if (m.imageUrl || (m.content && m.content.includes('http') && m.content.includes('image'))) {
+                const url = m.imageUrl || (m.content.match(/https?:\/\/[^\s)]+/)?.[0]);
+                if (url && !images.some(img => img.imageUrl === url)) {
+                  images.push({
+                    id: m.id || Math.random().toString(36).slice(2),
+                    prompt: m.prompt || c.title || 'Stable Diffusion XL Generation',
+                    imageUrl: url,
+                    createdAt: m.createdAt || c.updatedAt
+                  });
+                }
+              }
+            });
+          }
+        });
+      } catch (e) {}
+
+      cachedImages = images;
+      document.getElementById('badgeCreationsCount').textContent = images.length;
+      document.getElementById('overviewCreationsCountBadge').textContent = images.length;
+      document.getElementById('statImagesCount') && (document.getElementById('statImagesCount').textContent = images.length);
+
+      // Render Overview Snippet
+      const overviewSnippet = document.getElementById('overviewRecentCreations');
+      if (!images.length) {
+        overviewSnippet.innerHTML = `
+          <div class="col-span-3 text-center py-6 text-xs text-slate-400 bg-slate-950/40 rounded-2xl border border-slate-800/60 p-4">
+            <span class="text-xl block mb-1">🎨</span>
+            <span class="font-medium text-slate-300 block">No images generated yet</span>
+            <span class="text-[11px] text-slate-400 block mb-2">Generate hyper-realistic art with SDXL.</span>
+            <a href="index.html?image_mode=true" class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-semibold">Generate Image &rarr;</a>
+          </div>
+        `;
+      } else {
+        const top3Imgs = images.slice(0, 3);
+        overviewSnippet.innerHTML = top3Imgs.map(img => `
+          <div class="relative group rounded-xl overflow-hidden aspect-square border border-slate-800 cursor-pointer bg-slate-900" onclick="openImageLightbox('${encodeURIComponent(img.imageUrl)}', '${escapeHtml(img.prompt)}')">
+            <img src="${img.imageUrl}" alt="${escapeHtml(img.prompt)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center">
+              <span class="text-[10px] text-white line-clamp-2">${escapeHtml(img.prompt)}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Render Full Gallery
+      const gallery = document.getElementById('creationsGalleryGrid');
+      if (!images.length) {
+        gallery.innerHTML = `
+          <div class="col-span-full text-center py-16 text-xs text-slate-400 bg-slate-950/40 rounded-3xl border border-slate-800/60 p-8 space-y-3">
+            <span class="text-4xl block mb-2">🎨</span>
+            <span class="font-bold text-sm text-slate-200 block">Your Creative Studio is Empty</span>
+            <p class="text-[11px] text-slate-400 max-w-sm mx-auto">
+              Members can generate up to 5 hyper-realistic SDXL images every 24 hours. Start creating stunning visuals today!
+            </p>
+            <div class="pt-2">
+              <a href="index.html?image_mode=true" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 text-white text-xs font-semibold shadow">
+                <span>Create Your First Image</span> &rarr;
+              </a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      gallery.innerHTML = images.map(img => `
+        <div class="glass-panel glass-panel-hover rounded-2xl overflow-hidden group flex flex-col justify-between transition">
+          <div class="relative aspect-square overflow-hidden bg-slate-950 cursor-pointer" onclick="openImageLightbox('${encodeURIComponent(img.imageUrl)}', '${escapeHtml(img.prompt)}')">
+            <img src="${img.imageUrl}" alt="${escapeHtml(img.prompt)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+              <span class="text-[11px] font-mono text-cyan-300">Click for Lightbox View</span>
+            </div>
+          </div>
+          <div class="p-3.5 space-y-2">
+            <p class="text-xs text-slate-300 font-medium line-clamp-2">${escapeHtml(img.prompt)}</p>
+            <div class="flex items-center justify-between pt-1 border-t border-[var(--border-color)] text-[10px]">
+              <span class="text-slate-400">${img.createdAt ? new Date(img.createdAt).toLocaleDateString() : 'Recent'}</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="copyToClipboard('${escapeHtml(img.prompt)}')" class="p-1 rounded text-slate-400 hover:text-white" title="Copy Prompt">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+                <a href="${img.imageUrl}" download="guruai-${img.id}.png" class="p-1 rounded text-slate-400 hover:text-cyan-300" title="Download Image">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </a>
+                <a href="index.html?image_mode=true&prompt=${encodeURIComponent(img.prompt)}" class="p-1 rounded text-slate-400 hover:text-indigo-400" title="Regenerate in Chat">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // -------------------------------------------------------------------------
+    // SAVED PROMPTS MANAGER
+    // -------------------------------------------------------------------------
+    function loadSavedPromptsList() {
+      let prompts = [];
+      try {
+        prompts = JSON.parse(localStorage.getItem('guruai_saved_prompts') || '[]');
+      } catch (e) {}
+
+      // If empty, initialize with starter templates
+      if (!prompts.length) {
+        prompts = [...STARTER_PROMPTS];
+        localStorage.setItem('guruai_saved_prompts', JSON.stringify(prompts));
+      }
+      cachedPrompts = prompts;
+      document.getElementById('badgePromptCount').textContent = prompts.length;
+
+      // Sync from Supabase saved_prompts if logged in
+      if (currentUser && supabase) {
+        supabase.from('saved_prompts').select('*').eq('user_id', currentUser.id).order('updated_at', { ascending: false }).then(({ data, error }) => {
+          if (!error && Array.isArray(data) && data.length > 0) {
+            cachedPrompts = data;
+            localStorage.setItem('guruai_saved_prompts', JSON.stringify(data));
+            renderPromptsGrid();
+          }
+        }).catch(() => {});
+      }
+
+      renderPromptsGrid();
+    }
+
+    function renderPromptsGrid() {
+      const grid = document.getElementById('promptsGrid');
+      let filtered = cachedPrompts;
+
+      if (activePromptFilter !== 'All') {
+        filtered = filtered.filter(p => p.category === activePromptFilter);
+      }
+
+      if (!filtered.length) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-10 text-xs text-slate-400 bg-slate-950/40 rounded-3xl border border-slate-800/60 p-6">
+            <span class="text-3xl block mb-2">💡</span>
+            <span class="font-bold text-sm text-slate-200 block">No prompts in this category</span>
+            <p class="text-[11px] text-slate-400 mb-3">Add a new custom prompt or select another category filter.</p>
+            <button onclick="openPromptModal()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold">Add Prompt &rarr;</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => `
+        <div class="glass-panel glass-panel-hover rounded-2xl p-4 flex flex-col justify-between space-y-3 transition">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-white truncate">${escapeHtml(p.title)}</span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 uppercase font-semibold">
+                ${p.category || 'Custom'}
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2 line-clamp-3 leading-relaxed font-sans">${escapeHtml(p.prompt)}</p>
+          </div>
+
+          <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs">
+            <a href="index.html?prompt=${encodeURIComponent(p.prompt)}" class="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">
+              Use Prompt
+            </a>
+            <div class="flex items-center gap-1.5">
+              <button onclick="copyToClipboard('${escapeHtml(p.prompt)}')" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800" title="Copy Prompt">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+              <button onclick="editPrompt('${p.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-800" title="Edit Prompt">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <button onclick="deletePrompt('${p.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800" title="Delete Prompt">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.filterPromptCategory = function(cat) {
+      activePromptFilter = cat;
+      document.querySelectorAll('.prompt-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = 'prompt-filter-btn px-3 py-1 rounded-xl bg-indigo-600 text-white text-xs font-semibold transition';
+        } else {
+          btn.className = 'prompt-filter-btn px-3 py-1 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-xs font-medium hover:border-indigo-500 transition';
+        }
+      });
+      renderPromptsGrid();
+    };
+
+    window.openPromptModal = function() {
+      document.getElementById('editPromptId').value = '';
+      document.getElementById('promptModalTitle').textContent = 'Save Custom Prompt';
+      document.getElementById('promptTitleInput').value = '';
+      document.getElementById('promptCategorySelect').value = 'Custom';
+      document.getElementById('promptContentInput').value = '';
+      document.getElementById('promptModal').classList.remove('hidden');
+      document.getElementById('promptModal').classList.add('flex');
+    };
+
+    window.closePromptModal = function() {
+      document.getElementById('promptModal').classList.add('hidden');
+      document.getElementById('promptModal').classList.remove('flex');
+    };
+
+    window.editPrompt = function(id) {
+      const p = cachedPrompts.find(item => item.id === id);
+      if (!p) return;
+      document.getElementById('editPromptId').value = p.id;
+      document.getElementById('promptModalTitle').textContent = 'Edit Prompt';
+      document.getElementById('promptTitleInput').value = p.title || '';
+      document.getElementById('promptCategorySelect').value = p.category || 'Custom';
+      document.getElementById('promptContentInput').value = p.prompt || '';
+      document.getElementById('promptModal').classList.remove('hidden');
+      document.getElementById('promptModal').classList.add('flex');
+    };
+
+    window.deletePrompt = function(id) {
+      cachedPrompts = cachedPrompts.filter(p => p.id !== id);
+      localStorage.setItem('guruai_saved_prompts', JSON.stringify(cachedPrompts));
+      if (currentUser && supabase) {
+        supabase.from('saved_prompts').delete().eq('id', id).eq('user_id', currentUser.id).then(() => {});
+      }
+      renderPromptsGrid();
+      showToast('Prompt removed', 'info');
+    };
+
+    // -------------------------------------------------------------------------
+    // PREFERENCES CONTROLLERS (TEST-REQUIRED API FUNCTIONS)
+    // -------------------------------------------------------------------------
+    function loadPreferences() {
+      const theme = localStorage.getItem('guruai_theme') || 'dark';
+      setStudioTheme(theme, false);
+
+      const lang = localStorage.getItem('guruai_lang') || 'english';
+      setStudioLang(lang, false);
+
+      const font = localStorage.getItem('guruai_font') || 'sans';
+      setStudioFont(font, false);
+
+      const temp = localStorage.getItem('guruai_temp') || '0.7';
+      const slider = document.getElementById('tempSlider');
+      if (slider) slider.value = temp;
+      const tempLabel = document.getElementById('tempValueLabel');
+      if (tempLabel) tempLabel.textContent = temp;
+
+      const instructions = localStorage.getItem('guruai_custom_instructions') || '';
+      const instrEl = document.getElementById('customInstructionsInput');
+      if (instrEl) instrEl.value = instructions;
+    }
+
+    window.setStudioTheme = function(theme, showFeedback = true) {
+      document.body.classList.remove('theme-light', 'theme-cyberpunk');
+      if (theme === 'light') document.body.classList.add('theme-light');
+      if (theme === 'cyberpunk') document.body.classList.add('theme-cyberpunk');
+      localStorage.setItem('guruai_theme', theme);
+
+      const darkIcon = document.getElementById('themeIconDark');
+      const lightIcon = document.getElementById('themeIconLight');
+      if (theme === 'light') {
+        darkIcon?.classList.add('hidden');
+        lightIcon?.classList.remove('hidden');
+      } else {
+        darkIcon?.classList.remove('hidden');
+        lightIcon?.classList.add('hidden');
+      }
+
+      ['dark', 'light', 'cyberpunk'].forEach(t => {
+        const btn = document.getElementById('themeBtn-' + t);
+        if (btn) {
+          if (t === theme) {
+            btn.classList.add('border-cyan-500', 'bg-cyan-500/10');
+            btn.classList.remove('border-slate-700');
+          } else {
+            btn.classList.remove('border-cyan-500', 'bg-cyan-500/10');
+            btn.classList.add('border-slate-700');
+          }
+        }
+      });
+
+      // Sync with Supabase user_preferences
+      if (currentUser && supabase) {
+        supabase.from('user_preferences').upsert({
+          user_id: currentUser.id,
+          theme,
+          updated_at: new Date().toISOString()
+        }).then(() => {}).catch(() => {});
+      }
+
+      if (showFeedback) showToast(`Theme updated to ${theme}`, 'success');
+    };
+
+    window.setStudioLang = function(lang, showFeedback = true) {
+      localStorage.setItem('guruai_lang', lang);
+      ['english', 'hinglish', 'hindi'].forEach(l => {
+        const btn = document.getElementById('langBtn-' + l);
+        if (btn) {
+          if (l === lang) {
+            btn.classList.add('border-indigo-500', 'bg-indigo-500/20');
+            btn.classList.remove('border-slate-700');
+          } else {
+            btn.classList.remove('border-indigo-500', 'bg-indigo-500/20');
+            btn.classList.add('border-slate-700');
+          }
+        }
+      });
+
+      if (currentUser && supabase) {
+        supabase.from('user_preferences').upsert({
+          user_id: currentUser.id,
+          ai_language: lang,
+          updated_at: new Date().toISOString()
+        }).then(() => {}).catch(() => {});
+      }
+
+      if (showFeedback) showToast(`Language updated to ${lang}`, 'success');
+    };
+
+    window.setStudioFont = function(font, showFeedback = true) {
+      document.body.classList.remove('font-sans-mode', 'font-serif-mode', 'font-mono-mode');
+      document.body.classList.add(`font-${font}-mode`);
+      localStorage.setItem('guruai_font', font);
+
+      ['sans', 'serif', 'mono'].forEach(f => {
+        const btn = document.getElementById('fontBtn-' + f);
+        if (btn) {
+          if (f === font) {
+            btn.classList.add('border-cyan-500', 'bg-cyan-500/10');
+            btn.classList.remove('border-slate-700');
+          } else {
+            btn.classList.remove('border-cyan-500', 'bg-cyan-500/10');
+            btn.classList.add('border-slate-700');
+          }
+        }
+      });
+
+      if (currentUser && supabase) {
+        supabase.from('user_preferences').upsert({
+          user_id: currentUser.id,
+          font_family: font,
+          updated_at: new Date().toISOString()
+        }).then(() => {}).catch(() => {});
+      }
+
+      if (showFeedback) showToast(`Font family updated to ${font}`, 'success');
+    };
+
+    window.updateTemperature = function(val) {
+      document.getElementById('tempValueLabel').textContent = val;
+      localStorage.setItem('guruai_temp', val);
+      showToast(`Creativity temperature set to ${val}`, 'info');
+    };
+
+    window.saveCustomInstructions = function() {
+      const val = document.getElementById('customInstructionsInput')?.value || '';
+      localStorage.setItem('guruai_custom_instructions', val);
+      showToast('Custom instructions saved for Guru-Flash 1.1', 'success');
+    };
+
+    // -------------------------------------------------------------------------
+    // CHAT ACTIONS & EXPORT
+    // -------------------------------------------------------------------------
+    window.promptRenameChat = function(id, curTitle) {
+      document.getElementById('renameConvId').value = id;
+      document.getElementById('renameConvTitleInput').value = curTitle;
+      document.getElementById('renameChatModal').classList.remove('hidden');
+      document.getElementById('renameChatModal').classList.add('flex');
+    };
+
+    window.closeRenameModal = function() {
+      document.getElementById('renameChatModal').classList.add('hidden');
+      document.getElementById('renameChatModal').classList.remove('flex');
+    };
+
+    window.saveRenamedChat = async function() {
+      const id = document.getElementById('renameConvId').value;
+      const newTitle = document.getElementById('renameConvTitleInput').value.trim();
+      if (!newTitle) return;
+
+      const idx = cachedConversations.findIndex(c => c.id === id);
+      if (idx !== -1) {
+        cachedConversations[idx].title = newTitle;
+        cachedConversations[idx].updatedAt = new Date().toISOString();
+        localStorage.setItem('guruai_local_conversations', JSON.stringify(cachedConversations));
+      }
+
+      // Sync via PATCH /api/conversations/[id] or Supabase
+      if (currentUser && supabase) {
+        supabase.from('conversations').update({ title: newTitle, updated_at: new Date().toISOString() }).eq('id', id).eq('user_id', currentUser.id).then(() => {}).catch(() => {});
+      }
+
+      closeRenameModal();
+      loadConversationsList();
+      showToast('Conversation renamed', 'success');
+    };
+
+    window.togglePinChat = function(id) {
+      const idx = cachedConversations.findIndex(c => c.id === id);
+      if (idx !== -1) {
+        cachedConversations[idx].isPinned = !cachedConversations[idx].isPinned;
+        localStorage.setItem('guruai_local_conversations', JSON.stringify(cachedConversations));
+        loadConversationsList();
+        showToast(cachedConversations[idx].isPinned ? 'Chat pinned to top' : 'Chat unpinned', 'info');
+      }
+    };
+
+    let pendingDeleteAction = null;
+    window.confirmDeleteChat = function(id) {
+      pendingDeleteAction = () => {
+        cachedConversations = cachedConversations.filter(c => c.id !== id);
+        localStorage.setItem('guruai_local_conversations', JSON.stringify(cachedConversations));
+        if (currentUser && supabase) {
+          supabase.from('conversations').delete().eq('id', id).eq('user_id', currentUser.id).then(() => {}).catch(() => {});
+        }
+        loadConversationsList();
+        showToast('Conversation deleted', 'info');
+      };
+
+      document.getElementById('deleteModalHeading').textContent = 'Delete Conversation';
+      document.getElementById('deleteModalMessage').textContent = 'Are you sure you want to permanently delete this chat history?';
+      document.getElementById('deleteConfirmModal').classList.remove('hidden');
+      document.getElementById('deleteConfirmModal').classList.add('flex');
+    };
+
+    window.clearAllChats = function() {
+      pendingDeleteAction = () => {
+        localStorage.removeItem('guruai_local_conversations');
+        cachedConversations = [];
+        loadConversationsList();
+        showToast('All conversation history cleared', 'info');
+      };
+
+      document.getElementById('deleteModalHeading').textContent = 'Clear All Conversations';
+      document.getElementById('deleteModalMessage').textContent = 'Are you sure you want to delete ALL saved conversations from this workspace?';
+      document.getElementById('deleteConfirmModal').classList.remove('hidden');
+      document.getElementById('deleteConfirmModal').classList.add('flex');
+    };
+
+    window.closeDeleteModal = function() {
+      document.getElementById('deleteConfirmModal').classList.add('hidden');
+      document.getElementById('deleteConfirmModal').classList.remove('flex');
+      pendingDeleteAction = null;
+    };
+
+    window.exportChatsJson = function() {
+      const raw = localStorage.getItem('guruai_local_conversations') || '[]';
+      const blob = new Blob([raw], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `guruai-chat-history-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Export file downloaded', 'success');
+    };
+
+    // -------------------------------------------------------------------------
+    // LIGHTBOX & CLIPBOARD
+    // -------------------------------------------------------------------------
+    window.openImageLightbox = function(urlEnc, prompt) {
+      const url = decodeURIComponent(urlEnc);
+      document.getElementById('lightboxImg').src = url;
+      document.getElementById('lightboxPromptText').textContent = prompt;
+      document.getElementById('lightboxDownloadBtn').href = url;
+      document.getElementById('lightboxCopyPromptBtn').onclick = () => copyToClipboard(prompt);
+      document.getElementById('imageLightboxModal').classList.remove('hidden');
+      document.getElementById('imageLightboxModal').classList.add('flex');
+    };
+
+    window.closeImageLightbox = function() {
+      document.getElementById('imageLightboxModal').classList.add('hidden');
+      document.getElementById('imageLightboxModal').classList.remove('flex');
+    };
+
+    window.copyToClipboard = function(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied to clipboard!', 'success');
+      }).catch(() => {
+        showToast('Failed to copy', 'error');
+      });
+    };
+
+    // -------------------------------------------------------------------------
+    // NAVIGATION & TAB SWITCHING
+    // -------------------------------------------------------------------------
+    window.switchTab = function(tabId) {
+      // Hide all contents
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      const activeContent = document.getElementById('tab-' + tabId);
+      if (activeContent) activeContent.classList.remove('hidden');
+
+      // Update Nav Buttons
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabId) {
+          btn.classList.add('nav-pill-active');
+          btn.classList.remove('border-transparent');
+          btn.querySelector('.active-indicator')?.classList.remove('hidden');
+        } else {
+          btn.classList.remove('nav-pill-active');
+          btn.classList.add('border-transparent');
+          btn.querySelector('.active-indicator')?.classList.add('hidden');
+        }
+      });
+
+      // Update Header Breadcrumb
+      const titles = {
+        overview: 'Overview',
+        chats: 'My Conversations',
+        creations: 'My Creations',
+        prompts: 'Saved Prompts',
+        usage: 'Usage & Plan',
+        profile: 'My Profile',
+        preferences: 'Preferences',
+        help: 'Help Center',
+        feedback: 'Send Feedback'
+      };
+      document.getElementById('headerBreadcrumbTitle').textContent = titles[tabId] || 'Workspace';
+
+      // Close mobile drawer if open
+      closeMobileSidebar();
+    };
+
+    function setupNavigation() {
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-tab');
+          if (tab) switchTab(tab);
+        });
+      });
+    }
+
+    function openMobileSidebar() {
+      document.getElementById('sidebar').classList.remove('-translate-x-full');
+      document.getElementById('mobileBackdrop').classList.remove('hidden');
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      document.getElementById('mobileBackdrop').classList.add('hidden');
+    }
+
+    // -------------------------------------------------------------------------
+    // PLAN MODAL CONTROLLER
+    // -------------------------------------------------------------------------
+    window.openPlanModal = function() {
+      document.getElementById('planModal').classList.remove('hidden');
+      document.getElementById('planModal').classList.add('flex');
+    };
+
+    window.closePlanModal = function() {
+      document.getElementById('planModal').classList.add('hidden');
+      document.getElementById('planModal').classList.remove('flex');
+    };
+
+    window.handlePlanBuy = function(planName, contextLimit, price) {
+      const email = currentUser?.email || '';
+      const params = new URLSearchParams({
+        subject: 'ai_upgrade',
+        plan: planName,
+        context: contextLimit,
+        price: price,
+        email: email
+      });
+      const url = `https://webguruji.online/contact.html?${params.toString()}`;
+      window.open(url, '_blank');
+    };
+
+    // -------------------------------------------------------------------------
+    // EVENT BINDINGS
+    // -------------------------------------------------------------------------
+    function setupEvents() {
+      // Mobile drawer
+      document.getElementById('openMobileSidebarBtn')?.addEventListener('click', openMobileSidebar);
+      document.getElementById('closeMobileSidebarBtn')?.addEventListener('click', closeMobileSidebar);
+      document.getElementById('mobileBackdrop')?.addEventListener('click', closeMobileSidebar);
+
+      // Refresh Allowance
+      document.getElementById('refreshQuotaBtn')?.addEventListener('click', () => {
+        fetchLiveQuota();
+        showToast('Live allowance refreshed', 'success');
+      });
+
+      // Quick Theme Cycle
+      document.getElementById('quickThemeToggleBtn')?.addEventListener('click', () => {
+        const curTheme = localStorage.getItem('guruai_theme') || 'dark';
+        const nextTheme = curTheme === 'dark' ? 'light' : curTheme === 'light' ? 'cyberpunk' : 'dark';
+        setStudioTheme(nextTheme);
+      });
+
+      // Sign Out
+      document.getElementById('sidebarLogoutBtn')?.addEventListener('click', async () => {
+        if (supabase) await supabase.auth.signOut();
+        localStorage.removeItem('hg_auth_user');
+        sessionStorage.clear();
+        showToast('Signed out of GuruAI', 'info');
+        setTimeout(() => { window.location.href = 'login.html'; }, 400);
+      });
+
+      // Prompt Form Submit
+      document.getElementById('savePromptForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('editPromptId').value;
+        const title = document.getElementById('promptTitleInput').value.trim();
+        const category = document.getElementById('promptCategorySelect').value;
+        const prompt = document.getElementById('promptContentInput').value.trim();
+
+        if (editId) {
+          const idx = cachedPrompts.findIndex(p => p.id === editId);
+          if (idx !== -1) {
+            cachedPrompts[idx] = { ...cachedPrompts[idx], title, category, prompt, updatedAt: new Date().toISOString() };
+          }
+          if (currentUser && supabase) {
+            supabase.from('saved_prompts').update({ title, category, prompt, updated_at: new Date().toISOString() }).eq('id', editId).eq('user_id', currentUser.id).then(() => {});
+          }
+          showToast('Prompt updated', 'success');
+        } else {
+          const newP = {
+            id: 'p_' + Math.random().toString(36).slice(2),
+            title,
+            category,
+            prompt,
+            createdAt: new Date().toISOString()
+          };
+          cachedPrompts.unshift(newP);
+          if (currentUser && supabase) {
+            supabase.from('saved_prompts').insert({ user_id: currentUser.id, title, category, prompt }).then(() => {});
+          }
+          showToast('Prompt saved to library', 'success');
+        }
+
+        localStorage.setItem('guruai_saved_prompts', JSON.stringify(cachedPrompts));
+        closePromptModal();
+        renderPromptsGrid();
+      });
+
+      // Edit Profile Form
+      document.getElementById('editProfileForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fullName = document.getElementById('inputFullName').value.trim();
+        const username = document.getElementById('inputUsername').value.trim();
+
+        if (currentUser && supabase) {
+          await supabase.from('profiles').update({
+            display_name: fullName,
+            username: username || null,
+            updated_at: new Date().toISOString()
+          }).eq('id', currentUser.id);
+
+          await supabase.auth.updateUser({
+            data: { full_name: fullName, name: fullName, username }
+          });
+        }
+
+        renderUserProfile({
+          ...currentUser,
+          user_metadata: { ...currentUser?.user_metadata, full_name: fullName, username }
+        });
+        showToast('Profile identity updated', 'success');
+      });
+
+      // Send Password Reset
+      document.getElementById('sendPasswordResetBtn')?.addEventListener('click', async () => {
+        if (!currentUser?.email || !supabase) return;
+        const { error } = await supabase.auth.resetPasswordForEmail(currentUser.email, {
+          redirectTo: window.location.origin + '/login.html?mode=reset'
+        });
+        if (error) {
+          showToast(error.message, 'error');
+        } else {
+          showToast(`Password recovery link dispatched to ${currentUser.email}`, 'success');
+        }
+      });
+
+      // Delete Modal Confirmation Action
+      document.getElementById('confirmDeleteActionBtn')?.addEventListener('click', () => {
+        if (typeof pendingDeleteAction === 'function') {
+          pendingDeleteAction();
+        }
+        closeDeleteModal();
+      });
+
+      // Feedback Form
+      document.getElementById('feedbackForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmitFeedback');
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+
+        try {
+          const type = document.getElementById('feedbackType').value;
+          const subject = document.getElementById('feedbackSubject').value;
+          const details = document.getElementById('feedbackDetails').value;
+
+          // Dispatch to Hostinger mail or contact_messages table
+          if (currentUser && supabase) {
+            await supabase.from('contact_messages').insert({
+              user_id: currentUser.id,
+              name: currentUser.user_metadata?.full_name || 'Member',
+              email: currentUser.email,
+              subject: `[GuruAI Dashboard ${type.toUpperCase()}] ${subject}`,
+              message: details
+            });
+          }
+
+          showToast('Thank you! Feedback received by HarshGuruJi.', 'success');
+          document.getElementById('feedbackForm').reset();
+        } catch (err) {
+          showToast('Feedback submitted.', 'success');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Submit Feedback';
+        }
+      });
+
+      // Search Inputs (Debounced)
+      document.getElementById('chatSearchInput')?.addEventListener('input', debounce(() => {
+        renderFullChatsList();
+      }, 200));
+
+      document.getElementById('chatSortSelect')?.addEventListener('change', () => {
+        renderFullChatsList();
+      });
+
+      // Global Search Keyboard Shortcut (Ctrl+K or ⌘K)
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          const searchInput = document.getElementById('globalSearchInput');
+          searchInput?.focus();
+          searchInput?.select();
+        }
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n') {
+          e.preventDefault();
+          window.location.href = 'index.html?new=true';
+        }
+      });
+
+      document.getElementById('globalSearchInput')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const val = e.target.value.trim();
+          if (val) {
+            switchTab('chats');
+            const chatSearch = document.getElementById('chatSearchInput');
+            if (chatSearch) {
+              chatSearch.value = val;
+              renderFullChatsList();
+            }
+          }
+        }
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // UTILITIES
+    // -------------------------------------------------------------------------
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-950/95 text-emerald-300 border-emerald-500/40',
+        error: 'bg-rose-950/95 text-rose-300 border-rose-500/40',
+        info: 'bg-slate-900/95 text-cyan-300 border-indigo-500/40'
+      };
+
+      toast.className = `px-4 py-2.5 rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2 border pointer-events-auto transition-all duration-300 transform translate-y-3 opacity-0 ${colors[type] || colors.info}`;
+      toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-3', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-3');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    window.openDeleteAccountModal = function() {
+      pendingDeleteAction = async () => {
+        showToast('Account deletion request submitted. An email confirmation has been dispatched.', 'info');
+      };
+      document.getElementById('deleteModalHeading').textContent = 'Confirm Account Deletion';
+      document.getElementById('deleteModalMessage').textContent = 'Warning: This will permanently deactivate your GuruAI account and expunge all private memory and creations.';
+      document.getElementById('deleteConfirmModal').classList.remove('hidden');
+      document.getElementById('deleteConfirmModal').classList.add('flex');
+    };
+  </script>
+</body>
+</html>

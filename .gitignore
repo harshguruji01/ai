@@ -37,3 +37,11 @@ next-env.d.ts
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Android & Gradle
+.gradle/
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <url>
+       <loc>https://ai.webguruji.online/</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>1.0000</priority>
+       <image:image>
+         <image:loc>https://ai.webguruji.online/guruai-chat-assistant.webp</image:loc>
+         <image:title>GuruAI Chat Assistant Workspace</image:title>
+         <image:caption>Interactive GuruAI chat assistant interface with intelligent conversation, Python code analysis, reasoning tabs, and real-time knowledge support.</image:caption>
+       </image:image>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/dashboard.html</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html?new=true</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html?prompt=Hello%20GuruAI,%20help%20me%20with%20my%20task</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html?prompt=Review%20and%20debug%20this%20code:%20</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html?image_mode=true&amp;prompt=Hyper-realistic%20photograph%20of%20</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html?prompt=Summarize%20the%20following%20text%20clearly%20in%20bullet%20points:%20</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html?prompt=Brainstorm%20creative%20and%20innovative%20ideas%20for:%20</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html?prompt=Explain%20this%20concept%20simply%20with%20intuitive%20analogies:%20</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/index.html?image_mode=true</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/login.html</loc>
+       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <priority>0.5120</priority>
+  </url>
+</urlset>

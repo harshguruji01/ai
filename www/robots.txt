@@ -1,0 +1,14 @@
+# robots.txt — ai.webguruji.online
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /guruai-chat-assistant.webp
+Allow: /guruji-ai-chat-assistant.webp
+Disallow: /admin*
+Disallow: /api/
+Disallow: /auth/
+
+Sitemap: https://ai.webguruji.online/sitemap.xml
+Sitemap: https://webguruji.online/sitemap-images.xml
+Sitemap: https://webguruji.online/sitemap.xml
+
