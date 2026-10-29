@@ -253,6 +253,9 @@ export async function POST(request) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache, no-transform',
         Connection: 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-visitor-id, x-requested-with',
       },
     });
   } catch (error) {
@@ -262,7 +265,26 @@ export async function POST(request) {
     }
     return NextResponse.json(
       { error: error.message || 'An unexpected server error occurred.' },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-visitor-id, x-requested-with',
+        },
+      }
     );
   }
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-visitor-id, x-requested-with',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
 }

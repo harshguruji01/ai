@@ -324,6 +324,7 @@
 
   <script>
     const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
+    const getApiBase = () => (window.location.protocol === 'https:' && window.location.origin.includes('webguruji.online')) ? '' : 'https://ai.webguruji.online';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80';
     
     let supabase = null;
@@ -457,7 +458,7 @@
       verifyBtn.innerHTML = '<span>Verifying code...</span>';
 
       try {
-        const res = await fetch('/api/auth/verify-login-code', {
+        const res = await fetch(`${getApiBase()}/api/auth/verify-login-code`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -513,7 +514,7 @@
       resendBtn.textContent = 'Sending...';
 
       try {
-        const res = await fetch('/api/auth/send-login-code', {
+        const res = await fetch(`${getApiBase()}/api/auth/send-login-code`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -563,7 +564,7 @@
 
         // Send Welcome email automatically via Hostinger Mail API
         try {
-          await fetch('/api/mail/send', {
+          await fetch(`${getApiBase()}/api/mail/send`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -676,7 +677,7 @@
               await supabase.auth.updateUser({
                 data: { welcome_email_sent: true, welcome_sent_at: new Date().toISOString() }
               });
-              await fetch('/api/mail/send', {
+              await fetch(`${getApiBase()}/api/mail/send`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

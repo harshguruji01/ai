@@ -344,6 +344,21 @@
 
 <body class="h-screen w-screen overflow-hidden flex flex-col font-sans-mode text-size-medium select-none">
 
+  <!-- APP SPLASH SCREEN OVERLAY (Auto-fades on load) -->
+  <div id="appSplashScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0b0f19] transition-opacity duration-500 pointer-events-none">
+    <div class="flex flex-col items-center">
+      <div class="w-28 h-28 rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/30 border border-indigo-500/30 animate-pulse">
+        <img src="logo.png" alt="GuruAI Mascot" class="w-full h-full object-cover" />
+      </div>
+      <div class="mt-5 flex items-center gap-2">
+        <span class="text-2xl font-bold font-heading text-white tracking-wide">GuruAI</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold">v1.1</span>
+      </div>
+      <div class="mt-2 text-xs text-slate-400 font-medium tracking-wider">Fast • Intelligent • By HarshGuruJi</div>
+    </div>
+  </div>
+
+
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -1451,7 +1466,8 @@
 
         // 2. Dispatch invoice email with QR Code & UPI ID placeholders from info@webguruji.online
         try {
-          await fetch('/api/mail/send', {
+          const mailApi = (window.location.protocol === 'https:' && window.location.origin.includes('webguruji.online')) ? '/api/mail/send' : 'https://ai.webguruji.online/api/mail/send';
+        await fetch(mailApi, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1484,6 +1500,18 @@
         showToast('Request submitted. You can also contact support directly.', 'info');
       }
     };
+
+    
+    // Auto-dismiss App Splash Screen
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('appSplashScreen');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => splash.remove(), 550);
+        }
+      }, 400);
+    });
 
     // 1. Supabase Initialization
     const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
