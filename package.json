@@ -13,8 +13,11 @@
   "dependencies": {
     "@capacitor/app": "^8.1.2",
     "@fingerprintjs/fingerprintjs": "^4.5.1",
+    "@radix-ui/react-label": "^2.1.17",
+    "@radix-ui/react-slot": "^1.5.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.48.1",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^14.8.0",
     "lucide-react": "^0.475.0",
