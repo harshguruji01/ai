@@ -870,10 +870,10 @@
               </div>
             </div>
 
-            <!-- Auto-resize Textarea Input (from Animated AI Chat) -->
-            <div class="p-3 sm:p-4">
-              <textarea id="promptInput" rows="1" placeholder="Ask GuruAI a question... (Type / for commands)"
-                class="w-full px-2 sm:px-3 py-1.5 resize-none bg-transparent border-none text-[14px] leading-relaxed text-white/90 placeholder-white/30 focus:outline-none min-h-[52px] max-h-44 disabled:opacity-60"></textarea>
+            <!-- Auto-resize Textarea Input (Slim Breadth & Ask Anything To GuruAI ) -->
+            <div class="px-3 sm:px-4 pt-2 pb-0.5">
+              <textarea id="promptInput" rows="1" placeholder="Ask Anything To GuruAI "
+                class="w-full px-1.5 py-1 resize-none bg-transparent border-none text-[14px] leading-snug text-white/90 placeholder-white/40 focus:outline-none min-h-[34px] max-h-40 disabled:opacity-60"></textarea>
             </div>
 
             <!-- In-Capsule Attachments Chip Container -->
@@ -887,7 +887,7 @@
             </div>
 
             <!-- Bottom Action Toolbar (from Animated AI Chat) -->
-            <div class="px-3 sm:px-4 py-2.5 border-t border-white/[0.06] flex items-center justify-between gap-3">
+            <div class="px-2.5 sm:px-3.5 py-1.5 border-t border-white/[0.06] flex items-center justify-between gap-2">
               <div class="flex items-center gap-1 sm:gap-2">
                 <!-- Paperclip Attachment Input & Button -->
                 <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
@@ -1382,6 +1382,176 @@
   </div>
 
   
+  <!-- 7. ULTRA ATTRACTIVE IN-APP USER DASHBOARD MODAL -->
+  <div id="userDashboardModal"
+    class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-xl hidden animate-in fade-in duration-200">
+    <div
+      class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#090e1a]/95 border border-indigo-500/30 shadow-2xl shadow-indigo-950/70 p-5 sm:p-7 text-slate-100">
+      
+      <!-- Ambient Glow Accents -->
+      <div class="absolute -top-24 -left-24 w-52 h-52 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-52 h-52 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Close Button -->
+      <button onclick="closeUserDashboardModal()"
+        class="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition"
+        aria-label="Close Dashboard Modal">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Dashboard Header -->
+      <div class="flex items-center gap-3.5 mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 overflow-hidden flex-shrink-0 p-1">
+          <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-xl" />
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-xl sm:text-2xl font-bold font-heading text-white">GuruAI Dashboard</h2>
+            <span id="dashModalTierBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold">Active Member</span>
+          </div>
+          <p class="text-xs text-slate-400">Workspace overview, live quotas, AI tools &amp; preferences</p>
+        </div>
+      </div>
+
+      <!-- Profile Summary Card -->
+      <div class="mb-5 p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div id="dashModalAvatar" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
+            U
+          </div>
+          <div class="min-w-0">
+            <div id="dashModalName" class="text-sm font-semibold text-white truncate">User</div>
+            <div id="dashModalEmail" class="text-xs text-slate-400 truncate">user@example.com</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="dashboard.html" class="px-3.5 py-1.5 rounded-xl bg-indigo-950/80 border border-indigo-500/40 text-cyan-300 hover:text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+            <span>Full Dashboard</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+          <button id="dashModalAuthBtn" onclick="handleDashboardAuthAction()" class="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition">
+            Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Analytics & Quota Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+        <!-- 1. Text Conversations -->
+        <div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span class="font-medium">Daily Requests</span>
+            <span class="text-cyan-400">⚡</span>
+          </div>
+          <div class="flex items-baseline gap-1.5">
+            <span id="dashModalRequestsCount" class="text-2xl font-bold font-mono text-cyan-300">20</span>
+            <span id="dashModalRequestsMax" class="text-xs text-slate-500 font-mono">/ 20</span>
+          </div>
+          <div class="w-full bg-slate-900 h-1.5 rounded-full mt-2 overflow-hidden">
+            <div id="dashModalRequestsBar" class="bg-gradient-to-r from-indigo-500 to-cyan-400 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
+          </div>
+          <span class="text-[10px] text-slate-500 mt-1">24h auto-refresh</span>
+        </div>
+
+        <!-- 2. SDXL Creations -->
+        <div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span class="font-medium">SDXL Images</span>
+            <span class="text-purple-400">🎨</span>
+          </div>
+          <div class="flex items-baseline gap-1.5">
+            <span id="dashModalImagesCount" class="text-2xl font-bold font-mono text-purple-300">5</span>
+            <span class="text-xs text-slate-500 font-mono">/ 5</span>
+          </div>
+          <div class="w-full bg-slate-900 h-1.5 rounded-full mt-2 overflow-hidden">
+            <div id="dashModalImagesBar" class="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
+          </div>
+          <span class="text-[10px] text-slate-500 mt-1">24h allowance</span>
+        </div>
+
+        <!-- 3. AI Intelligence -->
+        <div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span class="font-medium">Active Engine</span>
+            <span class="text-emerald-400">🧠</span>
+          </div>
+          <div class="text-base font-bold text-white font-mono leading-tight">Guru-Flash 1.1</div>
+          <div class="text-[11px] text-cyan-400 mt-1">Ultra-low latency inference</div>
+          <span class="text-[10px] text-slate-500 mt-1">By HarshGuruJi</span>
+        </div>
+      </div>
+
+      <!-- Quick Feature Controls -->
+      <div class="space-y-3 mb-5">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">Workspace Features &amp; Actions</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button onclick="closeUserDashboardModal(); resetChat();" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 text-left transition group">
+            <div class="text-cyan-400 text-sm mb-1 group-hover:scale-110 transition-transform">➕</div>
+            <div class="text-xs font-semibold text-slate-200 group-hover:text-white">New Chat</div>
+            <div class="text-[10px] text-slate-500">Fresh context</div>
+          </button>
+          <button onclick="closeUserDashboardModal(); document.getElementById('imageModeBtn')?.click();" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-purple-500/50 text-left transition group">
+            <div class="text-purple-400 text-sm mb-1 group-hover:scale-110 transition-transform">🎨</div>
+            <div class="text-xs font-semibold text-slate-200 group-hover:text-white">Image Studio</div>
+            <div class="text-[10px] text-slate-500">SDXL AI art</div>
+          </button>
+          <button onclick="closeUserDashboardModal(); document.getElementById('voiceDictationBtn')?.click();" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-emerald-500/50 text-left transition group">
+            <div class="text-emerald-400 text-sm mb-1 group-hover:scale-110 transition-transform">🎙️</div>
+            <div class="text-xs font-semibold text-slate-200 group-hover:text-white">Voice Mode</div>
+            <div class="text-[10px] text-slate-500">Speech to text</div>
+          </button>
+          <button onclick="exportAllChats();" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-500/50 text-left transition group">
+            <div class="text-amber-400 text-sm mb-1 group-hover:scale-110 transition-transform">💾</div>
+            <div class="text-xs font-semibold text-slate-200 group-hover:text-white">Export Data</div>
+            <div class="text-[10px] text-slate-500">Download JSON</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- App Preferences & Display Customizer -->
+      <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800/80 mb-5 space-y-3">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">Appearance &amp; Preferences</h3>
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <span class="text-slate-300 font-medium">Theme Style:</span>
+          <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <button onclick="setTheme('dark')" class="px-2.5 py-1 rounded-lg text-xs transition hover:text-white text-slate-300">Indigo Dark</button>
+            <button onclick="setTheme('cyberpunk')" class="px-2.5 py-1 rounded-lg text-xs transition hover:text-white text-slate-300">Cyberpunk</button>
+            <button onclick="setTheme('light')" class="px-2.5 py-1 rounded-lg text-xs transition hover:text-slate-900 text-slate-400">Light</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-2 border-t border-slate-900">
+          <span class="text-slate-300 font-medium">Font Sizing:</span>
+          <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <button onclick="setFontSize('small')" class="px-2.5 py-1 rounded-lg text-xs text-slate-300 hover:text-white">Small</button>
+            <button onclick="setFontSize('medium')" class="px-2.5 py-1 rounded-lg text-xs text-slate-300 hover:text-white">Medium</button>
+            <button onclick="setFontSize('large')" class="px-2.5 py-1 rounded-lg text-xs text-slate-300 hover:text-white">Large</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Creator Ecosystem & Official Links -->
+      <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-800/60">
+        <div class="flex items-center gap-3">
+          <a href="https://webguruji.online/owner.html" target="_blank" class="hover:text-cyan-400 transition flex items-center gap-1">
+            <span>👤 Creator Bio</span>
+          </a>
+          <span>•</span>
+          <a href="https://webguruji.online" target="_blank" class="hover:text-cyan-400 transition">
+            <span>webguruji.online</span>
+          </a>
+        </div>
+        <button onclick="clearAllChatHistory()" class="text-rose-400 hover:text-rose-300 transition text-[11px]">
+          Clear History
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- 6. GURUAI PREMIUM CONTEXT & QUOTA UPGRADE MODAL -->
   <div id="upgradeModal"
     class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden animate-in fade-in duration-200">
@@ -1937,7 +2107,87 @@
     const historyList = document.getElementById('historyList');
     const searchInput = document.getElementById('searchInput');
     const toastContainer = document.getElementById('toastContainer');
+    
+    // User Dashboard In-App Modal Handlers
+    function openUserDashboardModal() {
+      const modal = document.getElementById('userDashboardModal');
+      if (!modal) return;
+      
+      const isMember = !!currentUser;
+      const name = currentUser ? (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0]) : 'Guest Explorer';
+      const email = currentUser ? currentUser.email : 'guest@webguruji.online';
+      const tierBadge = document.getElementById('dashModalTierBadge');
+      const avatarEl = document.getElementById('dashModalAvatar');
+      const nameEl = document.getElementById('dashModalName');
+      const emailEl = document.getElementById('dashModalEmail');
+      const authBtn = document.getElementById('dashModalAuthBtn');
+      const reqCount = document.getElementById('dashModalRequestsCount');
+      const reqMax = document.getElementById('dashModalRequestsMax');
+      const reqBar = document.getElementById('dashModalRequestsBar');
+      const imgCount = document.getElementById('dashModalImagesCount');
+
+      if (nameEl) nameEl.textContent = name;
+      if (emailEl) emailEl.textContent = email;
+      if (avatarEl) avatarEl.textContent = name[0].toUpperCase();
+
+      if (isMember) {
+        if (tierBadge) {
+          tierBadge.textContent = 'Active Member';
+          tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold';
+        }
+        if (authBtn) authBtn.textContent = 'Sign Out';
+        if (reqCount) reqCount.textContent = Math.max(0, 20 - (chatCount || 0)).toString();
+        if (reqMax) reqMax.textContent = '/ 20';
+        if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((20 - (chatCount || 0)) / 20) * 100)) + '%';
+      } else {
+        if (tierBadge) {
+          tierBadge.textContent = 'Guest Tier (8/8)';
+          tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold';
+        }
+        if (authBtn) authBtn.textContent = 'Sign In';
+        if (reqCount) reqCount.textContent = Math.max(0, 8 - (chatCount || 0)).toString();
+        if (reqMax) reqMax.textContent = '/ 8';
+        if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((8 - (chatCount || 0)) / 8) * 100)) + '%';
+      }
+
+      const imgQuota = getStoredImageQuota();
+      if (imgCount) imgCount.textContent = (imgQuota?.remaining ?? 5).toString();
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeUserDashboardModal() {
+      const modal = document.getElementById('userDashboardModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    window.openUserDashboardModal = openUserDashboardModal;
+    window.closeUserDashboardModal = closeUserDashboardModal;
+
+    function handleDashboardAuthAction() {
+      closeUserDashboardModal();
+      if (currentUser) {
+        if (supabase) supabase.auth.signOut();
+        window.location.reload();
+      } else {
+        openAuthModal('login');
+      }
+    }
+    window.handleDashboardAuthAction = handleDashboardAuthAction;
     const headerDashboardBtn = document.getElementById('headerDashboardBtn');
+    if (headerDashboardBtn) {
+      headerDashboardBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openUserDashboardModal();
+      });
+    }
+    if (sidebarDashboardLink) {
+      sidebarDashboardLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        openUserDashboardModal();
+      });
+    }
+
     const sidebarDashboardLink = document.getElementById('sidebarDashboardLink');
 
     // Toast Notification Utility
@@ -2374,7 +2624,7 @@
         showToast(`Image Studio enabled (${imgQuota.remaining}/5 images remaining today)`, 'success');
       } else {
         imageModeBtn.className = 'flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700/80 transition';
-        promptInput.placeholder = 'Ask GuruAI anything in English, Hinglish, or Hindi...';
+        promptInput.placeholder = 'Ask Anything To GuruAI ';
       }
     };
 
@@ -2557,8 +2807,7 @@
       const greeting = displayName ? `Hi ${displayName}, how can I help?` : 'Hi there, how can I help?';
 
       chatFeed.innerHTML = `
-        <div class="h-full flex flex-col items-center justify-center text-center space-y-7 my-auto py-8 animate-in fade-in duration-300">
-          
+        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto py-12 animate-in fade-in duration-300">
           <div class="space-y-3 max-w-xl mx-auto">
             <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mx-auto overflow-hidden flex-shrink-0 mb-4 p-1.5">
               <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-xl" />
@@ -2568,91 +2817,8 @@
               ${greeting}
             </h1>
             <p class="text-xs md:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
-              Ask questions, explore ideas, write code, or create something new.
+              Ask Anything To GuruAI in English, Hinglish, or Hindi.
             </p>
-          </div>
-
-          <!-- 6 Interactive Prompt Chips (Gemini style) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-3xl text-left pt-2">
-            
-            <!-- Chip 1: Build Website -->
-            <button onclick="usePrompt('Help me build a modern, responsive website with HTML, Tailwind CSS, and clean interactive JavaScript.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                  Coding
-                </span>
-                <span class="text-slate-500 group-hover:text-cyan-400 transition-colors">↗</span>
-              </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Help me build a website</div>
-              <div class="text-[11px] text-slate-400 line-clamp-1">Responsive layout & interactive UI</div>
-            </button>
-
-            <!-- Chip 2: Explain Concept -->
-            <button onclick="usePrompt('Explain how large language models and transformers work under the hood in simple terms with everyday analogies.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-indigo-500/60 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left space-y-1.5 group">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                  Learning
-                </span>
-                <span class="text-slate-500 group-hover:text-indigo-400 transition-colors">↗</span>
-              </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Explain a difficult concept</div>
-              <div class="text-[11px] text-slate-400 line-clamp-1">Transformers & LLMs simplified</div>
-            </button>
-
-            <!-- Chip 3: Debug Code -->
-            <button onclick="usePrompt('Here is a code snippet that has a bug or unexpected behavior. Can you review and debug it step by step?')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-rose-500/60 hover:shadow-lg hover:shadow-rose-500/10 transition-all text-left space-y-1.5 group">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                  Debug
-                </span>
-                <span class="text-slate-500 group-hover:text-rose-400 transition-colors">↗</span>
-              </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Debug my code</div>
-              <div class="text-[11px] text-slate-400 line-clamp-1">Root cause analysis & verified fixes</div>
-            </button>
-
-            <!-- Chip 4: Brainstorm Ideas -->
-            <button onclick="usePrompt('Brainstorm 5 innovative, high-impact software startup ideas leveraging modern AI in 2026.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-amber-500/60 hover:shadow-lg hover:shadow-amber-500/10 transition-all text-left space-y-1.5 group">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                  Ideas
-                </span>
-                <span class="text-slate-500 group-hover:text-amber-400 transition-colors">↗</span>
-              </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Brainstorm new project ideas</div>
-              <div class="text-[11px] text-slate-400 line-clamp-1">5 high-impact AI startup concepts</div>
-            </button>
-
-            <!-- Chip 5: Summarize Text -->
-            <button onclick="usePrompt('Summarize the following text into key bullet points and action items concisely:\n\n')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-emerald-500/60 hover:shadow-lg hover:shadow-emerald-500/10 transition-all text-left space-y-1.5 group">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                  Summarize
-                </span>
-                <span class="text-slate-500 group-hover:text-emerald-400 transition-colors">↗</span>
-              </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Summarize a document</div>
-              <div class="text-[11px] text-slate-400 line-clamp-1">Extract core takeaways & action items</div>
-            </button>
-
-            <!-- Chip 6: Create Image (SDXL) -->
-            <button onclick="triggerImagePrompt('Cinematic 8K portrait of a futuristic cyberpunk samurai standing in neon rain in Tokyo, hyper-detailed, masterpiece.')" class="p-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/10 transition-all text-left space-y-1.5 group">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                  Image Studio
-                </span>
-                <span class="text-slate-500 group-hover:text-purple-400 transition-colors">🎨</span>
-              </div>
-              <div class="text-xs font-semibold text-slate-200 group-hover:text-white transition">Create an image (SDXL)</div>
-              <div class="text-[11px] text-slate-400 line-clamp-1">Cinematic cyberpunk samurai 8K</div>
-            </button>
-
           </div>
         </div>
       `;

@@ -705,6 +705,7 @@
     // Register Form
     registerForm.onsubmit = async (e) => {
       e.preventDefault();
+      const fullName = (document.getElementById('registerName')?.value || '').trim();
       const email = document.getElementById('registerEmail').value.trim().toLowerCase();
       const password = document.getElementById('registerPassword').value;
       const confirmPassword = document.getElementById('registerConfirmPassword').value;
@@ -718,7 +719,7 @@
       submitBtn.innerHTML = '<span>Creating account...</span>';
 
       try {
-        const displayName = email.split('@')[0];
+        const displayName = fullName || email.split('@')[0];
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
