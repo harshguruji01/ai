@@ -1,7 +1,13 @@
 # robots.txt — ai.webguruji.online
 User-agent: *
 Allow: /
+Allow: /ads.txt
 Allow: /login
+Allow: /privacy
+Allow: /terms
+Allow: /about
+Allow: /contact
+Allow: /disclaimer
 Allow: /guruai-chat-assistant.webp
 Allow: /guruji-ai-chat-assistant.webp
 Disallow: /admin*
@@ -11,4 +17,3 @@ Disallow: /auth/
 Sitemap: https://ai.webguruji.online/sitemap.xml
 Sitemap: https://webguruji.online/sitemap-images.xml
 Sitemap: https://webguruji.online/sitemap.xml
-

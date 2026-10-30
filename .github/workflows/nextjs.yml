@@ -91,13 +91,24 @@ jobs:
           cp logo.png ./out/logo.png
           cp robots.txt ./out/robots.txt
           cp sitemap.xml ./out/sitemap.xml
+          cp ads.txt ./out/ads.txt
+          cp privacy.html ./out/privacy.html
+          cp terms.html ./out/terms.html
+          cp about.html ./out/about.html
+          cp contact.html ./out/contact.html
+          cp disclaimer.html ./out/disclaimer.html
           cp CNAME ./out/CNAME
           touch ./out/.nojekyll
           # Create clean URL mirrors so paths without .html never 404
-          mkdir -p ./out/login ./out/dashboard ./out/admin
+          mkdir -p ./out/login ./out/dashboard ./out/admin ./out/privacy ./out/terms ./out/about ./out/contact ./out/disclaimer
           cp login.html ./out/login/index.html
           cp dashboard.html ./out/dashboard/index.html
           cp admin.html ./out/admin/index.html
+          cp privacy.html ./out/privacy/index.html
+          cp terms.html ./out/terms/index.html
+          cp about.html ./out/about/index.html
+          cp contact.html ./out/contact/index.html
+          cp disclaimer.html ./out/disclaimer/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

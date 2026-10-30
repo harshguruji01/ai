@@ -66,7 +66,32 @@
   </url>
   <url>
        <loc>https://ai.webguruji.online/login.html</loc>
-       <lastmod>2026-10-25T06:20:54+00:00</lastmod>
+       <lastmod>2026-10-30T13:00:00+00:00</lastmod>
        <priority>0.5120</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/privacy.html</loc>
+       <lastmod>2026-10-30T13:00:00+00:00</lastmod>
+       <priority>0.6000</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/terms.html</loc>
+       <lastmod>2026-10-30T13:00:00+00:00</lastmod>
+       <priority>0.6000</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/about.html</loc>
+       <lastmod>2026-10-30T13:00:00+00:00</lastmod>
+       <priority>0.7000</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/contact.html</loc>
+       <lastmod>2026-10-30T13:00:00+00:00</lastmod>
+       <priority>0.6000</priority>
+  </url>
+  <url>
+       <loc>https://ai.webguruji.online/disclaimer.html</loc>
+       <lastmod>2026-10-30T13:00:00+00:00</lastmod>
+       <priority>0.5000</priority>
   </url>
 </urlset>

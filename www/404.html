@@ -30,6 +30,26 @@
         window.location.replace('/admin.html' + window.location.search + window.location.hash);
         return;
       }
+      if (lastSeg === 'privacy' || lastSeg === 'privacy-policy') {
+        window.location.replace('/privacy.html' + window.location.search + window.location.hash);
+        return;
+      }
+      if (lastSeg === 'terms' || lastSeg === 'terms-and-conditions') {
+        window.location.replace('/terms.html' + window.location.search + window.location.hash);
+        return;
+      }
+      if (lastSeg === 'about') {
+        window.location.replace('/about.html' + window.location.search + window.location.hash);
+        return;
+      }
+      if (lastSeg === 'contact') {
+        window.location.replace('/contact.html' + window.location.search + window.location.hash);
+        return;
+      }
+      if (lastSeg === 'disclaimer') {
+        window.location.replace('/disclaimer.html' + window.location.search + window.location.hash);
+        return;
+      }
     })();
   </script>
 </head>
