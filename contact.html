@@ -242,7 +242,19 @@ Please verify and send payment link.`;
           <div class="font-bold text-emerald-400 text-sm mb-1">✓ Request Submitted!</div>
           <div class="text-xs text-white font-semibold mb-2">we will contact you for this premium within 3 days</div>
           <div class="text-[11px] text-slate-300 mb-3">Official email sent from info@webguruji.online with model details & payment link.</div>
-          <a href="https://payment.webguruji.online?email=${encodeURIComponent(email)}" class="inline-block py-1.5 px-3.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md">Pay Online at payment.webguruji.online →</a>
+          <script>
+            function generatePaymentToken(emailStr) {
+              if (!emailStr) return '';
+              let hash = 0;
+              const str = emailStr.toLowerCase().trim() + '::HarshGuruJiPaymentAuth2026';
+              for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+              }
+              return 'hg_token_' + Math.abs(hash).toString(36);
+            }
+          </script>
+          <a href="https://payment.webguruji.online/?email=${encodeURIComponent(email)}&token=${(function(e){let h=0,s=e.toLowerCase().trim()+'::HarshGuruJiPaymentAuth2026';for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return 'hg_token_'+Math.abs(h).toString(36);})(email)}&source=email" class="inline-block py-1.5 px-3.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md">Pay Online at payment.webguruji.online →</a>
         `;
         alertBox.classList.remove('hidden');
         btn.textContent = 'Request Received ✓';
