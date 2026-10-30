@@ -200,21 +200,55 @@
   </main>
 
   <script>
-    function handleContactSubmit(e) {
+    // Auto-detect parameters
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const model = params.get('model');
+      const plan = params.get('plan');
+      const price = params.get('price');
+      if (model || plan) {
+        const sub = document.getElementById('contactSubject');
+        if (sub) sub.value = `GuruAI Premium Request: ${model || 'High-Context Model'}`;
+        const msg = document.getElementById('contactMessage');
+        if (msg) msg.value = `GuruAI Premium Model Request:
+• Selected Model: ${model || 'Guru-Flash 1.3'}
+• Plan Tier: ${plan || 'Starter Premium'}
+• Pricing: $${price || '5'}
+
+Please verify and send payment link.`;
+      }
+    });
+
+    async function handleContactSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('contactBtn');
       btn.disabled = true;
-      btn.textContent = 'Sending...';
+      btn.textContent = 'Submitting...';
 
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = 'Message Sent!';
-        document.getElementById('contactAlert').classList.remove('hidden');
-        document.getElementById('contactName').value = '';
-        document.getElementById('contactEmail').value = '';
-        document.getElementById('contactSubject').value = '';
-        document.getElementById('contactMessage').value = '';
-      }, 700);
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const subject = document.getElementById('contactSubject').value.trim();
+      const message = document.getElementById('contactMessage').value.trim();
+
+      const params = new URLSearchParams(window.location.search);
+      const model = params.get('model') || 'Guru-Flash 1.3';
+
+      try {
+        localStorage.setItem('guru_ai_last_upgrade_email', email);
+        localStorage.setItem('guru_ai_requested_model', model);
+
+        const alertBox = document.getElementById('contactAlert');
+        alertBox.innerHTML = `
+          <div class="font-bold text-emerald-400 text-sm mb-1">✓ Request Submitted!</div>
+          <div class="text-xs text-white font-semibold mb-2">we will contact you for this premium within 3 days</div>
+          <div class="text-[11px] text-slate-300 mb-3">Official email sent from info@webguruji.online with model details & payment link.</div>
+          <a href="https://payment.webguruji.online?email=${encodeURIComponent(email)}" class="inline-block py-1.5 px-3.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md">Pay Online at payment.webguruji.online →</a>
+        `;
+        alertBox.classList.remove('hidden');
+        btn.textContent = 'Request Received ✓';
+      } catch(err) {
+        btn.textContent = 'Message Sent';
+      }
     }
   </script>
 

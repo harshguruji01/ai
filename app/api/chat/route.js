@@ -55,8 +55,22 @@ export async function POST(request) {
       );
     }
 
-    // 4b. Mandatory Payment Gating for Guru-Flash 1.3 High Context (Mistral 1T Pro)
-    if (model === 'guru-flash-1.3') {
+    // 4b. Access Gating for Tiered AI Models
+    // Guru-Flash 1.2: Logged-in users only
+    if (model === 'guru-flash-1.2' && !isLoggedIn) {
+      return NextResponse.json(
+        {
+          error: 'Authentication Required',
+          requiresLogin: true,
+          message: 'Guru-Flash 1.2 is exclusively available for logged-in members. Please sign in to use this model.',
+        },
+        { status: 403 }
+      );
+    }
+
+    // Guru-Flash 1.3, Guru-Argon 1.4, Guru-Argon 1.5: Paid Premium models
+    const isPremiumModel = model === 'guru-flash-1.3' || model === 'guru-argon-1.4' || model === 'guru-argon-1.5' || model === 'guru-flash-1.5';
+    if (isPremiumModel) {
       let isPaid = false;
       if (isLoggedIn && userId) {
         const userMeta = authState.user?.user_metadata || {};
@@ -68,7 +82,7 @@ export async function POST(request) {
           try {
             const { data: limitRow } = await supabaseAdmin
               .from('user_ai_limits')
-              .select('is_paid, max_requests')
+              .select('is_paid, max_requests, active_model')
               .eq('user_id', userId)
               .maybeSingle();
             if (limitRow?.is_paid === true || (limitRow?.max_requests && limitRow.max_requests > 20)) {
@@ -81,13 +95,20 @@ export async function POST(request) {
       }
 
       if (!isPaid) {
+        const modelDisplayNames = {
+          'guru-flash-1.3': 'Guru-Flash 1.3 ($5 Starter Premium)',
+          'guru-argon-1.4': 'Guru-Argon 1.4 ($15 Pro Premium)',
+          'guru-argon-1.5': 'Guru-Argon 1.5 ($25 Power User Mistral 1T)',
+        };
+        const displayName = modelDisplayNames[model] || model;
+
         return NextResponse.json(
           {
             error: 'Payment Required',
             requiresPayment: true,
-            message:
-              'Guru-Flash 1.3 High-Context Pro (Mistral 1T A52B) model payment ke baad hi unlock hota hai. Kripya Starter Pro ya higher plan upgrade karein.',
-            upgradeUrl: 'https://webguruji.online/contact.html?subject=ai_upgrade',
+            model,
+            message: `${displayName} payment ke baad hi unlock hota hai. Kripya apna plan upgrade karke payment complete karein.`,
+            upgradeUrl: `https://webguruji.online/contact.html?subject=ai_upgrade&model=${encodeURIComponent(displayName)}`,
           },
           { status: 402 }
         );
