@@ -1,9 +1,11 @@
-import { AnimatedAIChat } from "@/components/ui/animated-ai-chat"
+"use client"
 
-export function Demo() {
+import DoodleCrewFooter from "@/components/ui/doodle-crew-footer"
+
+export default function Demo() {
   return (
-    <div className="flex w-screen overflow-x-hidden">
-      <AnimatedAIChat />
+    <div className="w-full">
+      <DoodleCrewFooter />
     </div>
-  );
+  )
 }
