@@ -765,9 +765,9 @@
           </button>
 
           <!-- User Dashboard Logo Icon (Only for Logged-In User) -->
-          <a href="dashboard.html" id="headerDashboardBtn"
+          <button type="button" id="headerDashboardBtn" onclick="openUserDashboardModal()"
             class="hidden relative flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-full bg-slate-900/90 border border-indigo-500/50 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 text-slate-200 transition-all group active:scale-95"
-            title="User Dashboard (dashboard.html)">
+            title="Account Menu & Dashboard">
             <div id="headerDashboardAvatar"
               class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 border border-indigo-300/60 flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
               <span id="headerDashboardAvatarInitial">U</span>
@@ -775,17 +775,17 @@
             </div>
             <div class="hidden sm:flex flex-col text-left leading-tight pr-1">
               <span id="headerDashboardUserName"
-                class="text-xs font-semibold text-slate-200 group-hover:text-white truncate max-w-[110px]">Dashboard</span>
-              <span class="text-[9px] font-mono text-cyan-400 font-medium">Dashboard ↗</span>
+                class="text-xs font-semibold text-slate-200 group-hover:text-white truncate max-w-[110px]">User</span>
+              <span class="text-[9px] font-mono text-cyan-400 font-medium">Account ▾</span>
             </div>
             <svg
-              class="w-3.5 h-3.5 text-cyan-400 group-hover:translate-x-0.5 transition-transform hidden sm:inline-block"
+              class="w-3 h-3 text-cyan-400 group-hover:translate-y-0.5 transition-transform hidden sm:inline-block"
               fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
             <span
               class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#0d121f] animate-pulse"></span>
-          </a>
+          </button>
 
           <!-- Prominent Header Sign In Button -->
           <button id="headerSignInBtn"
@@ -3862,22 +3862,38 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
 
         imageLockIcon.classList.add('hidden');
 
-        // Show Dashboard Buttons for logged-in user
+        // Show Profile/Dashboard Button for logged-in user
         if (headerDashboardBtn) {
           headerDashboardBtn.classList.remove('hidden');
+          headerDashboardBtn.style.display = 'flex';
           const headerDashboardUserName = document.getElementById('headerDashboardUserName');
           if (headerDashboardUserName) headerDashboardUserName.textContent = name;
           const initialEl = document.getElementById('headerDashboardAvatarInitial');
           if (initialEl) initialEl.textContent = initial;
+          const avatarImg = document.getElementById('headerDashboardAvatarImg');
+          const avatarUrl = currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture;
+          if (avatarImg && avatarUrl) {
+            avatarImg.src = avatarUrl;
+            avatarImg.classList.remove('hidden');
+            if (initialEl) initialEl.classList.add('hidden');
+          }
         }
         if (sidebarDashboardLink) {
           sidebarDashboardLink.classList.remove('hidden');
         }
 
+        // HIDE Sign In button completely when logged in
         const headerSignInBtn = document.getElementById('headerSignInBtn');
         if (headerSignInBtn) {
-          document.getElementById('headerSignInBtnText').textContent = 'Profile';
+          headerSignInBtn.classList.add('hidden');
+          headerSignInBtn.style.display = 'none';
         }
+        if (openAuthBtn) {
+          openAuthBtn.classList.add('hidden');
+          openAuthBtn.style.display = 'none';
+        }
+        userProfileBtn.onclick = () => openUserDashboardModal();
+
         if (!conversationHistory || !conversationHistory.length) {
           renderWelcome();
         }
@@ -3890,18 +3906,28 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
 
         imageLockIcon.classList.remove('hidden');
 
-        // Hide Dashboard Buttons for guests
+        // Hide Dashboard / Profile Button for guests
         if (headerDashboardBtn) {
           headerDashboardBtn.classList.add('hidden');
+          headerDashboardBtn.style.display = 'none';
         }
         if (sidebarDashboardLink) {
           sidebarDashboardLink.classList.add('hidden');
         }
 
+        // SHOW Sign In button for guests
         const headerSignInBtn = document.getElementById('headerSignInBtn');
         if (headerSignInBtn) {
-          document.getElementById('headerSignInBtnText').textContent = 'Sign In';
+          headerSignInBtn.classList.remove('hidden');
+          headerSignInBtn.style.display = 'flex';
+          const btnText = document.getElementById('headerSignInBtnText');
+          if (btnText) btnText.textContent = 'Sign In';
         }
+        if (openAuthBtn) {
+          openAuthBtn.classList.remove('hidden');
+          openAuthBtn.style.display = '';
+        }
+        userProfileBtn.onclick = () => openAuthModal('login');
       }
     }
 
@@ -3992,18 +4018,14 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     }
 
     function openAuthModal(mode = 'login') {
-      const isApp = isNativeAppEnvironment();
-
       if (currentUser) {
-        setAuthModalMode('profile');
-        authModal.classList.remove('hidden');
+        openUserDashboardModal();
         return;
       }
 
+      const isApp = isNativeAppEnvironment();
+
       // If running inside Android Native APK / Capacitor:
-      // STAY 100% inside the app! Show the sleek in-app Auth modal directly.
-      // The user signs in directly within the app, their credentials/tokens are saved in local storage,
-      // and they are NEVER redirected out to a browser!
       if (isApp) {
         setAuthModalMode(mode);
         authModal.classList.remove('hidden');
@@ -4021,7 +4043,8 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
         document.cookie = `hg_auth_redirect=${encodeURIComponent('https://ai.webguruji.online/')}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
       } catch(e) {}
 
-      window.location.href = 'https://login.webguruji.online/?redirect=' + encodeURIComponent('https://ai.webguruji.online/') + '&source=ai';
+      const modeParam = (mode === 'register' || mode === 'signup') ? '&mode=signup' : '';
+      window.location.href = 'https://login.webguruji.online/?redirect=' + encodeURIComponent('https://ai.webguruji.online/') + '&source=ai' + modeParam;
     }
     function closeAuthModal() {
       authModal.classList.add('hidden');
