@@ -3701,6 +3701,15 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
         if (supabaseClient) {
           const emailQuery = user.email ? `,email.ilike.${user.email.toLowerCase().trim()}` : '';
           supabaseClient.from('user_ai_limits').select('*').or(`user_id.eq.${user.id}${emailQuery}`).maybeSingle().then(({ data }) => {
+            if (data) {
+              if (data.is_paid === true || data.active_model) {
+                window.currentUserLimits = data;
+                localStorage.setItem('guru_ai_user_paid', 'true');
+                if (data.active_model) {
+                  localStorage.setItem('guru_ai_unlocked_model', data.active_model);
+                }
+              }
+            }
             if (data && typeof data.max_requests === 'number' && data.max_requests > 0) {
               maxRequests = data.max_requests;
               if (stored.remaining < maxRequests) {

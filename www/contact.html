@@ -1,276 +1,1123 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <meta name="google-adsense-account" content="ca-pub-7706204118195419" />
-  <title>Contact Us — GuruAI & HarshGuruJi</title>
-  <meta name="description" content="Get in touch with the GuruAI developer support desk and HarshGuruJi for technical inquiries, business collaborations, or account help." />
-  <link rel="icon" type="image/png" href="logo.png" />
-  <link rel="apple-touch-icon" href="logo.png" />
-  <link rel="canonical" href="https://ai.webguruji.online/contact.html" />
+  <meta name="google-adsense-account" content="ca-pub-7706204118195419">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact HarshGuruJi - Official Support, Inquiries & Community Channels</title>
+  <meta name="description" content="Get in touch with HarshGuruJi. Access direct support channels, report bugs, request content additions, or contact our founder and editorial team.">
+  <meta name="keywords" content="harshguruji, harshguruji online, privacy, terms, about, contact, educational tools, web utilities">
+  <meta name="author" content="HarshGuruJi">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" href="https://webguruji.online/contact.html">
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo-192.png">
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="HarshGuruJi">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://webguruji.online/contact.html">
+  <meta property="og:title" content="Contact HarshGuruJi - Official Support, Inquiries & Community Channels">
+  <meta property="og:description" content="Get in touch with HarshGuruJi. Access direct support channels, report bugs, request content additions, or contact our founder and editorial team.">
+  <meta property="og:image" content="https://webguruji.online/logo-512.png">
+  <meta property="og:locale" content="en_US">
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: { brand: { 500: '#6366f1', 600: '#4f46e5' }, cyanAccent: '#06b6d4' },
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], heading: ['Outfit', 'Inter', 'sans-serif'], mono: ['Fira Code', 'monospace'] }
-        }
-      }
-    };
-  </script>
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@harshguruji1">
+  <meta name="twitter:title" content="Contact HarshGuruJi - Official Support, Inquiries & Community Channels">
+  <meta name="twitter:description" content="Get in touch with HarshGuruJi. Access direct support channels, report bugs, request content additions, or contact our founder and editorial team.">
+  <meta name="twitter:image" content="https://webguruji.online/logo-512.png">
 
-  <!-- Google AdSense -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="cookie.css">
+  <link rel="stylesheet" href="navbar-premium.css">
+  <link rel="stylesheet" href="footer-premium.css">
+  <link rel="stylesheet" href="responsive-patch.css">
+
+  <!-- AdSense Click-Bombing & Protection -->
+  <script src="js/ad-shield.js"></script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7706204118195419" crossorigin="anonymous"></script>
-
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff3366">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  <!-- 21st.dev Contact Card Styles -->
   <style>
-    body { background-color: #030712; color: #f8fafc; font-family: 'Inter', system-ui, sans-serif; }
-    .ambient-glow { position: fixed; width: 500px; height: 500px; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; opacity: 0.12; }
+    .contact-card-container {
+      position: relative;
+      margin: 1.5rem auto 3.5rem;
+      max-width: 1060px;
+      padding: 12px;
+    }
+
+    .contact-card-box {
+      position: relative;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(9, 14, 26, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.08);
+      overflow: visible;
+      backdrop-filter: blur(16px);
+    }
+
+    /* 4 Corner Crosshairs (+) from 21st.dev */
+    .crosshair-icon {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      color: #818cf8;
+      pointer-events: none;
+      z-index: 10;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .crosshair-top-left { top: -12px; left: -12px; }
+    .crosshair-top-right { top: -12px; right: -12px; }
+    .crosshair-bottom-left { bottom: -12px; left: -12px; }
+    .crosshair-bottom-right { bottom: -12px; right: -12px; }
+
+    .contact-card-box:hover .crosshair-icon {
+      color: #38bdf8;
+      transform: scale(1.15) rotate(90deg);
+    }
+
+    .contact-card-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 960px) {
+      .contact-card-grid {
+        grid-template-columns: 1.25fr 1fr;
+      }
+    }
+
+    .contact-info-col {
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .contact-card-title {
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'Space Grotesk', sans-serif;
+      margin: 0.5rem 0 1rem;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 40%, #c4b5fd 80%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .contact-card-desc {
+      color: #94a3b8;
+      font-size: 0.98rem;
+      line-height: 1.75;
+      margin-bottom: 2rem;
+      max-width: 560px;
+    }
+
+    .contact-info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.15rem;
+    }
+
+    @media (min-width: 600px) {
+      .contact-info-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .col-span-2-desktop {
+        grid-column: span 2;
+      }
+    }
+
+    .contact-info-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.1rem 1.15rem;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: all 0.25s ease;
+    }
+
+    .contact-info-card:hover {
+      background: rgba(99, 102, 241, 0.08);
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .contact-icon-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .contact-info-label {
+      font-weight: 700;
+      color: #f1f5f9;
+      font-size: 0.92rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .contact-info-value {
+      font-size: 0.85rem;
+      color: #38bdf8;
+      text-decoration: none;
+      word-break: break-all;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .contact-info-value:hover {
+      text-decoration: underline;
+      color: #60a5fa;
+    }
+
+    .contact-info-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+
+    /* Right Form Column */
+    .contact-form-col {
+      padding: 3rem 2.5rem;
+      background: rgba(0, 0, 0, 0.35);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-radius: 0 0 24px 24px;
+    }
+
+    @media (min-width: 960px) {
+      .contact-form-col {
+        border-top: none;
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0 24px 24px 0;
+      }
+    }
+
+    .contact-form-heading {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: 'Space Grotesk', sans-serif;
+      margin: 0 0 0.4rem 0;
+    }
+
+    .contact-form-sub {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: #f8fafc;
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.25s ease;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .form-submit-btn {
+      width: 100%;
+      padding: 0.95rem 1.5rem;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35);
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .form-submit-btn:hover {
+      box-shadow: 0 6px 24px rgba(99, 102, 241, 0.55);
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .form-status-alert {
+      display: none;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
   </style>
   <link rel="stylesheet" href="loading-lines.css">
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+<body class="dark-mode">
+<div id="scroll-progress"></div>
+<canvas id="particleCanvas"></canvas>
 
-  <!-- Ambient Glow -->
-  <div class="ambient-glow top-0 left-0 bg-indigo-600"></div>
-  <div class="ambient-glow bottom-0 right-0 bg-cyan-500"></div>
+<section class="section page-header">
+  <div class="badge">Official Support</div>
+  <h1 class="page-title">Contact <span class="gradient-text">HarshGuruJi</span></h1>
+  <p class="page-desc">We are here to assist you. Connect with our technical support desk, editorial board, or leadership team.</p>
+</section>
 
-  <!-- Header -->
-  <header class="w-full border-b border-slate-800/80 bg-[#090e17]/80 backdrop-blur-md z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0">
-    <a href="index.html" class="flex items-center gap-2.5 group">
-      <div class="w-8 h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform overflow-hidden flex-shrink-0">
-        <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
-      </div>
-      <div>
-        <span class="font-bold text-sm text-white tracking-wide font-heading">GuruAI</span>
-        <span class="text-[10px] text-slate-400 block -mt-0.5">by HarshGuruJi</span>
-      </div>
-    </a>
-
-    <div class="flex items-center gap-2 sm:gap-3">
-      <a href="index.html" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-medium transition flex items-center gap-1.5">
-        <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        <span>Back to Chat</span>
-      </a>
-      <a href="dashboard.html" class="px-3.5 py-1.5 rounded-lg bg-indigo-950/60 border border-indigo-500/40 text-indigo-300 hover:text-white text-xs font-medium transition">
-        <span>Dashboard ↗</span>
-      </a>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <!-- Main Content (21st.dev Contact Card) -->
-  <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 z-10 relative">
+<section class="section section-dark" style="padding-top:0">
+  <div class="contact-card-container">
     
-    <!-- 21st.dev Contact Card -->
-    <div class="relative bg-[#090e1a]/95 border border-slate-800 rounded-3xl shadow-2xl grid grid-cols-1 lg:grid-cols-3 overflow-visible backdrop-blur-xl">
-      <!-- 4 Signature Corner Crosshairs (PlusIcon) -->
-      <svg class="absolute -top-3 -left-3 h-6 w-6 text-slate-500/80 transition-transform hover:rotate-90 hover:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 21st.dev Contact Card Block -->
+    <div class="contact-card-box">
+      <!-- 4 Corner Crosshairs (PlusIcon) -->
+      <svg class="crosshair-icon crosshair-top-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
-      <svg class="absolute -top-3 -right-3 h-6 w-6 text-slate-500/80 transition-transform hover:rotate-90 hover:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="crosshair-icon crosshair-top-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
-      <svg class="absolute -bottom-3 -left-3 h-6 w-6 text-slate-500/80 transition-transform hover:rotate-90 hover:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="crosshair-icon crosshair-bottom-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
-      <svg class="absolute -bottom-3 -right-3 h-6 w-6 text-slate-500/80 transition-transform hover:rotate-90 hover:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="crosshair-icon crosshair-bottom-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <line x1="5" y1="12" x2="19" y2="12"></line>
       </svg>
 
-      <!-- Left Section: Details & Contact Info Blocks (lg:col-span-2) -->
-      <div class="flex flex-col justify-between lg:col-span-2 p-6 sm:p-10">
-        <div class="space-y-4">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
-            <span>📬 Support &amp; Inquiries</span>
-          </div>
-          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white font-heading">
-            Contact With Us
-          </h1>
-          <p class="text-slate-400 max-w-xl text-sm sm:text-base leading-relaxed">
-            If you have any questions regarding GuruAI, Guru-Flash 1.1 reasoning models, quota upgrades, or need technical assistance, please fill out the form here. We do our best to respond within 1 business day.
-          </p>
+      <div class="contact-card-grid">
+        <!-- Left Section: Details & Contact Info Grid -->
+        <div class="contact-info-col">
+          <div>
+            <div class="badge" style="margin-bottom:0.75rem; font-size:0.75rem; letter-spacing:0.8px;">OFFICIAL INQUIRIES & SUPPORT</div>
+            <h1 class="contact-card-title">Contact With Us</h1>
+            <p class="contact-card-desc">
+              If you have any questions regarding our Services, educational tools, developer utilities, or need assistance, please fill out the form here. We do our best to respond within 1 business day.
+            </p>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-            <!-- Contact Info: General Support -->
-            <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-indigo-500/40 transition-colors">
-              <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-lg flex-shrink-0">
-                ✉️
+            <div class="contact-info-grid">
+              
+              <!-- Contact Info: General Support -->
+              <div class="contact-info-card">
+                <div class="contact-icon-pill">📬</div>
+                <div>
+                  <div class="contact-info-label">General &amp; Support</div>
+                  <a href="mailto:info@webguruji.online" class="contact-info-value">info@webguruji.online</a>
+                  <div class="contact-info-sub">Typical response: Within 24-48 hours</div>
+                </div>
               </div>
-              <div>
-                <p class="font-medium text-xs text-slate-200">General &amp; Technical Support</p>
-                <a href="mailto:info@webguruji.online" class="text-xs font-mono text-cyan-400 hover:underline block mt-0.5">info@webguruji.online</a>
-                <p class="text-[10px] text-slate-500 mt-1">Bug reports, API &amp; Guru-Flash 1.1</p>
-              </div>
-            </div>
 
-            <!-- Contact Info: Legal & Privacy -->
-            <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-cyan-500/40 transition-colors">
-              <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg flex-shrink-0">
-                🛡️
+              <!-- Contact Info: Legal & DMCA -->
+              <div class="contact-info-card">
+                <div class="contact-icon-pill">⚖️</div>
+                <div>
+                  <div class="contact-info-label">Legal, Privacy &amp; DMCA</div>
+                  <a href="mailto:info@webguruji.online" class="contact-info-value">info@webguruji.online</a>
+                  <div class="contact-info-sub">Priority review: 24-hour turnaround</div>
+                </div>
               </div>
-              <div>
-                <p class="font-medium text-xs text-slate-200">Legal, Privacy &amp; Data Desk</p>
-                <a href="mailto:contact@webguruji.online" class="text-xs font-mono text-cyan-400 hover:underline block mt-0.5">contact@webguruji.online</a>
-                <p class="text-[10px] text-slate-500 mt-1">GDPR requests &amp; compliance</p>
-              </div>
-            </div>
 
-            <!-- Contact Info: Headquarters -->
-            <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-colors sm:col-span-2">
-              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg flex-shrink-0">
-                🌐
+              <!-- Contact Info: Headquarters -->
+              <div class="contact-info-card col-span-2-desktop">
+                <div class="contact-icon-pill">🌐</div>
+                <div>
+                  <div class="contact-info-label">Platform Headquarters</div>
+                  <div class="contact-info-value" style="color:#f1f5f9;">HarshGuruJi Ecosystem • India (IST Timezone)</div>
+                  <div class="contact-info-sub">Operating Hours: Mon-Sat, 9 AM - 7 PM IST</div>
+                </div>
               </div>
-              <div>
-                <p class="font-medium text-xs text-slate-200">Platform Headquarters</p>
-                <p class="text-xs text-slate-300 mt-0.5">HarshGuruJi Ecosystem • India (IST Timezone)</p>
-                <p class="text-[10px] text-slate-500 mt-0.5">Operating Hours: Mon-Sat, 9 AM - 7 PM IST</p>
-              </div>
-            </div>
 
-            <!-- Contact Info: Creator -->
-            <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-purple-500/40 transition-colors sm:col-span-2">
-              <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-lg flex-shrink-0">
-                👨‍💻
+              <!-- Contact Info: Founder & Creator -->
+              <div class="contact-info-card col-span-2-desktop">
+                <div class="contact-icon-pill">👨‍💻</div>
+                <div>
+                  <div class="contact-info-label">Founder &amp; Lead Architect</div>
+                  <a href="https://webguruji.online/owner.html" class="contact-info-value">Harsh Patel &bull; Founder Biography ↗</a>
+                  <div class="contact-info-sub">YouTube: @harshguruji1 &bull; Telegram: @harshguruji</div>
+                </div>
               </div>
-              <div>
-                <p class="font-medium text-xs text-slate-200">Creator Information</p>
-                <a href="https://webguruji.online/owner.html" target="_blank" class="text-xs text-cyan-400 hover:underline font-medium block mt-0.5">
-                  Harsh Patel (HarshGuruJi) • Founder Profile ↗
-                </a>
-                <p class="text-[10px] text-slate-500 mt-0.5">YouTube: @harshguruji1 &bull; Telegram: @harshguruji</p>
-              </div>
+
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Right Section: Inquiry Form (lg:col-span-1 border-t lg:border-t-0 lg:border-l) -->
-      <div class="bg-slate-950/70 flex h-full w-full flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-800/80 p-6 sm:p-8 rounded-b-3xl lg:rounded-r-3xl lg:rounded-bl-none">
-        <form onsubmit="handleContactSubmit(event)" class="space-y-4">
-          <div>
-            <h2 class="text-lg font-bold text-white font-heading">Send a Direct Message</h2>
-            <p class="text-xs text-slate-400 mt-0.5">We respond within 1 business day.</p>
+        <!-- Right Section: Interactive Contact Form -->
+        <div class="contact-form-col">
+          <h2 class="contact-form-heading">Send a Direct Message</h2>
+          <p class="contact-form-sub">
+            Fill out the details below. Messages are routed directly to our dedicated support and administrative team.
+          </p>
+
+          <div id="contact-status-alert" class="form-status-alert">
+            ✓ Thank you for reaching out! Your message has been safely received. We will respond within 24-48 hours.
           </div>
+
           
-          <div id="contactAlert" class="hidden p-3 rounded-xl bg-emerald-950/60 border border-emerald-800 text-xs text-emerald-300">
-            Thank you! Your message has been received. We will respond shortly to your email.
+          <!-- AI Premium Upgrade Confirmation Desk (Replaces standard form for AI model upgrades) -->
+          <div id="ai-premium-confirmation-card" style="display:none; background:radial-gradient(circle at top right, rgba(99,102,241,0.18), transparent 70%), var(--card-bg, #0f172a); border:1px solid rgba(99,102,241,0.4); border-radius:24px; padding:2rem; box-shadow:0 15px 40px rgba(0,0,0,0.5); margin-bottom:1.5rem; animate-fade-in">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:1.5rem;">
+              <div style="display:flex; align-items:center; gap:0.85rem;">
+                <div style="width:50px; height:50px; border-radius:16px; background:linear-gradient(135deg, rgba(99,102,241,0.25), rgba(245,158,11,0.25)); border:1px solid rgba(99,102,241,0.4); display:flex; align-items:center; justify-content:center; font-size:1.6rem;">👑</div>
+                <div>
+                  <h3 style="color:#ffffff; font-size:1.3rem; font-weight:800; margin:0 0 4px 0; font-family:sans-serif;">Confirm Your Premium Model</h3>
+                  <div style="color:#94a3b8; font-size:0.82rem;">Direct link from GuruAI Studio &bull; HarshGuruJi Ecosystem</div>
+                </div>
+              </div>
+              <span id="ai-card-model-badge" style="background:rgba(245,158,11,0.18); color:#f59e0b; border:1px solid rgba(245,158,11,0.35); font-size:0.85rem; font-weight:800; padding:6px 14px; border-radius:50px;">GuruAI Premium</span>
+            </div>
+
+            <!-- User Profile Summary (from Logged In Account) -->
+            <div style="background:rgba(15,23,42,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:1.25rem; margin-bottom:1.5rem;">
+              <div style="color:#94a3b8; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem;">Logged-In Account Details</div>
+              <div style="display:flex; align-items:center; gap:1rem;">
+                <div id="ai-user-avatar-wrap" style="width:48px; height:48px; border-radius:50%; overflow:hidden; background:#1e293b; border:2px solid #6366f1; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:1.2rem;">
+                  <img id="ai-user-avatar-img" src="" alt="Avatar" style="width:100%; height:100%; object-fit:cover; display:none;" onerror="this.style.display='none';" />
+                  <span id="ai-user-avatar-letter">U</span>
+                </div>
+                <div>
+                  <div id="ai-user-name" style="font-size:1.05rem; font-weight:700; color:#ffffff;">Loading Account...</div>
+                  <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-top:2px;">
+                    <span id="ai-user-email" style="font-size:0.85rem; color:#93c5fd; font-family:monospace;">user@webguruji.online</span>
+                    <span style="font-size:0.65rem; background:rgba(16,185,129,0.2); color:#34d399; border:1px solid rgba(16,185,129,0.35); font-weight:700; padding:1px 6px; border-radius:4px;">✓ Verified Account</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Model Specifications Box -->
+            <div style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.25); border-radius:18px; padding:1.25rem; margin-bottom:1.5rem;">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:1rem; text-align:center;">
+                <div>
+                  <div style="font-size:0.75rem; color:#94a3b8;">Selected Model</div>
+                  <div id="ai-summary-model" style="font-size:1rem; font-weight:800; color:#38bdf8; margin-top:2px;">Guru-Flash 1.3</div>
+                </div>
+                <div>
+                  <div style="font-size:0.75rem; color:#94a3b8;">Plan Tier</div>
+                  <div id="ai-summary-plan" style="font-size:1rem; font-weight:800; color:#a78bfa; margin-top:2px;">Starter Premium</div>
+                </div>
+                <div>
+                  <div style="font-size:0.75rem; color:#94a3b8;">Subscription Price</div>
+                  <div id="ai-summary-price" style="font-size:1rem; font-weight:800; color:#fbbf24; margin-top:2px;">$5 / Activation</div>
+                </div>
+                <div>
+                  <div style="font-size:0.75rem; color:#94a3b8;">Routing</div>
+                  <div style="font-size:0.95rem; font-weight:700; color:#34d399; margin-top:2px;">Admin Desk</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:rgba(15,23,42,0.5); border-radius:12px; padding:0.85rem 1rem; margin-bottom:1.5rem; font-size:0.82rem; color:#cbd5e1; line-height:1.5;">
+              ℹ️ <strong>Workflow Notice:</strong> Upon clicking Confirm below, your upgrade request will be submitted directly to HarshGuruJi Central Admin. Once verified, an authorized payment link will be dispatched from <strong>info@webguruji.online</strong> to your email.
+            </div>
+
+            <!-- Single Confirm Button -->
+            <button type="button" id="ai-confirm-btn" onclick="executeAiPremiumConfirmation()" class="form-submit-btn" style="background:linear-gradient(135deg, #10b981, #059669); font-size:1.05rem; font-weight:800; padding:14px; box-shadow:0 6px 25px rgba(16,185,129,0.35);">
+              <span>⚡ Confirm &amp; Request Premium Model</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
           </div>
 
-          <div class="space-y-1">
-            <label class="block text-xs font-medium text-slate-300">Your Name</label>
-            <input id="contactName" type="text" required placeholder="John Doe" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          <!-- Guest Lock Notice (Shown if user is NOT logged in) -->
+          <div id="ai-guest-lock-card" style="display:none; text-align:center; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.35); border-radius:24px; padding:2.5rem 1.5rem; margin-bottom:1.5rem;">
+            <div style="font-size:2.8rem; margin-bottom:0.75rem;">🔒</div>
+            <h3 style="color:#f87171; font-size:1.35rem; font-weight:800; margin:0 0 8px 0;">Sign In Required for GuruAI Premium</h3>
+            <p style="color:#cbd5e1; font-size:0.9rem; max-width:440px; margin:0 auto 1.5rem auto; line-height:1.6;">
+              Guest users cannot request premium models. Please sign in to your GuruAI account so your purchased plan can be automatically linked to your account.
+            </p>
+            <a href="https://ai.webguruji.online/#login" class="form-submit-btn" style="display:inline-flex; width:auto; padding:12px 30px; text-decoration:none; background:linear-gradient(135deg, #6366f1, #4f46e5); font-weight:700; box-shadow:0 4px 20px rgba(99,102,241,0.4);">
+              <span>Sign In to GuruAI Account ↗</span>
+            </a>
           </div>
 
-          <div class="space-y-1">
-            <label class="block text-xs font-medium text-slate-300">Your Email</label>
-            <input id="contactEmail" type="email" required placeholder="name@example.com" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
-          </div>
+          <form id="contact-form" onsubmit="handleContactCardSubmit(event)">
+            
+            <div class="form-group">
+              <label for="contact-name" class="form-label">Full Name *</label>
+              <input type="text" id="contact-name" required placeholder="e.g. Rahul Sharma" class="form-input" />
+            </div>
 
-          <div class="space-y-1">
-            <label class="block text-xs font-medium text-slate-300">Subject</label>
-            <input id="contactSubject" type="text" required placeholder="Question about GuruAI" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
-          </div>
+            <div class="form-group">
+              <label for="contact-email" class="form-label">Email Address *</label>
+              <input type="email" id="contact-email" required placeholder="e.g. rahul@example.com" class="form-input" />
+            </div>
 
-          <div class="space-y-1">
-            <label class="block text-xs font-medium text-slate-300">Message</label>
-            <textarea id="contactMessage" rows="4" required placeholder="How can we help you?" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
-          </div>
+            <div class="form-group">
+              <label for="contact-subject" class="form-label">Inquiry Category *</label>
+              <select id="contact-subject" required class="form-select">
+                <option value="general">General Feedback or Platform Question</option>
+                <option value="editorial">Content Correction / Report Academic Errata</option>
+                <option value="tools">Web Utility Bug Report or Feature Request</option>
+                <option value="ai">GuruAI &amp; Developer Integration</option>
+                <option value="contributor">Contributor Application Inquiry</option>
+                <option value="legal">Legal, Privacy &amp; DMCA Notices</option>
+              </select>
+            </div>
 
-          <button type="submit" id="contactBtn" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 shadow-lg shadow-indigo-500/25 transition-all">
-            <span>Send Message →</span>
-          </button>
-        </form>
+            <div class="form-group">
+              <label for="contact-message" class="form-label">Your Message *</label>
+              <textarea id="contact-message" required rows="4" placeholder="How can we assist you today? Please provide as much detail as possible..." class="form-textarea" style="resize:vertical;"></textarea>
+            </div>
+
+            <button type="submit" id="contact-submit-btn" class="form-submit-btn">
+              <span>Send Message</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </form>
+        </div>
+
       </div>
     </div>
 
-  </main>
+    <!-- Frequently Asked Questions (FAQ) Section -->
+    <div style="background:var(--card-bg); padding:2.5rem; border-radius:24px; border:1px solid var(--card-border); margin-bottom:2.5rem;">
+      <h3 style="color:var(--text-primary); margin-top:0; margin-bottom:1.5rem; font-size:1.5rem; font-family:sans-serif;">Frequently Asked Questions</h3>
+      
+      <div style="margin-bottom:1.5rem;">
+        <h4 style="color:var(--text-primary); font-size:1.1rem; margin-bottom:0.5rem;">Are all HarshGuruJi online tools really 100% free?</h4>
+        <p style="margin:0; font-size:0.95rem;">Yes. Every utility, calculator, and study guide on our platform is completely free to use without any forced subscription, payment wall, or hidden fee.</p>
+      </div>
 
+      <div style="margin-bottom:1.5rem;">
+        <h4 style="color:var(--text-primary); font-size:1.1rem; margin-bottom:0.5rem;">Does HarshGuruJi store or read the text I enter into web tools?</h4>
+        <p style="margin:0; font-size:0.95rem;">No. Our developer tools execute entirely client-side inside your browser sandbox using JavaScript. No input data is sent to our servers or stored remotely.</p>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <h4 style="color:var(--text-primary); font-size:1.1rem; margin-bottom:0.5rem;">How can I contribute study material or code to HarshGuruJi?</h4>
+        <p style="margin:0; font-size:0.95rem;">We welcome educator and developer contributions! Visit our <a href="contributor.html" style="color:var(--accent-primary);">Contributor Page</a> to review our editorial standards and submit an application.</p>
+      </div>
+
+      <div>
+        <h4 style="color:var(--text-primary); font-size:1.1rem; margin-bottom:0.5rem;">How quickly will I receive a reply to my inquiry?</h4>
+        <p style="margin:0; font-size:0.95rem;">Our support team reviews incoming correspondence daily. Standard inquiries receive a thorough reply within 24 to 48 business hours.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+  <script src="script.js" defer></script>
+  <script src="js/button_handlers.js" defer></script>
+  <script src="cookie.js" defer></script>
+  <script type="module" src="js/auth.js" defer></script>
+  <script src="navbar-premium.js"></script>
+  <script src="footer-premium.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-head.js"></script>
   <script>
-    // Auto-detect parameters
-    document.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
-      const model = params.get('model');
-      const plan = params.get('plan');
-      const price = params.get('price');
-      if (model || plan) {
-        const sub = document.getElementById('contactSubject');
-        if (sub) sub.value = `GuruAI Premium Request: ${model || 'High-Context Model'}`;
-        const msg = document.getElementById('contactMessage');
-        if (msg) msg.value = `GuruAI Premium Model Request:
-• Selected Model: ${model || 'Guru-Flash 1.3'}
-• Plan Tier: ${plan || 'Starter Premium'}
-• Pricing: $${price || '5'}
+    // 1. Detect AI Model Upgrade Parameters & Toggle Specialized Confirmation UI
+    let verifiedActiveUser = null;
 
-Please verify and send payment link.`;
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const isUpgrade = params.get('subject') === 'ai_upgrade' || params.get('model');
+      const modelParam = params.get('model') || 'Guru-Flash 1.3';
+      const planParam = params.get('plan') || 'Starter Premium ($5)';
+      const priceParam = params.get('price') || '5';
+      const emailParam = params.get('email');
+
+      if (!isUpgrade) return;
+
+      // 1. Switch Form Look to AI Premium Desk
+      const stdForm = document.getElementById('contact-form');
+      const stdHeading = document.querySelector('.contact-form-heading');
+      const stdSub = document.querySelector('.contact-form-sub');
+      const confirmCard = document.getElementById('ai-premium-confirmation-card');
+      const guestCard = document.getElementById('ai-guest-lock-card');
+
+      if (stdForm) stdForm.style.display = 'none';
+      if (stdHeading) stdHeading.textContent = '⚡ GuruAI Premium Model Request Desk';
+      if (stdSub) stdSub.textContent = 'Confirm your selected model below to send your verification request directly to HarshGuruJi Central Admin.';
+
+      // Check user authentication via Supabase session or verified email param
+      let loggedUser = null;
+      try {
+        if (window.supabase) {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (client) {
+            const { data } = await client.auth.getSession();
+            if (data?.session?.user) {
+              loggedUser = data.session.user;
+            }
+          }
+        }
+      } catch(e) {}
+
+      // If user came with emailParam from logged-in AI page or has session
+      if (loggedUser || emailParam) {
+        verifiedActiveUser = {
+          id: loggedUser?.id || '',
+          email: loggedUser?.email || emailParam,
+          name: loggedUser?.user_metadata?.full_name || loggedUser?.user_metadata?.name || (loggedUser?.email || emailParam).split('@')[0],
+          avatar: loggedUser?.user_metadata?.avatar_url || ''
+        };
+
+        if (confirmCard) confirmCard.style.display = 'block';
+        if (guestCard) guestCard.style.display = 'none';
+
+        // Populate card details
+        const badgeEl = document.getElementById('ai-card-model-badge');
+        if (badgeEl) badgeEl.textContent = modelParam + ' • $' + priceParam;
+
+        const nameEl = document.getElementById('ai-user-name');
+        if (nameEl) nameEl.textContent = verifiedActiveUser.name;
+
+        const emailEl = document.getElementById('ai-user-email');
+        if (emailEl) emailEl.textContent = verifiedActiveUser.email;
+
+        const avatarImg = document.getElementById('ai-user-avatar-img');
+        const avatarLetter = document.getElementById('ai-user-avatar-letter');
+        if (verifiedActiveUser.avatar && avatarImg) {
+          avatarImg.src = verifiedActiveUser.avatar;
+          avatarImg.style.display = 'block';
+          if (avatarLetter) avatarLetter.style.display = 'none';
+        } else if (avatarLetter) {
+          avatarLetter.textContent = verifiedActiveUser.name.charAt(0).toUpperCase();
+        }
+
+        const modelEl = document.getElementById('ai-summary-model');
+        if (modelEl) modelEl.textContent = modelParam;
+
+        const planEl = document.getElementById('ai-summary-plan');
+        if (planEl) planEl.textContent = planParam;
+
+        const priceEl = document.getElementById('ai-summary-price');
+        if (priceEl) priceEl.textContent = '$' + priceParam + ' / Activation';
+
+      } else {
+        // Guest user blocked - prompt sign in
+        if (confirmCard) confirmCard.style.display = 'none';
+        if (guestCard) guestCard.style.display = 'block';
       }
     });
 
-    async function handleContactSubmit(e) {
-      e.preventDefault();
-      const btn = document.getElementById('contactBtn');
-      btn.disabled = true;
-      btn.textContent = 'Submitting...';
+    // 2. Execute 1-Click Confirmation and Register to Supabase contact_messages
+    async function executeAiPremiumConfirmation() {
+      if (!verifiedActiveUser || !verifiedActiveUser.email) {
+        alert("Please sign in to confirm this request.");
+        window.location.href = 'https://ai.webguruji.online/#login';
+        return;
+      }
 
-      const name = document.getElementById('contactName').value.trim();
-      const email = document.getElementById('contactEmail').value.trim();
-      const subject = document.getElementById('contactSubject').value.trim();
-      const message = document.getElementById('contactMessage').value.trim();
+      const btn = document.getElementById('ai-confirm-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⚡ Submitting to Admin Desk...</span>';
+      }
 
       const params = new URLSearchParams(window.location.search);
       const model = params.get('model') || 'Guru-Flash 1.3';
+      const plan = params.get('plan') || 'Starter Premium';
+      const price = params.get('price') || '5';
 
       try {
-        localStorage.setItem('guru_ai_last_upgrade_email', email);
+        if (window.supabase) {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (client) {
+            await client.from('contact_messages').insert([{
+              name: verifiedActiveUser.name,
+              email: verifiedActiveUser.email,
+              subject: 'AI_PREMIUM_UPGRADE',
+              message: 'GuruAI Premium Model Request:\n• Selected Model: ' + model + '\n• Plan Tier: ' + plan + '\n• Requested Pricing: $' + price + '\n• User ID: ' + (verifiedActiveUser.id || 'N/A') + '\n• Status: Awaiting Admin Approval',
+              status: 'Pending Admin Review',
+              created_at: new Date().toISOString()
+            }]);
+          }
+        }
+
+        localStorage.setItem('guru_ai_last_upgrade_email', verifiedActiveUser.email);
         localStorage.setItem('guru_ai_requested_model', model);
 
-        const alertBox = document.getElementById('contactAlert');
-        alertBox.innerHTML = `
-          <div class="font-bold text-emerald-400 text-sm mb-1">✓ Request Submitted!</div>
-          <div class="text-xs text-white font-semibold mb-2">we will contact you for this premium within 3 days</div>
-          <div class="text-[11px] text-slate-300 mb-3">Official email sent from info@webguruji.online with model details & payment link.</div>
-          
-          <a href="https://payment.webguruji.online/?email=${encodeURIComponent(email)}&token=${(function(e){let h=0,s=e.toLowerCase().trim()+'::HarshGuruJiPaymentAuth2026';for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return 'hg_token_'+Math.abs(h).toString(36);})(email)}&source=email" class="inline-block py-1.5 px-3.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md">Pay Online at payment.webguruji.online →</a>
-        `;
-        alertBox.classList.remove('hidden');
-        btn.textContent = 'Request Received ✓';
+        // Replace card with success celebration
+        const confirmCard = document.getElementById('ai-premium-confirmation-card');
+        if (confirmCard) {
+          confirmCard.innerHTML = '<div style="text-align:center; padding:1.5rem 0.5rem;">' +
+            '<div style="font-size:3.5rem; margin-bottom:0.75rem;">👑✓</div>' +
+            '<h2 style="color:#34d399; font-size:1.5rem; font-weight:800; margin:0 0 8px 0; font-family:sans-serif;">Request Submitted Successfully!</h2>' +
+            '<div style="font-size:1.05rem; font-weight:700; color:#ffffff; margin-bottom:1rem;">we will contact you for this premium within 3 days</div>' +
+            '<p style="font-size:0.88rem; color:#cbd5e1; max-width:480px; margin:0 auto 1.5rem auto; line-height:1.6;">' +
+              'Your premium request for <strong>' + model + '</strong> has been registered in the HarshGuruJi Administrator Inquiry Desk. Once approved, you will receive an official payment link at <strong>' + verifiedActiveUser.email + '</strong> from <strong>info@webguruji.online</strong> to unlock your model.' +
+            '</p>' +
+            '<div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">' +
+              '<a href="https://ai.webguruji.online/" class="form-submit-btn" style="display:inline-flex; width:auto; padding:10px 24px; text-decoration:none;">' +
+                '<span>Return to GuruAI Assistant</span>' +
+              '</a>' +
+            '</div>' +
+          '</div>';
+        }
       } catch(err) {
-        btn.textContent = 'Message Sent';
+        console.error("Confirmation error:", err);
+        alert("Failed to submit request: " + err.message);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Try Confirm Again</span>';
+        }
+      }
+    }
+
+    async function handleContactCardSubmit(event) {
+      event.preventDefault();
+      const btn = document.getElementById('contact-submit-btn');
+      const alertBox = document.getElementById('contact-status-alert');
+      
+      const name = document.getElementById('contact-name').value.trim();
+      const email = document.getElementById('contact-email').value.trim();
+      const subject = document.getElementById('contact-subject').value;
+      const message = document.getElementById('contact-message').value.trim();
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>Submitting Request...</span>';
+      
+      const params = new URLSearchParams(window.location.search);
+      const isAiUpgrade = subject === 'ai' || params.get('subject') === 'ai_upgrade' || message.includes('GuruAI Premium');
+      const requestedModel = params.get('model') || (message.match(/Selected Model:\s*([^\r\n]+)/i)?.[1]) || 'Guru-Flash 1.3';
+
+      try {
+        // 1. Persist to Supabase contact_messages
+        if (window.supabase) {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (client) {
+            await client.from('contact_messages').insert([{
+              name: name,
+              email: email,
+              subject: isAiUpgrade ? 'AI_UPGRADE' : subject,
+              message: message,
+              status: 'Pending',
+              created_at: new Date().toISOString()
+            }]);
+          }
+        }
+
+        // Store email locally for instant claim on payment page
+        localStorage.setItem('guru_ai_last_upgrade_email', email);
+        localStorage.setItem('guru_ai_requested_model', requestedModel);
+
+        // Token generation helper for secure authorized payment link
+        function generatePaymentToken(emailStr) {
+          if (!emailStr) return '';
+          let hash = 0;
+          const str = emailStr.toLowerCase().trim() + '::HarshGuruJiPaymentAuth2026';
+          for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash |= 0;
+          }
+          return 'hg_token_' + Math.abs(hash).toString(36);
+        }
+        const payToken = generatePaymentToken(email);
+        const authorizedPaymentUrl = `https://payment.webguruji.online/?email=${encodeURIComponent(email)}&token=${payToken}&source=email`;
+
+        // 2. Dispatch email notification from info@webguruji.online with authorized payment link
+        try {
+          const mailApi = (window.location.protocol === 'https:' && window.location.origin.includes('webguruji.online')) ? '/api/mail/send' : 'https://ai.webguruji.online/api/mail/send';
+          await fetch(mailApi, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: email,
+              name: name,
+              type: 'ai_upgrade_invoice',
+              modelName: requestedModel,
+              planName: params.get('plan') || 'Premium Model',
+              paymentUrl: authorizedPaymentUrl
+            })
+          });
+        } catch(e) {}
+
+        // 3. Show exact requested confirmation message
+        alertBox.innerHTML = `
+          <div style="font-size:1.1rem; font-weight:800; color:#10b981; margin-bottom:0.4rem;">✓ Request Submitted Successfully!</div>
+          <div style="font-size:0.95rem; color:#f8fafc; font-weight:600; margin-bottom:0.75rem;">we will contact you for this premium within 3 days</div>
+          <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:1rem; line-height:1.5;">
+            An official instruction email has also been sent from <strong>info@webguruji.online</strong> with full model details.<br>
+            You can also complete payment immediately to unlock:
+          </div>
+          <a href="${authorizedPaymentUrl}" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg, #ffd700, #f59e0b); color:#0f172a; font-weight:800; font-size:0.88rem; padding:8px 20px; border-radius:50px; text-decoration:none; box-shadow:0 0 20px rgba(245,158,11,0.4);">
+            <span>Proceed to payment.webguruji.online</span> →
+          </a>
+        `;
+        alertBox.style.display = 'block';
+        btn.innerHTML = '<span>Request Received ✓</span>';
+        btn.style.background = '#10b981';
+        document.getElementById('contact-form').reset();
+
+      } catch (err) {
+        console.error('Submission error:', err);
+        alertBox.innerHTML = `
+          <div style="font-weight:700; color:#10b981;">✓ we will contact you for this premium within 3 days</div>
+          <div style="font-size:0.85rem; margin-top:0.4rem;"><a href="${authorizedPaymentUrl}" style="color:#ffd700; text-decoration:underline;">Click here to open payment.webguruji.online ↗</a></div>
+        `;
+        alertBox.style.display = 'block';
+      } finally {
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Send Message</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+          btn.style.background = '';
+        }, 5000);
       }
     }
   </script>
+  <script src="loading-lines.js" defer></script>
+</body>
+</html>
+ + priceParam;
 
-  <!-- Footer -->
-  <footer class="py-6 border-t border-slate-800/80 bg-[#070913] text-center text-xs text-slate-500 z-10">
-    <div class="flex flex-wrap items-center justify-center gap-4 mb-2">
-      <a href="privacy.html" class="text-slate-400 hover:text-white">Privacy Policy</a>
-      <span>•</span>
-      <a href="terms.html" class="text-slate-400 hover:text-white">Terms of Service</a>
-      <span>•</span>
-      <a href="about.html" class="text-slate-400 hover:text-white">About Us</a>
-      <span>•</span>
-      <a href="contact.html" class="text-slate-300 hover:text-white underline">Contact Us</a>
-      <span>•</span>
-      <a href="disclaimer.html" class="text-slate-400 hover:text-white">Disclaimer</a>
-    </div>
-    <div>
-      GuruAI by <img src="https://webguruji.online/logo.png" alt="HarshGuruJi Logo" style="height: 1.1em; width: 1.1em; border-radius: 3px; vertical-align: middle; display: inline-block; margin-right: 3px;" />HarshGuruJi • <a href="https://webguruji.online" target="_blank" class="text-slate-400 hover:text-slate-300 underline">webguruji.online</a>
-    </div>
-  </footer>
+        const nameEl = document.getElementById('ai-user-name');
+        if (nameEl) nameEl.textContent = verifiedActiveUser.name;
 
+        const emailEl = document.getElementById('ai-user-email');
+        if (emailEl) emailEl.textContent = verifiedActiveUser.email;
+
+        const avatarImg = document.getElementById('ai-user-avatar-img');
+        const avatarLetter = document.getElementById('ai-user-avatar-letter');
+        if (verifiedActiveUser.avatar && avatarImg) {
+          avatarImg.src = verifiedActiveUser.avatar;
+          avatarImg.style.display = 'block';
+          if (avatarLetter) avatarLetter.style.display = 'none';
+        } else if (avatarLetter) {
+          avatarLetter.textContent = verifiedActiveUser.name.charAt(0).toUpperCase();
+        }
+
+        const modelEl = document.getElementById('ai-summary-model');
+        if (modelEl) modelEl.textContent = modelParam;
+
+        const planEl = document.getElementById('ai-summary-plan');
+        if (planEl) planEl.textContent = planParam;
+
+        const priceEl = document.getElementById('ai-summary-price');
+        if (priceEl) priceEl.textContent = 'async function handleContactCardSubmit(event) {
+      event.preventDefault();
+      const btn = document.getElementById('contact-submit-btn');
+      const alertBox = document.getElementById('contact-status-alert');
+      
+      const name = document.getElementById('contact-name').value.trim();
+      const email = document.getElementById('contact-email').value.trim();
+      const subject = document.getElementById('contact-subject').value;
+      const message = document.getElementById('contact-message').value.trim();
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>Submitting Request...</span>';
+      
+      const params = new URLSearchParams(window.location.search);
+      const isAiUpgrade = subject === 'ai' || params.get('subject') === 'ai_upgrade' || message.includes('GuruAI Premium');
+      const requestedModel = params.get('model') || (message.match(/Selected Model:\s*([^\r\n]+)/i)?.[1]) || 'Guru-Flash 1.3';
+
+      try {
+        // 1. Persist to Supabase contact_messages
+        if (window.supabase) {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (client) {
+            await client.from('contact_messages').insert([{
+              name: name,
+              email: email,
+              subject: isAiUpgrade ? 'AI_UPGRADE' : subject,
+              message: message,
+              status: 'Pending',
+              created_at: new Date().toISOString()
+            }]);
+          }
+        }
+
+        // Store email locally for instant claim on payment page
+        localStorage.setItem('guru_ai_last_upgrade_email', email);
+        localStorage.setItem('guru_ai_requested_model', requestedModel);
+
+        // Token generation helper for secure authorized payment link
+        function generatePaymentToken(emailStr) {
+          if (!emailStr) return '';
+          let hash = 0;
+          const str = emailStr.toLowerCase().trim() + '::HarshGuruJiPaymentAuth2026';
+          for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash |= 0;
+          }
+          return 'hg_token_' + Math.abs(hash).toString(36);
+        }
+        const payToken = generatePaymentToken(email);
+        const authorizedPaymentUrl = `https://payment.webguruji.online/?email=${encodeURIComponent(email)}&token=${payToken}&source=email`;
+
+        // 2. Dispatch email notification from info@webguruji.online with authorized payment link
+        try {
+          const mailApi = (window.location.protocol === 'https:' && window.location.origin.includes('webguruji.online')) ? '/api/mail/send' : 'https://ai.webguruji.online/api/mail/send';
+          await fetch(mailApi, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: email,
+              name: name,
+              type: 'ai_upgrade_invoice',
+              modelName: requestedModel,
+              planName: params.get('plan') || 'Premium Model',
+              paymentUrl: authorizedPaymentUrl
+            })
+          });
+        } catch(e) {}
+
+        // 3. Show exact requested confirmation message
+        alertBox.innerHTML = `
+          <div style="font-size:1.1rem; font-weight:800; color:#10b981; margin-bottom:0.4rem;">✓ Request Submitted Successfully!</div>
+          <div style="font-size:0.95rem; color:#f8fafc; font-weight:600; margin-bottom:0.75rem;">we will contact you for this premium within 3 days</div>
+          <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:1rem; line-height:1.5;">
+            An official instruction email has also been sent from <strong>info@webguruji.online</strong> with full model details.<br>
+            You can also complete payment immediately to unlock:
+          </div>
+          <a href="${authorizedPaymentUrl}" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg, #ffd700, #f59e0b); color:#0f172a; font-weight:800; font-size:0.88rem; padding:8px 20px; border-radius:50px; text-decoration:none; box-shadow:0 0 20px rgba(245,158,11,0.4);">
+            <span>Proceed to payment.webguruji.online</span> →
+          </a>
+        `;
+        alertBox.style.display = 'block';
+        btn.innerHTML = '<span>Request Received ✓</span>';
+        btn.style.background = '#10b981';
+        document.getElementById('contact-form').reset();
+
+      } catch (err) {
+        console.error('Submission error:', err);
+        alertBox.innerHTML = `
+          <div style="font-weight:700; color:#10b981;">✓ we will contact you for this premium within 3 days</div>
+          <div style="font-size:0.85rem; margin-top:0.4rem;"><a href="${authorizedPaymentUrl}" style="color:#ffd700; text-decoration:underline;">Click here to open payment.webguruji.online ↗</a></div>
+        `;
+        alertBox.style.display = 'block';
+      } finally {
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Send Message</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+          btn.style.background = '';
+        }, 5000);
+      }
+    }
+  </script>
+  <script src="loading-lines.js" defer></script>
+</body>
+</html>
+ + priceParam + ' / Activation';
+
+      } else {
+        // Guest user blocked - prompt sign in
+        if (confirmCard) confirmCard.style.display = 'none';
+        if (guestCard) guestCard.style.display = 'block';
+      }
+    });
+
+    // 2. Execute 1-Click Confirmation and Register to Supabase contact_messages
+    async function executeAiPremiumConfirmation() {
+      if (!verifiedActiveUser || !verifiedActiveUser.email) {
+        alert("Please sign in to confirm this request.");
+        window.location.href = 'https://ai.webguruji.online/#login';
+        return;
+      }
+
+      const btn = document.getElementById('ai-confirm-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⚡ Submitting to Admin Desk...</span>';
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const model = params.get('model') || 'Guru-Flash 1.3';
+      const plan = params.get('plan') || 'Starter Premium';
+      const price = params.get('price') || '5';
+
+      try {
+        if (window.supabase) {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (client) {
+            await client.from('contact_messages').insert([{
+              name: verifiedActiveUser.name,
+              email: verifiedActiveUser.email,
+              subject: 'AI_PREMIUM_UPGRADE',
+              message: `GuruAI Premium Model Request:\n• Selected Model: ${model}\n• Plan Tier: ${plan}\n• Requested Pricing: ${price}\n• User ID: ${verifiedActiveUser.id || 'N/A'}\n• Status: Awaiting Admin Approval`,
+              status: 'Pending Admin Review',
+              created_at: new Date().toISOString()
+            }]);
+          }
+        }
+
+        localStorage.setItem('guru_ai_last_upgrade_email', verifiedActiveUser.email);
+        localStorage.setItem('guru_ai_requested_model', model);
+
+        // Replace card with success celebration
+        const confirmCard = document.getElementById('ai-premium-confirmation-card');
+        if (confirmCard) {
+          confirmCard.innerHTML = `
+            <div style="text-align:center; padding:1.5rem 0.5rem;">
+              <div style="font-size:3.5rem; margin-bottom:0.75rem;">👑✓</div>
+              <h2 style="color:#34d399; font-size:1.5rem; font-weight:800; margin:0 0 8px 0; font-family:sans-serif;">Request Submitted Successfully!</h2>
+              <div style="font-size:1.05rem; font-weight:700; color:#ffffff; margin-bottom:1rem;">we will contact you for this premium within 3 days</div>
+              <p style="font-size:0.88rem; color:#cbd5e1; max-width:480px; margin:0 auto 1.5rem auto; line-height:1.6;">
+                Your premium request for <strong>${model}</strong> has been registered in the HarshGuruJi Administrator Inquiry Desk. Once approved, you will receive an official payment link at <strong>${verifiedActiveUser.email}</strong> from <strong>info@webguruji.online</strong> to unlock your model.
+              </p>
+              <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+                <a href="https://ai.webguruji.online/" class="form-submit-btn" style="display:inline-flex; width:auto; padding:10px 24px; text-decoration:none;">
+                  <span>Return to GuruAI Assistant</span>
+                </a>
+              </div>
+            </div>
+          `;
+        }
+      } catch(err) {
+        console.error("Confirmation error:", err);
+        alert("Failed to submit request: " + err.message);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Try Confirm Again</span>';
+        }
+      }
+    }
+
+    async function handleContactCardSubmit(event) {
+      event.preventDefault();
+      const btn = document.getElementById('contact-submit-btn');
+      const alertBox = document.getElementById('contact-status-alert');
+      
+      const name = document.getElementById('contact-name').value.trim();
+      const email = document.getElementById('contact-email').value.trim();
+      const subject = document.getElementById('contact-subject').value;
+      const message = document.getElementById('contact-message').value.trim();
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>Submitting Request...</span>';
+      
+      const params = new URLSearchParams(window.location.search);
+      const isAiUpgrade = subject === 'ai' || params.get('subject') === 'ai_upgrade' || message.includes('GuruAI Premium');
+      const requestedModel = params.get('model') || (message.match(/Selected Model:\s*([^\r\n]+)/i)?.[1]) || 'Guru-Flash 1.3';
+
+      try {
+        // 1. Persist to Supabase contact_messages
+        if (window.supabase) {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (client) {
+            await client.from('contact_messages').insert([{
+              name: name,
+              email: email,
+              subject: isAiUpgrade ? 'AI_UPGRADE' : subject,
+              message: message,
+              status: 'Pending',
+              created_at: new Date().toISOString()
+            }]);
+          }
+        }
+
+        // Store email locally for instant claim on payment page
+        localStorage.setItem('guru_ai_last_upgrade_email', email);
+        localStorage.setItem('guru_ai_requested_model', requestedModel);
+
+        // Token generation helper for secure authorized payment link
+        function generatePaymentToken(emailStr) {
+          if (!emailStr) return '';
+          let hash = 0;
+          const str = emailStr.toLowerCase().trim() + '::HarshGuruJiPaymentAuth2026';
+          for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash |= 0;
+          }
+          return 'hg_token_' + Math.abs(hash).toString(36);
+        }
+        const payToken = generatePaymentToken(email);
+        const authorizedPaymentUrl = `https://payment.webguruji.online/?email=${encodeURIComponent(email)}&token=${payToken}&source=email`;
+
+        // 2. Dispatch email notification from info@webguruji.online with authorized payment link
+        try {
+          const mailApi = (window.location.protocol === 'https:' && window.location.origin.includes('webguruji.online')) ? '/api/mail/send' : 'https://ai.webguruji.online/api/mail/send';
+          await fetch(mailApi, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: email,
+              name: name,
+              type: 'ai_upgrade_invoice',
+              modelName: requestedModel,
+              planName: params.get('plan') || 'Premium Model',
+              paymentUrl: authorizedPaymentUrl
+            })
+          });
+        } catch(e) {}
+
+        // 3. Show exact requested confirmation message
+        alertBox.innerHTML = `
+          <div style="font-size:1.1rem; font-weight:800; color:#10b981; margin-bottom:0.4rem;">✓ Request Submitted Successfully!</div>
+          <div style="font-size:0.95rem; color:#f8fafc; font-weight:600; margin-bottom:0.75rem;">we will contact you for this premium within 3 days</div>
+          <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:1rem; line-height:1.5;">
+            An official instruction email has also been sent from <strong>info@webguruji.online</strong> with full model details.<br>
+            You can also complete payment immediately to unlock:
+          </div>
+          <a href="${authorizedPaymentUrl}" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg, #ffd700, #f59e0b); color:#0f172a; font-weight:800; font-size:0.88rem; padding:8px 20px; border-radius:50px; text-decoration:none; box-shadow:0 0 20px rgba(245,158,11,0.4);">
+            <span>Proceed to payment.webguruji.online</span> →
+          </a>
+        `;
+        alertBox.style.display = 'block';
+        btn.innerHTML = '<span>Request Received ✓</span>';
+        btn.style.background = '#10b981';
+        document.getElementById('contact-form').reset();
+
+      } catch (err) {
+        console.error('Submission error:', err);
+        alertBox.innerHTML = `
+          <div style="font-weight:700; color:#10b981;">✓ we will contact you for this premium within 3 days</div>
+          <div style="font-size:0.85rem; margin-top:0.4rem;"><a href="${authorizedPaymentUrl}" style="color:#ffd700; text-decoration:underline;">Click here to open payment.webguruji.online ↗</a></div>
+        `;
+        alertBox.style.display = 'block';
+      } finally {
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Send Message</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+          btn.style.background = '';
+        }, 5000);
+      }
+    }
+  </script>
   <script src="loading-lines.js" defer></script>
 </body>
 </html>
