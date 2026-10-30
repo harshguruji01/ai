@@ -4,6 +4,22 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Guarantee HarshGuruJi Universal Loading Lines (@ruhith369 / 21st.dev)
+  try {
+    if (!document.querySelector('link[href*="loading-lines.css"]')) {
+      const llCss = document.createElement('link');
+      llCss.rel = 'stylesheet';
+      llCss.href = 'loading-lines.css';
+      document.head.appendChild(llCss);
+    }
+    if (!window.renderHarshLoader && !document.querySelector('script[src*="loading-lines.js"]')) {
+      const llScript = document.createElement('script');
+      llScript.src = 'loading-lines.js';
+      llScript.defer = true;
+      document.body.appendChild(llScript);
+    }
+  } catch(e) {}
+
   // Ensure Google AdSense on public content pages
   const isNoIndex = document.querySelector('meta[name="robots"][content*="noindex"]');
   const path = (window.location.pathname || '').toLowerCase();

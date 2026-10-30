@@ -36,6 +36,7 @@
     body { background-color: #030712; color: #f8fafc; font-family: 'Inter', system-ui, sans-serif; }
     .ambient-glow { position: fixed; width: 500px; height: 500px; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; opacity: 0.12; }
   </style>
+  <link rel="stylesheet" href="loading-lines.css">
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
@@ -67,102 +68,135 @@
   </header>
 
   <!-- Main Content -->
-  <main class="w-full max-w-4xl mx-auto px-4 sm:px-6 py-10 z-10 relative">
+  <!-- Main Content (21st.dev Contact Card) -->
+  <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 z-10 relative">
     
-    <div class="mb-8">
-      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold mb-3">
-        <span>📬 Support &amp; Inquiries</span>
+    <!-- 21st.dev Contact Card -->
+    <div class="relative bg-[#090e1a]/95 border border-slate-800 rounded-3xl shadow-2xl grid grid-cols-1 lg:grid-cols-3 overflow-visible backdrop-blur-xl">
+      <!-- 4 Signature Corner Crosshairs (PlusIcon) -->
+      <svg class="absolute -top-3 -left-3 h-6 w-6 text-slate-500/80 transition-transform hover:rotate-90 hover:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <svg class="absolute -top-3 -right-3 h-6 w-6 text-slate-500/80 transition-transform hover:rotate-90 hover:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <svg class="absolute -bottom-3 -left-3 h-6 w-6 text-slate-500/80 transition-transform hover:rotate-90 hover:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <svg class="absolute -bottom-3 -right-3 h-6 w-6 text-slate-500/80 transition-transform hover:rotate-90 hover:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+
+      <!-- Left Section: Details & Contact Info Blocks (lg:col-span-2) -->
+      <div class="flex flex-col justify-between lg:col-span-2 p-6 sm:p-10">
+        <div class="space-y-4">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
+            <span>📬 Support &amp; Inquiries</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white font-heading">
+            Contact With Us
+          </h1>
+          <p class="text-slate-400 max-w-xl text-sm sm:text-base leading-relaxed">
+            If you have any questions regarding GuruAI, Guru-Flash 1.1 reasoning models, quota upgrades, or need technical assistance, please fill out the form here. We do our best to respond within 1 business day.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+            <!-- Contact Info: General Support -->
+            <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-indigo-500/40 transition-colors">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-lg flex-shrink-0">
+                ✉️
+              </div>
+              <div>
+                <p class="font-medium text-xs text-slate-200">General &amp; Technical Support</p>
+                <a href="mailto:info@webguruji.online" class="text-xs font-mono text-cyan-400 hover:underline block mt-0.5">info@webguruji.online</a>
+                <p class="text-[10px] text-slate-500 mt-1">Bug reports, API &amp; Guru-Flash 1.1</p>
+              </div>
+            </div>
+
+            <!-- Contact Info: Legal & Privacy -->
+            <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-cyan-500/40 transition-colors">
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg flex-shrink-0">
+                🛡️
+              </div>
+              <div>
+                <p class="font-medium text-xs text-slate-200">Legal, Privacy &amp; Data Desk</p>
+                <a href="mailto:contact@webguruji.online" class="text-xs font-mono text-cyan-400 hover:underline block mt-0.5">contact@webguruji.online</a>
+                <p class="text-[10px] text-slate-500 mt-1">GDPR requests &amp; compliance</p>
+              </div>
+            </div>
+
+            <!-- Contact Info: Headquarters -->
+            <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-colors sm:col-span-2">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg flex-shrink-0">
+                🌐
+              </div>
+              <div>
+                <p class="font-medium text-xs text-slate-200">Platform Headquarters</p>
+                <p class="text-xs text-slate-300 mt-0.5">HarshGuruJi Ecosystem • India (IST Timezone)</p>
+                <p class="text-[10px] text-slate-500 mt-0.5">Operating Hours: Mon-Sat, 9 AM - 7 PM IST</p>
+              </div>
+            </div>
+
+            <!-- Contact Info: Creator -->
+            <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-purple-500/40 transition-colors sm:col-span-2">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-lg flex-shrink-0">
+                👨‍💻
+              </div>
+              <div>
+                <p class="font-medium text-xs text-slate-200">Creator Information</p>
+                <a href="https://webguruji.online/owner.html" target="_blank" class="text-xs text-cyan-400 hover:underline font-medium block mt-0.5">
+                  Harsh Patel (HarshGuruJi) • Founder Profile ↗
+                </a>
+                <p class="text-[10px] text-slate-500 mt-0.5">YouTube: @harshguruji1 &bull; Telegram: @harshguruji</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-heading">
-        Contact Developer &amp; Support
-      </h1>
-      <p class="text-sm text-slate-400 mt-2">
-        Have questions about GuruAI features, quota upgrades, or partnership opportunities? Reach out below.
-      </p>
-    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
-      <!-- Contact Info Cards -->
-      <div class="space-y-4">
-        
-        <div class="rounded-3xl bg-[#090e1a]/90 border border-slate-800 p-6 shadow-xl space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-lg">
-            ✉️
-          </div>
-          <h2 class="text-base font-bold text-white font-heading">General &amp; Technical Support</h2>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            For technical bug reports, API questions, or feedback regarding Guru-Flash 1.1 or SDXL:
-          </p>
-          <a href="mailto:info@webguruji.online" class="inline-block text-xs font-mono text-cyan-400 hover:underline">
-            info@webguruji.online
-          </a>
-        </div>
-
-        <div class="rounded-3xl bg-[#090e1a]/90 border border-slate-800 p-6 shadow-xl space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
-            🛡️
-          </div>
-          <h2 class="text-base font-bold text-white font-heading">Legal, Privacy &amp; Data Desk</h2>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            For GDPR data requests, copyright notices, or advertising inquiries:
-          </p>
-          <a href="mailto:contact@webguruji.online" class="inline-block text-xs font-mono text-cyan-400 hover:underline">
-            contact@webguruji.online
-          </a>
-        </div>
-
-        <div class="rounded-3xl bg-[#090e1a]/90 border border-slate-800 p-6 shadow-xl space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-lg">
-            👨‍💻
-          </div>
-          <h2 class="text-base font-bold text-white font-heading">Creator Information</h2>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Harsh Patel (HarshGuruJi) • WebGuruJi Ecosystem
-          </p>
-          <a href="https://webguruji.online/owner.html" target="_blank" class="inline-block text-xs text-cyan-400 hover:underline">
-            Read Creator Biography ↗
-          </a>
-        </div>
-
-      </div>
-
-      <!-- Quick Message Form -->
-      <div class="rounded-3xl bg-[#090e1a]/90 border border-slate-800 p-6 sm:p-8 shadow-xl flex flex-col justify-between">
+      <!-- Right Section: Inquiry Form (lg:col-span-1 border-t lg:border-t-0 lg:border-l) -->
+      <div class="bg-slate-950/70 flex h-full w-full flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-800/80 p-6 sm:p-8 rounded-b-3xl lg:rounded-r-3xl lg:rounded-bl-none">
         <form onsubmit="handleContactSubmit(event)" class="space-y-4">
-          <h2 class="text-lg font-bold text-white font-heading">Send a Direct Message</h2>
+          <div>
+            <h2 class="text-lg font-bold text-white font-heading">Send a Direct Message</h2>
+            <p class="text-xs text-slate-400 mt-0.5">We respond within 1 business day.</p>
+          </div>
           
           <div id="contactAlert" class="hidden p-3 rounded-xl bg-emerald-950/60 border border-emerald-800 text-xs text-emerald-300">
             Thank you! Your message has been received. We will respond shortly to your email.
           </div>
 
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Your Name</label>
-            <input id="contactName" type="text" required placeholder="John Doe" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          <div class="space-y-1">
+            <label class="block text-xs font-medium text-slate-300">Your Name</label>
+            <input id="contactName" type="text" required placeholder="John Doe" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
           </div>
 
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Your Email</label>
-            <input id="contactEmail" type="email" required placeholder="name@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          <div class="space-y-1">
+            <label class="block text-xs font-medium text-slate-300">Your Email</label>
+            <input id="contactEmail" type="email" required placeholder="name@example.com" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
           </div>
 
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Subject</label>
-            <input id="contactSubject" type="text" required placeholder="Question about GuruAI" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          <div class="space-y-1">
+            <label class="block text-xs font-medium text-slate-300">Subject</label>
+            <input id="contactSubject" type="text" required placeholder="Question about GuruAI" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
           </div>
 
-          <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Message</label>
-            <textarea id="contactMessage" rows="4" required placeholder="How can we help you?" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
+          <div class="space-y-1">
+            <label class="block text-xs font-medium text-slate-300">Message</label>
+            <textarea id="contactMessage" rows="4" required placeholder="How can we help you?" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
           </div>
 
-          <button type="submit" id="contactBtn" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition shadow-md">
-            <span>Send Message</span>
+          <button type="submit" id="contactBtn" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 shadow-lg shadow-indigo-500/25 transition-all">
+            <span>Send Message →</span>
           </button>
         </form>
       </div>
-
     </div>
+
   </main>
 
   <script>
@@ -202,5 +236,6 @@
     </div>
   </footer>
 
+  <script src="loading-lines.js" defer></script>
 </body>
 </html>
