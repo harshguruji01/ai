@@ -421,6 +421,20 @@ test('Task 3: AI login portal implements email verification code flow', () => {
   assert.ok(aiLogin.includes('loginOtpSection'), 'ai login.html must have loginOtpSection');
 });
 
+test('Task 4: In-App Login preservation and deep linking parity between Web & Android APK', () => {
+  const indexHtml = fs.readFileSync('index.html', 'utf8');
+  assert.ok(indexHtml.includes('isNativeAppEnvironment'), 'index.html must detect native app environment');
+  assert.ok(indexHtml.includes('handleAuthTokensFromUrl'), 'index.html must have deep link & URL token handler');
+  assert.ok(indexHtml.includes('appUrlOpen'), 'index.html must listen for Capacitor appUrlOpen events');
+
+  const loginHtml = fs.readFileSync('login.html', 'utf8');
+  assert.ok(loginHtml.includes('performPostLoginRedirect'), 'login.html must have performPostLoginRedirect');
+  assert.ok(loginHtml.includes('online.webguruji.ai://login-callback'), 'login.html must support app scheme redirect');
+
+  const manifest = fs.readFileSync('android/app/src/main/AndroidManifest.xml', 'utf8');
+  assert.ok(manifest.includes('android:scheme="online.webguruji.ai"'), 'AndroidManifest.xml must declare online.webguruji.ai scheme');
+});
+
 
 console.log(`\n========================================`);
 console.log(`Test Summary: ${passedTests} passed, ${failedTests} failed.`);
