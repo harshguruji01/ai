@@ -46,16 +46,22 @@
   }
 
   /* Daylight high-contrast text overrides */
-  body.theme-light .text-white,
   body.theme-light .text-slate-100,
   body.theme-light .text-slate-200,
-  body.theme-light .text-slate-300 {
-    color: #000000 !important;
+  body.theme-light .text-slate-300,
+  body.theme-light .text-white:not([class*="bg-indigo"]):not([class*="bg-gradient"]):not([class*="bg-rose"]) {
+    color: #0f172a !important;
+  }
+
+  body.theme-light [class*="bg-indigo"],
+  body.theme-light [class*="bg-gradient-to-r"],
+  body.theme-light [class*="bg-rose"] {
+    color: #ffffff !important;
   }
 
   body.theme-light .text-slate-400,
   body.theme-light .text-slate-500 {
-    color: #1e293b !important;
+    color: #334155 !important;
   }
 
   body.theme-light .bg-slate-950,
