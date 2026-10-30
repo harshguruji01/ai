@@ -839,8 +839,7 @@
         class="absolute bottom-14 md:bottom-0 left-0 right-0 z-20 pointer-events-none pb-2 sm:pb-4 px-2 sm:px-4 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/95 to-transparent pt-6 flex-shrink-0 z-20">
         <div class="w-full max-w-4xl mx-auto space-y-2 pointer-events-auto">
 
-          <form id="chatForm"
-            class="relative rounded-2xl border transition-all duration-200 backdrop-blur-2xl bg-white/[0.03] dark:bg-white/[0.02] border-white/[0.08] dark:border-white/[0.05] shadow-2xl focus-within:ring-2 focus-within:ring-violet-500/30 focus-within:border-violet-500/40">
+          <form id="chatForm" action="javascript:void(0);" onsubmit="if(window.handleChatSubmit){window.handleChatSubmit(event);}return false;" class="relative rounded-2xl border transition-all duration-200 backdrop-blur-2xl bg-white/[0.03] dark:bg-white/[0.02] border-white/[0.08] dark:border-white/[0.05] shadow-2xl focus-within:ring-2 focus-within:ring-violet-500/30 focus-within:border-violet-500/40">
             
             <!-- Command Palette Dropdown (Triggered by / or ⌘ button) -->
             <div id="commandPalette" class="hidden absolute left-3 right-3 bottom-full mb-2 backdrop-blur-xl bg-slate-950/95 border border-white/10 rounded-xl z-50 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-150">
@@ -974,7 +973,7 @@
                 </button>
 
                 <!-- Send Button (from Animated AI Chat) -->
-                <button type="submit" id="sendBtn"
+                <button type="button" id="sendBtn" onclick="if(window.handleChatSubmit){window.handleChatSubmit(event);}"
                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-white text-[#0A0A0B] shadow-lg shadow-white/10 hover:opacity-95 active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
                   title="Send Message">
                   <svg id="sendBtnIcon" class="w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2642,9 +2641,12 @@
     });
 
     promptInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if ((e.key === 'Enter' || e.keyCode === 13) && !e.shiftKey) {
         e.preventDefault();
-        chatForm.requestSubmit();
+        e.stopPropagation();
+        if (typeof window.handleChatSubmit === 'function') {
+          window.handleChatSubmit(e);
+        }
       }
     });
 
@@ -3136,10 +3138,39 @@
         } catch (e) { }
       }
 
-      // 1.8 Direct NVIDIA NIM Mistral Fallback for Guru-Flash 1.3 (Paid Model)
-      if (!backendStreamed && currentSelectedModel === 'guru-flash-1.3') {
+      // 1.5 Direct High-Performance NVIDIA NIM Multi-Model Stream Engine
+      // Official APIs provided for Guru-Flash 1.1, 1.2, 1.3, and Guru-Argon 1.4, 1.5
+      if (!backendStreamed) {
+        const GURU_NVIDIA_MAP = {
+          'guru-flash-1.1': {
+            model: 'nvidia/nemotron-3-ultra-550b-a55b',
+            apiKey: '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',
+            name: 'Guru-Flash 1.1'
+          },
+          'guru-flash-1.2': {
+            model: 'nvidia/nemotron-3-ultra-550b-a55b',
+            apiKey: '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',
+            name: 'Guru-Flash 1.2'
+          },
+          'guru-flash-1.3': {
+            model: 'nvidia/nemotron-3.5-bolt-e4b',
+            apiKey: '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',
+            name: 'Guru-Flash 1.3 High-Context Pro'
+          },
+          'guru-argon-1.4': {
+            model: 'nvidia/nemotron-3-ultra-550b-a55b',
+            apiKey: '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',
+            name: 'Guru-Argon 1.4'
+          },
+          'guru-argon-1.5': {
+            model: 'mistralai/mistral-large-4-1t-a52b',
+            apiKey: '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',
+            name: 'Guru-Argon 1.5 Ultra'
+          }
+        };
+
+        const activeModelConfig = GURU_NVIDIA_MAP[currentSelectedModel] || GURU_NVIDIA_MAP['guru-flash-1.1'];
         try {
-          const nvMistralToken = 'nv' + 'api-iUGnYhR8yVKNec0VIe6HA2wveAV3Wl9nCYp0PvAHEXUW3IO_Hi2oPO7YS3U3ce_J';
           let userContent = prompt;
           if (window.currentImageBase64) {
             userContent = [
@@ -3148,48 +3179,55 @@
             ];
           }
 
-          const mistralRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${nvMistralToken}`
-            },
-            body: JSON.stringify({
-              model: 'mistralai/mistral-large-4-1t-a52b',
-              messages: [
-                { role: 'system', content: 'You are GuruAI running on Guru-Flash 1.3 High-Context Pro created by HarshGuruJi. Official site: https://webguruji.online' },
-                ...conversationHistory.slice(-8).map(m => ({ role: m.role, content: m.content })),
-                { role: 'user', content: userContent }
-              ],
-              stream: true,
-              max_tokens: 4096,
-              temperature: 0.5,
-              top_p: 1,
-              reasoning_effort: 'high',
-              frequency_penalty: 0,
-              presence_penalty: 0
-            })
-          });
-          if (mistralRes.ok && mistralRes.body) {
-            backendStreamed = await readSseStream(mistralRes);
-          }
-        } catch (mistralErr) {
-          console.warn('Guru-Flash 1.3 direct fallback notice:', mistralErr);
-        }
-      }
-
-      // 2. Direct AI Fallback (Groq Qwen-27B) for instant resilience in APK and edge scenarios
-      if (!backendStreamed) {
-        try {
-          const sysPrompt = `You are GuruAI, a world-class, intelligent conversational AI assistant.
+          const sysPrompt = `You are GuruAI running on ${activeModelConfig.name} created by HarshGuruJi (Harsh Patel).
 CRITICAL IDENTITY:
 - Creator & Owner: HarshGuruJi (Harsh Patel).
 - Official Main Website: https://webguruji.online
-- Owner & Founder Details: https://webguruji.online/owner.html
-- Model: Guru-Flash 1.1 (designed and released by HarshGuruJi).
-Language: ${currentLang === 'hindi' ? 'Pure Hindi in Devanagari script.' : currentLang === 'hinglish' ? 'Fluent, natural Hinglish (conversational Hindi words in Latin/English script).' : 'Clear, structured English.'}
+- Owner Biography & Details: https://webguruji.online/owner.html
+- Model: ${activeModelConfig.name}.
+Language instruction: ${currentLang === 'hindi' ? 'Respond in pure Hindi using Devanagari script.' : currentLang === 'hinglish' ? 'Respond in natural, friendly Hinglish (Hindi words in English alphabet).' : 'Respond in clear, structured English.'}
 Always use Markdown formatting and syntax-highlighted code blocks where applicable.`;
 
+          const nvPayload = {
+            model: activeModelConfig.model,
+            messages: [
+              { role: 'system', content: sysPrompt },
+              ...conversationHistory.slice(-8).map(m => ({ role: m.role, content: m.content })),
+              { role: 'user', content: userContent }
+            ],
+            stream: true,
+            max_tokens: 2048,
+            temperature: 0.6
+          };
+
+          if (currentSelectedModel === 'guru-flash-1.3') {
+            nvPayload.chat_template_kwargs = { enable_thinking: true };
+          }
+          if (currentSelectedModel === 'guru-argon-1.5') {
+            nvPayload.reasoning_effort = 'high';
+          }
+
+          const nvRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${activeModelConfig.apiKey}`
+            },
+            body: JSON.stringify(nvPayload)
+          });
+
+          if (nvRes.ok && nvRes.body) {
+            backendStreamed = await readSseStream(nvRes);
+          }
+        } catch (nvErr) {
+          console.warn('NVIDIA primary model inference notice:', nvErr);
+        }
+      }
+
+      // 2. Secondary AI Fallback (Groq with safe max_tokens)
+      if (!backendStreamed) {
+        try {
+          const sysPrompt = `You are GuruAI running on Guru-Flash created by HarshGuruJi. Official website: https://webguruji.online`;
           const groqToken = 'gs' + 'k_' + 'vmJWIdeBUhp8aEzwp1LmWGdyb3FYxAsDU3dEPrEQgxFFAJ8C6mcd';
           const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
@@ -3201,10 +3239,11 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
               model: 'qwen/qwen3.8-27b',
               messages: [
                 { role: 'system', content: sysPrompt },
-                ...conversationHistory.slice(-10).map(m => ({ role: m.role, content: m.content })),
+                ...conversationHistory.slice(-6).map(m => ({ role: m.role, content: m.content })),
                 { role: 'user', content: prompt }
               ],
               stream: true,
+              max_tokens: 400,
               temperature: 0.7
             })
           });
@@ -3217,36 +3256,7 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
         }
       }
 
-      // 2b. Secondary Direct NVIDIA NIM Fallback
-      if (!backendStreamed) {
-        try {
-          const nvToken = 'nv' + 'api-f8R3ka-OdjycltdiERsExRmQmS8-xgcvwKb56XR4_Gs1-vDKrj0GAZFY9GpyCiMA';
-          const nvRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${nvToken}`
-            },
-            body: JSON.stringify({
-              model: 'nvidia/nemotron-3-ultra-550b-a55b',
-              messages: [
-                { role: 'system', content: 'You are GuruAI, running on Guru-Flash 1.1 created by HarshGuruJi. Official site: https://webguruji.online and https://webguruji.online/owner.html' },
-                ...conversationHistory.slice(-6).map(m => ({ role: m.role, content: m.content })),
-                { role: 'user', content: prompt }
-              ],
-              stream: true,
-              max_tokens: 1024
-            })
-          });
-          if (nvRes.ok && nvRes.body) {
-            backendStreamed = await readSseStream(nvRes);
-          }
-        } catch (nvErr) {
-          console.warn('NVIDIA direct fallback notice:', nvErr);
-        }
-      }
-
-      // 2c. Fallback to Supabase Edge Function
+      // 2b. Fallback to Supabase Edge Function
       if (!backendStreamed) {
         try {
           const edgeRes = await fetch('https://wumdbpyhpblvgjttsbpv.supabase.co/functions/v1/chat', {
@@ -3587,10 +3597,14 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     }
 
     // Form Submit Handler
-    chatForm.onsubmit = (e) => {
-      e.preventDefault();
-      const text = promptInput.value.trim();
-      if (!text || isGenerating) return;
+    // Robust Zero-Refresh Chat Submit Handler (Invoked by Enter, Send Button, or Form Submit)
+    window.handleChatSubmit = function(e) {
+      if (e) {
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      }
+      const text = promptInput ? promptInput.value.trim() : '';
+      if (!text || isGenerating) return false;
 
       const isImageIntent = isImageMode || /^\/(image|imagine)\b/i.test(text) || /^(generate|create|draw|make|paint|render)\s+(an?\s+)?(image|photo|picture|artwork|illustration|wallpaper|portrait|drawing|visual|graphic)\b/i.test(text);
 
@@ -3598,7 +3612,7 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       if (isImageIntent && (!currentUser || currentUser.is_guest)) {
         openAuthModal('login');
         showToast('🔒 Image Generation is locked for Guests. Please sign in to create images (5 HD images every 24h).', 'warning');
-        return;
+        return false;
       }
 
       // Strict Rule 2: Only 5 images per 24 hours for logged-in users
@@ -3608,14 +3622,14 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
           const hours = Math.floor(imgQuota.resetInSeconds / 3600);
           const mins = Math.floor((imgQuota.resetInSeconds % 3600) / 60);
           showToast(`⚠️ Daily Image Limit Reached (5/5). Your allowance refreshes in ${hours}h ${mins}m.`, 'warning');
-          return;
+          return false;
         }
       }
 
       if (remainingAllowance <= 0) {
         openUpgradeModal();
         showToast('Chat allowance exhausted. Upgrade your plan for higher limits & up to 325,000 context!', 'warning');
-        return;
+        return false;
       }
 
       if (!currentConvId) {
@@ -3642,6 +3656,12 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       } else {
         streamResponse(text);
       }
+      return false;
+    };
+    chatForm.onsubmit = window.handleChatSubmit;
+    sendBtn.onclick = function(e) {
+      if (e) e.preventDefault();
+      window.handleChatSubmit(e);
     };
 
     // Stop Generation
