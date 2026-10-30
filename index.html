@@ -1821,12 +1821,12 @@
     };
 
     window.handlePlanBuy = async function(planName, contextLimit, price) {
-      const email = currentUser?.email || '';
-      if (!email) {
-        showToast('Please sign in first so your upgrade can be linked to your account.', 'warning');
+      if (!currentUser || currentUser.is_guest || !currentUser.email) {
+        showToast('🔒 Guest user bina login ke contact link par redirect nahi ho sakte. Kripya pehle sign in karein!', 'warning');
         if (typeof openAuthModal === 'function') openAuthModal('login');
         return;
       }
+      const email = currentUser.email;
 
       const userName = currentUser?.user_metadata?.name || email.split('@')[0];
       showToast('Submitting upgrade request & generating invoice...', 'info');
@@ -4825,11 +4825,22 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
           selectAiModel(modelKey, m.name, false);
         };
       } else {
-        primaryBtn.textContent = 'Select Premium (' + m.price + ') →';
-        primaryBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 transition shadow-lg shadow-amber-500/25';
-        primaryBtn.onclick = () => {
-          selectPremiumAndRedirect(modelKey, m.planName, m.priceVal);
-        };
+        const isGuestUser = !currentUser || currentUser.is_guest || !currentUser.email;
+        if (isGuestUser) {
+          primaryBtn.textContent = 'Sign In to Select Premium (' + m.price + ')';
+          primaryBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:opacity-95 transition shadow-lg shadow-cyan-500/20';
+          primaryBtn.onclick = () => {
+            closeModelDetailsModal();
+            showToast('🔒 Guest user bina login ke contact page par redirect nahi ho sakte. Kripya pehle sign in karein!', 'warning');
+            if (typeof openAuthModal === 'function') openAuthModal('login');
+          };
+        } else {
+          primaryBtn.textContent = 'Select Premium (' + m.price + ') →';
+          primaryBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 transition shadow-lg shadow-amber-500/25';
+          primaryBtn.onclick = () => {
+            selectPremiumAndRedirect(modelKey, m.planName, m.priceVal);
+          };
+        }
       }
     }
 
@@ -4843,9 +4854,16 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
 
   // Redirect to contact page with pre-selected model
   window.selectPremiumAndRedirect = function(modelKey, planName, priceVal) {
+    if (!currentUser || currentUser.is_guest || !currentUser.email) {
+      closeModelDetailsModal();
+      showToast('🔒 Guest user bina login ke contact page par redirect nahi ho sakte. Kripya pehle sign in karein!', 'warning');
+      if (typeof openAuthModal === 'function') openAuthModal('login');
+      return;
+    }
+
     closeModelDetailsModal();
-    showToast(`Redirecting to contact page for ${GURU_MODELS[modelKey]?.name}...`, 'info');
-    const contactUrl = `https://webguruji.online/contact.html?subject=ai_upgrade&model=${encodeURIComponent(GURU_MODELS[modelKey]?.name || modelKey)}&plan=${encodeURIComponent(planName)}&price=${priceVal}`;
+    showToast(`Redirecting to contact page for ${GURU_MODELS[modelKey]?.name || modelKey}...`, 'info');
+    const contactUrl = `https://webguruji.online/contact.html?subject=ai_upgrade&model=${encodeURIComponent(GURU_MODELS[modelKey]?.name || modelKey)}&plan=${encodeURIComponent(planName)}&price=${priceVal}&email=${encodeURIComponent(currentUser.email)}`;
     setTimeout(() => {
       window.location.href = contactUrl;
     }, 400);
