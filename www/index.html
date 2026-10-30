@@ -537,6 +537,8 @@
 
   </style>
   <link rel="stylesheet" href="loading-lines.css">
+  <link rel="stylesheet" href="ai-loader.css">
+  <script src="ai-loader.js" defer></script>
 </head>
 
 <body class="h-screen w-screen overflow-hidden flex flex-col font-sans-mode text-size-medium select-none">
@@ -2972,7 +2974,15 @@
             <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Guru-Flash 1.1</span>
           </div>
           <div id="${bubbleId}" class="rounded-2xl px-1 sm:px-2 py-1 text-sm bg-[var(--bubble-assistant)] text-[var(--text-primary)] leading-relaxed select-text prose-ai">
-            <span class="streaming-cursor"></span>
+            <div id="${bubbleId}-generating" class="ai-loader-container flex flex-col items-start my-2 py-1">
+              <div class="ai-loader-sphere compact">
+                <div class="ai-loader-glow"></div>
+                <div class="ai-loader-crescent"></div>
+                <div class="ai-loader-shadow"></div>
+                <div class="ai-loader-rim"></div>
+                <span class="ai-loader-text">Generating</span>
+              </div>
+            </div>
           </div>
         </div>
       `;
@@ -3344,8 +3354,16 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
               <span class="w-2 h-2 rounded-full bg-purple-500 animate-ping"></span>
               <span>AI Image Studio • Stable Diffusion XL / Flux</span>
             </div>
-            <div class="w-72 sm:w-80 h-72 sm:h-80 rounded-xl bg-slate-900/90 border border-purple-500/30 flex flex-col items-center justify-center text-center p-4 space-y-3 animate-pulse">
-              <div class="w-10 h-10 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
+            <div class="w-72 sm:w-80 h-72 sm:h-80 rounded-xl bg-slate-900/90 border border-purple-500/30 flex flex-col items-center justify-center text-center p-4 space-y-3">
+              <div class="ai-loader-container">
+                <div class="ai-loader-sphere compact">
+                  <div class="ai-loader-glow"></div>
+                  <div class="ai-loader-crescent"></div>
+                  <div class="ai-loader-shadow"></div>
+                  <div class="ai-loader-rim"></div>
+                  <span class="ai-loader-text">Generating</span>
+                </div>
+              </div>
               <div class="text-xs text-slate-300 font-medium">Synthesizing high-resolution artwork...</div>
               <div class="text-[11px] text-purple-300/80 line-clamp-2 max-w-xs font-mono">"${prompt.replace(/"/g, '&quot;')}"</div>
             </div>
@@ -4426,18 +4444,16 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     </div>
   </div>
 
-  <!-- Floating Thinking Indicator (from Animated AI Chat) -->
-  <div id="aiThinkingPill" class="hidden fixed bottom-24 md:bottom-20 left-1/2 -translate-x-1/2 backdrop-blur-2xl bg-slate-950/90 border border-white/10 rounded-full px-4 py-1.5 shadow-2xl z-30 flex items-center gap-3 animate-in fade-in duration-200">
-    <div class="w-6 h-6 rounded-full bg-indigo-600/80 border border-indigo-400/30 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-      <span>Guru</span>
+  <!-- Floating Thinking Indicator (from Animated AI Chat) with 21st.dev AI Loader -->
+  <div id="aiThinkingPill" class="hidden fixed bottom-24 md:bottom-20 left-1/2 -translate-x-1/2 backdrop-blur-2xl bg-slate-950/90 border border-purple-500/30 rounded-full px-4 py-1.5 shadow-2xl z-30 flex items-center gap-3 animate-in fade-in duration-200">
+    <div class="ai-loader-sphere mini" style="width: 26px; height: 26px;">
+      <div class="ai-loader-glow"></div>
+      <div class="ai-loader-crescent"></div>
+      <div class="ai-loader-shadow"></div>
+      <div class="ai-loader-rim"></div>
     </div>
-    <div class="flex items-center gap-2 text-xs text-slate-300">
-      <span>Thinking</span>
-      <span class="flex items-center gap-0.5 ml-1">
-        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-        <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" style="animation-delay: 150ms;"></span>
-        <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" style="animation-delay: 300ms;"></span>
-      </span>
+    <div class="flex items-center gap-2 text-xs text-slate-200 font-medium">
+      <span>Generating Answer...</span>
     </div>
   </div>
 

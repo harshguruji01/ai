@@ -23,6 +23,7 @@ import {
 import GuruLogo from '@/components/GuruLogo';
 import MessageBubble from '@/components/MessageBubble';
 import UsageBadge from '@/components/UsageBadge';
+import AiLoader from '@/components/AiLoader';
 
 export default function ChatWindow({
   messages = [],
@@ -311,17 +312,27 @@ export default function ChatWindow({
               />
             )}
 
-            {/* Generating Skeleton / Status Animation */}
+            {/* Generating Skeleton / 21st.dev AI Loader (@theutkarshmail) */}
             {isGenerating && !streamingContent && !streamingReasoning && (
-              <div className="flex gap-3 md:gap-4 justify-start items-center animate-fade-in">
-                <GuruLogo size={32} />
-                <div className="bg-[var(--bubble-assistant)] border border-[var(--bubble-border)] px-4 py-3 rounded-2xl rounded-bl-none text-xs text-slate-300 flex items-center gap-2.5 shadow-sm">
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-cyan-400" />
-                  <span>
+              <div className="flex flex-col gap-3 justify-start items-start animate-fade-in my-3">
+                <div className="flex items-center gap-3">
+                  <GuruLogo size={32} />
+                  <span className="text-xs font-semibold text-slate-200 font-heading">GuruAI</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                    {isImageMode ? 'AI Studio' : 'Synthesizing Answer'}
+                  </span>
+                </div>
+                <div className="ml-11 flex flex-col items-start gap-2.5">
+                  <AiLoader
+                    size="md"
+                    text="Generating"
+                    className="my-1.5"
+                  />
+                  <p className="text-xs text-slate-400 font-medium">
                     {isImageMode
                       ? 'GuruAI is rendering your high-resolution artwork with Stable Diffusion XL...'
-                      : 'GuruAI is thinking...'}
-                  </span>
+                      : 'GuruAI is analyzing your prompt and generating a comprehensive answer...'}
+                  </p>
                 </div>
               </div>
             )}
