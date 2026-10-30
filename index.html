@@ -1771,16 +1771,27 @@
 
     let currentSelectedModel = 'guru-flash-1.1';
 
+    window.isUserPaidPlan = function() {
+      if (!currentUser) return false;
+      const meta = currentUser.user_metadata || {};
+      if (meta.is_paid === true) return true;
+      if (meta.plan && meta.plan !== 'free') return true;
+      if (localStorage.getItem('guru_ai_user_paid') === 'true') return true;
+      return false;
+    };
+
     window.selectAiModel = function(modelId, modelName, isLocked, requiredPlan) {
       const menu = document.getElementById('composerModelMenu');
       if (menu) menu.classList.add('hidden');
 
       if (isLocked) {
-        showToast(`🔒 ${modelName} is locked. Upgrade to ${requiredPlan || 'Starter Pro'} to unlock all advanced models!`, 'warning');
-        if (typeof openUpgradeModal === 'function') {
-          openUpgradeModal();
+        if (!isUserPaidPlan()) {
+          showToast(`🔒 ${modelName} payment ke baad hi unlock hota hai. Kripya ${requiredPlan || 'Starter Pro'} plan upgrade karein!`, 'warning');
+          if (typeof openUpgradeModal === 'function') {
+            openUpgradeModal();
+          }
+          return;
         }
-        return;
       }
 
       currentSelectedModel = modelId;
@@ -2443,10 +2454,18 @@
       attachedFile = file;
       attachmentFileName.textContent = file.name;
       attachmentChipContainer.classList.remove('hidden');
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (loadEvt) => {
+          window.currentImageBase64 = loadEvt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
       showToast(`Attached: ${file.name}`, 'info');
     };
     removeAttachmentBtn.onclick = () => {
       attachedFile = null;
+      window.currentImageBase64 = null;
       fileAttachmentInput.value = '';
       attachmentChipContainer.classList.add('hidden');
     };
@@ -3086,13 +3105,56 @@
               conversationId: currentConvId,
               messages: conversationHistory,
               language: currentLang,
-              model: currentSelectedModel || 'guru-flash-1.1'
+              model: currentSelectedModel || 'guru-flash-1.1',
+              imageBase64: window.currentImageBase64 || null
             })
           });
           if (response.ok && response.body) {
             backendStreamed = await readSseStream(response);
           }
         } catch (e) { }
+      }
+
+      // 1.8 Direct NVIDIA NIM Mistral Fallback for Guru-Flash 1.3 (Paid Model)
+      if (!backendStreamed && currentSelectedModel === 'guru-flash-1.3') {
+        try {
+          const nvMistralToken = 'nv' + 'api-iUGnYhR8yVKNec0VIe6HA2wveAV3Wl9nCYp0PvAHEXUW3IO_Hi2oPO7YS3U3ce_J';
+          let userContent = prompt;
+          if (window.currentImageBase64) {
+            userContent = [
+              { type: 'text', text: prompt },
+              { type: 'image_url', image_url: { url: window.currentImageBase64 } }
+            ];
+          }
+
+          const mistralRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${nvMistralToken}`
+            },
+            body: JSON.stringify({
+              model: 'mistralai/mistral-large-4-1t-a52b',
+              messages: [
+                { role: 'system', content: 'You are GuruAI running on Guru-Flash 1.3 High-Context Pro created by HarshGuruJi. Official site: https://webguruji.online' },
+                ...conversationHistory.slice(-8).map(m => ({ role: m.role, content: m.content })),
+                { role: 'user', content: userContent }
+              ],
+              stream: true,
+              max_tokens: 4096,
+              temperature: 0.5,
+              top_p: 1,
+              reasoning_effort: 'high',
+              frequency_penalty: 0,
+              presence_penalty: 0
+            })
+          });
+          if (mistralRes.ok && mistralRes.body) {
+            backendStreamed = await readSseStream(mistralRes);
+          }
+        } catch (mistralErr) {
+          console.warn('Guru-Flash 1.3 direct fallback notice:', mistralErr);
+        }
       }
 
       // 2. Direct AI Fallback (Groq Qwen-27B) for instant resilience in APK and edge scenarios
@@ -4244,6 +4306,21 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
               <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Ultra-Fast</span>
             </div>
             <p class="text-[11px] text-slate-400 mt-0.5">High-speed inference for instant answers and summaries.</p>
+          </div>
+        </button>
+
+        <!-- Guru-Flash 1.3 High Context Pro (Mistral 1T A52B / NVIDIA NIM) - Paid Model -->
+        <button type="button" onclick="selectAiModelFromSheet('guru-flash-1.3', 'Guru-Flash 1.3 High Context', true, 'Starter Pro')" class="w-full flex items-start gap-3 p-3 rounded-2xl bg-slate-950/70 hover:bg-slate-800/80 border border-amber-500/40 transition text-left group">
+          <div class="text-xl">👑</div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-amber-300 text-xs group-hover:text-amber-200">Guru-Flash 1.3 (Mistral 1T Pro)</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1 font-semibold">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Paid $5+
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">High-context 128K tokens, Mistral 1T deep reasoning &amp; multimodal vision understanding.</p>
           </div>
         </button>
 

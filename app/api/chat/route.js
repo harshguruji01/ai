@@ -29,7 +29,7 @@ export async function POST(request) {
       );
     }
 
-    const { prompt, conversationId, messages, fingerprint, isImageMode, language, model } = parseResult.data;
+    const { prompt, conversationId, messages, fingerprint, isImageMode, language, model, imageBase64 } = parseResult.data;
 
     // 2. Identify Authenticated Session
     const authState = await getAuthenticatedUser();
@@ -53,6 +53,45 @@ export async function POST(request) {
         },
         { status: 403 }
       );
+    }
+
+    // 4b. Mandatory Payment Gating for Guru-Flash 1.3 High Context (Mistral 1T Pro)
+    if (model === 'guru-flash-1.3') {
+      let isPaid = false;
+      if (isLoggedIn && userId) {
+        const userMeta = authState.user?.user_metadata || {};
+        if (userMeta.is_paid === true || (userMeta.plan && userMeta.plan !== 'free')) {
+          isPaid = true;
+        }
+
+        if (!isPaid) {
+          try {
+            const { data: limitRow } = await supabaseAdmin
+              .from('user_ai_limits')
+              .select('is_paid, max_requests')
+              .eq('user_id', userId)
+              .maybeSingle();
+            if (limitRow?.is_paid === true || (limitRow?.max_requests && limitRow.max_requests > 20)) {
+              isPaid = true;
+            }
+          } catch (e) {
+            // Silently handle database limit check fallback
+          }
+        }
+      }
+
+      if (!isPaid) {
+        return NextResponse.json(
+          {
+            error: 'Payment Required',
+            requiresPayment: true,
+            message:
+              'Guru-Flash 1.3 High-Context Pro (Mistral 1T A52B) model payment ke baad hi unlock hota hai. Kripya Starter Pro ya higher plan upgrade karein.',
+            upgradeUrl: 'https://webguruji.online/contact.html?subject=ai_upgrade',
+          },
+          { status: 402 }
+        );
+      }
     }
 
     // 5. Concurrency-Safe Atomic Rate Limit Reservation
@@ -131,11 +170,19 @@ export async function POST(request) {
       content: m.content,
     }));
 
+    let userContent = prompt;
+    if (imageBase64) {
+      userContent = [
+        { type: 'text', text: prompt },
+        { type: 'image_url', image_url: { url: imageBase64 } }
+      ];
+    }
+
     if (
       formattedMessages.length === 0 ||
       formattedMessages[formattedMessages.length - 1].content !== prompt
     ) {
-      formattedMessages.push({ role: 'user', content: prompt });
+      formattedMessages.push({ role: 'user', content: userContent });
     }
 
     let nvidiaStream;
