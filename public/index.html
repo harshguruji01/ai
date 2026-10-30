@@ -1791,13 +1791,31 @@
 
     let currentSelectedModel = 'guru-flash-1.1';
 
+    const MODEL_TIER_HIERARCHY = {
+      'guru-flash-1.1': 1,
+      'guru-flash-1.2': 2,
+      'guru-flash-1.3': 3,
+      'guru-argon-1.4': 4,
+      'guru-argon-1.5': 5
+    };
+
     window.isUserPaidPlan = function() {
       if (!currentUser) return false;
       const meta = currentUser.user_metadata || {};
       if (meta.is_paid === true) return true;
       if (meta.plan && meta.plan !== 'free') return true;
       if (localStorage.getItem('guru_ai_user_paid') === 'true') return true;
+      if (window.currentUserLimits && (window.currentUserLimits.is_active === true || window.currentUserLimits.is_paid === true || window.currentUserLimits.plan_name)) return true;
       return false;
+    };
+
+    window.isModelKeyUnlocked = function(modelKey) {
+      if (!MODEL_TIER_HIERARCHY[modelKey] || MODEL_TIER_HIERARCHY[modelKey] <= 1) return true;
+      if (!isUserPaidPlan()) return false;
+      const unlocked = localStorage.getItem('guru_ai_unlocked_model') || window.currentUserUnlockedModel || 'guru-argon-1.5';
+      const userLevel = MODEL_TIER_HIERARCHY[unlocked] || 5;
+      const targetLevel = MODEL_TIER_HIERARCHY[modelKey] || 1;
+      return userLevel >= targetLevel;
     };
 
     window.selectAiModel = function(modelId, modelName, isLocked, requiredPlan) {
@@ -1805,8 +1823,8 @@
       if (menu) menu.classList.add('hidden');
 
       if (isLocked) {
-        if (!isUserPaidPlan()) {
-          showToast(`🔒 ${modelName} payment ke baad hi unlock hota hai. Kripya ${requiredPlan || 'Starter Pro'} plan upgrade karein!`, 'warning');
+        if (!isModelKeyUnlocked(modelId)) {
+          showToast('🔒 ' + modelName + ' payment ke baad hi unlock hota hai. Kripya upgrade karein!', 'warning');
           if (typeof openUpgradeModal === 'function') {
             openUpgradeModal();
           }
@@ -3703,12 +3721,22 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
           const emailQuery = user.email ? `,email.ilike.${user.email.toLowerCase().trim()}` : '';
           supabaseClient.from('user_ai_limits').select('*').or(`user_id.eq.${user.id}${emailQuery}`).maybeSingle().then(({ data }) => {
             if (data) {
-              if (data.is_paid === true || data.active_model) {
+              if (data.is_active === true || data.is_paid === true || data.plan_name || data.active_model) {
                 window.currentUserLimits = data;
                 localStorage.setItem('guru_ai_user_paid', 'true');
-                if (data.active_model) {
-                  localStorage.setItem('guru_ai_unlocked_model', data.active_model);
+                const rawName = (data.plan_name || data.active_model || 'guru-argon-1.5').toLowerCase();
+                let modelKey = 'guru-flash-1.3';
+                if (rawName.includes('argon 1.5') || rawName.includes('argon-1.5') || rawName.includes('grandmaster')) {
+                  modelKey = 'guru-argon-1.5';
+                } else if (rawName.includes('argon 1.4') || rawName.includes('argon-1.4') || rawName.includes('enterprise')) {
+                  modelKey = 'guru-argon-1.4';
+                } else if (rawName.includes('flash 1.3') || rawName.includes('flash-1.3') || rawName.includes('pro')) {
+                  modelKey = 'guru-flash-1.3';
+                } else if (rawName.includes('flash 1.2') || rawName.includes('flash-1.2')) {
+                  modelKey = 'guru-flash-1.2';
                 }
+                localStorage.setItem('guru_ai_unlocked_model', modelKey);
+                window.currentUserUnlockedModel = modelKey;
               }
             }
             if (data && typeof data.max_requests === 'number' && data.max_requests > 0) {
@@ -4849,7 +4877,7 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       }
     } else {
       // Check if user has already unlocked this model
-      const isUnlocked = isUserPaidPlan() && (localStorage.getItem('guru_ai_unlocked_model') === modelKey || currentUser?.user_metadata?.active_model === modelKey);
+      const isUnlocked = isModelKeyUnlocked(modelKey);
       if (isUnlocked) {
         primaryBtn.textContent = 'Use Unlocked ' + m.name;
         primaryBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 transition shadow-lg';
