@@ -801,7 +801,20 @@
 
       <!-- Chat Messages Container -->
       <div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto pb-44 px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
-        <!-- Rendered dynamically -->
+        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto py-12 animate-in fade-in duration-300">
+          <div class="space-y-3 max-w-xl mx-auto">
+            <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mx-auto overflow-hidden flex-shrink-0 mb-4 p-1.5">
+              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-xl" />
+            </div>
+            
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-cyan-400 bg-clip-text text-transparent font-heading">
+              Hey there, How can I Help You ?  
+            </h1>
+            <p class="text-xs md:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
+              Ask Anything To GuruAI in English, Hinglish, or Hindi.
+            </p>
+          </div>
+        </div>
       </div>
 
       <!-- Attachment Preview Chip (Above composer when file attached) -->
@@ -2836,7 +2849,7 @@
     // Render Welcome Screen (Gemini & ChatGPT Empty State)
     function renderWelcome() {
       const displayName = currentUser ? (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]) : null;
-      const greeting = displayName ? `Hi ${displayName}, how can I help?` : 'Hi there, how can I help?';
+      const greeting = displayName ? `Hey ${displayName}, How can I Help You ?  ` : 'Hey there, How can I Help You ?  ';
 
       chatFeed.innerHTML = `
         <div class="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto py-12 animate-in fade-in duration-300">
@@ -3836,6 +3849,9 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
         const headerSignInBtn = document.getElementById('headerSignInBtn');
         if (headerSignInBtn) {
           document.getElementById('headerSignInBtnText').textContent = 'Profile';
+        }
+        if (!conversationHistory || !conversationHistory.length) {
+          renderWelcome();
         }
       } else {
         userNameLabel.textContent = 'Guest Visitor';
