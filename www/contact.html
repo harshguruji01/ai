@@ -454,18 +454,35 @@
               </div>
             </div>
 
-            <div style="background:rgba(15,23,42,0.5); border-radius:12px; padding:0.85rem 1rem; margin-bottom:1.5rem; font-size:0.82rem; color:#cbd5e1; line-height:1.5;">
-              ℹ️ <strong>Workflow Notice:</strong> Upon clicking Confirm below, your upgrade request will be submitted directly to HarshGuruJi Central Admin. Once verified, an authorized payment link will be dispatched from <strong>info@webguruji.online</strong> to your email.
+            <!-- Plan Benefits Box -->
+            <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.22); border-radius:18px; padding:1.25rem; margin-bottom:1.5rem;">
+              <div style="font-size:0.75rem; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem;">Plan Benefits &amp; Features</div>
+              <ul id="ai-plan-benefits-list" style="margin:0; padding-left:1.25rem; font-size:0.85rem; color:#cbd5e1; line-height:1.7;">
+                <li>64,000 Token Memory Buffer with Extended Thinking</li>
+                <li>100 Daily Inquiries with NVIDIA Nemotron 3.5 Bolt reasoning</li>
+                <li>Continuous chat persistence &amp; priority queue access</li>
+                <li>High-speed code execution and scientific problem solving</li>
+              </ul>
             </div>
 
-            <!-- Single Confirm Button -->
-            <button type="button" id="ai-confirm-btn" onclick="executeAiPremiumConfirmation()" class="form-submit-btn" style="background:linear-gradient(135deg, #10b981, #059669); font-size:1.05rem; font-weight:800; padding:14px; box-shadow:0 6px 25px rgba(16,185,129,0.35);">
-              <span>⚡ Confirm &amp; Request Premium Model</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
+            <!-- Confirmation Question & 2 Buttons -->
+            <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:1.25rem; margin-bottom:1.5rem; text-align:center;">
+              <div style="font-size:1.05rem; font-weight:700; color:#ffffff; margin-bottom:0.35rem;">
+                Do you want to send this Premium Purchase Request to the GuruAI administration team?
+              </div>
+              <div style="font-size:0.8rem; color:#94a3b8;">
+                Upon confirmation, our administration team will review your account and dispatch an authorized payment link from <strong>info@webguruji.online</strong> to your email.
+              </div>
+            </div>
+
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+              <button type="button" id="ai-confirm-btn" onclick="executeAiPremiumConfirmation()" class="form-submit-btn" style="flex:1; min-width:200px; background:linear-gradient(135deg, #10b981, #059669); font-size:1rem; font-weight:800; padding:14px; box-shadow:0 6px 25px rgba(16,185,129,0.35);">
+                <span>Confirm Request</span>
+              </button>
+              <a href="https://ai.webguruji.online/" id="ai-cancel-btn" class="form-submit-btn" style="flex:1; min-width:140px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#cbd5e1; font-size:1rem; font-weight:700; padding:14px; text-decoration:none; text-align:center;">
+                <span>Cancel</span>
+              </a>
+            </div>
           </div>
 
           <!-- Guest Lock Notice (Shown if user is NOT logged in) -->
@@ -560,17 +577,80 @@
   <script src="js/supabase-head.js"></script>
   <script>
     // 1. Detect AI Model Upgrade Parameters & Toggle Specialized Confirmation UI
+        // ==========================================
+    // CANONICAL GURUAI SUBSCRIPTION PLANS (ANTI-TAMPER)
+    // ==========================================
+    const CANONICAL_PLANS = {
+      'guru-flash-1.3': {
+        id: 'guru-flash-1.3',
+        name: 'Starter Premium ($5)',
+        model: 'Guru-Flash 1.3',
+        price: 5,
+        context: '64,000 Tokens',
+        badge: '👑 Starter Premium • $5',
+        benefits: [
+          '64,000 Token Memory Buffer with Extended Thinking',
+          '100 Daily Inquiries with NVIDIA Nemotron 3.5 Bolt reasoning',
+          'Continuous chat persistence & priority queue access',
+          'High-speed code execution and scientific problem solving'
+        ]
+      },
+      'guru-argon-1.4': {
+        id: 'guru-argon-1.4',
+        name: 'Pro Premium ($15)',
+        model: 'Guru-Argon 1.4',
+        price: 15,
+        context: '128,000 Tokens',
+        badge: '💎 Pro Premium • $15',
+        benefits: [
+          '128,000 Token Massive Context Window',
+          '300 Daily Inquiries with Deep Mathematical Logic',
+          'Competitive code architecture & multi-variable analysis',
+          'Automatic hierarchical unlock of Guru-Flash 1.3'
+        ]
+      },
+      'guru-argon-1.5': {
+        id: 'guru-argon-1.5',
+        name: 'Power User ($25)',
+        model: 'Guru-Argon 1.5',
+        price: 25,
+        context: '256,000 Tokens',
+        badge: '🚀 Power User • $25',
+        benefits: [
+          '256,000 Maximum Token Memory Context',
+          'Unlimited High-Reasoning Inquiries',
+          'Mistral Large 1-Trillion Parameter Intelligence Engine',
+          'Automatic hierarchical unlock of ALL lower tier models'
+        ]
+      }
+    };
+
+    function resolveCanonicalPlan(params) {
+      const planId = (params.get('plan_id') || '').toLowerCase().trim();
+      const model = (params.get('model') || '').toLowerCase().trim();
+      const plan = (params.get('plan') || '').toLowerCase().trim();
+      const price = params.get('price');
+
+      if (planId === 'guru-argon-1.5' || model.includes('1.5') || plan.includes('25') || price === '25') {
+        return CANONICAL_PLANS['guru-argon-1.5'];
+      }
+      if (planId === 'guru-argon-1.4' || model.includes('1.4') || plan.includes('15') || price === '15') {
+        return CANONICAL_PLANS['guru-argon-1.4'];
+      }
+      return CANONICAL_PLANS['guru-flash-1.3'];
+    }
+
     let verifiedActiveUser = null;
+    let activeCanonicalPlan = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
-      const isUpgrade = params.get('subject') === 'ai_upgrade' || params.get('model');
-      const modelParam = params.get('model') || 'Guru-Flash 1.3';
-      const planParam = params.get('plan') || 'Starter Premium ($5)';
-      const priceParam = params.get('price') || '5';
+      const isUpgrade = params.get('subject') === 'ai_upgrade' || params.get('model') || params.get('plan_id');
       const emailParam = params.get('email');
 
       if (!isUpgrade) return;
+
+      activeCanonicalPlan = resolveCanonicalPlan(params);
 
       // 1. Switch Form Look to AI Premium Desk
       const stdForm = document.getElementById('contact-form');
@@ -609,9 +689,25 @@
         if (confirmCard) confirmCard.style.display = 'block';
         if (guestCard) guestCard.style.display = 'none';
 
+        // Check if duplicate submission already pending
+        const pendingKey = 'hg_pending_inquiry_' + verifiedActiveUser.email + '_' + activeCanonicalPlan.id;
+        if (localStorage.getItem(pendingKey)) {
+          confirmCard.innerHTML = '<div style="text-align:center; padding:1.5rem 0.5rem;">' +
+            '<div style="font-size:3.2rem; margin-bottom:0.75rem;">⏳</div>' +
+            '<h3 style="color:#fbbf24; font-size:1.35rem; font-weight:800; margin:0 0 8px 0;">Inquiry Already Submitted</h3>' +
+            '<p style="font-size:0.9rem; color:#cbd5e1; max-width:480px; margin:0 auto 1.5rem auto; line-height:1.6;">' +
+              'You already have an active request pending for <strong>' + activeCanonicalPlan.model + '</strong>. Our administration team is reviewing it and will email you at <strong>' + verifiedActiveUser.email + '</strong> with an authorized payment link.' +
+            '</p>' +
+            '<a href="https://ai.webguruji.online/" class="form-submit-btn" style="display:inline-flex; width:auto; padding:10px 24px; text-decoration:none;">' +
+              '<span>Return to GuruAI Assistant</span>' +
+            '</a>' +
+          '</div>';
+          return;
+        }
+
         // Populate card details
         const badgeEl = document.getElementById('ai-card-model-badge');
-        if (badgeEl) badgeEl.textContent = modelParam + ' • $' + priceParam;
+        if (badgeEl) badgeEl.textContent = activeCanonicalPlan.badge;
 
         const nameEl = document.getElementById('ai-user-name');
         if (nameEl) nameEl.textContent = verifiedActiveUser.name;
@@ -630,18 +726,28 @@
         }
 
         const modelEl = document.getElementById('ai-summary-model');
-        if (modelEl) modelEl.textContent = modelParam;
+        if (modelEl) modelEl.textContent = activeCanonicalPlan.model;
 
         const planEl = document.getElementById('ai-summary-plan');
-        if (planEl) planEl.textContent = planParam;
+        if (planEl) planEl.textContent = activeCanonicalPlan.name;
 
         const priceEl = document.getElementById('ai-summary-price');
-        if (priceEl) priceEl.textContent = '$' + priceParam + ' / Activation';
+        if (priceEl) priceEl.textContent = '$' + activeCanonicalPlan.price + ' / Activation';
+
+        // Populate Benefits List
+        const benefitsList = document.getElementById('ai-plan-benefits-list');
+        if (benefitsList) {
+          benefitsList.innerHTML = activeCanonicalPlan.benefits.map(b => '<li>' + b + '</li>').join('');
+        }
 
       } else {
         // Guest user blocked - prompt sign in
         if (confirmCard) confirmCard.style.display = 'none';
         if (guestCard) guestCard.style.display = 'block';
+        const loginBtn = guestCard?.querySelector('a');
+        if (loginBtn) {
+          loginBtn.href = 'https://login.webguruji.online/?redirect=' + encodeURIComponent(window.location.href);
+        }
       }
     });
 
@@ -649,20 +755,16 @@
     async function executeAiPremiumConfirmation() {
       if (!verifiedActiveUser || !verifiedActiveUser.email) {
         alert("Please sign in to confirm this request.");
-        window.location.href = 'https://ai.webguruji.online/#login';
+        window.location.href = 'https://login.webguruji.online/?redirect=' + encodeURIComponent(window.location.href);
         return;
       }
 
+      const plan = activeCanonicalPlan || resolveCanonicalPlan(new URLSearchParams(window.location.search));
       const btn = document.getElementById('ai-confirm-btn');
       if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<span>⚡ Submitting to Admin Desk...</span>';
       }
-
-      const params = new URLSearchParams(window.location.search);
-      const model = params.get('model') || 'Guru-Flash 1.3';
-      const plan = params.get('plan') || 'Starter Premium';
-      const price = params.get('price') || '5';
 
       try {
         if (window.supabase) {
@@ -672,15 +774,17 @@
               name: verifiedActiveUser.name,
               email: verifiedActiveUser.email,
               subject: 'AI_PREMIUM_UPGRADE',
-              message: 'GuruAI Premium Model Request:\n• Selected Model: ' + model + '\n• Plan Tier: ' + plan + '\n• Requested Pricing: $' + price + '\n• User ID: ' + (verifiedActiveUser.id || 'N/A') + '\n• Status: Awaiting Admin Approval',
+              message: 'GuruAI Premium Purchase Request:\n• Selected Model: ' + plan.model + '\n• Plan ID: ' + plan.id + '\n• Plan Tier: ' + plan.name + '\n• Requested Pricing: $' + plan.price + '\n• User ID: ' + (verifiedActiveUser.id || 'N/A') + '\n• Avatar: ' + (verifiedActiveUser.avatar || '') + '\n• Status: Awaiting Admin Approval',
               status: 'Pending Admin Review',
               created_at: new Date().toISOString()
             }]);
           }
         }
 
+        // Set local storage anti-duplicate lock
+        localStorage.setItem('hg_pending_inquiry_' + verifiedActiveUser.email + '_' + plan.id, 'true');
         localStorage.setItem('guru_ai_last_upgrade_email', verifiedActiveUser.email);
-        localStorage.setItem('guru_ai_requested_model', model);
+        localStorage.setItem('guru_ai_requested_model', plan.model);
 
         // Replace card with success celebration
         const confirmCard = document.getElementById('ai-premium-confirmation-card');
@@ -690,7 +794,7 @@
             '<h2 style="color:#34d399; font-size:1.5rem; font-weight:800; margin:0 0 8px 0; font-family:sans-serif;">Request Submitted Successfully!</h2>' +
             '<div style="font-size:1.05rem; font-weight:700; color:#ffffff; margin-bottom:1rem;">we will contact you for this premium within 3 days</div>' +
             '<p style="font-size:0.88rem; color:#cbd5e1; max-width:480px; margin:0 auto 1.5rem auto; line-height:1.6;">' +
-              'Your premium request for <strong>' + model + '</strong> has been registered in the HarshGuruJi Administrator Inquiry Desk. Once approved, you will receive an official payment link at <strong>' + verifiedActiveUser.email + '</strong> from <strong>info@webguruji.online</strong> to unlock your model.' +
+              'Your premium purchase request for <strong>' + plan.model + '</strong> (' + plan.name + ') has been registered in the HarshGuruJi Administrator Inquiry Desk. Once approved, you will receive an official payment link at <strong>' + verifiedActiveUser.email + '</strong> from <strong>info@webguruji.online</strong> to unlock your model.' +
             '</p>' +
             '<div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">' +
               '<a href="https://ai.webguruji.online/" class="form-submit-btn" style="display:inline-flex; width:auto; padding:10px 24px; text-decoration:none;">' +
