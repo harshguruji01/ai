@@ -639,7 +639,7 @@
       </div>
 
       <!-- Footer User Panel -->
-      <div class="p-3 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] space-y-2.5 flex-shrink-0">
+      <div class="p-3 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] space-y-2 flex-shrink-0">
 
         <!-- User Dashboard Link (shown only when logged in) -->
         <a href="dashboard.html" id="sidebarDashboardLink"
@@ -648,101 +648,78 @@
             <svg class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" fill="none"
               stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-5a1 1 0 011-1h4a1 1 0 011 1v9a1 1 0 01-1 1h-4a1 1 0 01-1-1v-9z" />
+                d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 12a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1v-7z" />
             </svg>
-            <span>User Dashboard</span>
+            <span>Member Dashboard</span>
           </div>
-          <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-200">dashboard.html</span>
+          <span class="text-[10px] text-cyan-400 font-mono">Open &rarr;</span>
         </a>
 
-        <!-- Allowance & Tier Indicator -->
-        <div class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-slate-300 font-medium text-[11px]" id="userTierLabel">Guest Allowance</span>
-          </div>
-          <span class="font-mono text-[11px] font-bold text-cyan-400" id="quotaSidebarText">8/8 Left</span>
+        <!-- Dynamic Quota Status -->
+        <div class="px-2 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>AI Credits:</span>
+          </span>
+          <span class="font-mono text-cyan-300 font-semibold" id="quotaSidebarText">10 Free Daily</span>
         </div>
-        <button onclick="openUpgradeModal()" class="w-full mt-2 py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-indigo-600/30 via-purple-600/30 to-amber-500/20 border border-indigo-500/40 hover:border-amber-400/60 text-amber-300 hover:text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition shadow-sm">
-          <span>⭐</span>
-          <span>Upgrade Context &amp; Limits</span>
-        </button>
-        
 
-        <div class="flex items-center justify-between pt-1">
-          <!-- User Profile / Guest Button -->
-          <div id="userProfileBtn"
-            class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition group"
-            title="Account & Profile">
-            <div
-              class="w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold group-hover:bg-indigo-600/30 group-hover:text-cyan-300 transition overflow-hidden"
-              id="userAvatar">G</div>
-            <div class="leading-tight min-w-0 max-w-[120px]">
-              <div class="font-semibold text-slate-300 group-hover:text-white truncate transition" id="userNameLabel">
-                Guest Visitor</div>
-              <div class="text-[10px] text-cyan-400 group-hover:underline truncate" id="userStatusLabel">Click to Sign In</div>
+        <div class="pt-1 space-y-2">
+          <!-- User Profile Row -->
+          <div class="flex items-center justify-between">
+            <div id="userProfileBtn"
+              class="flex items-center gap-2.5 text-xs text-slate-300 cursor-pointer hover:text-white transition group flex-1 min-w-0"
+              title="Account & Profile">
+              <div
+                class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-white text-xs font-bold group-hover:border-indigo-400 transition overflow-hidden flex-shrink-0"
+                id="userAvatar">
+                <img src="logo.png" alt="Avatar" class="w-full h-full object-cover" />
+              </div>
+              <div class="leading-tight min-w-0 flex-1">
+                <div class="font-bold text-slate-200 group-hover:text-white truncate text-xs" id="userNameLabel">
+                  HarshGuruJi Member</div>
+                <div class="text-[11px] text-slate-400 group-hover:text-cyan-300 truncate" id="userStatusLabel">Free</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1 flex-shrink-0">
+              <!-- Quick Theme Switch -->
+              <button id="quickThemeBtn" title="Switch Theme"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              </button>
+              <!-- Settings Modal Trigger -->
+              <button id="openSettingsBtn" title="Preferences"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+              <!-- Auth Link/Button -->
+              <button id="openAuthBtn" title="Sign In with Email or Google"
+                class="p-1.5 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-slate-800 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+              </button>
             </div>
           </div>
-          <script>
-            (function() {
-              try {
-                var cached = (typeof window.getCachedUserSession === 'function') ? window.getCachedUserSession() : null;
-                if (cached && cached.email) {
-                  var name = cached.user_metadata?.full_name || cached.user_metadata?.name || cached.email.split('@')[0];
-                  var initial = (name || cached.email)[0].toUpperCase();
-                  var nEl = document.getElementById('userNameLabel');
-                  var sEl = document.getElementById('userStatusLabel');
-                  var aEl = document.getElementById('userAvatar');
-                  var authBtn = document.getElementById('openAuthBtn');
-                  if (nEl) { nEl.textContent = name; nEl.title = name; }
-                  if (sEl) {
-                    sEl.innerHTML = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse"></span>Active Member';
-                    sEl.className = 'text-[10px] text-emerald-400 font-medium truncate flex items-center';
-                    sEl.title = cached.email;
-                  }
-                  if (aEl) {
-                    var avUrl = cached.user_metadata?.avatar_url || cached.user_metadata?.picture;
-                    if (avUrl) {
-                      aEl.innerHTML = '<img src="' + avUrl + '" alt="' + name + '" class="w-full h-full object-cover rounded-xl" />';
-                    } else {
-                      aEl.textContent = initial;
-                    }
-                  }
-                  if (authBtn) { authBtn.classList.add('hidden'); authBtn.style.display = 'none'; }
-                }
-              } catch(e) {}
-            })();
-          </script>
 
-          <div class="flex items-center gap-1">
-            <!-- Quick Theme Switch -->
-            <button id="quickThemeBtn" title="Switch Theme"
-              class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            </button>
-            <!-- Settings Modal Trigger -->
-            <button id="openSettingsBtn" title="Preferences"
-              class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
-            <!-- Auth Link/Button -->
-            <button id="openAuthBtn" title="Sign In with Email or Google"
-              class="p-1.5 rounded-lg text-cyan-400 hover:text-cyan-300 hover:bg-slate-800 transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </div>
-        </div>
+          <!-- Claim offer Full-width Pill Button (Image UI match) -->
+          <button type="button" onclick="openUpgradeModal()"
+            class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 hover:text-white text-xs font-semibold shadow-sm transition active:scale-[0.99] group">
+            <svg class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+            </svg>
+            <span class="font-heading tracking-wide">Claim offer</span>
+          </button>
       </div>
     </aside>
 
@@ -773,6 +750,12 @@
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2.5">
+          <!-- Free offer / Upgrade Pill Button (Image UI match) -->
+          <button type="button" onclick="openUpgradeModal()" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 via-indigo-500/15 to-purple-500/15 hover:from-amber-500/25 hover:to-indigo-500/25 text-amber-300 hover:text-white border border-amber-500/30 text-xs font-semibold transition shadow-sm active:scale-95" title="Special Offers & Upgrade">
+            <span class="text-amber-400 text-xs">🎁</span>
+            <span class="font-heading">Free offer</span>
+          </button>
+
           <!-- Mobile New Chat Button -->
           <button type="button" onclick="handleNewChat()" class="p-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-200 hover:text-white transition" title="Start New Chat">
             <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -853,12 +836,39 @@
               <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-xl" />
             </div>
             
-            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-cyan-400 bg-clip-text text-transparent font-heading">
-              Hey there, How can I Help You ?  
+            <h1 id="mainGreetingTitle" class="text-3xl md:text-4xl font-extrabold tracking-tight text-white font-heading">
+              Hey, Bro. Ready to dive in?
             </h1>
             <p class="text-xs md:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
-              Ask Anything To GuruAI in English, Hinglish, or Hindi.
+              Ask GuruAI anything in Hindi, Hinglish, or English.
             </p>
+
+            <!-- Quick Action Starters (Matching Image UI: Create image, Write/edit, Search web) -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 pt-5 max-w-xl mx-auto w-full">
+              <button type="button" onclick="quickPromptAction('image')" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/70 hover:border-indigo-500/60 text-xs font-semibold text-slate-200 hover:text-white transition group text-left flex-1 shadow-sm">
+                <span class="text-lg p-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 group-hover:scale-110 transition-transform">🖼️</span>
+                <div>
+                  <div class="font-bold text-white">Create an image</div>
+                  <div class="text-[10px] text-slate-400 font-normal">Generate 8K visuals</div>
+                </div>
+              </button>
+
+              <button type="button" onclick="quickPromptAction('write')" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/70 hover:border-cyan-500/60 text-xs font-semibold text-slate-200 hover:text-white transition group text-left flex-1 shadow-sm">
+                <span class="text-lg p-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 group-hover:scale-110 transition-transform">✏️</span>
+                <div>
+                  <div class="font-bold text-white">Write or edit</div>
+                  <div class="text-[10px] text-slate-400 font-normal">Code, essays &amp; letters</div>
+                </div>
+              </button>
+
+              <button type="button" onclick="quickPromptAction('search')" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/70 hover:border-emerald-500/60 text-xs font-semibold text-slate-200 hover:text-white transition group text-left flex-1 shadow-sm">
+                <span class="text-lg p-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 group-hover:scale-110 transition-transform">🌐</span>
+                <div>
+                  <div class="font-bold text-white">Search the web</div>
+                  <div class="text-[10px] text-slate-400 font-normal">Live research &amp; answers</div>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1032,10 +1042,9 @@
             </div>
           </form>
 
-          <div class="flex items-center justify-between px-2 text-[11px] text-slate-400">
-            <span>GuruAI can make mistakes. Verify important facts and code. • Model: <strong
-                class="text-indigo-400">Guru-Flash 1.1</strong></span>
-            <span id="footerQuotaText" class="font-mono hidden text-amber-400 font-semibold"></span>
+          <div class="flex items-center justify-center px-2 text-[11px] text-slate-500">
+            <span>GuruAI can make mistakes. Check important info.</span>
+            <span id="footerQuotaText" class="font-mono hidden text-amber-400 font-semibold ml-2"></span>
           </div>
 
         </div>
@@ -3067,14 +3076,13 @@
 
     function appendUserBubble(text) {
       const msgDiv = document.createElement('div');
-      msgDiv.className = 'flex gap-3 md:gap-4 justify-end transition-all duration-200';
-      const userInitial = currentUser ? (currentUser.email || 'U')[0].toUpperCase() : 'U';
+      msgDiv.className = 'flex justify-end my-3 transition-all duration-200 animate-in fade-in';
+      const safeText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
       msgDiv.innerHTML = `
-        <div class="max-w-[85%] md:max-w-[75%] flex flex-col space-y-1">
-          <div class="rounded-3xl px-5 py-3.5 shadow-sm text-sm bg-[var(--bubble-user)] text-[var(--text-primary)] rounded-br-none border border-[var(--border-color)] leading-relaxed whitespace-pre-wrap select-text">${text}</div>
+        <div class="max-w-[85%] md:max-w-[70%] rounded-3xl px-5 py-3 shadow-md text-sm bg-[#2f2f2f] text-white leading-relaxed whitespace-pre-wrap select-text break-words">
+          ${safeText}
         </div>
-        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 font-bold text-xs flex-shrink-0 mt-0.5">${userInitial}</div>
       `;
       chatFeed.appendChild(msgDiv);
       chatFeed.scrollTop = chatFeed.scrollHeight;
@@ -3168,14 +3176,9 @@
             <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Guru-Flash 1.1</span>
           </div>
           <div id="${bubbleId}" class="rounded-2xl px-1 sm:px-2 py-1 text-sm bg-[var(--bubble-assistant)] text-[var(--text-primary)] leading-relaxed select-text prose-ai">
-            <div id="${bubbleId}-generating" class="ai-loader-container flex flex-col items-start my-2 py-1">
-              <div class="ai-loader-sphere compact">
-                <div class="ai-loader-glow"></div>
-                <div class="ai-loader-crescent"></div>
-                <div class="ai-loader-shadow"></div>
-                <div class="ai-loader-rim"></div>
-                <span class="ai-loader-text">Generating</span>
-              </div>
+            <div id="${bubbleId}-generating" class="flex items-center gap-2.5 py-1.5 my-1">
+              <span class="w-3.5 h-3.5 rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.95)] animate-pulse inline-block"></span>
+              <span class="text-xs text-slate-400 font-mono">GuruAI is thinking...</span>
             </div>
           </div>
         </div>
@@ -3236,22 +3239,35 @@
 
           // Append action bar
           const actionDiv = document.createElement('div');
-          actionDiv.className = 'flex items-center gap-3 pt-1 text-xs text-slate-400';
+          actionDiv.className = 'flex flex-col gap-2 pt-1 text-xs text-slate-400';
           actionDiv.innerHTML = `
-            <button onclick="copyBubbleText(this)" class="flex items-center gap-1 hover:text-white transition" title="Copy response">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-              <span>Copy</span>
-            </button>
-            <button onclick="speakBubbleText(this)" class="flex items-center gap-1 hover:text-cyan-300 transition" title="Listen aloud">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
-              <span>Listen</span>
-            </button>
-            <button onclick="recordFeedback(this, 'up')" class="hover:text-emerald-400 transition" title="Good response">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
-            </button>
-            <button onclick="recordFeedback(this, 'down')" class="hover:text-rose-400 transition" title="Bad response">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76 1.04m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg>
-            </button>
+            <div class="flex items-center gap-3">
+              <button onclick="copyBubbleText(this)" class="p-1 hover:text-white transition" title="Copy response">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+              <button onclick="recordFeedback(this, 'up')" class="p-1 hover:text-emerald-400 transition" title="Good response">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
+              </button>
+              <button onclick="recordFeedback(this, 'down')" class="p-1 hover:text-rose-400 transition" title="Bad response">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76 1.04m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg>
+              </button>
+              <button onclick="speakBubbleText(this)" class="p-1 hover:text-cyan-300 transition" title="Listen aloud">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+              </button>
+              <button onclick="shareBubbleText(this)" class="p-1 hover:text-white transition" title="Share response">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+              </button>
+              <button onclick="regenerateLastResponse()" class="p-1 hover:text-white transition" title="Regenerate">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </button>
+            </div>
+            <!-- Helpful conversation pill (Image 3 UI) -->
+            <div class="mt-1 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700/60 text-[11px] text-slate-300 w-fit">
+              <span>Is this conversation helpful so far?</span>
+              <button onclick="recordFeedback(this, 'up'); this.parentElement.remove();" class="hover:text-emerald-400 p-0.5">👍</button>
+              <button onclick="recordFeedback(this, 'down'); this.parentElement.remove();" class="hover:text-rose-400 p-0.5">👎</button>
+              <button onclick="this.parentElement.remove();" class="hover:text-slate-400 p-0.5 text-[9px] ml-1">✕</button>
+            </div>
           `;
           assistantMsgDiv.querySelector('.max-w-\\[85\\%\\]').appendChild(actionDiv);
         }
@@ -5193,5 +5209,54 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
   } catch(e) {}
 </script>
 
+<script>
+  window.quickPromptAction = function(type) {
+    const input = document.getElementById('promptInput');
+    if (!input) return;
+    if (type === 'image') {
+      if (typeof triggerImageStudio === 'function') {
+        triggerImageStudio();
+      } else {
+        input.value = '/image 8k cinematic wallpaper of ';
+        input.focus();
+      }
+    } else if (type === 'write') {
+      input.value = 'Write a professional essay on: ';
+      input.focus();
+    } else if (type === 'search') {
+      input.value = 'Search and explain in simple terms: ';
+      input.focus();
+    }
+  };
+</script>
+<script>
+  window.shareBubbleText = function(btn) {
+    const parent = btn.closest('.prose-ai') || btn.closest('.flex-col');
+    const text = parent ? parent.innerText : '';
+    if (navigator.share) {
+      navigator.share({ title: 'GuruAI Chat', text: text }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text).then(() => {
+        if (typeof showToast === 'function') showToast('📋 Response copied to share!', 'success');
+      });
+    }
+  };
+
+  window.regenerateLastResponse = function() {
+    if (typeof conversationHistory !== 'undefined' && conversationHistory.length > 0) {
+      // Find last user message
+      let lastUserMsg = null;
+      for (let i = conversationHistory.length - 1; i >= 0; i--) {
+        if (conversationHistory[i].role === 'user') {
+          lastUserMsg = conversationHistory[i].content;
+          break;
+        }
+      }
+      if (lastUserMsg && typeof streamResponse === 'function') {
+        streamResponse(lastUserMsg);
+      }
+    }
+  };
+</script>
 </body>
 </html>
