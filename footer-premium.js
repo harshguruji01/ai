@@ -52,6 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('footer.footer, footer.hg-global-footer, footer.relative.z-20, #footer-placeholder').forEach(el => el.remove());
 
   const currentYear = new Date().getFullYear();
+  const isPaymentPage = window.location.hostname.startsWith('payment') || 
+                        window.location.pathname.includes('payment') ||
+                        document.title.toLowerCase().includes('payment') ||
+                        document.getElementById('step1Card') !== null ||
+                        window.__IS_PAYMENT_PAGE__ === true;
 
   // Create footer container
   const footer = document.createElement('footer');
@@ -61,7 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Inject markup
   footer.innerHTML = `
-    <!-- Top Band: Brand, Blurb, Search & Navigation Columns -->
+    <!-- Top Band: Brand, Blurb, Search & Navigation Columns (Hidden on payment page) -->
+    ${isPaymentPage ? '' : `
     <div class="dcf-top dcf-rise" style="--d: 0ms;">
       <div class="dcf-brand-area">
         <div class="dcf-brand">
@@ -140,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </nav>
     </div>
+    `}
 
     <!-- Center Stage: Giant Wordmark with Doodle Characters -->
     <div class="dcf-world" id="dcf-world">
@@ -181,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p class="dcf-tagline" id="dcf-tagline">
           <span class="dcf-word">A </span><span class="dcf-word">hand-drawn </span><span class="dcf-word">universe </span><span class="dcf-word">for </span><span class="dcf-word">curious </span><span class="dcf-word">minds, </span><span class="dcf-word">creators </span><span class="dcf-word">and </span><span class="dcf-word">builders.</span>
         </p>
+        ${isPaymentPage ? '' : `
         <div class="dcf-actions">
           <a href="${MAIN_SITE}/ai-hub.html" class="dcf-btn is-solid">
             <svg class="dcf-icon" viewBox="-16 -16 32 32" width="18" height="18" fill="none"><path fill="#ffd23f" d="M3 -14 L-8 2 L-1 2 L-4 14 L8 -3 L1 -3 Z" /></svg>
@@ -195,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span>NCERT Books</span>
           </a>
         </div>
+        `}
       </div>
     </div>
 
