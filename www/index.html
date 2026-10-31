@@ -82,6 +82,7 @@
 
   <!-- Supabase JS Client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-head.js"></script>
 
   <style>
     /* Design Tokens */
@@ -764,31 +765,21 @@
             <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-amber-950/60 text-amber-200 hidden" id="headerTierText">Guest</span>
           </button>
 
-          <!-- User Dashboard Logo Icon (Only for Logged-In User) -->
+          <!-- User Profile Small Circular Icon (Replaces Sign In button when logged in) -->
           <button type="button" id="headerDashboardBtn" onclick="openUserDashboardModal()"
-            class="hidden relative flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-full bg-slate-900/90 border border-indigo-500/50 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 text-slate-200 transition-all group active:scale-95"
-            title="Account Menu & Dashboard">
+            class="hidden relative w-9 h-9 sm:w-9 sm:h-9 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 hover:scale-105 active:scale-95 transition-all shadow-md shadow-indigo-600/30 flex items-center justify-center cursor-pointer group flex-shrink-0"
+            title="User Dashboard & Profile (Click to open)">
             <div id="headerDashboardAvatar"
-              class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 border border-indigo-300/60 flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+              class="w-full h-full rounded-full bg-[#0d121f] overflow-hidden flex items-center justify-center text-white text-xs font-bold">
               <span id="headerDashboardAvatarInitial">U</span>
               <img id="headerDashboardAvatarImg" src="" alt="Avatar" class="w-full h-full object-cover hidden" />
             </div>
-            <div class="hidden sm:flex flex-col text-left leading-tight pr-1">
-              <span id="headerDashboardUserName"
-                class="text-xs font-semibold text-slate-200 group-hover:text-white truncate max-w-[110px]">User</span>
-              <span class="text-[9px] font-mono text-cyan-400 font-medium">Account ▾</span>
-            </div>
-            <svg
-              class="w-3 h-3 text-cyan-400 group-hover:translate-y-0.5 transition-transform hidden sm:inline-block"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-            <span
-              class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#0d121f] animate-pulse"></span>
+            <!-- Online status indicator dot -->
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0d121f] animate-pulse"></span>
           </button>
 
-          <!-- Prominent Header Sign In Button -->
-          <button id="headerSignInBtn"
+          <!-- Prominent Header Sign In Button (Shown only for Guest) -->
+          <button id="headerSignInBtn" onclick="openAuthModal('login')"
             class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -2091,9 +2082,17 @@
     // 1. Supabase Initialization
     const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80';
-    let supabaseClient = null;
-    if (window.supabase && window.supabase.createClient) {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let supabaseClient = window.supabaseClient || null;
+    if (!supabaseClient && window.supabase && window.supabase.createClient) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          storage: window.HG_SHARED_STORAGE || localStorage,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+      window.supabaseClient = supabaseClient;
     }
 
     // App State
@@ -3860,20 +3859,21 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
 
         imageLockIcon.classList.add('hidden');
 
-        // Show Profile/Dashboard Button for logged-in user
+        // Show Profile/Dashboard Circular Button for logged-in user
         if (headerDashboardBtn) {
           headerDashboardBtn.classList.remove('hidden');
           headerDashboardBtn.style.display = 'flex';
-          const headerDashboardUserName = document.getElementById('headerDashboardUserName');
-          if (headerDashboardUserName) headerDashboardUserName.textContent = name;
           const initialEl = document.getElementById('headerDashboardAvatarInitial');
           if (initialEl) initialEl.textContent = initial;
           const avatarImg = document.getElementById('headerDashboardAvatarImg');
-          const avatarUrl = currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture;
+          const avatarUrl = currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture || currentUser.user_metadata?.avatar;
           if (avatarImg && avatarUrl) {
             avatarImg.src = avatarUrl;
             avatarImg.classList.remove('hidden');
             if (initialEl) initialEl.classList.add('hidden');
+          } else if (initialEl) {
+            initialEl.classList.remove('hidden');
+            if (avatarImg) avatarImg.classList.add('hidden');
           }
         }
         if (sidebarDashboardLink) {
@@ -4016,29 +4016,16 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     }
 
     function openAuthModal(mode = 'login') {
-      if (currentUser) {
+      if (currentUser && !currentUser.is_guest) {
         openUserDashboardModal();
         return;
       }
-
-      const isApp = isNativeAppEnvironment();
-
-      // If running inside Android Native APK / Capacitor:
-      if (isApp) {
-        setAuthModalMode(mode);
-        authModal.classList.remove('hidden');
-        const appWebLink = document.getElementById('appWebLoginLinkContainer');
-        if (appWebLink) appWebLink.classList.remove('hidden');
-        return;
-      }
-
-      // If on Web (ai.webguruji.online):
-      // Redirect to unified login portal which redirects back to https://ai.webguruji.online/
       try {
         const hostname = window.location.hostname;
         let domainStr = (hostname === 'webguruji.online' || hostname.endsWith('.webguruji.online')) ? '; domain=.webguruji.online' : '';
         const secureStr = window.location.protocol === 'https:' ? '; secure' : '';
-        document.cookie = `hg_auth_redirect=${encodeURIComponent('https://ai.webguruji.online/')}; path=/; max-age=3600${domainStr}; SameSite=Lax${secureStr}`;
+        document.cookie = 'hg_auth_redirect=' + encodeURIComponent('https://ai.webguruji.online/') + '; path=/; max-age=3600' + domainStr + '; SameSite=Lax' + secureStr;
+        sessionStorage.setItem('hg_auth_redirect', 'https://ai.webguruji.online/');
       } catch(e) {}
 
       const modeParam = (mode === 'register' || mode === 'signup') ? '&mode=signup' : '';

@@ -50,6 +50,7 @@
 
   <!-- Supabase JS Client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-head.js"></script>
 
   <style>
     :root {
@@ -941,7 +942,7 @@
                 <button id="sendPasswordResetBtn" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-semibold transition">
                   Send Password Reset Link
                 </button>
-                <a href="login.html?mode=reset" class="text-xs text-cyan-400 hover:underline">
+                <a href="https://login.webguruji.online/forgot-password.html" class="text-xs text-cyan-400 hover:underline">
                   Open Recovery Portal &rarr;
                 </a>
               </div>
@@ -2367,7 +2368,7 @@
         localStorage.removeItem('hg_auth_user');
         sessionStorage.clear();
         showToast('Signed out of GuruAI', 'info');
-        setTimeout(() => { window.location.href = 'login.html'; }, 400);
+        setTimeout(() => { window.location.href = 'https://login.webguruji.online/?redirect=' + encodeURIComponent('https://ai.webguruji.online/'); }, 400);
       });
 
       // Prompt Form Submit
@@ -2436,7 +2437,7 @@
       document.getElementById('sendPasswordResetBtn')?.addEventListener('click', async () => {
         if (!currentUser?.email || !supabase) return;
         const { error } = await supabase.auth.resetPasswordForEmail(currentUser.email, {
-          redirectTo: window.location.origin + '/login.html?mode=reset'
+          redirectTo: 'https://login.webguruji.online/reset-password.html'
         });
         if (error) {
           showToast(error.message, 'error');
