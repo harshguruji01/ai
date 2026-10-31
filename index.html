@@ -728,78 +728,117 @@
 
       <!-- Top Navigation Header -->
       <header
-        class="h-14 border-b border-[var(--border-color)] px-4 flex items-center justify-between bg-[var(--bg-secondary)]/80 backdrop-blur-md z-10 flex-shrink-0">
-        <div class="flex items-center gap-3">
-          <button id="openSidebarBtn" aria-label="Open menu"
+        class="h-14 border-b border-[var(--border-color)] px-3 sm:px-4 flex items-center justify-between bg-[var(--bg-secondary)]/80 backdrop-blur-md z-10 flex-shrink-0">
+        
+        <!-- Left: Sidebar Toggle + Brand Identity -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button id="openSidebarBtn" aria-label="Open sidebar"
             class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
 
-          <!-- Model Selector Pill (ChatGPT & Gemini Style) -->
-          <div class="flex items-center gap-2">
-            <div
-              class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700/80 hover:border-indigo-500/60 transition cursor-pointer shadow-sm group"
-              id="modelSelectorBadge" onclick="openModelPickerSheet()" title="AI Model: Guru-Flash 1.1 (Tap to switch)">
-              <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" id="headerModelDot"></span>
-              <span class="font-bold text-xs tracking-wide text-white font-heading" id="headerActiveModelName">Guru-Flash 1.1</span>
-              <svg class="w-3 h-3 text-slate-400 group-hover:text-cyan-300 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </div>
+          <!-- Brand Identity (Mobile / Tablet) -->
+          <a href="https://webguruji.online" target="_blank" class="flex md:hidden items-center gap-1.5">
+            <img src="logo.png" alt="GuruAI Logo" class="w-6 h-6 rounded-lg object-cover" />
+            <span class="font-bold text-xs text-white">GuruAI</span>
+          </a>
+
+          <!-- Center/Left: Current Active Model Badge -->
+          <div
+            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700/80 hover:border-indigo-500/60 transition cursor-pointer shadow-sm group"
+            id="modelSelectorBadge" onclick="openModelPickerSheet()" title="AI Model: Guru-Flash 1.1 (Tap to switch)">
+            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" id="headerModelDot"></span>
+            <span class="font-bold text-xs tracking-wide text-white font-heading" id="headerActiveModelName">Guru-Flash 1.1</span>
+            <svg class="w-3 h-3 text-slate-400 group-hover:text-cyan-300 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5 sm:gap-2.5">
-          <!-- Free offer / Upgrade Pill Button (Image UI match) -->
-          <button type="button" onclick="openUpgradeModal()" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 via-indigo-500/15 to-purple-500/15 hover:from-amber-500/25 hover:to-indigo-500/25 text-amber-300 hover:text-white border border-amber-500/30 text-xs font-semibold transition shadow-sm active:scale-95" title="Special Offers & Upgrade">
+        <!-- Right: Buttons in Exact Specified Order -->
+        <div class="flex items-center gap-1 sm:gap-1.5">
+          
+          <!-- Request Counter Pill (Near user area) -->
+          <div id="headerQuotaBadge"
+            class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 shadow-sm transition">
+            <span id="headerQuotaText">8 requests left</span>
+            <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-indigo-950/60 text-indigo-200 hidden" id="headerTierText">Guest</span>
+          </div>
+
+          <!-- Free offer / Upgrade Pill Button -->
+          <button type="button" onclick="openUpgradeModal()" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 via-indigo-500/15 to-purple-500/15 hover:from-amber-500/25 hover:to-indigo-500/25 text-amber-300 hover:text-white border border-amber-500/30 text-xs font-semibold transition shadow-sm active:scale-95" title="Special Offers & Upgrade">
             <span class="text-amber-400 text-xs">🎁</span>
             <span class="font-heading">Free offer</span>
           </button>
 
-          <!-- Mobile New Chat Button -->
-          <button type="button" onclick="handleNewChat()" class="p-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-200 hover:text-white transition" title="Start New Chat">
+          <!-- 1. New Chat (plus icon) -->
+          <button type="button" onclick="handleNewChat()" class="p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-200 hover:text-white transition" title="New Chat (Ctrl+K)" aria-label="New chat">
             <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
           </button>
 
-          <!-- Chat Actions Menu Trigger (⋮) -->
-          <button type="button" onclick="openChatActionsSheet()" class="p-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Chat Actions">
+          <!-- 2. Search Chats (magnifier icon) -->
+          <button type="button" onclick="triggerSearchFocus()" class="hidden md:flex p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Search chats" aria-label="Search chats">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </button>
+
+          <!-- 3. Chat History (clock icon) -->
+          <button type="button" onclick="toggleSidebarDrawer()" class="hidden md:flex p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Chat History" aria-label="Chat history">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </button>
+
+          <!-- 4. Preferences / Settings (gear icon) -->
+          <button type="button" onclick="openSettingsModal()" class="hidden md:flex p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Preferences & Settings" aria-label="Settings">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </button>
+
+          <!-- 5. Theme Switcher (sun/moon icon) -->
+          <button type="button" onclick="toggleThemeAction()" class="p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Switch Theme (Dark, Slate Light, Cyberpunk)" aria-label="Toggle theme">
+            <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+          </button>
+
+          <!-- Mobile Three-Dot Menu (⋮) -->
+          <button type="button" onclick="openChatActionsSheet()" class="md:hidden p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Menu" aria-label="Open menu">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
             </svg>
           </button>
-          <!-- Hidden compatible elements (clean UI: moved into ⋮ Menu & Dynamic Quota Pill) -->
-          <button id="langBadgeBtn" class="hidden" aria-hidden="true"><span id="currentLangDisplay">English</span></button>
-          <button id="headerUpgradeBtn" onclick="openUpgradeModal()" class="hidden" aria-hidden="true"></button>
-          <button id="headerQuotaBadge"
-            class="hidden items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 shadow-sm transition animate-in fade-in">
-            <span id="headerQuotaText"></span>
-            <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-amber-950/60 text-amber-200 hidden" id="headerTierText">Guest</span>
-          </button>
 
-          <!-- User Profile Small Circular Icon (Replaces Sign In button when logged in) -->
+          <!-- 6. User Account (Avatar Icon / Sign In) -->
           <button type="button" id="headerDashboardBtn" onclick="openUserDashboardModal()"
-            class="hidden relative w-9 h-9 sm:w-9 sm:h-9 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 hover:scale-105 active:scale-95 transition-all shadow-md shadow-indigo-600/30 flex items-center justify-center cursor-pointer group flex-shrink-0"
-            title="User Dashboard & Profile (Click to open)">
+            class="hidden relative w-9 h-9 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 hover:scale-105 active:scale-95 transition-all shadow-md shadow-indigo-600/30 flex items-center justify-center cursor-pointer group flex-shrink-0"
+            title="User Account & Profile" aria-label="User account">
             <div id="headerDashboardAvatar"
               class="w-full h-full rounded-full bg-[#0d121f] overflow-hidden flex items-center justify-center text-white text-xs font-bold">
               <span id="headerDashboardAvatarInitial">U</span>
               <img id="headerDashboardAvatarImg" src="" alt="Avatar" class="w-full h-full object-cover hidden" />
             </div>
-            <!-- Online status indicator dot -->
             <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0d121f] animate-pulse"></span>
           </button>
 
-          <!-- Prominent Header Sign In Button (Shown only for Guest) -->
+          <!-- Sign In Button (Shown only for Guest) -->
           <button id="headerSignInBtn" onclick="openAuthModal('login')"
-            class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95">
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95" aria-label="Sign in">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
             </svg>
             <span id="headerSignInBtnText">Sign In</span>
           </button>
+
+          <!-- Hidden compatibility elements -->
+          <button id="langBadgeBtn" class="hidden" aria-hidden="true"><span id="currentLangDisplay">English</span></button>
+          <button id="headerUpgradeBtn" onclick="openUpgradeModal()" class="hidden" aria-hidden="true"></button>
           <script>
             (function() {
               try {
@@ -830,43 +869,56 @@
 
       <!-- Chat Messages Container -->
       <div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto pb-44 px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
-        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto py-12 animate-in fade-in duration-300">
-          <div class="space-y-3 max-w-xl mx-auto">
-            <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mx-auto overflow-hidden flex-shrink-0 mb-4 p-1.5">
+        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto py-8 animate-in fade-in duration-300">
+          <div class="space-y-3 max-w-xl mx-auto px-2">
+            <!-- Mascot / Logo -->
+            <div class="w-16 h-16 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mx-auto overflow-hidden flex-shrink-0 mb-3 p-1.5 group hover:scale-105 transition-transform">
               <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-xl" />
             </div>
             
             <h1 id="mainGreetingTitle" class="text-3xl md:text-4xl font-extrabold tracking-tight text-white font-heading">
-              Hey, Bro. Ready to dive in?
+              Namaste! Main GuruAI hoon.
             </h1>
             <p class="text-xs md:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
-              Ask GuruAI anything in Hindi, Hinglish, or English.
+              Koi bhi sawaal poochho — study, coding, GK ya general knowledge.
             </p>
 
-            <!-- Quick Action Starters (Matching Image UI: Create image, Write/edit, Search web) -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 pt-5 max-w-xl mx-auto w-full">
-              <button type="button" onclick="quickPromptAction('image')" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/70 hover:border-indigo-500/60 text-xs font-semibold text-slate-200 hover:text-white transition group text-left flex-1 shadow-sm">
-                <span class="text-lg p-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 group-hover:scale-110 transition-transform">🖼️</span>
-                <div>
-                  <div class="font-bold text-white">Create an image</div>
-                  <div class="text-[10px] text-slate-400 font-normal">Generate 8K visuals</div>
-                </div>
+            <!-- 4 Quick-Start Study Buttons (Student Friendly) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-4 max-w-lg mx-auto w-full text-left">
+              <button type="button" onclick="quickFillPrompt('Photosynthesis ko simple Hindi me diagram ke sath samjhao.')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
+                <span class="text-base p-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 group-hover:scale-110 transition-transform">🌿</span>
+                <span class="truncate">Photosynthesis samjhao</span>
               </button>
 
-              <button type="button" onclick="quickPromptAction('write')" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/70 hover:border-cyan-500/60 text-xs font-semibold text-slate-200 hover:text-white transition group text-left flex-1 shadow-sm">
-                <span class="text-lg p-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 group-hover:scale-110 transition-transform">✏️</span>
-                <div>
-                  <div class="font-bold text-white">Write or edit</div>
-                  <div class="text-[10px] text-slate-400 font-normal">Code, essays &amp; letters</div>
-                </div>
+              <button type="button" onclick="quickFillPrompt('Mera coding doubt clear karo: ')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
+                <span class="text-base p-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-transform">💻</span>
+                <span class="truncate">Coding doubt clear karo</span>
               </button>
 
-              <button type="button" onclick="quickPromptAction('search')" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/70 hover:border-emerald-500/60 text-xs font-semibold text-slate-200 hover:text-white transition group text-left flex-1 shadow-sm">
-                <span class="text-lg p-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 group-hover:scale-110 transition-transform">🌐</span>
-                <div>
-                  <div class="font-bold text-white">Search the web</div>
-                  <div class="text-[10px] text-slate-400 font-normal">Live research &amp; answers</div>
-                </div>
+              <button type="button" onclick="quickFillPrompt('Mujhe ek acche topic par essay likhne me help karo: ')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
+                <span class="text-base p-1 rounded-lg bg-amber-500/10 border border-amber-500/20 group-hover:scale-110 transition-transform">✍️</span>
+                <span class="truncate">Essay likhne me help karo</span>
+              </button>
+
+              <button type="button" onclick="quickFillPrompt('Exam preparation ke liye ek daily balanced study plan banao.')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
+                <span class="text-base p-1 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform">📅</span>
+                <span class="truncate">Daily study plan banao</span>
+              </button>
+            </div>
+
+            <!-- 3 Creative Quick Starters (Image UI match) -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 pt-2 max-w-lg mx-auto w-full">
+              <button type="button" onclick="quickPromptAction('image')" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-[11px] font-medium text-slate-300 transition flex-1">
+                <span>🖼️</span>
+                <span>Create an image</span>
+              </button>
+              <button type="button" onclick="quickPromptAction('write')" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-[11px] font-medium text-slate-300 transition flex-1">
+                <span>✏️</span>
+                <span>Write or edit</span>
+              </button>
+              <button type="button" onclick="quickPromptAction('search')" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-[11px] font-medium text-slate-300 transition flex-1">
+                <span>🌐</span>
+                <span>Search the web</span>
               </button>
             </div>
           </div>
@@ -894,6 +946,63 @@
       <div
         class="absolute bottom-14 md:bottom-0 left-0 right-0 z-20 pointer-events-none pb-2 sm:pb-4 px-2 sm:px-4 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/95 to-transparent pt-6 flex-shrink-0 z-20">
         <div class="w-full max-w-4xl mx-auto space-y-2 pointer-events-auto">
+          <!-- Floating Scroll To Latest Message Button (Visible when scrolled up) -->
+          <div class="flex justify-center">
+            <button type="button" id="scrollToLatestBtn" onclick="scrollChatToBottom()"
+              class="hidden px-3.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-white text-xs font-semibold shadow-xl flex items-center gap-1.5 backdrop-blur-md transition-all active:scale-95 animate-in fade-in"
+              title="Scroll to latest message" aria-label="Scroll to latest message">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+              <span>Scroll to latest</span>
+            </button>
+          </div>
+
+          <!-- Quota Limit Reached Friendly Card (Hidden by default) -->
+          <div id="limitReachedCard" class="hidden p-4 rounded-2xl bg-gradient-to-r from-amber-950/80 via-slate-900 to-indigo-950/80 border border-amber-500/40 shadow-2xl backdrop-blur-xl animate-in fade-in duration-200">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-amber-400 text-base">⚠️</span>
+                  <h4 class="font-bold text-white text-sm font-heading">Aaj ki free limit khatam ho gayi</h4>
+                </div>
+                <p class="text-xs text-slate-300">
+                  Premium me zyada chats, bada context aur priority speed milta hai.
+                </p>
+              </div>
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button type="button" onclick="openUpgradeModal()" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md transition">
+                  Upgrade karein
+                </button>
+                <button type="button" onclick="openAuthModal('login')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs border border-slate-600 transition">
+                  Sign in
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick-Reply Chips (Horizontally Scrollable) -->
+          <div id="quickRepliesContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-1">
+            <button type="button" onclick="insertQuickReply('Explain in simple Hindi: ')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:border-indigo-500/50 text-xs text-slate-300 hover:text-white transition shadow-sm active:scale-95 flex items-center gap-1.5">
+              <span>💡</span>
+              <span>Explain in simple Hindi</span>
+            </button>
+            <button type="button" onclick="insertQuickReply('Make concise study notes on: ')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:border-indigo-500/50 text-xs text-slate-300 hover:text-white transition shadow-sm active:scale-95 flex items-center gap-1.5">
+              <span>📝</span>
+              <span>Make notes</span>
+            </button>
+            <button type="button" onclick="insertQuickReply('Give clear real-world examples of: ')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:border-indigo-500/50 text-xs text-slate-300 hover:text-white transition shadow-sm active:scale-95 flex items-center gap-1.5">
+              <span>🔍</span>
+              <span>Give examples</span>
+            </button>
+            <button type="button" onclick="insertQuickReply('Solve step by step with explanation: ')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:border-indigo-500/50 text-xs text-slate-300 hover:text-white transition shadow-sm active:scale-95 flex items-center gap-1.5">
+              <span>🪜</span>
+              <span>Solve step by step</span>
+            </button>
+            <button type="button" onclick="insertQuickReply('Translate to clear English: ')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:border-indigo-500/50 text-xs text-slate-300 hover:text-white transition shadow-sm active:scale-95 flex items-center gap-1.5">
+              <span>🌐</span>
+              <span>Translate to English</span>
+            </button>
+          </div>
+
 
           <form id="chatForm" action="javascript:void(0);" onsubmit="if(window.handleChatSubmit){window.handleChatSubmit(event);}return false;" class="relative rounded-2xl border transition-all duration-200 backdrop-blur-2xl bg-white/[0.03] dark:bg-white/[0.02] border-white/[0.08] dark:border-white/[0.05] shadow-2xl focus-within:ring-2 focus-within:ring-violet-500/30 focus-within:border-violet-500/40">
             
@@ -945,7 +1054,7 @@
 
             <!-- Auto-resize Textarea Input (Slim Breadth & Ask Anything To GuruAI ) -->
             <div class="px-3 sm:px-4 pt-2 pb-0.5">
-              <textarea id="promptInput" rows="1" placeholder="Ask Anything To GuruAI "
+              <textarea id="promptInput" rows="1" placeholder="Apna sawaal GuruAI se poochhein…"
                 class="w-full px-1.5 py-1 resize-none bg-transparent border-none text-[14px] leading-snug text-white/90 placeholder-white/40 focus:outline-none min-h-[34px] max-h-40 disabled:opacity-60"></textarea>
             </div>
 
@@ -1043,7 +1152,7 @@
           </form>
 
           <div class="flex items-center justify-center px-2 text-[11px] text-slate-500">
-            <span>GuruAI can make mistakes. Check important info.</span>
+            <span>GuruAI can make mistakes. Verify important facts and code.</span>
             <span id="footerQuotaText" class="font-mono hidden text-amber-400 font-semibold ml-2"></span>
           </div>
 
@@ -3980,43 +4089,55 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     }
 
     function updateQuotaUI() {
+      const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
       const quotaSidebarEl = document.getElementById('quotaSidebarText');
-      if (quotaSidebarEl) quotaSidebarEl.textContent = `${remainingAllowance}/${maxRequests} Left`;
+      if (quotaSidebarEl) {
+        quotaSidebarEl.textContent = isMember ? `${remainingAllowance}/20 Left` : `${remainingAllowance}/8 Left`;
+      }
 
       const headerQuotaBadge = document.getElementById('headerQuotaBadge');
       const headerQuotaText = document.getElementById('headerQuotaText');
       const footerQuotaText = document.getElementById('footerQuotaText');
+      const limitCard = document.getElementById('limitReachedCard');
 
-      // Requirement: Do NOT show persistent quota counter when above 3.
-      // When chat limit reaches 3 or fewer (3, 2, 1), show a clean notice: 'Remaining limit: 3'
-      // and decrease when users send questions.
-      if (remainingAllowance <= 3 && remainingAllowance > 0) {
+      if (remainingAllowance <= 0) {
+        // Limit reached: Show limit card above composer and red badges
+        if (limitCard) limitCard.classList.remove('hidden');
         if (headerQuotaBadge) {
           headerQuotaBadge.classList.remove('hidden');
-          headerQuotaBadge.classList.add('flex');
-          if (headerQuotaText) headerQuotaText.textContent = `Remaining limit: ${remainingAllowance}`;
+          headerQuotaBadge.classList.add('inline-flex');
+          headerQuotaBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 border border-rose-500/30 text-rose-300 shadow-sm transition';
+          if (headerQuotaText) headerQuotaText.textContent = 'Limit reached';
         }
         if (footerQuotaText) {
           footerQuotaText.classList.remove('hidden');
-          footerQuotaText.textContent = `Remaining limit: ${remainingAllowance}`;
-          footerQuotaText.className = 'font-mono text-amber-400 font-semibold text-[11px] animate-pulse';
-        }
-      } else if (remainingAllowance <= 0) {
-        if (headerQuotaBadge) {
-          headerQuotaBadge.classList.remove('hidden');
-          headerQuotaBadge.classList.add('flex');
-          if (headerQuotaText) headerQuotaText.textContent = 'Daily limit reached';
-        }
-        if (footerQuotaText) {
-          footerQuotaText.classList.remove('hidden');
-          footerQuotaText.textContent = 'Daily limit reached';
+          footerQuotaText.textContent = 'Aaj ki free limit khatam ho gayi';
           footerQuotaText.className = 'font-mono text-rose-400 font-semibold text-[11px]';
         }
-      } else {
-        // Limit is plenty (> 3): Keep clean, DO NOT display quota counters
+      } else if (remainingAllowance <= 2) {
+        // Subtle warning badge: Sirf 2 requests bache hain
+        if (limitCard) limitCard.classList.add('hidden');
         if (headerQuotaBadge) {
-          headerQuotaBadge.classList.add('hidden');
-          headerQuotaBadge.classList.remove('flex');
+          headerQuotaBadge.classList.remove('hidden');
+          headerQuotaBadge.classList.add('inline-flex');
+          headerQuotaBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 shadow-sm transition animate-pulse';
+          if (headerQuotaText) headerQuotaText.textContent = `Sirf ${remainingAllowance} requests bache hain`;
+        }
+        if (footerQuotaText) {
+          footerQuotaText.classList.remove('hidden');
+          footerQuotaText.textContent = `Sirf ${remainingAllowance} requests bache hain`;
+          footerQuotaText.className = 'font-mono text-amber-400 font-semibold text-[11px]';
+        }
+      } else {
+        // Normal quota
+        if (limitCard) limitCard.classList.add('hidden');
+        if (headerQuotaBadge) {
+          headerQuotaBadge.classList.remove('hidden');
+          headerQuotaBadge.classList.add('inline-flex');
+          headerQuotaBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 shadow-sm transition';
+          if (headerQuotaText) {
+            headerQuotaText.textContent = isMember ? `${remainingAllowance} requests / 12h left` : `${remainingAllowance} requests left`;
+          }
         }
         if (footerQuotaText) {
           footerQuotaText.classList.add('hidden');
@@ -5257,6 +5378,73 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       }
     }
   };
+</script>
+<script>
+  // Quick Prompt Filler
+  window.quickFillPrompt = function(text) {
+    const input = document.getElementById('promptInput');
+    if (input) {
+      input.value = text;
+      input.focus();
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+    }
+  };
+
+  // Quick Reply Insert
+  window.insertQuickReply = function(prefix) {
+    const input = document.getElementById('promptInput');
+    if (input) {
+      const cur = input.value.trim();
+      input.value = cur ? prefix + cur : prefix;
+      input.focus();
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+    }
+  };
+
+  // Scroll To Bottom Handler & Detection
+  window.scrollChatToBottom = function() {
+    const feed = document.getElementById('chatFeed');
+    if (feed) {
+      feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' });
+    }
+    const btn = document.getElementById('scrollToLatestBtn');
+    if (btn) btn.classList.add('hidden');
+  };
+
+  // Search input focus
+  window.triggerSearchFocus = function() {
+    const sInput = document.getElementById('searchInput');
+    if (sInput) {
+      sInput.focus();
+      sInput.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Toggle sidebar drawer
+  window.toggleSidebarDrawer = function() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('-translate-x-full');
+    }
+  };
+
+  // Scroll listener on chatFeed for "Scroll to latest" button
+  (function() {
+    const feed = document.getElementById('chatFeed');
+    const scrollBtn = document.getElementById('scrollToLatestBtn');
+    if (feed && scrollBtn) {
+      feed.addEventListener('scroll', function() {
+        const distFromBottom = feed.scrollHeight - feed.scrollTop - feed.clientHeight;
+        if (distFromBottom > 150) {
+          scrollBtn.classList.remove('hidden');
+        } else {
+          scrollBtn.classList.add('hidden');
+        }
+      });
+    }
+  })();
 </script>
 </body>
 </html>
