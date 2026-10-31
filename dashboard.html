@@ -1354,7 +1354,14 @@
     // Supabase Initialization
     const SUPABASE_URL = 'https://wumdbpyhpblvgjttsbpv.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1bWRicHlocGJsdmdqdHRzYnB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDMwNDQsImV4cCI6MjEwMTgxOTA0NH0.6eK0veaHyf6Dk9UMX6fGrxNItsfa4Y-m-NE6PXbCQ80';
-    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    const supabase = window.supabaseClient || (window.supabase && typeof window.supabase.createClient === 'function' ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        storage: window.HG_SHARED_STORAGE || localStorage,
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }) : null);
 
     let currentUser = null;
     let maxAllowance = 20;
@@ -1417,7 +1424,13 @@
     // Check Session & Quotas with Non-Blocking Guest Support
     async function checkAuthAndQuota() {
       try {
-        if (supabase) {
+        if (typeof window.getCachedUserSession === 'function') {
+          const cached = window.getCachedUserSession();
+          if (cached && cached.email) {
+            currentUser = cached;
+          }
+        }
+        if (supabase && supabase.auth) {
           const { data: { session } } = await supabase.auth.getSession();
           if (session && session.user) {
             currentUser = session.user;
@@ -2364,7 +2377,13 @@
 
       // Sign Out
       document.getElementById('sidebarLogoutBtn')?.addEventListener('click', async () => {
-        if (supabase) await supabase.auth.signOut();
+        if (supabase && supabase.auth) {
+          try { await supabase.auth.signOut(); } catch(e) {}
+        }
+        if (typeof window.removeSharedCookie === 'function') {
+          window.removeSharedCookie('sb-wumdbpyhpblvgjttsbpv-auth-token');
+        }
+        try { localStorage.removeItem('sb-wumdbpyhpblvgjttsbpv-auth-token'); } catch(e) {}
         localStorage.removeItem('hg_auth_user');
         sessionStorage.clear();
         showToast('Signed out of GuruAI', 'info');

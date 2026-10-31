@@ -675,14 +675,44 @@
             class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition group"
             title="Account & Profile">
             <div
-              class="w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold group-hover:bg-indigo-600/30 group-hover:text-cyan-300 transition"
+              class="w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs font-bold group-hover:bg-indigo-600/30 group-hover:text-cyan-300 transition overflow-hidden"
               id="userAvatar">G</div>
             <div class="leading-tight min-w-0 max-w-[120px]">
               <div class="font-semibold text-slate-300 group-hover:text-white truncate transition" id="userNameLabel">
                 Guest Visitor</div>
-              <div class="text-[10px] text-cyan-400 group-hover:underline" id="userStatusLabel">Click to Sign In</div>
+              <div class="text-[10px] text-cyan-400 group-hover:underline truncate" id="userStatusLabel">Click to Sign In</div>
             </div>
           </div>
+          <script>
+            (function() {
+              try {
+                var cached = (typeof window.getCachedUserSession === 'function') ? window.getCachedUserSession() : null;
+                if (cached && cached.email) {
+                  var name = cached.user_metadata?.full_name || cached.user_metadata?.name || cached.email.split('@')[0];
+                  var initial = (name || cached.email)[0].toUpperCase();
+                  var nEl = document.getElementById('userNameLabel');
+                  var sEl = document.getElementById('userStatusLabel');
+                  var aEl = document.getElementById('userAvatar');
+                  var authBtn = document.getElementById('openAuthBtn');
+                  if (nEl) { nEl.textContent = name; nEl.title = name; }
+                  if (sEl) {
+                    sEl.innerHTML = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse"></span>Active Member';
+                    sEl.className = 'text-[10px] text-emerald-400 font-medium truncate flex items-center';
+                    sEl.title = cached.email;
+                  }
+                  if (aEl) {
+                    var avUrl = cached.user_metadata?.avatar_url || cached.user_metadata?.picture;
+                    if (avUrl) {
+                      aEl.innerHTML = '<img src="' + avUrl + '" alt="' + name + '" class="w-full h-full object-cover rounded-xl" />';
+                    } else {
+                      aEl.textContent = initial;
+                    }
+                  }
+                  if (authBtn) { authBtn.classList.add('hidden'); authBtn.style.display = 'none'; }
+                }
+              } catch(e) {}
+            })();
+          </script>
 
           <div class="flex items-center gap-1">
             <!-- Quick Theme Switch -->
@@ -787,6 +817,31 @@
             </svg>
             <span id="headerSignInBtnText">Sign In</span>
           </button>
+          <script>
+            (function() {
+              try {
+                var cached = (typeof window.getCachedUserSession === 'function') ? window.getCachedUserSession() : null;
+                if (cached && cached.email) {
+                  var name = cached.user_metadata?.full_name || cached.user_metadata?.name || cached.email.split('@')[0];
+                  var initial = (name || cached.email)[0].toUpperCase();
+                  var hSign = document.getElementById('headerSignInBtn');
+                  var hDash = document.getElementById('headerDashboardBtn');
+                  var hInit = document.getElementById('headerDashboardAvatarInitial');
+                  var hImg = document.getElementById('headerDashboardAvatarImg');
+                  var avUrl = cached.user_metadata?.avatar_url || cached.user_metadata?.picture;
+                  if (hSign) { hSign.classList.add('hidden'); hSign.style.display = 'none'; }
+                  if (hDash) { hDash.classList.remove('hidden'); hDash.style.display = 'flex'; }
+                  if (avUrl && hImg && hInit) {
+                    hImg.src = avUrl;
+                    hImg.classList.remove('hidden');
+                    hInit.classList.add('hidden');
+                  } else if (hInit) {
+                    hInit.textContent = initial;
+                  }
+                }
+              } catch(e) {}
+            })();
+          </script>
         </div>
       </header>
 
@@ -2135,9 +2190,9 @@
       const modal = document.getElementById('userDashboardModal');
       if (!modal) return;
       
-      const isMember = !!currentUser;
-      const name = currentUser ? (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0]) : 'Guest Explorer';
-      const email = currentUser ? currentUser.email : 'guest@webguruji.online';
+      const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
+      const name = isMember ? (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0]) : 'Guest Explorer';
+      const email = isMember ? currentUser.email : 'guest@webguruji.online';
       const tierBadge = document.getElementById('dashModalTierBadge');
       const avatarEl = document.getElementById('dashModalAvatar');
       const nameEl = document.getElementById('dashModalName');
@@ -2150,14 +2205,25 @@
 
       if (nameEl) nameEl.textContent = name;
       if (emailEl) emailEl.textContent = email;
-      if (avatarEl) avatarEl.textContent = name[0].toUpperCase();
+
+      const avatarUrl = isMember ? (currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture || currentUser.user_metadata?.avatar) : null;
+      if (avatarEl) {
+        if (avatarUrl) {
+          avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${name}" class="w-full h-full object-cover rounded-2xl" />`;
+        } else {
+          avatarEl.textContent = name[0].toUpperCase();
+        }
+      }
 
       if (isMember) {
         if (tierBadge) {
           tierBadge.textContent = 'Active Member';
           tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold';
         }
-        if (authBtn) authBtn.textContent = 'Sign Out';
+        if (authBtn) {
+          authBtn.textContent = 'Sign Out';
+          authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-900/60 transition';
+        }
         if (reqCount) reqCount.textContent = Math.max(0, 20 - (chatCount || 0)).toString();
         if (reqMax) reqMax.textContent = '/ 20';
         if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((20 - (chatCount || 0)) / 20) * 100)) + '%';
@@ -2166,14 +2232,17 @@
           tierBadge.textContent = 'Guest Tier (8/8)';
           tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold';
         }
-        if (authBtn) authBtn.textContent = 'Sign In';
+        if (authBtn) {
+          authBtn.textContent = 'Sign In';
+          authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition';
+        }
         if (reqCount) reqCount.textContent = Math.max(0, 8 - (chatCount || 0)).toString();
         if (reqMax) reqMax.textContent = '/ 8';
         if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((8 - (chatCount || 0)) / 8) * 100)) + '%';
       }
 
       const imgQuota = getStoredImageQuota();
-      if (imgCount) imgCount.textContent = (imgQuota?.remaining ?? 5).toString();
+      if (imgCount) imgCount.textContent = (imgQuota?.remaining ?? (isMember ? 5 : 0)).toString();
 
       modal.classList.remove('hidden');
     }
@@ -2188,9 +2257,17 @@
 
     function handleDashboardAuthAction() {
       closeUserDashboardModal();
-      if (currentUser) {
-        if (supabase) supabase.auth.signOut();
-        window.location.reload();
+      if (currentUser && !currentUser.is_guest) {
+        if (supabaseClient && supabaseClient.auth) {
+          try { supabaseClient.auth.signOut(); } catch(e) {}
+        }
+        if (typeof window.removeSharedCookie === 'function') {
+          window.removeSharedCookie('sb-wumdbpyhpblvgjttsbpv-auth-token');
+        }
+        try { localStorage.removeItem('sb-wumdbpyhpblvgjttsbpv-auth-token'); } catch (e) {}
+        updateUserState(null);
+        if (typeof showToast === 'function') showToast('Signed out successfully 👋', 'info');
+        setTimeout(() => window.location.reload(), 400);
       } else {
         openAuthModal('login');
       }
@@ -2203,14 +2280,13 @@
         openUserDashboardModal();
       });
     }
+    const sidebarDashboardLink = document.getElementById('sidebarDashboardLink');
     if (sidebarDashboardLink) {
       sidebarDashboardLink.addEventListener('click', (e) => {
         e.preventDefault();
         openUserDashboardModal();
       });
     }
-
-    const sidebarDashboardLink = document.getElementById('sidebarDashboardLink');
 
     // Toast Notification Utility
     function showToast(message, type = 'info') {
@@ -3848,25 +3924,53 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       currentUser = user;
       initUserQuota(user);
 
-      if (user) {
+      const headerSignInBtn = document.getElementById('headerSignInBtn');
+      const headerDashboardBtn = document.getElementById('headerDashboardBtn');
+      const initialEl = document.getElementById('headerDashboardAvatarInitial');
+      const avatarImg = document.getElementById('headerDashboardAvatarImg');
+      const userProfileBtn = document.getElementById('userProfileBtn');
+      const openAuthBtn = document.getElementById('openAuthBtn');
+      const userNameLabel = document.getElementById('userNameLabel');
+      const userStatusLabel = document.getElementById('userStatusLabel');
+      const userAvatar = document.getElementById('userAvatar');
+      const userTierLabel = document.getElementById('userTierLabel');
+      const headerTierText = document.getElementById('headerTierText');
+      const imageLockIcon = document.getElementById('imageLockIcon');
+      const sidebarDashboardLink = document.getElementById('sidebarDashboardLink');
+
+      const isMember = !!(user && !user.is_guest && user.email);
+
+      if (isMember) {
         const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
         const initial = (name || user.email)[0].toUpperCase();
-        userNameLabel.textContent = name;
-        userStatusLabel.textContent = user.email;
-        userAvatar.textContent = initial;
-        userTierLabel.textContent = 'Member (20 msgs & 5 img / 24h)';
-        headerTierText.textContent = 'Member';
+        const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || user.user_metadata?.avatar;
 
-        imageLockIcon.classList.add('hidden');
+        if (userNameLabel) {
+          userNameLabel.textContent = name;
+          userNameLabel.title = name;
+        }
+        if (userStatusLabel) {
+          userStatusLabel.innerHTML = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse"></span>Active Member';
+          userStatusLabel.title = user.email;
+          userStatusLabel.className = 'text-[10px] text-emerald-400 font-medium truncate flex items-center';
+        }
+        if (userAvatar) {
+          if (avatarUrl) {
+            userAvatar.innerHTML = `<img src="${avatarUrl}" alt="${name}" class="w-full h-full object-cover rounded-xl" />`;
+          } else {
+            userAvatar.textContent = initial;
+          }
+        }
+        if (userTierLabel) userTierLabel.textContent = 'Member (20 msgs & 5 img / 24h)';
+        if (headerTierText) headerTierText.textContent = 'Member';
 
-        // Show Profile/Dashboard Circular Button for logged-in user
+        if (imageLockIcon) imageLockIcon.classList.add('hidden');
+
+        // Show Profile/Dashboard Circular Button for logged-in user in header
         if (headerDashboardBtn) {
           headerDashboardBtn.classList.remove('hidden');
           headerDashboardBtn.style.display = 'flex';
-          const initialEl = document.getElementById('headerDashboardAvatarInitial');
           if (initialEl) initialEl.textContent = initial;
-          const avatarImg = document.getElementById('headerDashboardAvatarImg');
-          const avatarUrl = currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture || currentUser.user_metadata?.avatar;
           if (avatarImg && avatarUrl) {
             avatarImg.src = avatarUrl;
             avatarImg.classList.remove('hidden');
@@ -3881,7 +3985,6 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
         }
 
         // HIDE Sign In button completely when logged in
-        const headerSignInBtn = document.getElementById('headerSignInBtn');
         if (headerSignInBtn) {
           headerSignInBtn.classList.add('hidden');
           headerSignInBtn.style.display = 'none';
@@ -3890,19 +3993,29 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
           openAuthBtn.classList.add('hidden');
           openAuthBtn.style.display = 'none';
         }
-        userProfileBtn.onclick = () => openUserDashboardModal();
+
+        // Clicking profile in sidebar opens User Dashboard
+        if (userProfileBtn) {
+          userProfileBtn.onclick = (e) => {
+            if (e) e.preventDefault();
+            openUserDashboardModal();
+          };
+        }
 
         if (!conversationHistory || !conversationHistory.length) {
           renderWelcome();
         }
       } else {
-        userNameLabel.textContent = 'Guest Visitor';
-        userStatusLabel.textContent = 'Click to Sign In';
-        userAvatar.textContent = 'G';
-        userTierLabel.textContent = 'Guest (8 msgs / 24h • Images Locked)';
-        headerTierText.textContent = 'Guest';
+        if (userNameLabel) userNameLabel.textContent = 'Guest Visitor';
+        if (userStatusLabel) {
+          userStatusLabel.textContent = 'Click to Sign In';
+          userStatusLabel.className = 'text-[10px] text-cyan-400 group-hover:underline truncate';
+        }
+        if (userAvatar) userAvatar.textContent = 'G';
+        if (userTierLabel) userTierLabel.textContent = 'Guest (8 msgs / 24h • Images Locked)';
+        if (headerTierText) headerTierText.textContent = 'Guest';
 
-        imageLockIcon.classList.remove('hidden');
+        if (imageLockIcon) imageLockIcon.classList.remove('hidden');
 
         // Hide Dashboard / Profile Button for guests
         if (headerDashboardBtn) {
@@ -3914,7 +4027,6 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
         }
 
         // SHOW Sign In button for guests
-        const headerSignInBtn = document.getElementById('headerSignInBtn');
         if (headerSignInBtn) {
           headerSignInBtn.classList.remove('hidden');
           headerSignInBtn.style.display = 'flex';
@@ -3925,7 +4037,12 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
           openAuthBtn.classList.remove('hidden');
           openAuthBtn.style.display = '';
         }
-        userProfileBtn.onclick = () => openAuthModal('login');
+        if (userProfileBtn) {
+          userProfileBtn.onclick = (e) => {
+            if (e) e.preventDefault();
+            openAuthModal('login');
+          };
+        }
       }
     }
 
@@ -4036,7 +4153,14 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     }
 
     openAuthBtn.onclick = () => openAuthModal('login');
-    userProfileBtn.onclick = () => openAuthModal('login');
+    userProfileBtn.onclick = (e) => {
+      if (e) e.preventDefault();
+      if (currentUser && !currentUser.is_guest && currentUser.email) {
+        openUserDashboardModal();
+      } else {
+        openAuthModal('login');
+      }
+    };
     closeAuthModalBtn.onclick = closeAuthModal;
     document.getElementById('headerSignInBtn').onclick = () => openAuthModal('login');
     document.getElementById('headerQuotaBadge').onclick = () => openUpgradeModal();
@@ -4188,10 +4312,17 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
 
     // Sign out
     document.getElementById('logoutBtn').onclick = async () => {
-      if (supabaseClient) await supabaseClient.auth.signOut();
+      if (supabaseClient && supabaseClient.auth) {
+        try { await supabaseClient.auth.signOut(); } catch(e) {}
+      }
+      if (typeof window.removeSharedCookie === 'function') {
+        window.removeSharedCookie('sb-wumdbpyhpblvgjttsbpv-auth-token');
+      }
+      try { localStorage.removeItem('sb-wumdbpyhpblvgjttsbpv-auth-token'); } catch (e) {}
       updateUserState(null);
       closeAuthModal();
-      showToast('Signed out successfully', 'info');
+      showToast('Signed out successfully 👋', 'info');
+      setTimeout(() => window.location.reload(), 400);
     };
 
     // Deep Link & Auth Token Ingestion
@@ -4211,8 +4342,9 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
         const refresh_token = params.get('refresh_token');
         if (access_token && refresh_token) {
           const { data, error } = await supabaseClient.auth.setSession({ access_token, refresh_token });
-          if (!error && data?.session) {
-            updateUserState(data.session.user);
+          if (!error && data?.session?.user) {
+            currentUser = data.session.user;
+            updateUserState(currentUser);
             if (typeof showToast === 'function') {
               showToast('Logged into GuruAI successfully! 🎉', 'success');
             }
@@ -4227,10 +4359,10 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     // Capacitor App URL Open listener for deep linking (online.webguruji.ai:// or guruai://)
     try {
       if (typeof window !== 'undefined' && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-        window.Capacitor.Plugins.App.addListener('appUrlOpen', (event) => {
+        window.Capacitor.Plugins.App.addListener('appUrlOpen', async (event) => {
           if (event && event.url) {
             console.log('GuruAI deep link opened:', event.url);
-            handleAuthTokensFromUrl(event.url);
+            await handleAuthTokensFromUrl(event.url);
           }
         });
       }
@@ -4238,37 +4370,71 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       console.warn('Capacitor App listener initialization:', e);
     }
 
-    // Session Listener
-    if (supabaseClient) {
-      if (window.location.hash && window.location.hash.includes('access_token=')) {
-        handleAuthTokensFromUrl(window.location.hash);
+    // Unified Auth Session Initialization & Sync
+    async function initAuthSession() {
+      // 1. Immediately hydrate from cached cross-domain session if present
+      try {
+        const cached = (typeof window.getCachedUserSession === 'function') ? window.getCachedUserSession() : null;
+        if (cached && cached.email) {
+          currentUser = cached;
+          updateUserState(currentUser);
+        }
+      } catch(e) {}
+
+      // 2. Ingest tokens from URL redirect (awaited!)
+      const hash = window.location.hash || '';
+      const search = window.location.search || '';
+      if (hash.includes('access_token=')) {
+        await handleAuthTokensFromUrl(hash);
         try {
           const cleanUrl = window.location.pathname + window.location.search;
           history.replaceState(null, document.title, cleanUrl);
         } catch (e) {}
-      } else if (window.location.search && window.location.search.includes('access_token=')) {
-        handleAuthTokensFromUrl(window.location.search);
+      } else if (search.includes('access_token=')) {
+        await handleAuthTokensFromUrl(search);
         try {
           const cleanUrl = window.location.pathname;
           history.replaceState(null, document.title, cleanUrl);
         } catch (e) {}
       }
 
-      window.addEventListener('hashchange', () => {
-        if (window.location.hash && window.location.hash.includes('access_token=')) {
-          handleAuthTokensFromUrl(window.location.hash);
+      // 3. Confirm with Supabase getSession
+      if (supabaseClient && supabaseClient.auth) {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && session.user) {
+            currentUser = session.user;
+            updateUserState(currentUser);
+          } else if (!currentUser) {
+            updateUserState(null);
+          }
+        } catch (err) {
+          console.warn('Supabase session verification notice:', err);
+          if (!currentUser) updateUserState(null);
         }
-      });
 
-      supabaseClient.auth.getSession().then(({ data: { session } }) => {
-        updateUserState(session?.user || null);
-      });
-      supabaseClient.auth.onAuthStateChange((event, session) => {
-        updateUserState(session?.user || null);
-      });
-    } else {
-      updateUserState(null);
+        // 4. Live auth state changes
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          if (session && session.user) {
+            currentUser = session.user;
+            updateUserState(currentUser);
+          } else if (event === 'SIGNED_OUT') {
+            currentUser = null;
+            updateUserState(null);
+          }
+        });
+      } else if (!currentUser) {
+        updateUserState(null);
+      }
     }
+
+    window.addEventListener('hashchange', async () => {
+      if (window.location.hash && window.location.hash.includes('access_token=')) {
+        await handleAuthTokensFromUrl(window.location.hash);
+      }
+    });
+
+    initAuthSession();
 
     // Composer Model Menu Toggle Listener
     const composerModelBtn = document.getElementById('composerModelBtn');

@@ -127,6 +127,46 @@
   window.setSharedCookie = setSharedCookie;
   window.removeSharedCookie = removeSharedCookie;
 
+  window.getCachedUserSession = function() {
+    try {
+      var raw = window.HG_SHARED_STORAGE ? window.HG_SHARED_STORAGE.getItem('sb-wumdbpyhpblvgjttsbpv-auth-token') : null;
+      if (!raw && typeof localStorage !== 'undefined') {
+        raw = localStorage.getItem('sb-wumdbpyhpblvgjttsbpv-auth-token');
+      }
+      if (!raw && typeof getSharedCookie === 'function') {
+        raw = getSharedCookie('sb-wumdbpyhpblvgjttsbpv-auth-token');
+      }
+      if (!raw && typeof localStorage !== 'undefined') {
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') !== -1) {
+            raw = localStorage.getItem(k);
+            break;
+          }
+        }
+      }
+      if (raw) {
+        var parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (parsed && parsed.user) return parsed.user;
+        if (parsed && parsed.currentSession && parsed.currentSession.user) return parsed.currentSession.user;
+      }
+    } catch (e) {}
+    return null;
+  };
+
+  try {
+    var fastUser = window.getCachedUserSession();
+    if (fastUser && fastUser.email) {
+      window.__INITIAL_USER__ = fastUser;
+      if (typeof document !== 'undefined' && document.head) {
+        var style = document.createElement('style');
+        style.id = 'hg-auth-fast-style';
+        style.textContent = '#headerSignInBtn { display: none !important; } #headerDashboardBtn { display: flex !important; } #openAuthBtn { display: none !important; }';
+        document.head.appendChild(style);
+      }
+    }
+  } catch(e) {}
+
   if (window.supabase && typeof window.supabase.createClient === 'function') {
     window.supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, {
       auth: {
