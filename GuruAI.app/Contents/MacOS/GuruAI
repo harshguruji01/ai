@@ -1,0 +1,16 @@
+#!/bin/bash
+# ==============================================================================
+# GuruAI macOS Native App Launcher by HarshGuruJi
+# ==============================================================================
+URL="https://ai.webguruji.online"
+
+# Launch in dedicated app window mode if modern Chromium browser exists, else native default
+if [ -d "/Applications/Google Chrome.app" ]; then
+    open -na "Google Chrome" --args --app="$URL" --user-data-dir="$HOME/Library/Application Support/GuruAI"
+elif [ -d "/Applications/Microsoft Edge.app" ]; then
+    open -na "Microsoft Edge" --args --app="$URL" --user-data-dir="$HOME/Library/Application Support/GuruAI"
+elif [ -d "/Applications/Brave Browser.app" ]; then
+    open -na "Brave Browser" --args --app="$URL" --user-data-dir="$HOME/Library/Application Support/GuruAI"
+else
+    open "$URL"
+fi
