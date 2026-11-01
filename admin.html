@@ -2808,6 +2808,16 @@
       height: auto !important;
     }
 
+    /* Subadmin Security Restriction: Strictly hide AI Live Operations & Subadmin Delegation Desks from all subadmins */
+    body.is-subadmin-session #ai-control-box-section,
+    body.is-subadmin-session #ai-control-panel-box,
+    body.is-subadmin-session #sec-subadmins-headline,
+    body.is-subadmin-session #subadmin-desk-box,
+    body.is-subadmin-session #modal-audit-photo-preview,
+    body.is-subadmin-session #btn-view-live-ai-box {
+      display: none !important;
+    }
+
     /* Prevent mobile inputs zooming */
     @media (max-width: 768px) {
 
@@ -4021,7 +4031,7 @@
             </ul>
           </div>
           <div class="card-btn-group">
-            <button type="button" class="card-action-btn" onclick="document.getElementById('ai-control-box-section')?.scrollIntoView({behavior:'smooth'});">
+            <button type="button" class="card-action-btn" id="btn-view-live-ai-box" onclick="document.getElementById('ai-control-box-section')?.scrollIntoView({behavior:'smooth'});">
               <span>View Live AI Box ↓</span>
               <span>⚡</span>
             </button>
@@ -4041,7 +4051,7 @@
         </h3>
       </div>
 
-      <section class="ai-control-panel-box" style="background: rgba(11, 15, 27, 0.9); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 25px rgba(99,102,241,0.15);">
+      <section class="ai-control-panel-box" id="ai-control-panel-box" style="background: rgba(11, 15, 27, 0.9); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 25px rgba(99,102,241,0.15);">
         
         <!-- Box Top Bar with Live KPI Counters & Action Buttons -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1.25rem;">
@@ -5967,13 +5977,14 @@
     const AUTH_TIME_KEY = "hg_admin_login_time";
     const SESSION_MAX_MS = 60 * 60 * 1000; // 1 hour (3,600,000 ms)
     const GATE_SALT = "HGJ_MASTER_SALT_v2_2026";
+    const MAX_GATE_ATTEMPTS = 3;
 
-    // Master hashes for harshguruji01@gmail.com and harshguruji01@gmail.commit with secret ID 2547277654
+    // Master hashes for harshguruji01@gmail.com and harshguruji01@gmail.commit with secret ID HarshGuruJi@2547277654
     const AUTHORIZED_HASHES = [
-      "7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86", // harshguruji01@gmail.com
-      "e5b44bce70dbf185896bee1ccb5cae48eb8c2097c5219585032d1683eaae06aa"  // harshguruji01@gmail.commit
+      "8e3f20418fd09b0d023ff3c4119f85d09dacc9d14f35b58143d73da7c39e196a", // harshguruji01@gmail.com
+      "f7736b94c8ea1ccc584fb3123027126c9d0aa8bb2145077ab8cdec0c9f39b989"  // harshguruji01@gmail.commit
     ];
-    const EXPECTED_HASH = btoa("harshguruji01@gmail.com:2547277654:HGJ_MASTER_ADMIN_2026");
+    const EXPECTED_HASH = btoa("harshguruji01@gmail.com:HarshGuruJi@2547277654:HGJ_MASTER_ADMIN_2026");
 
     window.toggleSecretVisibility = function() {
       const input = document.getElementById('input-admin-id');
@@ -6002,11 +6013,11 @@
         } catch(e) {}
       }
 
-      if (cleanEmail === 'harshguruji01@gmail.com' && cleanId === '2547277654') {
-        return '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86';
+      if (cleanEmail === 'harshguruji01@gmail.com' && cleanId === 'HarshGuruJi@2547277654') {
+        return '8e3f20418fd09b0d023ff3c4119f85d09dacc9d14f35b58143d73da7c39e196a';
       }
-      if (cleanEmail === 'harshguruji01@gmail.commit' && cleanId === '2547277654') {
-        return 'e5b44bce70dbf185896bee1ccb5cae48eb8c2097c5219585032d1683eaae06aa';
+      if (cleanEmail === 'harshguruji01@gmail.commit' && cleanId === 'HarshGuruJi@2547277654') {
+        return 'f7736b94c8ea1ccc584fb3123027126c9d0aa8bb2145077ab8cdec0c9f39b989';
       }
       return '';
     }
@@ -6016,6 +6027,7 @@
     function clearAllAdminAuth() {
       try {
         sessionStorage.clear();
+        if (document.body) document.body.classList.remove('is-subadmin-session');
         localStorage.removeItem(AUTH_STATE_KEY);
         localStorage.removeItem(AUTH_TOKEN_KEY);
         localStorage.removeItem(AUTH_TIME_KEY);
@@ -6359,6 +6371,10 @@
 
     window.handleCreateSubadminSubmit = function(e) {
       if (e && e.preventDefault) e.preventDefault();
+      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
+        alert('⛔ Access Denied: Subadmin delegation is reserved exclusively for Master Admin.');
+        return false;
+      }
       const nameInput = document.getElementById('subadmin-name-input');
       const emailInput = document.getElementById('subadmin-email-input');
       const passInput = document.getElementById('subadmin-pass-input');
@@ -6410,6 +6426,10 @@
     };
 
     window.toggleSubadminStatus = function(id, newStatus) {
+      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
+        alert('⛔ Access Denied: Action reserved exclusively for Master Admin.');
+        return;
+      }
       const list = getStoredSubadmins();
       const sub = list.find(s => s.id === id);
       if (!sub) return;
@@ -6421,6 +6441,10 @@
     };
 
     window.deleteSubadmin = function(id) {
+      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
+        alert('⛔ Access Denied: Action reserved exclusively for Master Admin.');
+        return;
+      }
       const list = getStoredSubadmins();
       const sub = list.find(s => s.id === id);
       if (!sub) return;
@@ -6558,7 +6582,7 @@
           enteredEmail === 'harshguruji01@gmail.com' ||
           enteredEmail === 'harshguruji01' ||
           enteredEmail === 'harshguruji01@gmail.commit'
-        ) && enteredId === '2547277654';
+        ) && enteredId === 'HarshGuruJi@2547277654';
 
         // 2. Subadmin Credentials check
         let isSubadmin = false;
@@ -6642,8 +6666,8 @@
         let computedHash = '';
         if (isDirectMaster) {
           computedHash = enteredEmail.includes('commit')
-            ? 'e5b44bce70dbf185896bee1ccb5cae48eb8c2097c5219585032d1683eaae06aa'
-            : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86';
+            ? 'f7736b94c8ea1ccc584fb3123027126c9d0aa8bb2145077ab8cdec0c9f39b989'
+            : '8e3f20418fd09b0d023ff3c4119f85d09dacc9d14f35b58143d73da7c39e196a';
         } else if (!isSubadmin) {
           const lockoutUntil = parseInt(sessionStorage.getItem('hg_gate_lockout') || localStorage.getItem('hg_gate_lockout') || '0', 10);
           if (Date.now() < lockoutUntil) {
@@ -6665,7 +6689,7 @@
           localStorage.removeItem('hg_gate_lockout');
 
           const now = Date.now().toString();
-          const finalHash = computedHash || (isSubadmin ? 'subadmin_token_' + Date.now() : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86');
+          const finalHash = computedHash || (isSubadmin ? 'subadmin_token_' + Date.now() : '8e3f20418fd09b0d023ff3c4119f85d09dacc9d14f35b58143d73da7c39e196a');
 
           sessionStorage.setItem(AUTH_STATE_KEY, 'true');
           sessionStorage.setItem(AUTH_TOKEN_KEY, finalHash);
@@ -6679,9 +6703,12 @@
           if (isSubadmin) {
             sessionStorage.setItem('is_subadmin_readonly', 'true');
             sessionStorage.setItem('subadmin_role', subadminUser.role || 'Viewer');
+            if (document.body) document.body.classList.add('is-subadmin-session');
             recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success', subadminPhoto, subadminIp);
           } else {
             sessionStorage.removeItem('is_subadmin_readonly');
+            sessionStorage.removeItem('subadmin_role');
+            if (document.body) document.body.classList.remove('is-subadmin-session');
             recordLoginAuditLog(enteredEmail, enteredId, 'Master Admin (Harsh Patel)', 'Success');
           }
 
@@ -6749,12 +6776,35 @@
         if (securityGate) securityGate.style.display = 'none';
         if (adminDashboard) adminDashboard.style.display = 'block';
 
-        // Enforce Read-Only mode for subadmins
+        // Enforce Read-Only and Restricted mode for subadmins (Task: Strictly hide AI Live Operations & Subadmin Delegation Desks from all subadmins)
         const isSubadmin = sessionStorage.getItem('is_subadmin_readonly') === 'true';
+
+        const aiHeadline = document.getElementById('ai-control-box-section');
+        const aiBox = document.getElementById('ai-control-panel-box');
+        const subadminsHeadline = document.getElementById('sec-subadmins-headline');
+        const subadminsBox = document.getElementById('subadmin-desk-box');
+        const auditPhotoModal = document.getElementById('modal-audit-photo-preview');
+        const btnViewAiBox = document.getElementById('btn-view-live-ai-box');
+
         if (isSubadmin) {
+          if (document.body) document.body.classList.add('is-subadmin-session');
+          if (aiHeadline) aiHeadline.style.display = 'none';
+          if (aiBox) aiBox.style.display = 'none';
+          if (subadminsHeadline) subadminsHeadline.style.display = 'none';
+          if (subadminsBox) subadminsBox.style.display = 'none';
+          if (auditPhotoModal) auditPhotoModal.style.display = 'none';
+          if (btnViewAiBox) btnViewAiBox.style.display = 'none';
+
           // Hide subadmin creation pass from subadmin
           const createCard = document.querySelector('form[onsubmit*="handleCreateSubadminSubmit"]')?.closest('div');
           if (createCard) createCard.style.display = 'none';
+        } else {
+          if (document.body) document.body.classList.remove('is-subadmin-session');
+          if (aiHeadline) aiHeadline.style.display = '';
+          if (aiBox) aiBox.style.display = '';
+          if (subadminsHeadline) subadminsHeadline.style.display = '';
+          if (subadminsBox) subadminsBox.style.display = '';
+          if (btnViewAiBox) btnViewAiBox.style.display = '';
         }
 
         try { startLiveSessionCountdown(); } catch(e) {}
@@ -9550,6 +9600,10 @@
     };
 
     window.handleQuickAiLimitSave = async function() {
+      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
+        alert('⛔ Access Denied: Subadmins do not have permission to alter AI quotas.');
+        return;
+      }
       const emailInput = document.getElementById('ai-quick-tune-email');
       const limitInput = document.getElementById('ai-quick-tune-limit');
       const modelSelect = document.getElementById('ai-quick-tune-model');

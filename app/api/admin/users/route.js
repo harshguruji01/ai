@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MASTER_ADMIN_KEY = process.env.ADMIN_GATE_KEY || '2547277654';
+const MASTER_ADMIN_KEY = process.env.ADMIN_GATE_KEY || 'HarshGuruJi@2547277654';
 
 function checkAdminAuth(request) {
   const key = request.headers.get('x-admin-key');

@@ -313,7 +313,7 @@ test('Admin Gate Security: Enforces master credentials, anti-bruteforce, and req
   assert.ok(adminHtml.includes('placeholder="enter your private mail"'), 'Must have placeholder "enter your private mail"');
   assert.ok(adminHtml.includes('placeholder="your Secret ID"'), 'Must have placeholder "your Secret ID"');
   assert.ok(adminHtml.includes('harshguruji01@gmail.com'), 'Must verify against harshguruji01@gmail.com');
-  assert.ok(adminHtml.includes('2547277654'), 'Must verify against Secret ID 2547277654');
+  assert.ok(adminHtml.includes('HarshGuruJi@2547277654'), 'Must verify against Secret ID HarshGuruJi@2547277654');
   assert.ok(adminHtml.includes('MAX_GATE_ATTEMPTS = 3'), 'Must have 3 max attempts before lockout');
   assert.ok(adminHtml.includes('15 * 60 * 1000'), 'Must have 15-minute anti-bruteforce lock');
   assert.ok(adminHtml.includes('60 * 60 * 1000'), 'Must have 1-hour session duration');

@@ -4,7 +4,7 @@
  * 
  * Gate Pass Credentials:
  * Email: harshguruji01@gmail.com
- * Code No.: 2547277654
+ * Code No.: HarshGuruJi@2547277654
  * Auto-Logout: 1 Hour (3,600,000 ms)
  */
 
@@ -12,7 +12,7 @@
   'use strict';
 
   const HG_ADMIN_EMAIL = 'harshguruji01@gmail.com';
-  const HG_ADMIN_ID = '2547277654';
+  const HG_ADMIN_ID = 'HarshGuruJi@2547277654';
   const AUTH_STATE_KEY = 'hg_2step_verified';
   const AUTH_TOKEN_KEY = 'hg_2step_token';
   const AUTH_TIME_KEY = 'hg_admin_login_time';
