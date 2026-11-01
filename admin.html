@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HarshGuruJi Admin Panel - Master Command Center Gate Pass</title>
+  <title>Admin Panel - Master Command Center Gate Pass</title>
   <meta name="description"
     content="HarshGuruJi Master Admin Command Center and administrative control portal with gate pass security.">
   <meta name="keywords"
@@ -2582,6 +2582,908 @@
       }
     }
 
+    /* ==========================================================================
+       AI PAGE LIVE OPERATIONS & CHAT LIMITS BOX: RESPONSIVE DESIGN SUITE
+       ========================================================================== */
+    .ai-section-headline {
+      margin-top: 2.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .ai-control-panel-box {
+      background: rgba(11, 15, 27, 0.92);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(99, 102, 241, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Top Bar */
+    .ai-box-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 1.25rem;
+    }
+
+    .ai-box-top-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .ai-live-indicator-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      flex-shrink: 0;
+      animation: aiPulseDot 2s infinite ease-in-out;
+    }
+
+    @keyframes aiPulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.75; }
+    }
+
+    .ai-box-heading {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+      letter-spacing: -0.2px;
+    }
+
+    .ai-box-domain-badge {
+      font-size: 0.75rem;
+      background: rgba(99, 102, 241, 0.25);
+      color: #c7d2fe;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-weight: 700;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      white-space: nowrap;
+    }
+
+    .ai-box-subtext {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin: 0.35rem 0 0;
+      line-height: 1.4;
+    }
+
+    .ai-box-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .ai-box-top-actions .ai-btn-refresh {
+      padding: 0.45rem 0.9rem;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 9px;
+      font-weight: 600;
+    }
+
+    .ai-box-top-actions .ai-btn-studio {
+      padding: 0.45rem 1rem;
+      font-size: 0.82rem;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      font-weight: 700;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 9px;
+    }
+
+    /* Stats Grid */
+    .ai-box-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .ai-box-stat-card {
+      background: rgba(17, 24, 39, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+      padding: 1rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .ai-box-stat-card.ai-stat-unlocked {
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+
+    .ai-box-stat-card.ai-stat-free {
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .ai-box-stat-card.ai-stat-guest {
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+
+    .ai-stat-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .ai-stat-value {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #818cf8;
+      margin-top: 0.25rem;
+      line-height: 1.15;
+    }
+
+    .ai-stat-unlocked .ai-stat-value { color: #34d399; }
+    .ai-stat-free .ai-stat-value { color: #38bdf8; }
+    .ai-stat-guest .ai-stat-value { color: #fbbf24; }
+
+    .ai-stat-sub {
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+
+    /* Filter & Search Bar */
+    .ai-box-filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .ai-box-filter-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .ai-box-search-box {
+      position: relative;
+      max-width: 320px;
+      width: 100%;
+    }
+
+    .ai-search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.8rem;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    #ai-box-search-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 0.48rem 0.85rem 0.48rem 2.1rem;
+      font-size: 0.82rem;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    #ai-box-search-input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Table Container on Desktop */
+    .ai-box-table-wrap {
+      overflow-x: auto;
+      background: rgba(10, 14, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .ai-box-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .ai-box-table thead tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.02);
+      color: #94a3b8;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .ai-box-table th {
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+    }
+
+    .ai-box-table td {
+      padding: 0.75rem 1rem;
+    }
+
+    .ai-user-row {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      transition: background 0.2s;
+    }
+
+    .ai-user-row:hover {
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .ai-mobile-label {
+      display: none;
+    }
+
+    .ai-user-cell-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .ai-user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .ai-user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ai-user-name-line {
+      font-weight: 700;
+      color: #f8fafc;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .ai-badge-tick {
+      color: #fbbf24;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .ai-badge-admin {
+      font-size: 0.6rem;
+      background: rgba(99, 102, 241, 0.25);
+      color: #a5b4fc;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .ai-user-status-line {
+      font-size: 0.7rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .ai-status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    .ai-email-code {
+      font-size: 0.82rem;
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    .ai-limit-cell-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 130px;
+    }
+
+    .ai-limit-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .ai-limit-number {
+      color: #34d399;
+    }
+
+    .ai-limit-period {
+      color: #94a3b8;
+      font-size: 0.72rem;
+    }
+
+    .ai-limit-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .ai-limit-bar-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #06b6d4);
+      border-radius: 999px;
+    }
+
+    .ai-context-code {
+      font-size: 0.8rem;
+      color: #c7d2fe;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    .ai-actions-cell-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .ai-action-btn {
+      padding: 0.28rem 0.55rem;
+      font-size: 0.72rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .ai-btn-add10 {
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .ai-btn-add25 {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .ai-btn-tune {
+      color: #e2e8f0;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .ai-btn-model {
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      font-weight: 700;
+    }
+
+    /* Quick Limit Tuner Card */
+    .ai-box-tuner-card {
+      margin-top: 1.25rem;
+      background: rgba(17, 24, 39, 0.75);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .ai-tuner-header {
+      display: none;
+    }
+
+    .ai-tuner-body {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .ai-tuner-input-group label {
+      display: none;
+    }
+
+    .ai-tuner-inline-fields {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    #ai-quick-tune-email {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 0.42rem 0.75rem;
+      font-size: 0.82rem;
+      color: #fff;
+      min-width: 220px;
+    }
+
+    #ai-quick-tune-limit {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 0.42rem 0.75rem;
+      font-size: 0.82rem;
+      color: #fff;
+      width: 130px;
+    }
+
+    #ai-quick-tune-model {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 0.42rem 0.75rem;
+      font-size: 0.82rem;
+      color: #fff;
+    }
+
+    .ai-btn-save-tune {
+      padding: 0.45rem 1.1rem;
+      font-size: 0.82rem;
+      background: linear-gradient(135deg, #10b981, #059669);
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    /* --------------------------------------------------------------------------
+       MOBILE RESPONSIVENESS OVERRIDES: TABLETS & SMARTPHONES (<= 768px)
+       -------------------------------------------------------------------------- */
+    @media (max-width: 768px) {
+      .ai-section-headline {
+        margin-top: 1.5rem !important;
+        margin-bottom: 0.85rem !important;
+      }
+
+      .ai-section-headline h3 {
+        font-size: 1.15rem !important;
+        flex-wrap: wrap !important;
+        line-height: 1.35 !important;
+        gap: 0.4rem !important;
+      }
+
+      .ai-control-panel-box {
+        padding: 1rem 0.85rem !important;
+        border-radius: 16px !important;
+        margin-bottom: 1.5rem !important;
+      }
+
+      /* Top Bar */
+      .ai-box-top-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.85rem !important;
+        padding-bottom: 1rem !important;
+      }
+
+      .ai-box-top-title-row {
+        gap: 0.5rem !important;
+      }
+
+      .ai-box-heading {
+        font-size: 1.05rem !important;
+        line-height: 1.3 !important;
+      }
+
+      .ai-box-domain-badge {
+        font-size: 0.68rem !important;
+        padding: 2px 6px !important;
+      }
+
+      .ai-box-subtext {
+        font-size: 0.76rem !important;
+        line-height: 1.35 !important;
+        margin-top: 0.25rem !important;
+      }
+
+      .ai-box-top-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+      }
+
+      .ai-box-top-actions .ai-btn-refresh,
+      .ai-box-top-actions .ai-btn-studio {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 42px !important;
+        font-size: 0.78rem !important;
+        padding: 0.5rem 0.4rem !important;
+        border-radius: 10px !important;
+        text-align: center !important;
+      }
+
+      /* Quick Stats Strip: Clean 2x2 Grid */
+      .ai-box-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.6rem !important;
+        margin: 0.9rem 0 !important;
+      }
+
+      .ai-box-stat-card {
+        padding: 0.75rem 0.7rem !important;
+        border-radius: 12px !important;
+      }
+
+      .ai-stat-label {
+        font-size: 0.68rem !important;
+        line-height: 1.25 !important;
+      }
+
+      .ai-stat-value {
+        font-size: 1.35rem !important;
+        margin: 0.2rem 0 !important;
+      }
+
+      .ai-stat-sub {
+        font-size: 0.66rem !important;
+        line-height: 1.25 !important;
+      }
+
+      /* Filter Bar: Horizontal Scrollable Chips + Full Width Search */
+      .ai-box-filter-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.65rem !important;
+        margin-bottom: 0.85rem !important;
+      }
+
+      .ai-box-filter-chips {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        padding-bottom: 4px !important;
+        gap: 0.4rem !important;
+      }
+
+      .ai-box-filter-chips .filter-chip {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        padding: 0.4rem 0.75rem !important;
+        font-size: 0.76rem !important;
+        border-radius: 999px !important;
+      }
+
+      .ai-box-search-box {
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+
+      #ai-box-search-input {
+        height: 42px !important;
+        font-size: 16px !important;
+        padding: 0.5rem 0.85rem 0.5rem 2.2rem !important;
+        border-radius: 10px !important;
+      }
+
+      /* Table to Native Mobile Cards Transformation */
+      .ai-box-table-wrap {
+        overflow-x: visible !important;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+      }
+
+      .ai-box-table thead {
+        display: none !important;
+      }
+
+      .ai-box-table,
+      .ai-box-table tbody,
+      .ai-box-table tr.ai-user-row,
+      .ai-box-table td {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Mobile Card for Each User */
+      .ai-box-table tr.ai-user-row {
+        background: rgba(15, 23, 42, 0.85) !important;
+        border: 1px solid rgba(99, 102, 241, 0.28) !important;
+        border-radius: 14px !important;
+        padding: 0.85rem 0.85rem !important;
+        margin-bottom: 0.75rem !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+        position: relative !important;
+      }
+
+      .ai-box-table td {
+        padding: 0 !important;
+        border: none !important;
+      }
+
+      .ai-box-loading-cell {
+        padding: 2rem 1rem !important;
+        text-align: center !important;
+        color: #94a3b8 !important;
+      }
+
+      /* Show field labels in mobile cards */
+      .ai-mobile-label {
+        display: inline-block !important;
+        font-size: 0.72rem !important;
+        color: #94a3b8 !important;
+        font-weight: 700 !important;
+        margin-right: 0.4rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px !important;
+      }
+
+      /* Cell: User Info */
+      .ai-td-user {
+        margin-bottom: 0.5rem !important;
+      }
+
+      .ai-user-name {
+        font-size: 0.92rem !important;
+      }
+
+      /* Cell: Email Address */
+      .ai-td-email {
+        margin-bottom: 0.45rem !important;
+      }
+
+      .ai-email-cell-wrapper {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background: rgba(0, 0, 0, 0.28) !important;
+        border-radius: 8px !important;
+        padding: 0.35rem 0.65rem !important;
+      }
+
+      .ai-email-code {
+        font-size: 0.78rem !important;
+        word-break: break-all !important;
+      }
+
+      /* Cell: Model & Context Window */
+      .ai-td-model {
+        display: inline-block !important;
+        width: auto !important;
+        margin-bottom: 0.45rem !important;
+        margin-right: 0.5rem !important;
+      }
+
+      .ai-td-context {
+        display: inline-block !important;
+        width: auto !important;
+        margin-bottom: 0.45rem !important;
+      }
+
+      .ai-model-cell-wrapper,
+      .ai-context-cell-wrapper {
+        display: inline-flex !important;
+        align-items: center !important;
+      }
+
+      .ai-context-code {
+        font-size: 0.75rem !important;
+        background: rgba(99, 102, 241, 0.15) !important;
+        padding: 2px 7px !important;
+        border-radius: 6px !important;
+      }
+
+      /* Cell: Chat Limit Progress Bar */
+      .ai-td-limit {
+        margin-bottom: 0.65rem !important;
+        margin-top: 0.25rem !important;
+      }
+
+      .ai-limit-cell-wrapper {
+        background: rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        border-radius: 10px !important;
+        padding: 0.55rem 0.75rem !important;
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+
+      .ai-limit-number {
+        font-size: 0.85rem !important;
+      }
+
+      /* Cell: Touch Actions in 2x2 Grid */
+      .ai-td-actions {
+        margin-top: 0.6rem !important;
+        padding-top: 0.65rem !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+      }
+
+      .ai-actions-cell-wrapper {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+      }
+
+      .ai-action-btn {
+        min-height: 40px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 0.8rem !important;
+        font-weight: 700 !important;
+        border-radius: 9px !important;
+        width: 100% !important;
+        padding: 0.45rem !important;
+        text-align: center !important;
+      }
+
+      /* Quick Limit Tuner Card on Mobile */
+      .ai-box-tuner-card {
+        padding: 1rem 0.9rem !important;
+        border-radius: 14px !important;
+        margin-top: 1rem !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.75rem !important;
+      }
+
+      .ai-tuner-header {
+        display: block !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        padding-bottom: 0.5rem !important;
+      }
+
+      .ai-tuner-heading {
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.4rem !important;
+      }
+
+      .ai-tuner-caption {
+        font-size: 0.74rem !important;
+        color: #94a3b8 !important;
+        margin: 0.2rem 0 0 !important;
+        line-height: 1.35 !important;
+      }
+
+      .ai-tuner-body {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.65rem !important;
+      }
+
+      .ai-tuner-input-group {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.25rem !important;
+        width: 100% !important;
+      }
+
+      .ai-tuner-input-group label {
+        display: block !important;
+        font-size: 0.72rem !important;
+        color: #94a3b8 !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+      }
+
+      .ai-tuner-inline-fields {
+        display: grid !important;
+        grid-template-columns: 1fr 1.3fr !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+      }
+
+      #ai-quick-tune-email {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 42px !important;
+        font-size: 16px !important;
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 10px !important;
+      }
+
+      #ai-quick-tune-limit {
+        width: 100% !important;
+        height: 42px !important;
+        font-size: 16px !important;
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 10px !important;
+      }
+
+      #ai-quick-tune-model {
+        width: 100% !important;
+        height: 42px !important;
+        font-size: 16px !important;
+        padding: 0.5rem 0.6rem !important;
+        border-radius: 10px !important;
+      }
+
+      .ai-tuner-action-group {
+        width: 100% !important;
+        margin-top: 0.25rem !important;
+      }
+
+      .ai-btn-save-tune {
+        width: 100% !important;
+        min-height: 46px !important;
+        font-size: 0.92rem !important;
+        font-weight: 800 !important;
+        border-radius: 12px !important;
+        justify-content: center !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .ai-control-panel-box {
+        padding: 0.85rem 0.65rem !important;
+        border-radius: 14px !important;
+      }
+
+      .ai-box-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+      }
+
+      .ai-box-stat-card {
+        padding: 0.65rem 0.55rem !important;
+      }
+
+      .ai-stat-value {
+        font-size: 1.25rem !important;
+      }
+
+      .ai-tuner-inline-fields {
+        grid-template-columns: 1fr !important;
+        gap: 0.55rem !important;
+      }
+    }
+
     /* Universal Zero-Overflow and Mobile Responsiveness Shield */
     *,
     *::before,
@@ -4054,94 +4956,95 @@
       </section>
 
       <!-- SECTION: AI PAGE LIVE OPERATIONS & USER CHAT LIMITS BOX -->
-      <div class="section-headline" id="ai-control-box-section" style="margin-top: 2.5rem;">
+      <div class="section-headline ai-section-headline" id="ai-control-box-section">
         <h3>
           <span>🤖</span>
           <span>AI Page Live Operations &amp; User Chat Limits (ai.webguruji.online)</span>
         </h3>
       </div>
 
-      <section class="ai-control-panel-box" id="ai-control-panel-box" style="background: rgba(11, 15, 27, 0.9); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 25px rgba(99,102,241,0.15);">
+      <section class="ai-control-panel-box" id="ai-control-panel-box">
         
         <!-- Box Top Bar with Live KPI Counters & Action Buttons -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1.25rem;">
-          <div>
-            <div style="display: flex; align-items: center; gap: 0.6rem;">
-              <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981;"></span>
-              <h4 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">Live AI Page Active Users &amp; Chat Limits</h4>
-              <span style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.25); color: #c7d2fe; padding: 2px 8px; border-radius: 8px; font-weight: 700; border: 1px solid rgba(99,102,241,0.4);">ai.webguruji.online</span>
+        <div class="ai-box-top-bar">
+          <div class="ai-box-top-info">
+            <div class="ai-box-top-title-row">
+              <span class="ai-live-indicator-dot"></span>
+              <h4 class="ai-box-heading">Live AI Page Active Users &amp; Chat Limits</h4>
+              <span class="ai-box-domain-badge">ai.webguruji.online</span>
             </div>
-            <p style="font-size: 0.82rem; color: #94a3b8; margin: 0.35rem 0 0;">Users logged in on GuruAI, their remaining chat allowances, active model tiers, and instant limit modifiers.</p>
+            <p class="ai-box-subtext">Users logged in on GuruAI, their remaining chat allowances, active model tiers, and instant limit modifiers.</p>
           </div>
 
           <!-- Action Buttons -->
-          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-            <button type="button" class="btn-action-outline" onclick="loadAiLimitsAndRequests(true)" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+          <div class="ai-box-top-actions">
+            <button type="button" class="btn-action-outline ai-btn-refresh" onclick="loadAiLimitsAndRequests(true)">
               <span>🔄</span>
               <span>Refresh Limits</span>
             </button>
-            <button type="button" class="btn-action-primary" onclick="openMasterModal('guruai')" style="padding: 0.45rem 1rem; font-size: 0.82rem; background: linear-gradient(135deg, #6366f1, #4f46e5); font-weight: 700; box-shadow: 0 0 15px rgba(99,102,241,0.4); display: inline-flex; align-items: center; gap: 0.4rem;">
-              <span>🎛️ Open Full GuruAI Studio</span>
+            <button type="button" class="btn-action-primary ai-btn-studio" onclick="openMasterModal('guruai')">
+              <span>🎛️ Full GuruAI Studio</span>
               <span>&rarr;</span>
             </button>
           </div>
         </div>
 
         <!-- Quick Stats Strip -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.25rem 0;">
-          <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 14px; padding: 1rem;">
-            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Total AI Users</div>
-            <div style="font-size: 1.7rem; font-weight: 800; color: #818cf8; margin-top: 0.25rem;" id="ai-box-stat-total">...</div>
-            <div style="font-size: 0.72rem; color: #64748b;">Registered / Logged In</div>
+        <div class="ai-box-stats-grid">
+          <div class="ai-box-stat-card ai-stat-total">
+            <div class="ai-stat-label">Total AI Users</div>
+            <div class="ai-stat-value" id="ai-box-stat-total">...</div>
+            <div class="ai-stat-sub">Registered / Logged In</div>
           </div>
 
-          <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 14px; padding: 1rem;">
-            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Active / Upgraded Users</div>
-            <div style="font-size: 1.7rem; font-weight: 800; color: #34d399; margin-top: 0.25rem;" id="ai-box-stat-unlocked">...</div>
-            <div style="font-size: 0.72rem; color: #64748b;">Custom Quota &amp; Argon Models</div>
+          <div class="ai-box-stat-card ai-stat-unlocked">
+            <div class="ai-stat-label">Active / Upgraded Users</div>
+            <div class="ai-stat-value" id="ai-box-stat-unlocked">...</div>
+            <div class="ai-stat-sub">Custom Quota &amp; Argon Models</div>
           </div>
 
-          <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 1rem;">
-            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Standard Free Members</div>
-            <div style="font-size: 1.7rem; font-weight: 800; color: #38bdf8; margin-top: 0.25rem;" id="ai-box-stat-free">...</div>
-            <div style="font-size: 0.72rem; color: #64748b;">Default 20 Chats / 24h</div>
+          <div class="ai-box-stat-card ai-stat-free">
+            <div class="ai-stat-label">Standard Free Members</div>
+            <div class="ai-stat-value" id="ai-box-stat-free">...</div>
+            <div class="ai-stat-sub">Default 20 Chats / 24h</div>
           </div>
 
-          <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 14px; padding: 1rem;">
-            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Guest Allowance</div>
-            <div style="font-size: 1.7rem; font-weight: 800; color: #fbbf24; margin-top: 0.25rem;">8 Chats</div>
-            <div style="font-size: 0.72rem; color: #64748b;">Rolling 24h per unauthenticated visitor</div>
+          <div class="ai-box-stat-card ai-stat-guest">
+            <div class="ai-stat-label">Guest Allowance</div>
+            <div class="ai-stat-value">8 Chats</div>
+            <div class="ai-stat-sub">Rolling 24h unauthenticated</div>
           </div>
         </div>
 
         <!-- Search and Filters Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
-          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <div class="ai-box-filter-bar">
+          <div class="ai-box-filter-chips">
             <button type="button" class="filter-chip active" id="ai-box-filter-all" onclick="filterAiBoxRoster('ALL')">All Users (<span id="ai-box-count-all">0</span>)</button>
-            <button type="button" class="filter-chip" id="ai-box-filter-unlocked" onclick="filterAiBoxRoster('UNLOCKED')">⭐ Upgraded / Custom Limit (<span id="ai-box-count-unlocked">0</span>)</button>
-            <button type="button" class="filter-chip" id="ai-box-filter-free" onclick="filterAiBoxRoster('FREE')">⚡ Standard Free (<span id="ai-box-count-free">0</span>)</button>
+            <button type="button" class="filter-chip" id="ai-box-filter-unlocked" onclick="filterAiBoxRoster('UNLOCKED')">⭐ Upgraded (<span id="ai-box-count-unlocked">0</span>)</button>
+            <button type="button" class="filter-chip" id="ai-box-filter-free" onclick="filterAiBoxRoster('FREE')">⚡ Standard (<span id="ai-box-count-free">0</span>)</button>
           </div>
-          <div style="position: relative; max-width: 320px; width: 100%;">
-            <input type="text" id="ai-box-search-input" placeholder="Search user by name, email or model..." oninput="renderAiBoxRoster()" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 0.45rem 0.85rem; font-size: 0.82rem; color: #fff;">
+          <div class="ai-box-search-box">
+            <span class="ai-search-icon">🔍</span>
+            <input type="text" id="ai-box-search-input" placeholder="Search user name, email, model..." oninput="renderAiBoxRoster()">
           </div>
         </div>
 
-        <!-- Live Users & Chat Limit Table -->
-        <div style="overflow-x: auto; background: rgba(10, 14, 26, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;">
-          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+        <!-- Live Users & Chat Limit Table (Auto-Transforms into Touch Cards on Mobile) -->
+        <div class="ai-box-table-wrap">
+          <table class="ai-box-table">
             <thead>
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">
-                <th style="padding: 0.75rem 1rem;">User / Member</th>
-                <th style="padding: 0.75rem 1rem;">Email Address</th>
-                <th style="padding: 0.75rem 1rem;">Current AI Model</th>
-                <th style="padding: 0.75rem 1rem;">Chat Limit &amp; Allowance</th>
-                <th style="padding: 0.75rem 1rem;">Context Window</th>
-                <th style="padding: 0.75rem 1rem; text-align: center;">Quick Adjust &amp; Actions</th>
+              <tr>
+                <th>User / Member</th>
+                <th>Email Address</th>
+                <th>Current AI Model</th>
+                <th>Chat Limit &amp; Allowance</th>
+                <th>Context Window</th>
+                <th style="text-align: center;">Quick Adjust &amp; Actions</th>
               </tr>
             </thead>
             <tbody id="ai-box-users-tbody">
               <tr>
-                <td colspan="6" style="padding: 2.5rem; text-align: center; color: #94a3b8;">
+                <td colspan="6" class="ai-box-loading-cell">
                   <span>🔄 Loading live AI page users and limits...</span>
                 </td>
               </tr>
@@ -4149,25 +5052,41 @@
           </table>
         </div>
 
-        <!-- Inline Quick Limit Modifier Bar -->
-        <div style="margin-top: 1.25rem; background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 14px; padding: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-            <div style="font-weight: 700; color: #fff; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
-              <span>⚡ Quick Limit Tuner:</span>
+        <!-- Inline Quick Limit Modifier Bar (Touch-Optimized Form on Mobile) -->
+        <div class="ai-box-tuner-card" id="ai-quick-tune-card">
+          <div class="ai-tuner-header">
+            <div class="ai-tuner-heading">
+              <span class="ai-tuner-icon">⚡</span>
+              <span>Quick Limit Tuner</span>
             </div>
-            <input type="email" id="ai-quick-tune-email" placeholder="user email (e.g. user@gmail.com)" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.8rem; color: #fff; min-width: 220px;">
-            <input type="number" id="ai-quick-tune-limit" placeholder="New Chat Limit (e.g. 50)" min="1" max="1000" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.8rem; color: #fff; width: 150px;">
-            <select id="ai-quick-tune-model" style="background: #0f172a; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.8rem; color: #fff;">
-              <option value="Guru-Flash 1.1">Guru-Flash 1.1 (Free)</option>
-              <option value="Guru-Flash 1.3">Guru-Flash 1.3 (Starter Pro)</option>
-              <option value="Guru-Argon 1.4">Guru-Argon 1.4 (Power Scholar)</option>
-              <option value="Guru-Argon 1.5">Guru-Argon 1.5 (Grandmaster Enterprise)</option>
-            </select>
+            <p class="ai-tuner-caption">Tap <strong>🎛️ Tune</strong> on any user card above or enter email below to push custom limits live to the AI page.</p>
           </div>
-          <div>
-            <button type="button" class="btn-action-primary" onclick="handleQuickAiLimitSave()" style="padding: 0.45rem 1.1rem; font-size: 0.82rem; background: linear-gradient(135deg, #10b981, #059669); font-weight: 700; box-shadow: 0 0 12px rgba(16,185,129,0.35);">
-              <span>💾 Save &amp; Push Live to AI Page</span>
-            </button>
+          
+          <div class="ai-tuner-body">
+            <div class="ai-tuner-input-group ai-tuner-email-group">
+              <label for="ai-quick-tune-email">Target User Email</label>
+              <input type="email" id="ai-quick-tune-email" placeholder="user email (e.g. user@gmail.com)" autocomplete="off">
+            </div>
+            <div class="ai-tuner-inline-fields">
+              <div class="ai-tuner-input-group ai-tuner-limit-group">
+                <label for="ai-quick-tune-limit">Chat Quota</label>
+                <input type="number" id="ai-quick-tune-limit" placeholder="Limit (e.g. 50)" min="1" max="1000">
+              </div>
+              <div class="ai-tuner-input-group ai-tuner-model-group">
+                <label for="ai-quick-tune-model">Model Tier</label>
+                <select id="ai-quick-tune-model">
+                  <option value="Guru-Flash 1.1">Guru-Flash 1.1 (Free)</option>
+                  <option value="Guru-Flash 1.3">Guru-Flash 1.3 (Starter Pro)</option>
+                  <option value="Guru-Argon 1.4">Guru-Argon 1.4 (Power Scholar)</option>
+                  <option value="Guru-Argon 1.5">Guru-Argon 1.5 (Grandmaster Enterprise)</option>
+                </select>
+              </div>
+            </div>
+            <div class="ai-tuner-action-group">
+              <button type="button" class="btn-action-primary ai-btn-save-tune" onclick="handleQuickAiLimitSave()">
+                <span>💾 Save &amp; Push Live to AI Page</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -9917,64 +10836,73 @@
       if (cntFree) cntFree.textContent = totalFree;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:2.5rem;">No AI users found matching the search criteria.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="ai-box-loading-cell">No AI users found matching the search criteria.</td></tr>';
         return;
       }
 
       tbody.innerHTML = filtered.map(u => {
         return `
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.05)'" onmouseout="this.style.background='transparent'">
-            <td style="padding: 0.75rem 1rem;">
-              <div style="display:flex; align-items:center; gap:0.6rem;">
-                <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg, #6366f1, #06b6d4); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:0.8rem; overflow:hidden; flex-shrink:0;">
-                  ${u.avatarUrl ? `<img src="${escapeHtml(u.avatarUrl)}" alt="Avatar" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='';">` : (u.displayName || 'U')[0].toUpperCase()}
+          <tr class="ai-user-row">
+            <td class="ai-td-user">
+              <div class="ai-user-cell-wrapper">
+                <div class="ai-user-avatar">
+                  ${u.avatarUrl ? `<img src="${escapeHtml(u.avatarUrl)}" alt="Avatar" onerror="this.onerror=null; this.src='';">` : (u.displayName || 'U')[0].toUpperCase()}
                 </div>
-                <div>
-                  <div style="font-weight:700; color:#f8fafc; font-size:0.88rem; display:flex; align-items:center; gap:0.35rem;">
-                    <span>${escapeHtml(u.displayName)}</span>
-                    ${u.goldenTick ? '<span style="color:#fbbf24; font-size:0.85rem;" title="Golden Verified">✓</span>' : ''}
-                    ${u.isAdmin ? '<span style="font-size:0.6rem; background:rgba(99,102,241,0.25); color:#a5b4fc; padding:1px 5px; border-radius:4px; font-weight:700;">ADMIN</span>' : ''}
+                <div class="ai-user-info">
+                  <div class="ai-user-name-line">
+                    <span class="ai-user-name">${escapeHtml(u.displayName)}</span>
+                    ${u.goldenTick ? '<span class="ai-badge-tick" title="Golden Verified">✓</span>' : ''}
+                    ${u.isAdmin ? '<span class="ai-badge-admin">ADMIN</span>' : ''}
                   </div>
-                  <div style="font-size:0.7rem; color:#10b981; display:flex; align-items:center; gap:0.3rem;">
-                    <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10b981;"></span>
+                  <div class="ai-user-status-line">
+                    <span class="ai-status-dot"></span>
                     <span>Logged in on AI</span>
                   </div>
                 </div>
               </div>
             </td>
-            <td style="padding: 0.75rem 1rem;">
-              <span style="font-size:0.82rem; color:#38bdf8; font-family:'JetBrains Mono', monospace; font-weight:600;">${escapeHtml(u.email || 'No email')}</span>
+            <td class="ai-td-email">
+              <div class="ai-email-cell-wrapper">
+                <span class="ai-mobile-label">Email:</span>
+                <span class="ai-email-code">${escapeHtml(u.email || 'No email')}</span>
+              </div>
             </td>
-            <td style="padding: 0.75rem 1rem;">
-              ${u.modelBadgeHtml}
+            <td class="ai-td-model">
+              <div class="ai-model-cell-wrapper">
+                <span class="ai-mobile-label">Model:</span>
+                ${u.modelBadgeHtml}
+              </div>
             </td>
-            <td style="padding: 0.75rem 1rem;">
-              <div style="display: flex; flex-direction: column; gap: 4px; min-width: 130px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700;">
-                  <span style="color: #34d399;">⚡ ${u.chatLimit} / ${u.chatLimit}</span>
-                  <span style="color: #94a3b8; font-size: 0.72rem;">Chats / 24h</span>
+            <td class="ai-td-limit">
+              <div class="ai-limit-cell-wrapper">
+                <div class="ai-limit-info-row">
+                  <span class="ai-limit-number">⚡ ${u.chatLimit} / ${u.chatLimit}</span>
+                  <span class="ai-limit-period">Chats / 24h</span>
                 </div>
-                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 999px; overflow: hidden;">
-                  <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #06b6d4); border-radius: 999px;"></div>
+                <div class="ai-limit-bar-bg">
+                  <div class="ai-limit-bar-fill"></div>
                 </div>
               </div>
             </td>
-            <td style="padding: 0.75rem 1rem;">
-              <span style="font-size:0.8rem; color:#c7d2fe; font-family:'JetBrains Mono',monospace; font-weight:600;">${Number(u.contextLimit).toLocaleString()} tokens</span>
+            <td class="ai-td-context">
+              <div class="ai-context-cell-wrapper">
+                <span class="ai-mobile-label">Context:</span>
+                <span class="ai-context-code">${Number(u.contextLimit).toLocaleString()} tokens</span>
+              </div>
             </td>
-            <td style="padding: 0.75rem 1rem; text-align: center;">
-              <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem; flex-wrap:wrap;">
-                <button type="button" class="btn-action-outline" style="padding:0.28rem 0.55rem; font-size:0.72rem; color:#34d399; border-color:rgba(16,185,129,0.4);" onclick="quickAddAiChats('${escapeHtml(u.email || '')}', 10)" title="Add +10 Chats to this user">
-                  <span>+10</span>
+            <td class="ai-td-actions">
+              <div class="ai-actions-cell-wrapper">
+                <button type="button" class="btn-action-outline ai-action-btn ai-btn-add10" onclick="quickAddAiChats('${escapeHtml(u.email || '')}', 10)" title="Add +10 Chats to this user">
+                  <span>+10 Chats</span>
                 </button>
-                <button type="button" class="btn-action-outline" style="padding:0.28rem 0.55rem; font-size:0.72rem; color:#38bdf8; border-color:rgba(56,189,248,0.4);" onclick="quickAddAiChats('${escapeHtml(u.email || '')}', 25)" title="Add +25 Chats to this user">
-                  <span>+25</span>
+                <button type="button" class="btn-action-outline ai-action-btn ai-btn-add25" onclick="quickAddAiChats('${escapeHtml(u.email || '')}', 25)" title="Add +25 Chats to this user">
+                  <span>+25 Chats</span>
                 </button>
-                <button type="button" class="btn-action-outline" style="padding:0.28rem 0.6rem; font-size:0.72rem;" onclick="selectUserForQuickTune('${escapeHtml(u.email || '')}', ${u.chatLimit}, '${escapeHtml(u.unlockedModelName)}')" title="Tune in Quick Tuner">
-                  <span>🎛️ Tune</span>
+                <button type="button" class="btn-action-outline ai-action-btn ai-btn-tune" onclick="selectUserForQuickTune('${escapeHtml(u.email || '')}', ${u.chatLimit}, '${escapeHtml(u.unlockedModelName)}')" title="Tune in Quick Tuner">
+                  <span>🎛️ Tune Limits</span>
                 </button>
-                <button type="button" class="btn-action-primary" style="padding:0.28rem 0.6rem; font-size:0.72rem; background:linear-gradient(135deg, #6366f1, #06b6d4);" onclick="openQuickModelModal('${escapeHtml(u.email || '')}', '${escapeHtml(u.displayName)}')">
-                  <span>👑 Model</span>
+                <button type="button" class="btn-action-primary ai-action-btn ai-btn-model" onclick="openQuickModelModal('${escapeHtml(u.email || '')}', '${escapeHtml(u.displayName)}')">
+                  <span>👑 Model Tier</span>
                 </button>
               </div>
             </td>
@@ -9999,7 +10927,8 @@
       }
 
       document.getElementById('ai-quick-tune-limit')?.focus();
-      document.getElementById('ai-control-box-section')?.scrollIntoView({behavior:'smooth'});
+      const targetCard = document.getElementById('ai-quick-tune-card') || document.getElementById('ai-control-box-section');
+      if (targetCard) targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
 
     window.quickAddAiChats = async function(email, delta) {
