@@ -4252,20 +4252,21 @@
               <span>Clear History</span>
             </button>
           </div>
-          <div style="overflow-x: auto; max-height: 240px; overflow-y: auto;">
+          <div style="overflow-x: auto; max-height: 280px; overflow-y: auto;">
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem;">
               <thead>
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 0.72rem; text-transform: uppercase;">
                   <th style="padding: 0.5rem 0.75rem;">Account Email</th>
                   <th style="padding: 0.5rem 0.75rem;">Password / Pass Used</th>
                   <th style="padding: 0.5rem 0.75rem;">Role / Tier</th>
+                  <th style="padding: 0.5rem 0.75rem;">Device IP &amp; Snapshot</th>
                   <th style="padding: 0.5rem 0.75rem;">Timestamp</th>
                   <th style="padding: 0.5rem 0.75rem;">Result Status</th>
                 </tr>
               </thead>
               <tbody id="login-audit-tbody">
                 <tr>
-                  <td colspan="5" style="text-align: center; color: #94a3b8; padding: 1.5rem;">Loading audit logs...</td>
+                  <td colspan="6" style="text-align: center; color: #94a3b8; padding: 1.5rem;">Loading audit logs...</td>
                 </tr>
               </tbody>
             </table>
@@ -4273,6 +4274,19 @@
         </div>
 
       </section>
+
+      <!-- AUDIT PHOTO MODAL LIGHTBOX -->
+      <div id="modal-audit-photo-preview" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center;" onclick="if(event.target===this) this.style.display='none'">
+        <div style="background:#0f172a; border:2px solid #ef4444; border-radius:16px; padding:1.25rem; max-width:480px; width:92%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.9);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.5rem;">
+            <h4 style="margin:0; font-size:1rem; color:#f87171; display:flex; align-items:center; gap:0.4rem;">📷 Subadmin Security Snapshot</h4>
+            <button type="button" onclick="document.getElementById('modal-audit-photo-preview').style.display='none'" style="background:none; border:none; color:#94a3b8; font-size:1.25rem; cursor:pointer;">✕</button>
+          </div>
+          <img id="audit-photo-modal-img" src="" alt="Snapshot" style="max-width:100%; border-radius:12px; border:2px solid rgba(255,255,255,0.1); margin-bottom:1rem;" />
+          <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:0.75rem;" id="audit-photo-modal-meta">Captured live during security verification.</div>
+          <button type="button" class="btn-action-primary" onclick="document.getElementById('modal-audit-photo-preview').style.display='none'" style="width:100%;">Close Preview</button>
+        </div>
+      </div>
 
       <!-- SECTION: QUICK SHORTCUTS & SYSTEM STATUS -->
       <div class="section-headline">
@@ -5417,30 +5431,33 @@
         </div>
       </div>
 
-      <!-- Embedded Live Portal Frame -->
+      <!-- GuruAI Direct Cloud Launchpad -->
       <div
-        style="border:1px solid rgba(99, 102, 241, 0.3); border-radius:16px; overflow:hidden; background:#07090e; box-shadow:0 10px 30px rgba(0,0,0,0.6);">
-        <div
-          style="padding:0.75rem 1rem; background:rgba(13, 18, 35, 0.95); border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-          <div
-            style="display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; font-family:'JetBrains Mono', monospace; color:#cbd5e1;">
-            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#10b981;"></span>
-            <span>Live Command Window: https://ai.webguruji.online/admin.html</span>
+        style="border:1px solid rgba(99, 102, 241, 0.3); border-radius:16px; overflow:hidden; background:linear-gradient(135deg, rgba(13, 18, 35, 0.95), rgba(7, 9, 19, 0.95)); box-shadow:0 10px 30px rgba(0,0,0,0.6); padding: 1.5rem 2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.25rem;">
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, #6366f1, #ec4899); display:flex; align-items:center; justify-content:center; font-size:1.5rem; box-shadow:0 0 20px rgba(99,102,241,0.4);">⚡</div>
+            <div>
+              <div style="font-size:1.1rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:0.5rem;">
+                <span>GuruAI Cloud Assistant Operations</span>
+                <span style="display:inline-flex; align-items:center; gap:0.3rem; font-size:0.7rem; color:#34d399; background:rgba(16,185,129,0.15); padding:2px 8px; border-radius:99px; font-weight:700;">
+                  <span style="width:6px; height:6px; border-radius:50%; background:#10b981;"></span> Live &amp; Synced
+                </span>
+              </div>
+              <p style="margin:0.25rem 0 0; font-size:0.85rem; color:#94a3b8;">
+                Realtime cross-device synchronization active for all quota upgrades, context limits, and model authorizations.
+              </p>
+            </div>
           </div>
-          <div style="display:flex; gap:0.5rem;">
-            <button type="button" class="btn-action-outline" style="padding:0.3rem 0.65rem; font-size:0.75rem;"
-              onclick="document.getElementById('guruai-admin-iframe').src = 'https://ai.webguruji.online/admin.html?gate=master_admin'">
-              <span>🔄 Reload Frame</span>
-            </button>
-            <a href="https://ai.webguruji.online/admin.html?gate=master_admin" target="_blank"
-              class="btn-action-outline"
-              style="padding:0.3rem 0.65rem; font-size:0.75rem; color:#60a5fa; text-decoration:none;">
-              <span>Open in New Tab ↗</span>
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <a href="https://ai.webguruji.online" target="_blank" class="btn-action-outline" style="padding:0.6rem 1.25rem; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
+              <span>🤖 Launch GuruAI Chat Studio ↗</span>
+            </a>
+            <a href="https://ai.webguruji.online/admin.html?gate=master_admin" target="_blank" class="btn-action-primary" style="padding:0.6rem 1.25rem; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
+              <span>🛡️ Open Full AI Admin Console ↗</span>
             </a>
           </div>
         </div>
-        <iframe id="guruai-admin-iframe" src="https://ai.webguruji.online/admin.html?gate=master_admin"
-          style="width:100%; height:580px; border:none; display:block;" title="GuruAI Admin Command Center"></iframe>
       </div>
     </div>
   </div>
@@ -6074,6 +6091,9 @@
     // Subadmin & Audit Trail State
     const SUBADMINS_STORAGE_KEY = 'hg_admin_subadmins';
     const LOGIN_AUDIT_STORAGE_KEY = 'hg_admin_login_history';
+    const SUBADMINS_CLOUD_EMAIL = 'admin_subadmins_roster@webguruji.online';
+    const HOSTINGER_MAIL_URL = 'https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send';
+    const HOSTINGER_MAIL_TOKEN = 'afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21';
 
     function getStoredSubadmins() {
       try {
@@ -6083,11 +6103,53 @@
       return [];
     }
 
+    async function syncSubadminsFromCloud() {
+      try {
+        const sb = window.supabaseClient;
+        if (!sb) return getStoredSubadmins();
+        const { data, error } = await sb
+          .from('user_ai_limits')
+          .select('plan_name')
+          .eq('email', SUBADMINS_CLOUD_EMAIL)
+          .maybeSingle();
+
+        if (data && data.plan_name) {
+          const cloudList = JSON.parse(data.plan_name);
+          if (Array.isArray(cloudList)) {
+            localStorage.setItem(SUBADMINS_STORAGE_KEY, JSON.stringify(cloudList));
+            renderSubadminsTable();
+            return cloudList;
+          }
+        }
+      } catch (e) {
+        console.warn('Subadmin cloud sync notice:', e);
+      }
+      return getStoredSubadmins();
+    }
+
+    async function pushSubadminsToCloud(list) {
+      try {
+        const sb = window.supabaseClient;
+        if (!sb) return;
+        await sb.from('user_ai_limits').upsert({
+          email: SUBADMINS_CLOUD_EMAIL,
+          max_requests: 9999,
+          context_limit: 9999,
+          plan_name: JSON.stringify(list || []),
+          is_active: true,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'email' });
+      } catch (e) {
+        console.warn('Subadmin cloud push notice:', e);
+      }
+    }
+
     function saveStoredSubadmins(list) {
       try {
         localStorage.setItem(SUBADMINS_STORAGE_KEY, JSON.stringify(list));
       } catch (e) {}
       renderSubadminsTable();
+      pushSubadminsToCloud(list);
     }
 
     function getLoginAuditLogs() {
@@ -6098,7 +6160,7 @@
       return [];
     }
 
-    function recordLoginAuditLog(email, passUsed, role, status) {
+    function recordLoginAuditLog(email, passUsed, role, status, photo = null, ip = null) {
       try {
         const logs = getLoginAuditLogs();
         const newLog = {
@@ -6107,6 +6169,8 @@
           passUsed: passUsed || '••••',
           role: role || 'Staff',
           status: status || 'Success',
+          photo: photo || null,
+          ip: ip || null,
           timestamp: new Date().toLocaleString(undefined, {
             year: 'numeric', month: 'short', day: 'numeric',
             hour: '2-digit', minute: '2-digit', second: '2-digit'
@@ -6117,6 +6181,173 @@
         localStorage.setItem(LOGIN_AUDIT_STORAGE_KEY, JSON.stringify(logs));
         renderLoginAuditLogs();
       } catch(e) {}
+    }
+
+    window.previewAuditPhoto = function(src, email, time) {
+      const modal = document.getElementById('modal-audit-photo-preview');
+      const img = document.getElementById('audit-photo-modal-img');
+      const meta = document.getElementById('audit-photo-modal-meta');
+      if (modal && img) {
+        img.src = src;
+        if (meta) meta.textContent = `Captured from webcam on login: ${email || ''} at ${time || ''}`;
+        modal.style.display = 'flex';
+      }
+    };
+
+    window.previewAuditPhotoById = function(logId) {
+      try {
+        const logs = getLoginAuditLogs();
+        const target = logs.find(item => item.id === logId);
+        if (!target || !target.photo) return;
+        previewAuditPhoto(target.photo, target.email, target.timestamp);
+      } catch(e) {}
+    };
+
+    async function fetchPublicDeviceIp() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(3500) });
+        const data = await res.json();
+        if (data && data.ip) return data.ip;
+      } catch(e) {}
+      try {
+        const res2 = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3500) });
+        const data2 = await res2.json();
+        if (data2 && data2.ip) return data2.ip;
+      } catch(e2) {}
+      return '127.0.0.1';
+    }
+
+    async function captureSubadminCameraPhoto() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera hardware not supported on this device/browser.');
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+        audio: false
+      });
+
+      return new Promise((resolve, reject) => {
+        let cleanupDone = false;
+        const safeCleanup = () => {
+          if (cleanupDone) return;
+          cleanupDone = true;
+          try { stream.getTracks().forEach(t => t.stop()); } catch(e) {}
+          try {
+            if (typeof video.remove === 'function') video.remove();
+            else if (video.parentNode) video.parentNode.removeChild(video);
+          } catch(e) {}
+        };
+
+        try {
+          const video = document.createElement('video');
+          video.style.display = 'none';
+          video.autoplay = true;
+          video.muted = true;
+          video.playsInline = true;
+          video.srcObject = stream;
+          document.body.appendChild(video);
+
+          video.onloadedmetadata = async () => {
+            try {
+              await video.play();
+              setTimeout(() => {
+                try {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = video.videoWidth || 640;
+                  canvas.height = video.videoHeight || 480;
+                  const ctx = canvas.getContext('2d');
+                  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                  const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+                  safeCleanup();
+                  resolve(dataUrl);
+                } catch(canvasErr) {
+                  safeCleanup();
+                  reject(canvasErr);
+                }
+              }, 400);
+            } catch(playErr) {
+              safeCleanup();
+              reject(playErr);
+            }
+          };
+
+          video.onerror = (e) => {
+            safeCleanup();
+            reject(new Error('Video stream error'));
+          };
+        } catch(err) {
+          safeCleanup();
+          reject(err);
+        }
+      });
+    }
+
+    async function dispatchSubadminSecurityAlert({ name, email, passUsed, role, ip, photoBase64 }) {
+      try {
+        const timestamp = new Date().toLocaleString();
+        const userAgent = navigator.userAgent || 'Unknown Device';
+
+        const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>Subadmin Login Security Alert</title></head>
+<body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
+  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #ef4444;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+    <div style="background:linear-gradient(135deg, #b91c1c, #dc2626);padding:24px;text-align:center;color:#fff;">
+      <h1 style="margin:0;font-size:22px;">🚨 SUBADMIN LOGIN SECURITY ALERT</h1>
+      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">HarshGuruJi Command Center Security Guard</p>
+    </div>
+    <div style="padding:24px;">
+      <p style="font-size:15px;line-height:1.6;color:#cbd5e1;">A subadmin has authenticated and accessed the <strong>HarshGuruJi Command Center (webguruji.online/admin.html)</strong>.</p>
+      
+      <table style="width:100%;border-collapse:collapse;margin:20px 0;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden;">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Subadmin Name</td><td style="padding:10px 14px;color:#fff;font-weight:700;">${name}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Account Email</td><td style="padding:10px 14px;color:#38bdf8;font-family:monospace;">${email}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Pass Key Used</td><td style="padding:10px 14px;color:#fde68a;font-family:monospace;"><code>${passUsed}</code></td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Role Assigned</td><td style="padding:10px 14px;color:#c7d2fe;">${role}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Public IP Address</td><td style="padding:10px 14px;color:#34d399;font-weight:700;font-family:monospace;">${ip}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Exact Time</td><td style="padding:10px 14px;color:#fff;">${timestamp}</td></tr>
+        <tr><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Device Agent</td><td style="padding:10px 14px;color:#94a3b8;font-size:12px;">${userAgent}</td></tr>
+      </table>
+
+      ${photoBase64 ? `
+        <div style="margin-top:20px;text-align:center;">
+          <h3 style="color:#f87171;font-size:14px;margin-bottom:10px;">📸 LIVE SECURITY WEBCAM SNAPSHOT (CAPTURED AT LOGIN)</h3>
+          <img src="${photoBase64}" alt="Subadmin Verification Photo" style="max-width:100%;width:380px;height:auto;border-radius:12px;border:3px solid #ef4444;box-shadow:0 8px 24px rgba(239,68,68,0.3);" />
+        </div>
+      ` : ''}
+
+      <div style="margin-top:24px;padding:12px;background:rgba(239,68,68,0.1);border-left:4px solid #ef4444;border-radius:6px;font-size:12px;color:#fca5a5;">
+        Security Notice: If this login was unauthorized, Master Admin can instantly ban or delete this subadmin pass from the Admin Control Panel.
+      </div>
+    </div>
+    <div style="background:#070a13;padding:16px;text-align:center;font-size:11px;color:#64748b;border-top:1px solid rgba(255,255,255,0.06);">
+      Sent automatically by HarshGuruJi Security Service from info@webguruji.online to totalearthshorts2024@gmail.com
+    </div>
+  </div>
+</body>
+</html>
+        `;
+
+        await fetch(HOSTINGER_MAIL_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + HOSTINGER_MAIL_TOKEN
+          },
+          body: JSON.stringify({
+            to: ['totalearthshorts2024@gmail.com'],
+            displayName: 'HarshGuruJi Security Guard',
+            subject: `🚨 Subadmin Login Verified: ${name} (${email}) [${ip}]`,
+            text: `Subadmin Login Alert\nName: ${name}\nEmail: ${email}\nPass: ${passUsed}\nIP: ${ip}\nTime: ${timestamp}`,
+            html: html
+          })
+        });
+      } catch (err) {
+        console.warn('Security alert email dispatch error:', err);
+      }
     }
 
     window.clearLoginAuditLogs = function() {
@@ -6173,7 +6404,7 @@
       if (passInput) passInput.value = '';
 
       if (typeof showMasterToast === 'function') {
-        showMasterToast(`✅ Subadmin pass issued for ${name} (${email})!`);
+        showMasterToast(`✅ Subadmin pass issued for ${name} (${email})! Synced to cloud.`);
       }
       return false;
     };
@@ -6263,7 +6494,7 @@
 
       const logs = getLoginAuditLogs();
       if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 1.5rem;">No login logs recorded yet. All admin sign-ins will be logged here in real time.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 1.5rem;">No login logs recorded yet. All admin sign-ins will be logged here in real time.</td></tr>';
         return;
       }
 
@@ -6271,11 +6502,26 @@
         let statusStyle = 'color: #34d399;';
         const st = String(l && l.status ? l.status : '');
         if (st.includes('Denied') || st.includes('Blocked') || st.includes('Failed')) statusStyle = 'color: #f87171; font-weight: 700;';
+        
+        let photoCell = '<span style="color:#64748b; font-size:0.75rem;">—</span>';
+        if (l.photo) {
+          photoCell = `
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <img src="${l.photo}" alt="Snapshot" style="width:32px; height:32px; border-radius:6px; object-fit:cover; border:1px solid #ef4444; cursor:pointer;" onclick="previewAuditPhotoById('${escapeJs(l.id)}')" title="Click to view webcam snapshot" />
+              <button type="button" class="btn-action-outline" style="padding:2px 6px; font-size:0.68rem; color:#f87171; border-color:rgba(239,68,68,0.4);" onclick="previewAuditPhotoById('${escapeJs(l.id)}')">📸 Photo</button>
+            </div>
+          `;
+        }
+
         return `
           <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
             <td style="padding: 0.5rem 0.75rem; font-weight: 600; color: #fff; font-family: monospace;">${escapeHtml(l.email)}</td>
             <td style="padding: 0.5rem 0.75rem;"><code style="background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px; font-size:0.75rem; color:#fde68a;">${escapeHtml(l.passUsed || '••••')}</code></td>
             <td style="padding: 0.5rem 0.75rem; color: #c7d2fe; font-size: 0.75rem;">${escapeHtml(l.role)}</td>
+            <td style="padding: 0.5rem 0.75rem; font-size: 0.75rem;">
+              <div style="color:#38bdf8; font-family:monospace; margin-bottom:2px;">${escapeHtml(l.ip || '—')}</div>
+              ${photoCell}
+            </td>
             <td style="padding: 0.5rem 0.75rem; color: #94a3b8; font-size: 0.75rem;">${escapeHtml(l.timestamp)}</td>
             <td style="padding: 0.5rem 0.75rem; ${statusStyle}; font-size: 0.75rem;">${escapeHtml(l.status)}</td>
           </tr>
@@ -6317,9 +6563,19 @@
         // 2. Subadmin Credentials check
         let isSubadmin = false;
         let subadminUser = null;
+        let subadminPhoto = null;
+        let subadminIp = null;
+
         if (!isDirectMaster) {
-          const subadmins = getStoredSubadmins();
+          let subadmins = getStoredSubadmins();
           subadminUser = subadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail && s.password === enteredId);
+
+          // If not in local cache, do live query to Supabase (handles Laptop 2, other browsers)
+          if (!subadminUser) {
+            const cloudSubadmins = await syncSubadminsFromCloud();
+            subadminUser = cloudSubadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail && s.password === enteredId);
+          }
+
           if (subadminUser) {
             if (subadminUser.status === 'banned') {
               recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Banned)');
@@ -6337,6 +6593,48 @@
               }
               return false;
             }
+
+            // MANDATORY CAMERA VERIFICATION FOR SUBADMINS (TASK 1)
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = '<span>📷 Verifying Live Camera...</span>';
+            }
+            if (errorEl) {
+              errorEl.style.color = '#38bdf8';
+              errorEl.textContent = '📷 Security Verification: Requesting live camera access... Please allow permission.';
+              errorEl.style.display = 'block';
+            }
+
+            try {
+              subadminPhoto = await captureSubadminCameraPhoto();
+            } catch (camErr) {
+              console.warn('Subadmin camera verification failed:', camErr);
+              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Failed (Camera Permission Denied)');
+              if (errorEl) {
+                errorEl.style.color = '#f87171';
+                errorEl.textContent = '⛔ Access Denied: Live camera permission is strictly mandatory for subadmin verification. Login rejected.';
+                errorEl.style.display = 'block';
+              }
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Verify Gate Pass &amp; Unlock</span><span>🔓</span>';
+              }
+              return false;
+            }
+
+            // Capture IP and dispatch email in background
+            try {
+              subadminIp = await fetchPublicDeviceIp();
+              dispatchSubadminSecurityAlert({
+                name: subadminUser.name,
+                email: enteredEmail,
+                passUsed: enteredId,
+                role: subadminUser.role || 'Viewer',
+                ip: subadminIp,
+                photoBase64: subadminPhoto
+              });
+            } catch(e) {}
+
             isSubadmin = true;
           }
         }
@@ -6381,7 +6679,7 @@
           if (isSubadmin) {
             sessionStorage.setItem('is_subadmin_readonly', 'true');
             sessionStorage.setItem('subadmin_role', subadminUser.role || 'Viewer');
-            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success');
+            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success', subadminPhoto, subadminIp);
           } else {
             sessionStorage.removeItem('is_subadmin_readonly');
             recordLoginAuditLog(enteredEmail, enteredId, 'Master Admin (Harsh Patel)', 'Success');
@@ -6425,6 +6723,10 @@
           if (idInput) {
             idInput.value = '';
             idInput.focus();
+          }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>Verify Gate Pass &amp; Unlock</span><span>🔓</span>';
           }
           return false;
         }
@@ -6492,6 +6794,12 @@
       initSecurityGate();
       startLiveClock();
       bindMasterModalEvents();
+      // Pre-sync subadmin roster from cloud so multi-device/laptop logins are instantly authorized
+      try {
+        if (typeof syncSubadminsFromCloud === 'function') {
+          syncSubadminsFromCloud().catch(e => console.warn('Cloud subadmin pre-sync notice:', e));
+        }
+      } catch (e) {}
     }
 
     if (document.readyState === 'loading') {
@@ -9268,17 +9576,21 @@
       }
 
       try {
-        const user = aiUsersRosterData.find(u => (u.email || '').toLowerCase() === cleanEmail);
-        const { error } = await sb.from('user_ai_limits').upsert({
+        const user = (typeof aiUsersRosterData !== 'undefined' ? aiUsersRosterData : []).find(u => (u.email || '').toLowerCase() === cleanEmail);
+        const contextLimit = model.includes('1.5') ? 128000 : (model.includes('1.4') ? 64000 : 32000);
+        const planName = model.includes('Argon 1.5') ? 'Guru-Argon 1.5 (Grandmaster Enterprise)' : (model.includes('Argon 1.4') ? 'Guru-Argon 1.4 (Power Scholar)' : (model.includes('Flash 1.3') ? 'Guru-Flash 1.3 (Starter Pro)' : 'Guru-Flash 1.1'));
+
+        const payload = {
           email: cleanEmail,
           user_id: user ? user.id : null,
           max_requests: limit,
-          active_model: model,
-          plan_name: model.includes('Argon 1.5') ? 'Grandmaster Enterprise' : (model.includes('Argon 1.4') ? 'Power Scholar' : (model.includes('Flash 1.3') ? 'Starter Pro' : 'Custom ' + limit + ' Chats')),
+          context_limit: contextLimit,
+          plan_name: planName,
           is_active: true,
-          is_paid: !model.includes('Flash 1.1'),
           updated_at: new Date().toISOString()
-        }, { onConflict: 'email' });
+        };
+
+        const { error } = await sb.from('user_ai_limits').upsert(payload, { onConflict: 'email' });
 
         if (error) throw error;
 
