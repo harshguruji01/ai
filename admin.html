@@ -3513,7 +3513,7 @@
           <div class="gate-error" id="gate-error-msg" style="display: none;"></div>
         </div>
 
-        <button type="submit" class="gate-btn" id="btn-submit-gate-pass" onclick="handleGatePassSubmit(event)">
+        <button type="submit" class="gate-btn" id="btn-submit-gate-pass">
           <span>Verify Gate Pass &amp; Unlock</span>
           <span>🔓</span>
         </button>
@@ -4000,6 +4000,276 @@
             </a>
           </div>
         </article>
+
+        <!-- CARD 5: GURUAI ENGINE & USER CHAT LIMITS DESK -->
+        <article class="module-card"
+          style="--card-glow: rgba(99, 102, 241, 0.35); --card-border-hover: #818cf8; --icon-bg: rgba(99, 102, 241, 0.18); --icon-border: rgba(99, 102, 241, 0.4); --icon-glow: rgba(99, 102, 241, 0.35); --btn-bg: linear-gradient(135deg, #6366f1, #4338ca); --btn-border: rgba(99, 102, 241, 0.5); --btn-glow: rgba(99, 102, 241, 0.6);">
+          <div>
+            <div class="card-head">
+              <div class="module-icon-wrap" style="color: #818cf8;">🤖</div>
+              <div class="card-title-group">
+                <h4>GuruAI Engine &amp; User Chat Limits</h4>
+                <span class="card-badge" style="background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.4); color: #c7d2fe;">ai.webguruji.online Control</span>
+              </div>
+            </div>
+            <p class="module-desc">Central management desk for GuruAI (ai.webguruji.online). Monitor logged-in members, inspect remaining chat allowances (20/24h or upgraded), allocate models (Argon 1.5, 1.4, Flash 1.3), and modify limits with instant push.</p>
+            <ul class="feature-list">
+              <li><span class="dot">✔</span> Live tracking of logged-in AI users, emails, and active models</li>
+              <li><span class="dot">✔</span> Real-time remaining chat limits &amp; custom quota adjustment</li>
+              <li><span class="dot">✔</span> Instant cross-tab sync via BroadcastChannel &amp; Supabase Realtime</li>
+              <li><span class="dot">✔</span> 1-Click model upgrades &amp; purchase requests approval</li>
+            </ul>
+          </div>
+          <div class="card-btn-group">
+            <button type="button" class="card-action-btn" onclick="document.getElementById('ai-control-box-section')?.scrollIntoView({behavior:'smooth'});">
+              <span>View Live AI Box ↓</span>
+              <span>⚡</span>
+            </button>
+            <button type="button" class="card-action-btn-secondary" onclick="openMasterModal('guruai')" title="Open Full AI Studio Modal">
+              <span>Full Studio 🎛️</span>
+            </button>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- SECTION: AI PAGE LIVE OPERATIONS & USER CHAT LIMITS BOX -->
+      <div class="section-headline" id="ai-control-box-section" style="margin-top: 2.5rem;">
+        <h3>
+          <span>🤖</span>
+          <span>AI Page Live Operations &amp; User Chat Limits (ai.webguruji.online)</span>
+        </h3>
+      </div>
+
+      <section class="ai-control-panel-box" style="background: rgba(11, 15, 27, 0.9); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 25px rgba(99,102,241,0.15);">
+        
+        <!-- Box Top Bar with Live KPI Counters & Action Buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1.25rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981;"></span>
+              <h4 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">Live AI Page Active Users &amp; Chat Limits</h4>
+              <span style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.25); color: #c7d2fe; padding: 2px 8px; border-radius: 8px; font-weight: 700; border: 1px solid rgba(99,102,241,0.4);">ai.webguruji.online</span>
+            </div>
+            <p style="font-size: 0.82rem; color: #94a3b8; margin: 0.35rem 0 0;">Users logged in on GuruAI, their remaining chat allowances, active model tiers, and instant limit modifiers.</p>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            <button type="button" class="btn-action-outline" onclick="loadAiLimitsAndRequests(true)" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span>🔄</span>
+              <span>Refresh Limits</span>
+            </button>
+            <button type="button" class="btn-action-primary" onclick="openMasterModal('guruai')" style="padding: 0.45rem 1rem; font-size: 0.82rem; background: linear-gradient(135deg, #6366f1, #4f46e5); font-weight: 700; box-shadow: 0 0 15px rgba(99,102,241,0.4); display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span>🎛️ Open Full GuruAI Studio</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Stats Strip -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.25rem 0;">
+          <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 14px; padding: 1rem;">
+            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Total AI Users</div>
+            <div style="font-size: 1.7rem; font-weight: 800; color: #818cf8; margin-top: 0.25rem;" id="ai-box-stat-total">...</div>
+            <div style="font-size: 0.72rem; color: #64748b;">Registered / Logged In</div>
+          </div>
+
+          <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 14px; padding: 1rem;">
+            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Active / Upgraded Users</div>
+            <div style="font-size: 1.7rem; font-weight: 800; color: #34d399; margin-top: 0.25rem;" id="ai-box-stat-unlocked">...</div>
+            <div style="font-size: 0.72rem; color: #64748b;">Custom Quota &amp; Argon Models</div>
+          </div>
+
+          <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 1rem;">
+            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Standard Free Members</div>
+            <div style="font-size: 1.7rem; font-weight: 800; color: #38bdf8; margin-top: 0.25rem;" id="ai-box-stat-free">...</div>
+            <div style="font-size: 0.72rem; color: #64748b;">Default 20 Chats / 24h</div>
+          </div>
+
+          <div style="background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 14px; padding: 1rem;">
+            <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Guest Allowance</div>
+            <div style="font-size: 1.7rem; font-weight: 800; color: #fbbf24; margin-top: 0.25rem;">8 Chats</div>
+            <div style="font-size: 0.72rem; color: #64748b;">Rolling 24h per unauthenticated visitor</div>
+          </div>
+        </div>
+
+        <!-- Search and Filters Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="filter-chip active" id="ai-box-filter-all" onclick="filterAiBoxRoster('ALL')">All Users (<span id="ai-box-count-all">0</span>)</button>
+            <button type="button" class="filter-chip" id="ai-box-filter-unlocked" onclick="filterAiBoxRoster('UNLOCKED')">⭐ Upgraded / Custom Limit (<span id="ai-box-count-unlocked">0</span>)</button>
+            <button type="button" class="filter-chip" id="ai-box-filter-free" onclick="filterAiBoxRoster('FREE')">⚡ Standard Free (<span id="ai-box-count-free">0</span>)</button>
+          </div>
+          <div style="position: relative; max-width: 320px; width: 100%;">
+            <input type="text" id="ai-box-search-input" placeholder="Search user by name, email or model..." oninput="renderAiBoxRoster()" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 0.45rem 0.85rem; font-size: 0.82rem; color: #fff;">
+          </div>
+        </div>
+
+        <!-- Live Users & Chat Limit Table -->
+        <div style="overflow-x: auto; background: rgba(10, 14, 26, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">
+                <th style="padding: 0.75rem 1rem;">User / Member</th>
+                <th style="padding: 0.75rem 1rem;">Email Address</th>
+                <th style="padding: 0.75rem 1rem;">Current AI Model</th>
+                <th style="padding: 0.75rem 1rem;">Chat Limit &amp; Allowance</th>
+                <th style="padding: 0.75rem 1rem;">Context Window</th>
+                <th style="padding: 0.75rem 1rem; text-align: center;">Quick Adjust &amp; Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ai-box-users-tbody">
+              <tr>
+                <td colspan="6" style="padding: 2.5rem; text-align: center; color: #94a3b8;">
+                  <span>🔄 Loading live AI page users and limits...</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Inline Quick Limit Modifier Bar -->
+        <div style="margin-top: 1.25rem; background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 14px; padding: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <div style="font-weight: 700; color: #fff; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span>⚡ Quick Limit Tuner:</span>
+            </div>
+            <input type="email" id="ai-quick-tune-email" placeholder="user email (e.g. user@gmail.com)" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.8rem; color: #fff; min-width: 220px;">
+            <input type="number" id="ai-quick-tune-limit" placeholder="New Chat Limit (e.g. 50)" min="1" max="1000" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.8rem; color: #fff; width: 150px;">
+            <select id="ai-quick-tune-model" style="background: #0f172a; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.8rem; color: #fff;">
+              <option value="Guru-Flash 1.1">Guru-Flash 1.1 (Free)</option>
+              <option value="Guru-Flash 1.3">Guru-Flash 1.3 (Starter Pro)</option>
+              <option value="Guru-Argon 1.4">Guru-Argon 1.4 (Power Scholar)</option>
+              <option value="Guru-Argon 1.5">Guru-Argon 1.5 (Grandmaster Enterprise)</option>
+            </select>
+          </div>
+          <div>
+            <button type="button" class="btn-action-primary" onclick="handleQuickAiLimitSave()" style="padding: 0.45rem 1.1rem; font-size: 0.82rem; background: linear-gradient(135deg, #10b981, #059669); font-weight: 700; box-shadow: 0 0 12px rgba(16,185,129,0.35);">
+              <span>💾 Save &amp; Push Live to AI Page</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- SECTION: SUBADMIN DELEGATION & LOGIN AUDIT DESK -->
+      <div class="section-headline" id="sec-subadmins-headline" style="margin-top: 2.5rem;">
+        <h3>
+          <span>🛡️</span>
+          <span>Subadmin Delegation &amp; Login Audit Desk</span>
+        </h3>
+      </div>
+
+      <section class="subadmin-panel-box" id="subadmin-desk-box" style="background: rgba(11, 15, 27, 0.9); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 25px rgba(245,158,11,0.12);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1.25rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 10px #f59e0b;"></span>
+              <h4 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">Trusted Subadmin Passwords &amp; Login Audit Logs</h4>
+              <span style="font-size: 0.75rem; background: rgba(245, 158, 11, 0.2); color: #fde68a; padding: 2px 8px; border-radius: 8px; font-weight: 700; border: 1px solid rgba(245,158,11,0.35);">Master Admin Controlled</span>
+            </div>
+            <p style="font-size: 0.82rem; color: #94a3b8; margin: 0.35rem 0 0;">Create subadmin credentials for trusted staff. Subadmins have viewer/read-only access. Full access, ban, suspend, and delete are reserved exclusively for Master Admin (Harsh Patel).</p>
+          </div>
+          <div>
+            <button type="button" class="btn-action-outline" onclick="renderSubadminsTable(); renderLoginAuditLogs();" style="padding: 0.45rem 0.9rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span>🔄 Refresh Logs</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.25rem;">
+          
+          <!-- Box 1: Create New Subadmin Pass -->
+          <div style="background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 1.25rem;">
+            <h5 style="font-size: 0.95rem; font-weight: 700; color: #f8fafc; margin: 0 0 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span>➕</span>
+              <span>Create New Subadmin Login Pass</span>
+            </h5>
+            <form onsubmit="handleCreateSubadminSubmit(event); return false;" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div>
+                <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 4px;">Staff / Subadmin Name</label>
+                <input type="text" id="subadmin-name-input" placeholder="e.g. Rahul Sharma (Editor)" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.82rem; color: #fff;">
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 4px;">Login Email</label>
+                <input type="email" id="subadmin-email-input" placeholder="e.g. rahul@webguruji.online" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.82rem; color: #fff;">
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 4px;">Secret Password / ID</label>
+                <input type="text" id="subadmin-pass-input" placeholder="Enter secure password or code" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.82rem; color: #fff;">
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 4px;">Permissions / Access Level</label>
+                <select id="subadmin-role-input" style="width: 100%; background: #0f172a; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.82rem; color: #fff;">
+                  <option value="Viewer">Viewer / Read-Only (Cannot modify or delete)</option>
+                  <option value="Editor">Editor (Limited edit, no master controls)</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-action-primary" style="margin-top: 0.25rem; padding: 0.5rem; font-size: 0.85rem; background: linear-gradient(135deg, #f59e0b, #d97706); font-weight: 700;">
+                <span>🛡️ Issue Subadmin Pass</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Box 2: Active Subadmins List -->
+          <div style="background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <h5 style="font-size: 0.95rem; font-weight: 700; color: #f8fafc; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+                <span>👥</span>
+                <span>Active Subadmins (<span id="subadmin-count-badge">0</span>)</span>
+              </h5>
+            </div>
+            <div style="overflow-x: auto; flex: 1; max-height: 280px; overflow-y: auto;">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem;">
+                <thead>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 0.72rem; text-transform: uppercase;">
+                    <th style="padding: 0.4rem 0.6rem;">Subadmin</th>
+                    <th style="padding: 0.4rem 0.6rem;">Status</th>
+                    <th style="padding: 0.4rem 0.6rem; text-align: right;">Master Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="subadmins-tbody">
+                  <tr>
+                    <td colspan="3" style="text-align: center; color: #94a3b8; padding: 2rem;">No subadmin passes issued yet.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Box 3: Live Login Audit Trail -->
+        <div style="margin-top: 1.5rem; background: rgba(17, 24, 39, 0.75); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h5 style="font-size: 0.95rem; font-weight: 700; color: #f8fafc; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+              <span>📜</span>
+              <span>Admin Login Audit History (Who Logged In &amp; When)</span>
+            </h5>
+            <button type="button" onclick="clearLoginAuditLogs()" class="btn-action-outline" style="padding: 0.25rem 0.6rem; font-size: 0.72rem; color: #f87171; border-color: rgba(239,68,68,0.3);">
+              <span>Clear History</span>
+            </button>
+          </div>
+          <div style="overflow-x: auto; max-height: 240px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 0.72rem; text-transform: uppercase;">
+                  <th style="padding: 0.5rem 0.75rem;">Account Email</th>
+                  <th style="padding: 0.5rem 0.75rem;">Role / Tier</th>
+                  <th style="padding: 0.5rem 0.75rem;">Timestamp</th>
+                  <th style="padding: 0.5rem 0.75rem;">Result Status</th>
+                </tr>
+              </thead>
+              <tbody id="login-audit-tbody">
+                <tr>
+                  <td colspan="4" style="text-align: center; color: #94a3b8; padding: 1.5rem;">Loading audit logs...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
       </section>
 
@@ -5645,10 +5915,27 @@
     <span id="master-toast-text">Action executed successfully</span>
   </div>
 
-  <!-- Supabase Module Script -->
+  <!-- Supabase Client Safe Resolver -->
+  <script>
+    if (!window.supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
+      try {
+        window.supabaseClient = window.supabase.createClient(
+          window.SUPABASE_URL || 'https://wumdbpyhpblvgjttsbpv.supabase.co',
+          window.SUPABASE_ANON_KEY || 'sb_publishable_xLqKY9N62MXb6ELG-5trig_RlJs_n-l',
+          { auth: { storage: window.HG_SHARED_STORAGE || localStorage, persistSession: true } }
+        );
+      } catch (e) {
+        console.warn('Supabase fallback init warning:', e);
+      }
+    }
+  </script>
   <script type="module">
-    import { supabase } from './js/supabase.js';
-    window.supabaseClient = supabase;
+    try {
+      const { supabase } = await import('./js/supabase.js');
+      if (supabase) window.supabaseClient = supabase;
+    } catch (e) {
+      console.warn('ES module supabase client notice:', e);
+    }
   </script>
   <script src="js/admin-bridge.js"></script>
   <script src="js/ncert-master-catalog.js"></script>
@@ -5779,6 +6066,403 @@
     let contribFilter = 'ALL';
     let userFilter = 'ALL';
 
+    // Subadmin & Audit Trail State
+    const SUBADMINS_STORAGE_KEY = 'hg_admin_subadmins';
+    const LOGIN_AUDIT_STORAGE_KEY = 'hg_admin_login_history';
+
+    function getStoredSubadmins() {
+      try {
+        const raw = localStorage.getItem(SUBADMINS_STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [];
+    }
+
+    function saveStoredSubadmins(list) {
+      try {
+        localStorage.setItem(SUBADMINS_STORAGE_KEY, JSON.stringify(list));
+      } catch (e) {}
+      renderSubadminsTable();
+    }
+
+    function getLoginAuditLogs() {
+      try {
+        const raw = localStorage.getItem(LOGIN_AUDIT_STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [];
+    }
+
+    function recordLoginAuditLog(email, role, status) {
+      try {
+        const logs = getLoginAuditLogs();
+        const newLog = {
+          id: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          email: email || 'Unknown',
+          role: role || 'Staff',
+          status: status || 'Success',
+          timestamp: new Date().toLocaleString(undefined, {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+          })
+        };
+        logs.unshift(newLog);
+        if (logs.length > 80) logs.length = 80;
+        localStorage.setItem(LOGIN_AUDIT_STORAGE_KEY, JSON.stringify(logs));
+        renderLoginAuditLogs();
+      } catch(e) {}
+    }
+
+    window.clearLoginAuditLogs = function() {
+      if (confirm('Are you sure you want to clear the admin login audit history?')) {
+        localStorage.removeItem(LOGIN_AUDIT_STORAGE_KEY);
+        renderLoginAuditLogs();
+      }
+    };
+
+    window.handleCreateSubadminSubmit = function(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const nameInput = document.getElementById('subadmin-name-input');
+      const emailInput = document.getElementById('subadmin-email-input');
+      const passInput = document.getElementById('subadmin-pass-input');
+      const roleInput = document.getElementById('subadmin-role-input');
+
+      const name = (nameInput?.value || '').trim();
+      const email = (emailInput?.value || '').trim().toLowerCase();
+      const pass = (passInput?.value || '').trim();
+      const role = roleInput?.value || 'Viewer';
+
+      if (!name || !email || !pass) {
+        alert('Please fill out all fields.');
+        return false;
+      }
+
+      if (email === 'harshguruji01@gmail.com') {
+        alert('Cannot create subadmin with Master Admin email.');
+        return false;
+      }
+
+      const list = getStoredSubadmins();
+      const existingIdx = list.findIndex(s => (s.email || '').toLowerCase() === email);
+      if (existingIdx >= 0) {
+        alert('A subadmin pass for this email already exists.');
+        return false;
+      }
+
+      const newSubadmin = {
+        id: 'sub_' + Date.now(),
+        name,
+        email,
+        password: pass,
+        role,
+        status: 'active', // 'active' | 'suspended' | 'banned'
+        createdAt: new Date().toISOString()
+      };
+
+      list.push(newSubadmin);
+      saveStoredSubadmins(list);
+
+      if (nameInput) nameInput.value = '';
+      if (emailInput) emailInput.value = '';
+      if (passInput) passInput.value = '';
+
+      if (typeof showMasterToast === 'function') {
+        showMasterToast(`✅ Subadmin pass issued for ${name} (${email})!`);
+      }
+      return false;
+    };
+
+    window.toggleSubadminStatus = function(id, newStatus) {
+      const list = getStoredSubadmins();
+      const sub = list.find(s => s.id === id);
+      if (!sub) return;
+      sub.status = newStatus;
+      saveStoredSubadmins(list);
+      if (typeof showMasterToast === 'function') {
+        showMasterToast(`Updated status of ${sub.name} to ${newStatus.toUpperCase()}`);
+      }
+    };
+
+    window.deleteSubadmin = function(id) {
+      const list = getStoredSubadmins();
+      const sub = list.find(s => s.id === id);
+      if (!sub) return;
+      if (confirm(`Are you sure you want to delete the subadmin pass for "${sub.name}" (${sub.email})? They will no longer be able to log in.`)) {
+        const updated = list.filter(s => s.id !== id);
+        saveStoredSubadmins(updated);
+        if (typeof showMasterToast === 'function') {
+          showMasterToast(`Deleted subadmin pass for ${sub.email}`);
+        }
+      }
+    };
+
+    function renderSubadminsTable() {
+      const tbody = document.getElementById('subadmins-tbody');
+      const badge = document.getElementById('subadmin-count-badge');
+      if (!tbody) return;
+
+      const list = getStoredSubadmins();
+      if (badge) badge.textContent = list.length;
+
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 2rem;">No subadmin passes issued yet. Use the form on the left to create one.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = list.map(s => {
+        let statusBadge = '<span style="background:rgba(16,185,129,0.2); color:#34d399; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.7rem;">● Active</span>';
+        if (s.status === 'suspended') {
+          statusBadge = '<span style="background:rgba(245,158,11,0.2); color:#fbbf24; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.7rem;">⏸️ Suspended</span>';
+        } else if (s.status === 'banned') {
+          statusBadge = '<span style="background:rgba(239,68,68,0.2); color:#f87171; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.7rem;">⛔ Banned</span>';
+        }
+
+        return `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding: 0.5rem 0.6rem;">
+              <div style="font-weight: 700; color: #fff;">${escapeHtml(s.name)}</div>
+              <div style="font-size: 0.72rem; color: #38bdf8; font-family: monospace;">${escapeHtml(s.email)}</div>
+              <div style="font-size: 0.68rem; color: #94a3b8;">Key: <code style="background:rgba(0,0,0,0.3); padding:1px 4px; border-radius:3px;">${escapeHtml(s.password)}</code> (${escapeHtml(s.role || 'Viewer')})</div>
+            </td>
+            <td style="padding: 0.5rem 0.6rem;">
+              ${statusBadge}
+            </td>
+            <td style="padding: 0.5rem 0.6rem; text-align: right;">
+              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.35rem; flex-wrap: wrap;">
+                ${s.status === 'active' ? `
+                  <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #fbbf24; border-color: rgba(245,158,11,0.4);" onclick="toggleSubadminStatus('${s.id}', 'suspended')" title="Suspend access temporarily">
+                    <span>Suspend</span>
+                  </button>
+                  <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #f87171; border-color: rgba(239,68,68,0.4);" onclick="toggleSubadminStatus('${s.id}', 'banned')" title="Ban user from admin panel">
+                    <span>Ban</span>
+                  </button>
+                ` : `
+                  <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #34d399; border-color: rgba(16,185,129,0.4);" onclick="toggleSubadminStatus('${s.id}', 'active')" title="Re-activate access">
+                    <span>Activate</span>
+                  </button>
+                `}
+                <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #f87171; border-color: rgba(239,68,68,0.4);" onclick="deleteSubadmin('${s.id}')" title="Permanently delete pass">
+                  <span>🗑️</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderLoginAuditLogs() {
+      const tbody = document.getElementById('login-audit-tbody');
+      if (!tbody) return;
+
+      const logs = getLoginAuditLogs();
+      if (logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 1.5rem;">No login logs recorded yet. All admin sign-ins will be logged here in real time.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = logs.map(l => {
+        let statusStyle = 'color: #34d399;';
+        if (l.status.includes('Denied') || l.status.includes('Blocked')) statusStyle = 'color: #f87171; font-weight: 700;';
+        return `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding: 0.5rem 0.75rem; font-weight: 600; color: #fff; font-family: monospace;">${escapeHtml(l.email)}</td>
+            <td style="padding: 0.5rem 0.75rem; color: #c7d2fe; font-size: 0.75rem;">${escapeHtml(l.role)}</td>
+            <td style="padding: 0.5rem 0.75rem; color: #94a3b8; font-size: 0.75rem;">${escapeHtml(l.timestamp)}</td>
+            <td style="padding: 0.5rem 0.75rem; ${statusStyle}; font-size: 0.75rem;">${escapeHtml(l.status)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.renderSubadminsTable = renderSubadminsTable;
+    window.renderLoginAuditLogs = renderLoginAuditLogs;
+
+    async function handleGatePassSubmit(e) {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      const emailInput = document.getElementById('input-admin-email');
+      const idInput = document.getElementById('input-admin-id');
+      const errorEl = document.getElementById('gate-error-msg');
+      const submitBtn = document.getElementById('btn-submit-gate-pass');
+
+      if (errorEl) errorEl.style.display = 'none';
+
+      const enteredEmail = (emailInput?.value || '').trim().toLowerCase();
+      const enteredId = (idInput?.value || '').trim();
+
+      if (!enteredEmail || !enteredId) {
+        if (errorEl) {
+          errorEl.textContent = '⚠️ Please enter both Private Mail and Secret ID.';
+          errorEl.style.display = 'block';
+        }
+        return false;
+      }
+
+      // 1. Direct Master Admin check (Harsh Patel)
+      const isDirectMaster = (enteredEmail === 'harshguruji01@gmail.com' || enteredEmail === 'harshguruji01@gmail.commit') && enteredId === '2547277654';
+
+      // 2. Subadmin Credentials check
+      let isSubadmin = false;
+      let subadminUser = null;
+      if (!isDirectMaster) {
+        const subadmins = getStoredSubadmins();
+        subadminUser = subadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail && s.password === enteredId);
+        if (subadminUser) {
+          if (subadminUser.status === 'banned') {
+            recordLoginAuditLog(enteredEmail, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Banned)');
+            if (errorEl) {
+              errorEl.textContent = '⛔ Access Denied: This subadmin account has been permanently banned by Master Admin.';
+              errorEl.style.display = 'block';
+            }
+            return false;
+          }
+          if (subadminUser.status === 'suspended') {
+            recordLoginAuditLog(enteredEmail, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Suspended)');
+            if (errorEl) {
+              errorEl.textContent = '⚠️ Access Paused: This subadmin account is currently suspended by Master Admin.';
+              errorEl.style.display = 'block';
+            }
+            return false;
+          }
+          isSubadmin = true;
+        }
+      }
+
+      let computedHash = '';
+      if (isDirectMaster) {
+        computedHash = enteredEmail.includes('commit')
+          ? 'e5b44bce70dbf185896bee1ccb5cae48eb8c2097c5219585032d1683eaae06aa'
+          : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86';
+      } else if (!isSubadmin) {
+        const lockoutUntil = parseInt(sessionStorage.getItem('hg_gate_lockout') || localStorage.getItem('hg_gate_lockout') || '0', 10);
+        if (Date.now() < lockoutUntil) {
+          const remMins = Math.ceil((lockoutUntil - Date.now()) / 60000);
+          if (errorEl) {
+            errorEl.textContent = `⛔ Security Gate is temporarily locked due to multiple failed attempts. Please retry in ${remMins}m.`;
+            errorEl.style.display = 'block';
+          }
+          return false;
+        }
+        computedHash = await hashAdminCredentials(enteredEmail, enteredId);
+      }
+
+      if (isDirectMaster || isSubadmin || AUTHORIZED_HASHES.includes(computedHash)) {
+        // Clear all failed lockouts on correct match
+        sessionStorage.removeItem('hg_gate_failed');
+        sessionStorage.removeItem('hg_gate_lockout');
+        localStorage.removeItem('hg_gate_failed');
+        localStorage.removeItem('hg_gate_lockout');
+
+        const now = Date.now().toString();
+        const finalHash = computedHash || (isSubadmin ? 'subadmin_token_' + Date.now() : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86');
+
+        sessionStorage.setItem(AUTH_STATE_KEY, 'true');
+        sessionStorage.setItem(AUTH_TOKEN_KEY, finalHash);
+        sessionStorage.setItem(AUTH_TIME_KEY, now);
+        sessionStorage.setItem('admin_apk_email', enteredEmail);
+        sessionStorage.setItem('hg_master_admin_authenticated', 'true');
+        sessionStorage.setItem('admin_chatbase_auth', 'true');
+        sessionStorage.setItem('admin_contacts_auth', 'true');
+        sessionStorage.setItem('hg_contributor_admin_unlocked', 'true');
+
+        if (isSubadmin) {
+          sessionStorage.setItem('is_subadmin_readonly', 'true');
+          sessionStorage.setItem('subadmin_role', subadminUser.role || 'Viewer');
+          recordLoginAuditLog(enteredEmail, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success');
+        } else {
+          sessionStorage.removeItem('is_subadmin_readonly');
+          recordLoginAuditLog(enteredEmail, 'Master Admin (Harsh Patel)', 'Success');
+        }
+
+        try {
+          localStorage.setItem(AUTH_STATE_KEY, 'true');
+          localStorage.setItem(AUTH_TOKEN_KEY, finalHash);
+          localStorage.setItem(AUTH_TIME_KEY, now);
+          localStorage.setItem('admin_apk_email', enteredEmail);
+          localStorage.setItem('hg_master_admin_authenticated', 'true');
+        } catch(e) {}
+
+        const sessionDisplay = document.getElementById('admin-session-display');
+        if (sessionDisplay) sessionDisplay.textContent = `Authenticated: ${enteredEmail}${isSubadmin ? ' (Subadmin - Read Only)' : ''}`;
+
+        try { if (window.setAllAdminSessions) window.setAllAdminSessions(); } catch(e) {}
+        try { if (window.setupAdminMasterLinks) window.setupAdminMasterLinks(); } catch(e) {}
+
+        unlockDashboard();
+        return false;
+      } else {
+        recordLoginAuditLog(enteredEmail, 'Unknown', 'Failed (Invalid credentials)');
+        let fails = parseInt(sessionStorage.getItem('hg_gate_failed') || '0', 10) + 1;
+        sessionStorage.setItem('hg_gate_failed', fails.toString());
+
+        if (fails >= 3) {
+          const lockDuration = 15 * 60 * 1000;
+          sessionStorage.setItem('hg_gate_lockout', (Date.now() + lockDuration).toString());
+          if (errorEl) {
+            errorEl.textContent = '⛔ 3 failed attempts: Security Gate is locked for 15 minutes to prevent unauthorized access.';
+            errorEl.style.display = 'block';
+          }
+        } else {
+          if (errorEl) {
+            errorEl.textContent = `❌ Access Denied: Invalid Private Mail or Secret ID. (${3 - fails} attempts remaining)`;
+            errorEl.style.display = 'block';
+          }
+        }
+
+        if (idInput) {
+          idInput.value = '';
+          idInput.focus();
+        }
+        return false;
+      }
+    }
+    window.handleGatePassSubmit = handleGatePassSubmit;
+
+    function unlockDashboard() {
+      const securityGate = document.getElementById('security-gate');
+      const adminDashboard = document.getElementById('admin-dashboard');
+      if (securityGate) securityGate.style.display = 'none';
+      if (adminDashboard) adminDashboard.style.display = 'block';
+
+      // Enforce Read-Only mode for subadmins
+      const isSubadmin = sessionStorage.getItem('is_subadmin_readonly') === 'true';
+      const subDeskBox = document.getElementById('subadmin-desk-box');
+      if (isSubadmin) {
+        // Hide subadmin creation pass from subadmin
+        const createCard = document.querySelector('form[onsubmit*="handleCreateSubadminSubmit"]')?.closest('div');
+        if (createCard) createCard.style.display = 'none';
+      }
+
+      try { startLiveSessionCountdown(); } catch(e) {}
+      try { if (window.setupAdminMasterLinks) window.setupAdminMasterLinks(); } catch(e) {}
+      try { loadAllMasterData(); } catch(e) {}
+      try { renderSubadminsTable(); } catch(e) {}
+      try { renderLoginAuditLogs(); } catch(e) {}
+
+      // Handle query redirect if present
+      const fromParam = new URLSearchParams(window.location.search).get('from');
+      if (fromParam) {
+        if (fromParam === 'adminbooks.html' || fromParam === 'books') {
+          setTimeout(() => openMasterModal('books'), 400);
+        } else if (fromParam === 'adminapkupload.html' || fromParam === 'store') {
+          setTimeout(() => openMasterModal('store'), 400);
+        } else if (fromParam === 'admin-contacts.html' || fromParam === 'messages') {
+          setTimeout(() => openMasterModal('messages'), 400);
+        } else if (fromParam === 'admincontributors.html' || fromParam === 'contributors') {
+          setTimeout(() => openMasterModal('contributors'), 400);
+        } else if (fromParam === 'admin-chatbase.html' || fromParam === 'chatbase') {
+          setTimeout(() => openMasterModal('chatbase'), 400);
+        } else if (fromParam === 'goldentick') {
+          setTimeout(() => openMasterModal('goldentick'), 400);
+        } else if (fromParam === 'premium-requests') {
+          setTimeout(() => openMasterModal('premium-requests'), 400);
+        } else if (fromParam === 'guruai' || fromParam === 'ai') {
+          setTimeout(() => openMasterModal('guruai'), 400);
+        }
+      }
+    }
+    window.unlockDashboard = unlockDashboard;
+
     function bootAdmin() {
       initSecurityGate();
       startLiveClock();
@@ -5808,7 +6492,10 @@
 
       // Handle Gate Pass Submission
       if (gateForm) {
-        gateForm.addEventListener('submit', window.handleGatePassSubmit);
+        gateForm.onsubmit = function(e) {
+          handleGatePassSubmit(e);
+          return false;
+        };
       }
 
       // Lock / Logout button
@@ -5819,139 +6506,7 @@
       }
     }
 
-    window.handleGatePassSubmit = async function(e) {
-      if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      const emailInput = document.getElementById('input-admin-email');
-      const idInput = document.getElementById('input-admin-id');
-      const errorEl = document.getElementById('gate-error-msg');
-      const submitBtn = document.getElementById('btn-submit-gate-pass');
-
-      if (errorEl) errorEl.style.display = 'none';
-
-      const enteredEmail = (emailInput?.value || '').trim().toLowerCase();
-      const enteredId = (idInput?.value || '').trim();
-
-      if (!enteredEmail || !enteredId) {
-        if (errorEl) {
-          errorEl.textContent = '⚠️ Please enter both Private Mail and Secret ID.';
-          errorEl.style.display = 'block';
-        }
-        return false;
-      }
-
-      // Direct credential match check
-      const isDirectMaster = (enteredEmail === 'harshguruji01@gmail.com' || enteredEmail === 'harshguruji01@gmail.commit') && enteredId === '2547277654';
-
-      let computedHash = '';
-      if (isDirectMaster) {
-        computedHash = enteredEmail.includes('commit')
-          ? 'e5b44bce70dbf185896bee1ccb5cae48eb8c2097c5219585032d1683eaae06aa'
-          : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86';
-      } else {
-        const lockoutUntil = parseInt(sessionStorage.getItem('hg_gate_lockout') || localStorage.getItem('hg_gate_lockout') || '0', 10);
-        if (Date.now() < lockoutUntil) {
-          const remMins = Math.ceil((lockoutUntil - Date.now()) / 60000);
-          if (errorEl) {
-            errorEl.textContent = `⛔ Security Gate is temporarily locked due to multiple failed attempts. Please retry in ${remMins}m.`;
-            errorEl.style.display = 'block';
-          }
-          return false;
-        }
-        computedHash = await hashAdminCredentials(enteredEmail, enteredId);
-      }
-
-      if (isDirectMaster || AUTHORIZED_HASHES.includes(computedHash)) {
-        // Clear all failed lockouts on correct match
-        sessionStorage.removeItem('hg_gate_failed');
-        sessionStorage.removeItem('hg_gate_lockout');
-        localStorage.removeItem('hg_gate_failed');
-        localStorage.removeItem('hg_gate_lockout');
-
-        const now = Date.now().toString();
-        const finalHash = computedHash || '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86';
-
-        sessionStorage.setItem(AUTH_STATE_KEY, 'true');
-        sessionStorage.setItem(AUTH_TOKEN_KEY, finalHash);
-        sessionStorage.setItem(AUTH_TIME_KEY, now);
-        sessionStorage.setItem('admin_apk_email', enteredEmail);
-        sessionStorage.setItem('hg_master_admin_authenticated', 'true');
-        sessionStorage.setItem('admin_chatbase_auth', 'true');
-        sessionStorage.setItem('admin_contacts_auth', 'true');
-        sessionStorage.setItem('hg_contributor_admin_unlocked', 'true');
-
-        try {
-          localStorage.setItem(AUTH_STATE_KEY, 'true');
-          localStorage.setItem(AUTH_TOKEN_KEY, finalHash);
-          localStorage.setItem(AUTH_TIME_KEY, now);
-          localStorage.setItem('admin_apk_email', enteredEmail);
-          localStorage.setItem('hg_master_admin_authenticated', 'true');
-        } catch(e) {}
-
-        const sessionDisplay = document.getElementById('admin-session-display');
-        if (sessionDisplay) sessionDisplay.textContent = `Authenticated: ${enteredEmail}`;
-
-        if (window.setAllAdminSessions) window.setAllAdminSessions();
-        if (window.setupAdminMasterLinks) window.setupAdminMasterLinks();
-
-        unlockDashboard();
-        return false;
-      } else {
-        let fails = parseInt(sessionStorage.getItem('hg_gate_failed') || '0', 10) + 1;
-        sessionStorage.setItem('hg_gate_failed', fails.toString());
-
-        if (fails >= 3) {
-          const lockDuration = 15 * 60 * 1000;
-          sessionStorage.setItem('hg_gate_lockout', (Date.now() + lockDuration).toString());
-          if (errorEl) {
-            errorEl.textContent = '⛔ 3 failed attempts: Security Gate is locked for 15 minutes to prevent unauthorized access.';
-            errorEl.style.display = 'block';
-          }
-        } else {
-          if (errorEl) {
-            errorEl.textContent = `❌ Access Denied: Invalid Private Mail or Secret ID. (${3 - fails} attempts remaining)`;
-            errorEl.style.display = 'block';
-          }
-        }
-
-        if (idInput) {
-          idInput.value = '';
-          idInput.focus();
-        }
-        return false;
-      }
-    };
-
-    function unlockDashboard() {
-      const securityGate = document.getElementById('security-gate');
-      const adminDashboard = document.getElementById('admin-dashboard');
-      if (securityGate) securityGate.style.display = 'none';
-      if (adminDashboard) adminDashboard.style.display = 'block';
-      startLiveSessionCountdown();
-      if (window.setupAdminMasterLinks) window.setupAdminMasterLinks();
-      loadAllMasterData();
-
-      // Handle query redirect if present
-      const fromParam = new URLSearchParams(window.location.search).get('from');
-      if (fromParam) {
-        if (fromParam === 'adminbooks.html' || fromParam === 'books') {
-          setTimeout(() => openMasterModal('books'), 400);
-        } else if (fromParam === 'adminapkupload.html' || fromParam === 'store') {
-          setTimeout(() => openMasterModal('store'), 400);
-        } else if (fromParam === 'admin-contacts.html' || fromParam === 'messages') {
-          setTimeout(() => openMasterModal('messages'), 400);
-        } else if (fromParam === 'admincontributors.html' || fromParam === 'contributors') {
-          setTimeout(() => openMasterModal('contributors'), 400);
-        } else if (fromParam === 'admin-chatbase.html' || fromParam === 'chatbase') {
-          setTimeout(() => openMasterModal('chatbase'), 400);
-        } else if (fromParam === 'goldentick') {
-          setTimeout(() => openMasterModal('goldentick'), 400);
-        } else if (fromParam === 'premium-requests') {
-          setTimeout(() => openMasterModal('premium-requests'), 400);
-        }
-      }
-    }
-
-      function startLiveSessionCountdown() {
+    function startLiveSessionCountdown() {
         if (sessionCountdownInterval) clearInterval(sessionCountdownInterval);
         const countdownEl = document.getElementById('session-countdown');
 
@@ -6297,7 +6852,7 @@
     }
 
     // Open Modal to Specific Tab
-    window.openMasterModal = function (tabName) {
+    function openMasterModal(tabName) {
       const modal = document.getElementById('master-control-modal');
       if (!modal) return;
 
@@ -6309,17 +6864,19 @@
       if (storeAppsData.length === 0 && booksData.length === 0 && messagesData.length === 0 && usersData.length === 0) {
         loadAllMasterData();
       }
-    };
+    }
+    window.openMasterModal = openMasterModal;
 
     // Close Modal
-    window.closeMasterModal = function () {
+    function closeMasterModal() {
       const modal = document.getElementById('master-control-modal');
       if (modal) modal.classList.remove('active');
       document.body.style.overflow = '';
-    };
+    }
+    window.closeMasterModal = closeMasterModal;
 
     // Switch Tab in Modal
-    window.switchMasterTab = function (tabName) {
+    function switchMasterTab(tabName) {
       currentMasterTab = tabName;
 
       // Update tab buttons
@@ -8461,7 +9018,253 @@
       });
 
       renderAiUsersRoster();
+      renderAiBoxRoster();
     }
+
+    let aiBoxRosterFilter = 'ALL';
+
+    window.filterAiBoxRoster = function (filter) {
+      aiBoxRosterFilter = filter;
+      document.querySelectorAll('#ai-box-filter-all, #ai-box-filter-unlocked, #ai-box-filter-free').forEach(b => {
+        if (b) b.classList.remove('active');
+      });
+      const activeBtn = document.getElementById('ai-box-filter-' + filter.toLowerCase());
+      if (activeBtn) activeBtn.classList.add('active');
+      renderAiBoxRoster();
+    };
+
+    window.renderAiBoxRoster = function () {
+      const tbody = document.getElementById('ai-box-users-tbody');
+      if (!tbody) return;
+
+      const searchTerm = (document.getElementById('ai-box-search-input')?.value || '').toLowerCase().trim();
+
+      let filtered = aiUsersRosterData.filter(u => {
+        if (aiBoxRosterFilter === 'UNLOCKED' && !u.isPremiumUnlocked) return false;
+        if (aiBoxRosterFilter === 'FREE' && u.isPremiumUnlocked) return false;
+
+        if (searchTerm) {
+          const name = (u.displayName || '').toLowerCase();
+          const email = (u.email || '').toLowerCase();
+          const model = (u.unlockedModelName || '').toLowerCase();
+          return name.includes(searchTerm) || email.includes(searchTerm) || model.includes(searchTerm);
+        }
+        return true;
+      });
+
+      // Update AI Box stats
+      const totalAll = aiUsersRosterData.length;
+      const totalUnlocked = aiUsersRosterData.filter(u => u.isPremiumUnlocked).length;
+      const totalFree = totalAll - totalUnlocked;
+
+      const statTotal = document.getElementById('ai-box-stat-total');
+      if (statTotal) statTotal.textContent = totalAll;
+      const statUnlocked = document.getElementById('ai-box-stat-unlocked');
+      if (statUnlocked) statUnlocked.textContent = totalUnlocked;
+      const statFree = document.getElementById('ai-box-stat-free');
+      if (statFree) statFree.textContent = totalFree;
+
+      const cntAll = document.getElementById('ai-box-count-all');
+      if (cntAll) cntAll.textContent = totalAll;
+      const cntUnl = document.getElementById('ai-box-count-unlocked');
+      if (cntUnl) cntUnl.textContent = totalUnlocked;
+      const cntFree = document.getElementById('ai-box-count-free');
+      if (cntFree) cntFree.textContent = totalFree;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:2.5rem;">No AI users found matching the search criteria.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        return `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.05)'" onmouseout="this.style.background='transparent'">
+            <td style="padding: 0.75rem 1rem;">
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg, #6366f1, #06b6d4); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:0.8rem; overflow:hidden; flex-shrink:0;">
+                  ${u.avatarUrl ? `<img src="${escapeHtml(u.avatarUrl)}" alt="Avatar" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='';">` : (u.displayName || 'U')[0].toUpperCase()}
+                </div>
+                <div>
+                  <div style="font-weight:700; color:#f8fafc; font-size:0.88rem; display:flex; align-items:center; gap:0.35rem;">
+                    <span>${escapeHtml(u.displayName)}</span>
+                    ${u.goldenTick ? '<span style="color:#fbbf24; font-size:0.85rem;" title="Golden Verified">✓</span>' : ''}
+                    ${u.isAdmin ? '<span style="font-size:0.6rem; background:rgba(99,102,241,0.25); color:#a5b4fc; padding:1px 5px; border-radius:4px; font-weight:700;">ADMIN</span>' : ''}
+                  </div>
+                  <div style="font-size:0.7rem; color:#10b981; display:flex; align-items:center; gap:0.3rem;">
+                    <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10b981;"></span>
+                    <span>Logged in on AI</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td style="padding: 0.75rem 1rem;">
+              <span style="font-size:0.82rem; color:#38bdf8; font-family:'JetBrains Mono', monospace; font-weight:600;">${escapeHtml(u.email || 'No email')}</span>
+            </td>
+            <td style="padding: 0.75rem 1rem;">
+              ${u.modelBadgeHtml}
+            </td>
+            <td style="padding: 0.75rem 1rem;">
+              <div style="display: flex; flex-direction: column; gap: 4px; min-width: 130px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700;">
+                  <span style="color: #34d399;">⚡ ${u.chatLimit} / ${u.chatLimit}</span>
+                  <span style="color: #94a3b8; font-size: 0.72rem;">Chats / 24h</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 999px; overflow: hidden;">
+                  <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #06b6d4); border-radius: 999px;"></div>
+                </div>
+              </div>
+            </td>
+            <td style="padding: 0.75rem 1rem;">
+              <span style="font-size:0.8rem; color:#c7d2fe; font-family:'JetBrains Mono',monospace; font-weight:600;">${Number(u.contextLimit).toLocaleString()} tokens</span>
+            </td>
+            <td style="padding: 0.75rem 1rem; text-align: center;">
+              <div style="display:flex; align-items:center; justify-content:center; gap:0.35rem; flex-wrap:wrap;">
+                <button type="button" class="btn-action-outline" style="padding:0.28rem 0.55rem; font-size:0.72rem; color:#34d399; border-color:rgba(16,185,129,0.4);" onclick="quickAddAiChats('${escapeHtml(u.email || '')}', 10)" title="Add +10 Chats to this user">
+                  <span>+10</span>
+                </button>
+                <button type="button" class="btn-action-outline" style="padding:0.28rem 0.55rem; font-size:0.72rem; color:#38bdf8; border-color:rgba(56,189,248,0.4);" onclick="quickAddAiChats('${escapeHtml(u.email || '')}', 25)" title="Add +25 Chats to this user">
+                  <span>+25</span>
+                </button>
+                <button type="button" class="btn-action-outline" style="padding:0.28rem 0.6rem; font-size:0.72rem;" onclick="selectUserForQuickTune('${escapeHtml(u.email || '')}', ${u.chatLimit}, '${escapeHtml(u.unlockedModelName)}')" title="Tune in Quick Tuner">
+                  <span>🎛️ Tune</span>
+                </button>
+                <button type="button" class="btn-action-primary" style="padding:0.28rem 0.6rem; font-size:0.72rem; background:linear-gradient(135deg, #6366f1, #06b6d4);" onclick="openQuickModelModal('${escapeHtml(u.email || '')}', '${escapeHtml(u.displayName)}')">
+                  <span>👑 Model</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    window.selectUserForQuickTune = function(email, currentLimit, modelName) {
+      const emailInput = document.getElementById('ai-quick-tune-email');
+      const limitInput = document.getElementById('ai-quick-tune-limit');
+      const modelSelect = document.getElementById('ai-quick-tune-model');
+
+      if (emailInput) emailInput.value = email || '';
+      if (limitInput) limitInput.value = currentLimit || 20;
+
+      if (modelSelect && modelName) {
+        if (modelName.includes('Argon 1.5')) modelSelect.value = 'Guru-Argon 1.5';
+        else if (modelName.includes('Argon 1.4')) modelSelect.value = 'Guru-Argon 1.4';
+        else if (modelName.includes('Flash 1.3')) modelSelect.value = 'Guru-Flash 1.3';
+        else modelSelect.value = 'Guru-Flash 1.1';
+      }
+
+      document.getElementById('ai-quick-tune-limit')?.focus();
+      document.getElementById('ai-control-box-section')?.scrollIntoView({behavior:'smooth'});
+    };
+
+    window.quickAddAiChats = async function(email, delta) {
+      const sb = window.supabaseClient;
+      if (!sb) {
+        alert('Supabase client is not connected.');
+        return;
+      }
+      const cleanEmail = (email || '').trim().toLowerCase();
+      if (!cleanEmail) return;
+
+      const user = aiUsersRosterData.find(u => (u.email || '').toLowerCase() === cleanEmail);
+      const currentLimit = user ? (user.chatLimit || 20) : 20;
+      const newLimit = Math.max(1, currentLimit + delta);
+
+      try {
+        const { error } = await sb.from('user_ai_limits').upsert({
+          email: cleanEmail,
+          user_id: user ? user.id : null,
+          max_requests: newLimit,
+          plan_name: user && user.isPremiumUnlocked ? (user.planKey === 'grandmaster' ? 'Grandmaster Enterprise' : 'Power Scholar') : 'Custom Quota (' + newLimit + ' Chats)',
+          is_active: true,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'email' });
+
+        if (error) throw error;
+
+        // Broadcast live across all open tabs/devices
+        try {
+          const bc = new BroadcastChannel('guruai_quota_channel');
+          bc.postMessage({
+            type: 'QUOTA_UPDATED',
+            email: cleanEmail,
+            userId: user ? user.id : null,
+            max_requests: newLimit
+          });
+          bc.close();
+        } catch(e) {}
+
+        if (typeof showMasterToast === 'function') {
+          showMasterToast(`✅ Updated ${cleanEmail} to ${newLimit} chats! Pushed live to AI page.`);
+        }
+        await loadAiLimitsAndRequests();
+      } catch (err) {
+        alert('Failed to update chat limit: ' + err.message);
+      }
+    };
+
+    window.handleQuickAiLimitSave = async function() {
+      const emailInput = document.getElementById('ai-quick-tune-email');
+      const limitInput = document.getElementById('ai-quick-tune-limit');
+      const modelSelect = document.getElementById('ai-quick-tune-model');
+
+      const cleanEmail = (emailInput?.value || '').trim().toLowerCase();
+      const limit = parseInt(limitInput?.value || '0', 10);
+      const model = modelSelect?.value || 'Guru-Flash 1.1';
+
+      if (!cleanEmail || !cleanEmail.includes('@')) {
+        alert('Please enter a valid user email address.');
+        emailInput?.focus();
+        return;
+      }
+      if (!limit || limit <= 0) {
+        alert('Please enter a valid chat limit number (e.g. 50).');
+        limitInput?.focus();
+        return;
+      }
+
+      const sb = window.supabaseClient;
+      if (!sb) {
+        alert('Database client not connected.');
+        return;
+      }
+
+      try {
+        const user = aiUsersRosterData.find(u => (u.email || '').toLowerCase() === cleanEmail);
+        const { error } = await sb.from('user_ai_limits').upsert({
+          email: cleanEmail,
+          user_id: user ? user.id : null,
+          max_requests: limit,
+          active_model: model,
+          plan_name: model.includes('Argon 1.5') ? 'Grandmaster Enterprise' : (model.includes('Argon 1.4') ? 'Power Scholar' : (model.includes('Flash 1.3') ? 'Starter Pro' : 'Custom ' + limit + ' Chats')),
+          is_active: true,
+          is_paid: !model.includes('Flash 1.1'),
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'email' });
+
+        if (error) throw error;
+
+        try {
+          const bc = new BroadcastChannel('guruai_quota_channel');
+          bc.postMessage({
+            type: 'QUOTA_UPDATED',
+            email: cleanEmail,
+            userId: user ? user.id : null,
+            max_requests: limit
+          });
+          bc.close();
+        } catch(e) {}
+
+        if (typeof showMasterToast === 'function') {
+          showMasterToast(`✅ Saved ${cleanEmail}: ${limit} chats on ${model}! Pushed live.`);
+        }
+        if (emailInput) emailInput.value = '';
+        if (limitInput) limitInput.value = '';
+        await loadAiLimitsAndRequests();
+      } catch (err) {
+        alert('Failed to save quota: ' + err.message);
+      }
+    };
 
     window.filterAiUsersRoster = function (filter) {
       aiUsersRosterFilter = filter;

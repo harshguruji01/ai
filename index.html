@@ -2663,66 +2663,80 @@
       const modal = document.getElementById('userDashboardModal');
       if (!modal) return;
       
-      const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
-      const name = isMember ? (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0]) : 'Guest Explorer';
-      const email = isMember ? currentUser.email : 'guest@webguruji.online';
-      const tierBadge = document.getElementById('dashModalTierBadge');
-      const avatarEl = document.getElementById('dashModalAvatar');
-      const nameEl = document.getElementById('dashModalName');
-      const emailEl = document.getElementById('dashModalEmail');
-      const authBtn = document.getElementById('dashModalAuthBtn');
-      const reqCount = document.getElementById('dashModalRequestsCount');
-      const reqMax = document.getElementById('dashModalRequestsMax');
-      const reqBar = document.getElementById('dashModalRequestsBar');
-      const imgCount = document.getElementById('dashModalImagesCount');
+      try {
+        const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
+        const name = isMember ? (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0]) : 'Guest Explorer';
+        const email = isMember ? currentUser.email : 'guest@webguruji.online';
+        const tierBadge = document.getElementById('dashModalTierBadge');
+        const avatarEl = document.getElementById('dashModalAvatar');
+        const nameEl = document.getElementById('dashModalName');
+        const emailEl = document.getElementById('dashModalEmail');
+        const authBtn = document.getElementById('dashModalAuthBtn');
+        const reqCount = document.getElementById('dashModalRequestsCount');
+        const reqMax = document.getElementById('dashModalRequestsMax');
+        const reqBar = document.getElementById('dashModalRequestsBar');
+        const imgCount = document.getElementById('dashModalImagesCount');
 
-      if (nameEl) nameEl.textContent = name;
-      if (emailEl) emailEl.textContent = email;
+        if (nameEl) nameEl.textContent = name;
+        if (emailEl) emailEl.textContent = email;
 
-      const avatarUrl = isMember ? (currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture || currentUser.user_metadata?.avatar) : null;
-      if (avatarEl) {
-        if (avatarUrl) {
-          avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${name}" class="w-full h-full object-cover rounded-2xl" />`;
+        const avatarUrl = isMember ? (currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture || currentUser.user_metadata?.avatar) : null;
+        if (avatarEl) {
+          if (avatarUrl) {
+            avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${name}" class="w-full h-full object-cover rounded-2xl" />`;
+          } else {
+            avatarEl.textContent = name[0].toUpperCase();
+          }
+        }
+
+        if (isMember) {
+          if (tierBadge) {
+            tierBadge.textContent = 'Active Member';
+            tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold';
+          }
+          if (authBtn) {
+            authBtn.textContent = 'Sign Out';
+            authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-900/60 transition';
+          }
+          if (reqCount) reqCount.textContent = Math.max(0, 20 - (chatCount || 0)).toString();
+          if (reqMax) reqMax.textContent = '/ 20';
+          if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((20 - (chatCount || 0)) / 20) * 100)) + '%';
         } else {
-          avatarEl.textContent = name[0].toUpperCase();
+          if (tierBadge) {
+            tierBadge.textContent = 'Guest Tier (8/8)';
+            tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold';
+          }
+          if (authBtn) {
+            authBtn.textContent = 'Sign In';
+            authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition';
+          }
+          if (reqCount) reqCount.textContent = Math.max(0, 8 - (chatCount || 0)).toString();
+          if (reqMax) reqMax.textContent = '/ 8';
+          if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((8 - (chatCount || 0)) / 8) * 100)) + '%';
         }
-      }
 
-      if (isMember) {
-        if (tierBadge) {
-          tierBadge.textContent = 'Active Member';
-          tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold';
-        }
-        if (authBtn) {
-          authBtn.textContent = 'Sign Out';
-          authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-900/60 transition';
-        }
-        if (reqCount) reqCount.textContent = Math.max(0, 20 - (chatCount || 0)).toString();
-        if (reqMax) reqMax.textContent = '/ 20';
-        if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((20 - (chatCount || 0)) / 20) * 100)) + '%';
-      } else {
-        if (tierBadge) {
-          tierBadge.textContent = 'Guest Tier (8/8)';
-          tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold';
-        }
-        if (authBtn) {
-          authBtn.textContent = 'Sign In';
-          authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition';
-        }
-        if (reqCount) reqCount.textContent = Math.max(0, 8 - (chatCount || 0)).toString();
-        if (reqMax) reqMax.textContent = '/ 8';
-        if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((8 - (chatCount || 0)) / 8) * 100)) + '%';
+        let imgRemaining = isMember ? 5 : 0;
+        try {
+          if (typeof getImageQuota === 'function') {
+            const q = getImageQuota();
+            if (q && typeof q.remaining === 'number') imgRemaining = q.remaining;
+          }
+        } catch (e) {}
+        if (imgCount) imgCount.textContent = imgRemaining.toString();
+      } catch (err) {
+        console.warn('Dashboard modal render notice:', err);
       }
-
-      const imgQuota = getStoredImageQuota();
-      if (imgCount) imgCount.textContent = (imgQuota?.remaining ?? (isMember ? 5 : 0)).toString();
 
       modal.classList.remove('hidden');
+      modal.style.display = 'flex';
     }
 
     function closeUserDashboardModal() {
       const modal = document.getElementById('userDashboardModal');
-      if (modal) modal.classList.add('hidden');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
     }
 
     window.openUserDashboardModal = openUserDashboardModal;
