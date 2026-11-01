@@ -3495,7 +3495,7 @@
       </p>
 
       <!-- Gate Pass Form -->
-      <form id="admin-gate-pass-form" onsubmit="handleGatePassSubmit(event); return false;">
+      <form id="admin-gate-pass-form" action="javascript:void(0);" onsubmit="event.preventDefault(); handleGatePassSubmit(event); return false;">
         <div class="gate-form-group">
           <label class="gate-label" for="input-admin-email">Private Mail</label>
           <div class="gate-input-wrapper">
@@ -3513,7 +3513,7 @@
           <div class="gate-error" id="gate-error-msg" style="display: none;"></div>
         </div>
 
-        <button type="submit" class="gate-btn" id="btn-submit-gate-pass">
+        <button type="button" class="gate-btn" id="btn-submit-gate-pass" onclick="handleGatePassSubmit(event)">
           <span>Verify Gate Pass &amp; Unlock</span>
           <span>🔓</span>
         </button>
@@ -6045,7 +6045,11 @@
           return false;
         }
 
-        if (AUTHORIZED_HASHES.includes(token) || token === EXPECTED_HASH) {
+        const isKnownMasterToken = AUTHORIZED_HASHES.includes(token) || token === EXPECTED_HASH;
+        const isKnownSubadminToken = (token && String(token).startsWith('subadmin_token_')) || sessionStorage.getItem('is_subadmin_readonly') === 'true';
+        const isMasterAuthFlag = sessionStorage.getItem('hg_master_admin_authenticated') === 'true';
+
+        if (isKnownMasterToken || isKnownSubadminToken || isMasterAuthFlag) {
           return true;
         }
       } catch (e) { }
@@ -6265,7 +6269,8 @@
 
       tbody.innerHTML = logs.map(l => {
         let statusStyle = 'color: #34d399;';
-        if (l.status.includes('Denied') || l.status.includes('Blocked') || l.status.includes('Failed')) statusStyle = 'color: #f87171; font-weight: 700;';
+        const st = String(l && l.status ? l.status : '');
+        if (st.includes('Denied') || st.includes('Blocked') || st.includes('Failed')) statusStyle = 'color: #f87171; font-weight: 700;';
         return `
           <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
             <td style="padding: 0.5rem 0.75rem; font-weight: 600; color: #fff; font-family: monospace;">${escapeHtml(l.email)}</td>
@@ -6283,138 +6288,152 @@
 
     async function handleGatePassSubmit(e) {
       if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      const emailInput = document.getElementById('input-admin-email');
-      const idInput = document.getElementById('input-admin-id');
-      const errorEl = document.getElementById('gate-error-msg');
-      const submitBtn = document.getElementById('btn-submit-gate-pass');
+      try {
+        const emailInput = document.getElementById('input-admin-email');
+        const idInput = document.getElementById('input-admin-id');
+        const errorEl = document.getElementById('gate-error-msg');
+        const submitBtn = document.getElementById('btn-submit-gate-pass');
 
-      if (errorEl) errorEl.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'none';
 
-      const enteredEmail = (emailInput?.value || '').trim().toLowerCase();
-      const enteredId = (idInput?.value || '').trim();
+        const enteredEmail = (emailInput?.value || '').trim().toLowerCase();
+        const enteredId = (idInput?.value || '').trim();
 
-      if (!enteredEmail || !enteredId) {
-        if (errorEl) {
-          errorEl.textContent = '⚠️ Please enter both Private Mail and Secret ID.';
-          errorEl.style.display = 'block';
-        }
-        return false;
-      }
-
-      // 1. Direct Master Admin check (Harsh Patel)
-      const isDirectMaster = (enteredEmail === 'harshguruji01@gmail.com' || enteredEmail === 'harshguruji01@gmail.commit') && enteredId === '2547277654';
-
-      // 2. Subadmin Credentials check
-      let isSubadmin = false;
-      let subadminUser = null;
-      if (!isDirectMaster) {
-        const subadmins = getStoredSubadmins();
-        subadminUser = subadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail && s.password === enteredId);
-        if (subadminUser) {
-          if (subadminUser.status === 'banned') {
-            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Banned)');
-            if (errorEl) {
-              errorEl.textContent = '⛔ Access Denied: This subadmin account has been permanently banned by Master Admin.';
-              errorEl.style.display = 'block';
-            }
-            return false;
-          }
-          if (subadminUser.status === 'suspended') {
-            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Suspended)');
-            if (errorEl) {
-              errorEl.textContent = '⚠️ Access Paused: This subadmin account is currently suspended by Master Admin.';
-              errorEl.style.display = 'block';
-            }
-            return false;
-          }
-          isSubadmin = true;
-        }
-      }
-
-      let computedHash = '';
-      if (isDirectMaster) {
-        computedHash = enteredEmail.includes('commit')
-          ? 'e5b44bce70dbf185896bee1ccb5cae48eb8c2097c5219585032d1683eaae06aa'
-          : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86';
-      } else if (!isSubadmin) {
-        const lockoutUntil = parseInt(sessionStorage.getItem('hg_gate_lockout') || localStorage.getItem('hg_gate_lockout') || '0', 10);
-        if (Date.now() < lockoutUntil) {
-          const remMins = Math.ceil((lockoutUntil - Date.now()) / 60000);
+        if (!enteredEmail || !enteredId) {
           if (errorEl) {
-            errorEl.textContent = `⛔ Security Gate is temporarily locked due to multiple failed attempts. Please retry in ${remMins}m.`;
+            errorEl.textContent = '⚠️ Please enter both Private Mail and Secret ID.';
             errorEl.style.display = 'block';
           }
           return false;
         }
-        computedHash = await hashAdminCredentials(enteredEmail, enteredId);
-      }
 
-      if (isDirectMaster || isSubadmin || AUTHORIZED_HASHES.includes(computedHash)) {
-        // Clear all failed lockouts on correct match
-        sessionStorage.removeItem('hg_gate_failed');
-        sessionStorage.removeItem('hg_gate_lockout');
-        localStorage.removeItem('hg_gate_failed');
-        localStorage.removeItem('hg_gate_lockout');
+        // 1. Direct Master Admin check (Harsh Patel)
+        const isDirectMaster = (
+          enteredEmail === 'harshguruji01@gmail.com' ||
+          enteredEmail === 'harshguruji01' ||
+          enteredEmail === 'harshguruji01@gmail.commit'
+        ) && enteredId === '2547277654';
 
-        const now = Date.now().toString();
-        const finalHash = computedHash || (isSubadmin ? 'subadmin_token_' + Date.now() : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86');
-
-        sessionStorage.setItem(AUTH_STATE_KEY, 'true');
-        sessionStorage.setItem(AUTH_TOKEN_KEY, finalHash);
-        sessionStorage.setItem(AUTH_TIME_KEY, now);
-        sessionStorage.setItem('admin_apk_email', enteredEmail);
-        sessionStorage.setItem('hg_master_admin_authenticated', 'true');
-        sessionStorage.setItem('admin_chatbase_auth', 'true');
-        sessionStorage.setItem('admin_contacts_auth', 'true');
-        sessionStorage.setItem('hg_contributor_admin_unlocked', 'true');
-
-        if (isSubadmin) {
-          sessionStorage.setItem('is_subadmin_readonly', 'true');
-          sessionStorage.setItem('subadmin_role', subadminUser.role || 'Viewer');
-          recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success');
-        } else {
-          sessionStorage.removeItem('is_subadmin_readonly');
-          recordLoginAuditLog(enteredEmail, enteredId, 'Master Admin (Harsh Patel)', 'Success');
-        }
-
-        try {
-          localStorage.setItem(AUTH_STATE_KEY, 'true');
-          localStorage.setItem(AUTH_TOKEN_KEY, finalHash);
-          localStorage.setItem(AUTH_TIME_KEY, now);
-          localStorage.setItem('admin_apk_email', enteredEmail);
-          localStorage.setItem('hg_master_admin_authenticated', 'true');
-        } catch(e) {}
-
-        const sessionDisplay = document.getElementById('admin-session-display');
-        if (sessionDisplay) sessionDisplay.textContent = `Authenticated: ${enteredEmail}${isSubadmin ? ' (Subadmin - Read Only)' : ''}`;
-
-        try { if (window.setAllAdminSessions) window.setAllAdminSessions(); } catch(e) {}
-        try { if (window.setupAdminMasterLinks) window.setupAdminMasterLinks(); } catch(e) {}
-
-        unlockDashboard();
-        return false;
-      } else {
-        recordLoginAuditLog(enteredEmail, enteredId, 'Unknown', 'Failed (Invalid credentials)');
-        let fails = parseInt(sessionStorage.getItem('hg_gate_failed') || '0', 10) + 1;
-        sessionStorage.setItem('hg_gate_failed', fails.toString());
-
-        if (fails >= 3) {
-          const lockDuration = 15 * 60 * 1000;
-          sessionStorage.setItem('hg_gate_lockout', (Date.now() + lockDuration).toString());
-          if (errorEl) {
-            errorEl.textContent = '⛔ 3 failed attempts: Security Gate is locked for 15 minutes to prevent unauthorized access.';
-            errorEl.style.display = 'block';
-          }
-        } else {
-          if (errorEl) {
-            errorEl.textContent = `❌ Access Denied: Invalid Private Mail or Secret ID. (${3 - fails} attempts remaining)`;
-            errorEl.style.display = 'block';
+        // 2. Subadmin Credentials check
+        let isSubadmin = false;
+        let subadminUser = null;
+        if (!isDirectMaster) {
+          const subadmins = getStoredSubadmins();
+          subadminUser = subadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail && s.password === enteredId);
+          if (subadminUser) {
+            if (subadminUser.status === 'banned') {
+              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Banned)');
+              if (errorEl) {
+                errorEl.textContent = '⛔ Access Denied: This subadmin account has been permanently banned by Master Admin.';
+                errorEl.style.display = 'block';
+              }
+              return false;
+            }
+            if (subadminUser.status === 'suspended') {
+              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Suspended)');
+              if (errorEl) {
+                errorEl.textContent = '⚠️ Access Paused: This subadmin account is currently suspended by Master Admin.';
+                errorEl.style.display = 'block';
+              }
+              return false;
+            }
+            isSubadmin = true;
           }
         }
 
-        if (idInput) {
-          idInput.value = '';
-          idInput.focus();
+        let computedHash = '';
+        if (isDirectMaster) {
+          computedHash = enteredEmail.includes('commit')
+            ? 'e5b44bce70dbf185896bee1ccb5cae48eb8c2097c5219585032d1683eaae06aa'
+            : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86';
+        } else if (!isSubadmin) {
+          const lockoutUntil = parseInt(sessionStorage.getItem('hg_gate_lockout') || localStorage.getItem('hg_gate_lockout') || '0', 10);
+          if (Date.now() < lockoutUntil) {
+            const remMins = Math.ceil((lockoutUntil - Date.now()) / 60000);
+            if (errorEl) {
+              errorEl.textContent = `⛔ Security Gate is temporarily locked due to multiple failed attempts. Please retry in ${remMins}m.`;
+              errorEl.style.display = 'block';
+            }
+            return false;
+          }
+          computedHash = await hashAdminCredentials(enteredEmail, enteredId);
+        }
+
+        if (isDirectMaster || isSubadmin || AUTHORIZED_HASHES.includes(computedHash)) {
+          // Clear all failed lockouts on correct match
+          sessionStorage.removeItem('hg_gate_failed');
+          sessionStorage.removeItem('hg_gate_lockout');
+          localStorage.removeItem('hg_gate_failed');
+          localStorage.removeItem('hg_gate_lockout');
+
+          const now = Date.now().toString();
+          const finalHash = computedHash || (isSubadmin ? 'subadmin_token_' + Date.now() : '7e78eb6fb8144145d73ddc52f80609f2a7150757b8f8c19c7afa1950b0e46b86');
+
+          sessionStorage.setItem(AUTH_STATE_KEY, 'true');
+          sessionStorage.setItem(AUTH_TOKEN_KEY, finalHash);
+          sessionStorage.setItem(AUTH_TIME_KEY, now);
+          sessionStorage.setItem('admin_apk_email', enteredEmail);
+          sessionStorage.setItem('hg_master_admin_authenticated', 'true');
+          sessionStorage.setItem('admin_chatbase_auth', 'true');
+          sessionStorage.setItem('admin_contacts_auth', 'true');
+          sessionStorage.setItem('hg_contributor_admin_unlocked', 'true');
+
+          if (isSubadmin) {
+            sessionStorage.setItem('is_subadmin_readonly', 'true');
+            sessionStorage.setItem('subadmin_role', subadminUser.role || 'Viewer');
+            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success');
+          } else {
+            sessionStorage.removeItem('is_subadmin_readonly');
+            recordLoginAuditLog(enteredEmail, enteredId, 'Master Admin (Harsh Patel)', 'Success');
+          }
+
+          try {
+            localStorage.setItem(AUTH_STATE_KEY, 'true');
+            localStorage.setItem(AUTH_TOKEN_KEY, finalHash);
+            localStorage.setItem(AUTH_TIME_KEY, now);
+            localStorage.setItem('admin_apk_email', enteredEmail);
+            localStorage.setItem('hg_master_admin_authenticated', 'true');
+          } catch(e) {}
+
+          const sessionDisplay = document.getElementById('admin-session-display');
+          if (sessionDisplay) sessionDisplay.textContent = `Authenticated: ${enteredEmail}${isSubadmin ? ' (Subadmin - Read Only)' : ''}`;
+
+          try { if (window.setAllAdminSessions) window.setAllAdminSessions(); } catch(e) {}
+          try { if (window.setupAdminMasterLinks) window.setupAdminMasterLinks(); } catch(e) {}
+
+          unlockDashboard();
+          return false;
+        } else {
+          recordLoginAuditLog(enteredEmail, enteredId, 'Unknown', 'Failed (Invalid credentials)');
+          let fails = parseInt(sessionStorage.getItem('hg_gate_failed') || '0', 10) + 1;
+          sessionStorage.setItem('hg_gate_failed', fails.toString());
+
+          if (fails >= 3) {
+            const lockDuration = 15 * 60 * 1000;
+            sessionStorage.setItem('hg_gate_lockout', (Date.now() + lockDuration).toString());
+            if (errorEl) {
+              errorEl.textContent = '⛔ 3 failed attempts: Security Gate is locked for 15 minutes to prevent unauthorized access.';
+              errorEl.style.display = 'block';
+            }
+          } else {
+            if (errorEl) {
+              errorEl.textContent = `❌ Access Denied: Invalid Private Mail or Secret ID. (${3 - fails} attempts remaining)`;
+              errorEl.style.display = 'block';
+            }
+          }
+
+          if (idInput) {
+            idInput.value = '';
+            idInput.focus();
+          }
+          return false;
+        }
+      } catch (err) {
+        console.error('handleGatePassSubmit error:', err);
+        const errorEl = document.getElementById('gate-error-msg');
+        if (errorEl) {
+          errorEl.textContent = '❌ An error occurred during verification. Please try again.';
+          errorEl.style.display = 'block';
         }
         return false;
       }
@@ -6422,46 +6441,49 @@
     window.handleGatePassSubmit = handleGatePassSubmit;
 
     function unlockDashboard() {
-      const securityGate = document.getElementById('security-gate');
-      const adminDashboard = document.getElementById('admin-dashboard');
-      if (securityGate) securityGate.style.display = 'none';
-      if (adminDashboard) adminDashboard.style.display = 'block';
+      try {
+        const securityGate = document.getElementById('security-gate');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        if (securityGate) securityGate.style.display = 'none';
+        if (adminDashboard) adminDashboard.style.display = 'block';
 
-      // Enforce Read-Only mode for subadmins
-      const isSubadmin = sessionStorage.getItem('is_subadmin_readonly') === 'true';
-      const subDeskBox = document.getElementById('subadmin-desk-box');
-      if (isSubadmin) {
-        // Hide subadmin creation pass from subadmin
-        const createCard = document.querySelector('form[onsubmit*="handleCreateSubadminSubmit"]')?.closest('div');
-        if (createCard) createCard.style.display = 'none';
-      }
-
-      try { startLiveSessionCountdown(); } catch(e) {}
-      try { if (window.setupAdminMasterLinks) window.setupAdminMasterLinks(); } catch(e) {}
-      try { loadAllMasterData(); } catch(e) {}
-      try { renderSubadminsTable(); } catch(e) {}
-      try { renderLoginAuditLogs(); } catch(e) {}
-
-      // Handle query redirect if present
-      const fromParam = new URLSearchParams(window.location.search).get('from');
-      if (fromParam) {
-        if (fromParam === 'adminbooks.html' || fromParam === 'books') {
-          setTimeout(() => openMasterModal('books'), 400);
-        } else if (fromParam === 'adminapkupload.html' || fromParam === 'store') {
-          setTimeout(() => openMasterModal('store'), 400);
-        } else if (fromParam === 'admin-contacts.html' || fromParam === 'messages') {
-          setTimeout(() => openMasterModal('messages'), 400);
-        } else if (fromParam === 'admincontributors.html' || fromParam === 'contributors') {
-          setTimeout(() => openMasterModal('contributors'), 400);
-        } else if (fromParam === 'admin-chatbase.html' || fromParam === 'chatbase') {
-          setTimeout(() => openMasterModal('chatbase'), 400);
-        } else if (fromParam === 'goldentick') {
-          setTimeout(() => openMasterModal('goldentick'), 400);
-        } else if (fromParam === 'premium-requests') {
-          setTimeout(() => openMasterModal('premium-requests'), 400);
-        } else if (fromParam === 'guruai' || fromParam === 'ai') {
-          setTimeout(() => openMasterModal('guruai'), 400);
+        // Enforce Read-Only mode for subadmins
+        const isSubadmin = sessionStorage.getItem('is_subadmin_readonly') === 'true';
+        if (isSubadmin) {
+          // Hide subadmin creation pass from subadmin
+          const createCard = document.querySelector('form[onsubmit*="handleCreateSubadminSubmit"]')?.closest('div');
+          if (createCard) createCard.style.display = 'none';
         }
+
+        try { startLiveSessionCountdown(); } catch(e) {}
+        try { if (window.setupAdminMasterLinks) window.setupAdminMasterLinks(); } catch(e) {}
+        try { loadAllMasterData(); } catch(e) {}
+        try { renderSubadminsTable(); } catch(e) {}
+        try { renderLoginAuditLogs(); } catch(e) {}
+
+        // Handle query redirect if present
+        const fromParam = new URLSearchParams(window.location.search).get('from');
+        if (fromParam) {
+          if (fromParam === 'adminbooks.html' || fromParam === 'books') {
+            setTimeout(() => openMasterModal('books'), 400);
+          } else if (fromParam === 'adminapkupload.html' || fromParam === 'store') {
+            setTimeout(() => openMasterModal('store'), 400);
+          } else if (fromParam === 'admin-contacts.html' || fromParam === 'messages') {
+            setTimeout(() => openMasterModal('messages'), 400);
+          } else if (fromParam === 'admincontributors.html' || fromParam === 'contributors') {
+            setTimeout(() => openMasterModal('contributors'), 400);
+          } else if (fromParam === 'admin-chatbase.html' || fromParam === 'chatbase') {
+            setTimeout(() => openMasterModal('chatbase'), 400);
+          } else if (fromParam === 'goldentick') {
+            setTimeout(() => openMasterModal('goldentick'), 400);
+          } else if (fromParam === 'premium-requests') {
+            setTimeout(() => openMasterModal('premium-requests'), 400);
+          } else if (fromParam === 'guruai' || fromParam === 'ai') {
+            setTimeout(() => openMasterModal('guruai'), 400);
+          }
+        }
+      } catch (err) {
+        console.error('unlockDashboard error:', err);
       }
     }
     window.unlockDashboard = unlockDashboard;
@@ -6483,12 +6505,13 @@
       const adminDashboard = document.getElementById('admin-dashboard');
       const gateForm = document.getElementById('admin-gate-pass-form');
       const btnLock = document.getElementById('btn-lock-session');
+      const emailInput = document.getElementById('input-admin-email');
+      const idInput = document.getElementById('input-admin-id');
 
       // Check if there is an active session under 1 hour
       if (checkActiveSession()) {
         unlockDashboard();
       } else {
-        clearAllAdminAuth();
         if (securityGate) securityGate.style.display = 'flex';
         if (adminDashboard) adminDashboard.style.display = 'none';
       }
@@ -6496,9 +6519,28 @@
       // Handle Gate Pass Submission
       if (gateForm) {
         gateForm.onsubmit = function(e) {
+          if (e && typeof e.preventDefault === 'function') e.preventDefault();
           handleGatePassSubmit(e);
           return false;
         };
+      }
+
+      if (emailInput) {
+        emailInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleGatePassSubmit(e);
+          }
+        });
+      }
+
+      if (idInput) {
+        idInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleGatePassSubmit(e);
+          }
+        });
       }
 
       // Lock / Logout button
@@ -6554,19 +6596,12 @@
       }
     }
 
-    // Automatically verify remaining time on window focus and tab visibility change
+    // Automatically verify remaining time on window tab visibility change
     document.addEventListener('visibilitychange', () => {
       const adminDashboard = document.getElementById('admin-dashboard');
       if (!document.hidden && adminDashboard && adminDashboard.style.display === 'block') {
-        if (!checkActiveSession()) {
-          triggerSessionLogout('⚠️ 1 Hour Session Expired: Auto-logout triggered. Please re-enter your Gate Pass.');
-        }
-      }
-    });
-    window.addEventListener('focus', () => {
-      const adminDashboard = document.getElementById('admin-dashboard');
-      if (adminDashboard && adminDashboard.style.display === 'block') {
-        if (!checkActiveSession()) {
+        const loginTime = parseInt(sessionStorage.getItem(AUTH_TIME_KEY) || localStorage.getItem(AUTH_TIME_KEY) || '0', 10);
+        if (loginTime && (Date.now() - loginTime) >= SESSION_MAX_MS) {
           triggerSessionLogout('⚠️ 1 Hour Session Expired: Auto-logout triggered. Please re-enter your Gate Pass.');
         }
       }
