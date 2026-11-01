@@ -6560,6 +6560,155 @@
       }
     };
 
+    // Subadmin Role Hierarchy Ladder: 4 -> 3 -> 2 -> 1
+    const SUBADMIN_ROLE_LADDER = [
+      { key: 'viewer', category: 4, name: 'Category 4 (Viewer / Read-Only)' },
+      { key: 'limits_only', category: 3, name: 'Category 3 (AI Limits Manager)' },
+      { key: 'apk_only', category: 2, name: 'Category 2 (APK Release Manager)' },
+      { key: 'ops_limits_apk', category: 1, name: 'Category 1 (Ops Manager - Limits & APK)' }
+    ];
+
+    function getLadderIndex(roleKey) {
+      if (!roleKey) return 0;
+      const clean = String(roleKey).toLowerCase().trim();
+      if (clean === 'ops_limits_apk' || clean === 'ops' || clean === 'editor') return 3;
+      if (clean === 'apk_only' || clean === 'apk') return 2;
+      if (clean === 'limits_only' || clean === 'limits') return 1;
+      return 0; // 'viewer' or any other
+    }
+
+    window.promoteSubadmin = function(id) {
+      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
+        alert('⛔ Access Denied: Action reserved exclusively for Master Admin.');
+        return;
+      }
+      const list = getStoredSubadmins();
+      const sub = list.find(s => s.id === id);
+      if (!sub) return;
+
+      const currIdx = getLadderIndex(sub.role);
+      if (currIdx >= SUBADMIN_ROLE_LADDER.length - 1) {
+        alert(`⭐ "${sub.name}" is already at the highest Category (${SUBADMIN_ROLE_LADDER[currIdx].name}). Cannot promote further.`);
+        return;
+      }
+
+      const nextItem = SUBADMIN_ROLE_LADDER[currIdx + 1];
+      const prevItem = SUBADMIN_ROLE_LADDER[currIdx];
+
+      if (!confirm(`Are you sure you want to PROMOTE "${sub.name}" (${sub.email})?\n\nFrom: ${prevItem.name}\nTo: ${nextItem.name}\n\nThis will grant higher operational permissions immediately.`)) {
+        return;
+      }
+
+      sub.role = nextItem.key;
+      saveStoredSubadmins(list);
+
+      try {
+        const bc = new BroadcastChannel('hg_admin_security_channel');
+        bc.postMessage({ type: 'SUBADMINS_UPDATED', list: list });
+      } catch(e) {}
+
+      renderSubadminsTable();
+      recordLoginAuditLog('harshguruji01@gmail.com', 'Master Gate', 'Master Admin', `Promoted ${sub.name} to ${nextItem.name}`);
+
+      if (typeof showMasterToast === 'function') {
+        showMasterToast(`🔼 Promoted ${sub.name} to ${nextItem.name}! Synced live to cloud.`, 'success');
+      }
+    };
+
+    window.demoteSubadmin = function(id) {
+      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
+        alert('⛔ Access Denied: Action reserved exclusively for Master Admin.');
+        return;
+      }
+      const list = getStoredSubadmins();
+      const sub = list.find(s => s.id === id);
+      if (!sub) return;
+
+      const currIdx = getLadderIndex(sub.role);
+      if (currIdx <= 0) {
+        alert(`⚠️ "${sub.name}" is already at the lowest Category (${SUBADMIN_ROLE_LADDER[currIdx].name}). Cannot demote further.`);
+        return;
+      }
+
+      const prevItem = SUBADMIN_ROLE_LADDER[currIdx - 1];
+      const currItem = SUBADMIN_ROLE_LADDER[currIdx];
+
+      if (!confirm(`Are you sure you want to DEMOTE "${sub.name}" (${sub.email})?\n\nFrom: ${currItem.name}\nTo: ${prevItem.name}\n\nThis will restrict their operational permissions to a lower tier immediately.`)) {
+        return;
+      }
+
+      sub.role = prevItem.key;
+      saveStoredSubadmins(list);
+
+      try {
+        const bc = new BroadcastChannel('hg_admin_security_channel');
+        bc.postMessage({ type: 'SUBADMINS_UPDATED', list: list });
+      } catch(e) {}
+
+      renderSubadminsTable();
+      recordLoginAuditLog('harshguruji01@gmail.com', 'Master Gate', 'Master Admin', `Demoted ${sub.name} to ${prevItem.name}`);
+
+      if (typeof showMasterToast === 'function') {
+        showMasterToast(`🔽 Demoted ${sub.name} to ${prevItem.name}! Synced live to cloud.`, 'warning');
+      }
+    };
+
+    window.changeSubadminRolePrompt = function(id) {
+      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
+        alert('⛔ Access Denied: Action reserved exclusively for Master Admin.');
+        return;
+      }
+      const list = getStoredSubadmins();
+      const sub = list.find(s => s.id === id);
+      if (!sub) return;
+
+      const currentIdx = getLadderIndex(sub.role);
+      const choice = prompt(
+        `Select Subadmin Category for "${sub.name}" (${sub.email}):\n\n` +
+        `1: Category 1 (Ops Manager - Payment, AI Limits & APK Upload)\n` +
+        `2: Category 2 (APK Release Manager - Upload & Releases Only)\n` +
+        `3: Category 3 (AI Limits Manager - AI Limits Quota Only)\n` +
+        `4: Category 4 (Viewer / Read-Only - Auditor - No Modifications)\n\n` +
+        `Enter 1, 2, 3, or 4:`,
+        (4 - currentIdx).toString()
+      );
+      if (!choice) return;
+
+      let newRole = 'viewer';
+      let catName = 'Category 4: Viewer / Read-Only';
+      if (choice.trim() === '1') {
+        newRole = 'ops_limits_apk';
+        catName = 'Category 1: Ops Manager (Limits & APK)';
+      } else if (choice.trim() === '2') {
+        newRole = 'apk_only';
+        catName = 'Category 2: APK Release Manager';
+      } else if (choice.trim() === '3') {
+        newRole = 'limits_only';
+        catName = 'Category 3: AI Limits Manager';
+      } else if (choice.trim() === '4') {
+        newRole = 'viewer';
+        catName = 'Category 4: Viewer / Read-Only';
+      } else {
+        alert('Invalid option selected.');
+        return;
+      }
+
+      sub.role = newRole;
+      saveStoredSubadmins(list);
+
+      try {
+        const bc = new BroadcastChannel('hg_admin_security_channel');
+        bc.postMessage({ type: 'SUBADMINS_UPDATED', list: list });
+      } catch(e) {}
+
+      renderSubadminsTable();
+      recordLoginAuditLog('harshguruji01@gmail.com', 'Master Gate', 'Master Admin', `Assigned ${catName} to ${sub.name}`);
+
+      if (typeof showMasterToast === 'function') {
+        showMasterToast(`🎖️ Assigned ${catName} to ${sub.name}! Synced live to cloud.`, 'success');
+      }
+    };
+
     function renderSubadminsTable() {
       const tbody = document.getElementById('subadmins-tbody');
       const badge = document.getElementById('subadmin-count-badge');
@@ -6581,13 +6730,14 @@
           statusBadge = '<span style="background:rgba(239,68,68,0.2); color:#f87171; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.7rem;">⛔ Banned</span>';
         }
 
-        let roleBadge = '<span style="background:rgba(255,255,255,0.08); color:#94a3b8; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;">Viewer (Read-Only)</span>';
+        const currIdx = getLadderIndex(s.role);
+        let roleBadge = '<span style="background:rgba(255,255,255,0.08); color:#94a3b8; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;">Cat 4: Viewer (Read-Only)</span>';
         if (s.role === 'ops_limits_apk') {
-          roleBadge = '<span style="background:rgba(99,102,241,0.25); color:#a5b4fc; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(99,102,241,0.4);">⚡ Ops (Limits &amp; APK)</span>';
+          roleBadge = '<span style="background:rgba(99,102,241,0.25); color:#a5b4fc; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(99,102,241,0.4);">Cat 1: Ops (Limits &amp; APK)</span>';
         } else if (s.role === 'apk_only') {
-          roleBadge = '<span style="background:rgba(16,185,129,0.25); color:#6ee7b7; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(16,185,129,0.4);">📦 APK Manager</span>';
+          roleBadge = '<span style="background:rgba(16,185,129,0.25); color:#6ee7b7; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(16,185,129,0.4);">Cat 2: APK Manager</span>';
         } else if (s.role === 'limits_only') {
-          roleBadge = '<span style="background:rgba(56,189,248,0.25); color:#7dd3fc; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(56,189,248,0.4);">🤖 AI Limits Only</span>';
+          roleBadge = '<span style="background:rgba(56,189,248,0.25); color:#7dd3fc; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(56,189,248,0.4);">Cat 3: AI Limits Only</span>';
         }
 
         return `
@@ -6604,7 +6754,20 @@
               ${statusBadge}
             </td>
             <td style="padding: 0.5rem 0.6rem; text-align: right;">
-              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.35rem; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.28rem; flex-wrap: wrap;">
+                ${currIdx < SUBADMIN_ROLE_LADDER.length - 1 ? `
+                  <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #34d399; border-color: rgba(16,185,129,0.4);" onclick="promoteSubadmin('${s.id}')" title="Promote to higher work tier (${SUBADMIN_ROLE_LADDER[currIdx + 1].name})">
+                    <span>🔼 Promote</span>
+                  </button>
+                ` : ''}
+                ${currIdx > 0 ? `
+                  <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #f59e0b; border-color: rgba(245,158,11,0.4);" onclick="demoteSubadmin('${s.id}')" title="Demote to lower work tier (${SUBADMIN_ROLE_LADDER[currIdx - 1].name})">
+                    <span>🔽 Demote</span>
+                  </button>
+                ` : ''}
+                <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #818cf8; border-color: rgba(129,140,248,0.4);" onclick="changeSubadminRolePrompt('${s.id}')" title="Directly set Category Role">
+                  <span>🎖️ Role</span>
+                </button>
                 <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #38bdf8; border-color: rgba(56,189,248,0.4);" onclick="changeSubadminPassword('${s.id}')" title="Change Secret Password for this subadmin">
                   <span>🔑 Pass</span>
                 </button>
@@ -7103,6 +7266,18 @@
                 alert('⛔ Your access has been revoked by Master Admin.');
                 clearAllAdminAuth();
                 location.reload();
+              }
+              // If role was promoted or demoted by Master Admin, update live session and re-render UI permissions
+              if (me && me.role) {
+                const oldRole = (sessionStorage.getItem('subadmin_role') || '').toLowerCase().trim();
+                const newRole = (me.role || '').toLowerCase().trim();
+                if (oldRole !== newRole) {
+                  sessionStorage.setItem('subadmin_role', newRole);
+                  unlockDashboard();
+                  if (typeof showMasterToast === 'function') {
+                    showMasterToast(`🎖️ Your Subadmin role has been updated to "${newRole}" by Master Admin!`, 'info');
+                  }
+                }
               }
             } else {
               renderSubadminsTable();
