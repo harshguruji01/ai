@@ -6435,6 +6435,10 @@
       if (!sub) return;
       sub.status = newStatus;
       saveStoredSubadmins(list);
+      try {
+        const bc = new BroadcastChannel('hg_admin_security_channel');
+        bc.postMessage({ type: 'SUBADMINS_UPDATED', list: list });
+      } catch(e) {}
       if (typeof showMasterToast === 'function') {
         showMasterToast(`Updated status of ${sub.name} to ${newStatus.toUpperCase()}`);
       }
@@ -6451,9 +6455,42 @@
       if (confirm(`Are you sure you want to delete the subadmin pass for "${sub.name}" (${sub.email})? They will no longer be able to log in.`)) {
         const updated = list.filter(s => s.id !== id);
         saveStoredSubadmins(updated);
+        try {
+          const bc = new BroadcastChannel('hg_admin_security_channel');
+          bc.postMessage({ type: 'SUBADMINS_UPDATED', list: updated });
+        } catch(e) {}
         if (typeof showMasterToast === 'function') {
           showMasterToast(`Deleted subadmin pass for ${sub.email}`);
         }
+      }
+    };
+
+    window.changeSubadminPassword = function(id) {
+      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
+        alert('⛔ Access Denied: Action reserved exclusively for Master Admin.');
+        return;
+      }
+      const list = getStoredSubadmins();
+      const sub = list.find(s => s.id === id);
+      if (!sub) return;
+
+      const newPass = prompt(`🔑 Change Secret Password / Pass for subadmin "${sub.name}" (${sub.email}):\n(Email is permanent and cannot be changed)`, sub.password || '');
+      if (newPass === null) return;
+      const cleanPass = newPass.trim();
+      if (!cleanPass) {
+        alert('Password cannot be empty.');
+        return;
+      }
+
+      sub.password = cleanPass;
+      saveStoredSubadmins(list);
+      try {
+        const bc = new BroadcastChannel('hg_admin_security_channel');
+        bc.postMessage({ type: 'SUBADMINS_UPDATED', list: list });
+      } catch(e) {}
+
+      if (typeof showMasterToast === 'function') {
+        showMasterToast(`🔑 Password successfully updated for ${sub.name} (${sub.email})! Synced live to cloud.`, 'success');
       }
     };
 
@@ -6482,7 +6519,7 @@
           <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
             <td style="padding: 0.5rem 0.6rem;">
               <div style="font-weight: 700; color: #fff;">${escapeHtml(s.name)}</div>
-              <div style="font-size: 0.72rem; color: #38bdf8; font-family: monospace;">${escapeHtml(s.email)}</div>
+              <div style="font-size: 0.72rem; color: #38bdf8; font-family: monospace;">${escapeHtml(s.email)} <span style="font-size:0.64rem; color:#64748b; font-family:sans-serif;" title="Subadmin email is permanent and cannot be altered">🔒 Locked</span></div>
               <div style="font-size: 0.68rem; color: #94a3b8;">Key: <code style="background:rgba(0,0,0,0.3); padding:1px 4px; border-radius:3px;">${escapeHtml(s.password)}</code> (${escapeHtml(s.role || 'Viewer')})</div>
             </td>
             <td style="padding: 0.5rem 0.6rem;">
@@ -6490,6 +6527,9 @@
             </td>
             <td style="padding: 0.5rem 0.6rem; text-align: right;">
               <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.35rem; flex-wrap: wrap;">
+                <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #38bdf8; border-color: rgba(56,189,248,0.4);" onclick="changeSubadminPassword('${s.id}')" title="Change Secret Password for this subadmin">
+                  <span>🔑 Pass</span>
+                </button>
                 ${s.status === 'active' ? `
                   <button type="button" class="btn-action-outline" style="padding: 0.2rem 0.45rem; font-size: 0.7rem; color: #fbbf24; border-color: rgba(245,158,11,0.4);" onclick="toggleSubadminStatus('${s.id}', 'suspended')" title="Suspend access temporarily">
                     <span>Suspend</span>
@@ -6591,32 +6631,57 @@
         let subadminIp = null;
 
         if (!isDirectMaster) {
-          let subadmins = getStoredSubadmins();
-          subadminUser = subadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail && s.password === enteredId);
-
-          // If not in local cache, do live query to Supabase (handles Laptop 2, other browsers)
-          if (!subadminUser) {
-            const cloudSubadmins = await syncSubadminsFromCloud();
-            subadminUser = cloudSubadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail && s.password === enteredId);
+          // Always fetch live from cloud to ensure up-to-date ban/suspend status and password across laptops
+          let subadmins = await syncSubadminsFromCloud();
+          if (!subadmins || subadmins.length === 0) {
+            subadmins = getStoredSubadmins();
           }
 
-          if (subadminUser) {
-            if (subadminUser.status === 'banned') {
-              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Banned)');
+          const accountByEmail = subadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail);
+
+          if (accountByEmail) {
+            // Check status FIRST: If banned or suspended, reject login immediately
+            if (accountByEmail.status === 'banned') {
+              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + accountByEmail.name + ')', 'Blocked (Account Banned)');
               if (errorEl) {
-                errorEl.textContent = '⛔ Access Denied: This subadmin account has been permanently banned by Master Admin.';
+                errorEl.textContent = '⛔ Access Denied: This subadmin account has been permanently BANNED by Master Admin.';
                 errorEl.style.display = 'block';
+              }
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Verify Gate Pass &amp; Unlock</span><span>🔓</span>';
               }
               return false;
             }
-            if (subadminUser.status === 'suspended') {
-              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Suspended)');
+
+            if (accountByEmail.status === 'suspended') {
+              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + accountByEmail.name + ')', 'Blocked (Account Suspended)');
               if (errorEl) {
-                errorEl.textContent = '⚠️ Access Paused: This subadmin account is currently suspended by Master Admin.';
+                errorEl.textContent = '⚠️ Access Paused: This subadmin account is currently SUSPENDED by Master Admin.';
                 errorEl.style.display = 'block';
+              }
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Verify Gate Pass &amp; Unlock</span><span>🔓</span>';
               }
               return false;
             }
+
+            // Check if password matches
+            if (accountByEmail.password !== enteredId) {
+              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + accountByEmail.name + ')', 'Failed (Invalid Password)');
+              if (errorEl) {
+                errorEl.textContent = '❌ Access Denied: Invalid Secret ID / Password for this subadmin.';
+                errorEl.style.display = 'block';
+              }
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Verify Gate Pass &amp; Unlock</span><span>🔓</span>';
+              }
+              return false;
+            }
+
+            subadminUser = accountByEmail;
 
             // MANDATORY CAMERA VERIFICATION FOR SUBADMINS (TASK 1)
             if (submitBtn) {
@@ -6649,7 +6714,7 @@
             // Capture IP and dispatch email in background
             try {
               subadminIp = await fetchPublicDeviceIp();
-              dispatchSubadminSecurityAlert({
+              await dispatchSubadminSecurityAlert({
                 name: subadminUser.name,
                 email: enteredEmail,
                 passUsed: enteredId,
@@ -6657,7 +6722,9 @@
                 ip: subadminIp,
                 photoBase64: subadminPhoto
               });
-            } catch(e) {}
+            } catch(e) {
+              console.warn('Security alert email dispatch error:', e);
+            }
 
             isSubadmin = true;
           }
@@ -6849,6 +6916,28 @@
         if (typeof syncSubadminsFromCloud === 'function') {
           syncSubadminsFromCloud().catch(e => console.warn('Cloud subadmin pre-sync notice:', e));
         }
+      } catch (e) {}
+
+      // Realtime subadmin security listener for instantaneous ban/suspend revocation across all open tabs
+      try {
+        const bcSec = new BroadcastChannel('hg_admin_security_channel');
+        bcSec.onmessage = function(evt) {
+          if (evt.data && evt.data.type === 'SUBADMINS_UPDATED') {
+            const isSubadmin = sessionStorage.getItem('is_subadmin_readonly') === 'true';
+            const updatedList = evt.data.list || [];
+            if (isSubadmin) {
+              const currentEmail = (sessionStorage.getItem('admin_apk_email') || '').toLowerCase().trim();
+              const me = updatedList.find(s => (s.email || '').toLowerCase().trim() === currentEmail);
+              if (me && (me.status === 'banned' || me.status === 'suspended')) {
+                alert('⛔ Your access has been revoked by Master Admin.');
+                clearAllAdminAuth();
+                location.reload();
+              }
+            } else {
+              renderSubadminsTable();
+            }
+          }
+        };
       } catch (e) {}
     }
 
