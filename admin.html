@@ -4257,6 +4257,7 @@
               <thead>
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 0.72rem; text-transform: uppercase;">
                   <th style="padding: 0.5rem 0.75rem;">Account Email</th>
+                  <th style="padding: 0.5rem 0.75rem;">Password / Pass Used</th>
                   <th style="padding: 0.5rem 0.75rem;">Role / Tier</th>
                   <th style="padding: 0.5rem 0.75rem;">Timestamp</th>
                   <th style="padding: 0.5rem 0.75rem;">Result Status</th>
@@ -4264,7 +4265,7 @@
               </thead>
               <tbody id="login-audit-tbody">
                 <tr>
-                  <td colspan="4" style="text-align: center; color: #94a3b8; padding: 1.5rem;">Loading audit logs...</td>
+                  <td colspan="5" style="text-align: center; color: #94a3b8; padding: 1.5rem;">Loading audit logs...</td>
                 </tr>
               </tbody>
             </table>
@@ -6093,12 +6094,13 @@
       return [];
     }
 
-    function recordLoginAuditLog(email, role, status) {
+    function recordLoginAuditLog(email, passUsed, role, status) {
       try {
         const logs = getLoginAuditLogs();
         const newLog = {
           id: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
           email: email || 'Unknown',
+          passUsed: passUsed || '••••',
           role: role || 'Staff',
           status: status || 'Success',
           timestamp: new Date().toLocaleString(undefined, {
@@ -6257,16 +6259,17 @@
 
       const logs = getLoginAuditLogs();
       if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 1.5rem;">No login logs recorded yet. All admin sign-ins will be logged here in real time.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 1.5rem;">No login logs recorded yet. All admin sign-ins will be logged here in real time.</td></tr>';
         return;
       }
 
       tbody.innerHTML = logs.map(l => {
         let statusStyle = 'color: #34d399;';
-        if (l.status.includes('Denied') || l.status.includes('Blocked')) statusStyle = 'color: #f87171; font-weight: 700;';
+        if (l.status.includes('Denied') || l.status.includes('Blocked') || l.status.includes('Failed')) statusStyle = 'color: #f87171; font-weight: 700;';
         return `
           <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
             <td style="padding: 0.5rem 0.75rem; font-weight: 600; color: #fff; font-family: monospace;">${escapeHtml(l.email)}</td>
+            <td style="padding: 0.5rem 0.75rem;"><code style="background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px; font-size:0.75rem; color:#fde68a;">${escapeHtml(l.passUsed || '••••')}</code></td>
             <td style="padding: 0.5rem 0.75rem; color: #c7d2fe; font-size: 0.75rem;">${escapeHtml(l.role)}</td>
             <td style="padding: 0.5rem 0.75rem; color: #94a3b8; font-size: 0.75rem;">${escapeHtml(l.timestamp)}</td>
             <td style="padding: 0.5rem 0.75rem; ${statusStyle}; font-size: 0.75rem;">${escapeHtml(l.status)}</td>
@@ -6309,7 +6312,7 @@
         subadminUser = subadmins.find(s => (s.email || '').toLowerCase().trim() === enteredEmail && s.password === enteredId);
         if (subadminUser) {
           if (subadminUser.status === 'banned') {
-            recordLoginAuditLog(enteredEmail, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Banned)');
+            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Banned)');
             if (errorEl) {
               errorEl.textContent = '⛔ Access Denied: This subadmin account has been permanently banned by Master Admin.';
               errorEl.style.display = 'block';
@@ -6317,7 +6320,7 @@
             return false;
           }
           if (subadminUser.status === 'suspended') {
-            recordLoginAuditLog(enteredEmail, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Suspended)');
+            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Blocked (Account Suspended)');
             if (errorEl) {
               errorEl.textContent = '⚠️ Access Paused: This subadmin account is currently suspended by Master Admin.';
               errorEl.style.display = 'block';
@@ -6368,10 +6371,10 @@
         if (isSubadmin) {
           sessionStorage.setItem('is_subadmin_readonly', 'true');
           sessionStorage.setItem('subadmin_role', subadminUser.role || 'Viewer');
-          recordLoginAuditLog(enteredEmail, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success');
+          recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success');
         } else {
           sessionStorage.removeItem('is_subadmin_readonly');
-          recordLoginAuditLog(enteredEmail, 'Master Admin (Harsh Patel)', 'Success');
+          recordLoginAuditLog(enteredEmail, enteredId, 'Master Admin (Harsh Patel)', 'Success');
         }
 
         try {
@@ -6391,7 +6394,7 @@
         unlockDashboard();
         return false;
       } else {
-        recordLoginAuditLog(enteredEmail, 'Unknown', 'Failed (Invalid credentials)');
+        recordLoginAuditLog(enteredEmail, enteredId, 'Unknown', 'Failed (Invalid credentials)');
         let fails = parseInt(sessionStorage.getItem('hg_gate_failed') || '0', 10) + 1;
         sessionStorage.setItem('hg_gate_failed', fails.toString());
 
