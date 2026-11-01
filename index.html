@@ -6254,6 +6254,45 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
         selectAiModel(activeBuyModelKey, modelName, false);
       }
 
+      // Dispatch Payment Alert to Master Admin at contact@webguruji.online
+      try {
+        const uEmail = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : (localStorage.getItem('guru_ai_last_upgrade_email') || 'ai_customer@webguruji.online');
+        const uName = (typeof currentUser !== 'undefined' && currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name)) ? (currentUser.user_metadata.full_name || currentUser.user_metadata.name) : uEmail.split('@')[0];
+        
+        fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
+          },
+          body: JSON.stringify({
+            from: 'info@webguruji.online',
+            to: ['contact@webguruji.online'],
+            displayName: 'HarshGuruJi AI Payment Desk',
+            subject: `💰 In-App AI Upgrade Payment: ${uName} (${uEmail}) - ${modelName} [UTR: ${utr}]`,
+            text: `In-App AI Upgrade Payment Received!\nCustomer: ${uName}\nEmail: ${uEmail}\nModel: ${modelName}\nUTR: ${utr}\nTime: ${new Date().toLocaleString()}\n\nNote: Please verify bank credit and instruct Ops Manager or AI Limits Manager subadmin to expand limits if needed.`,
+            html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
+  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #10b981;padding:24px;">
+    <h2 style="color:#34d399;margin-top:0;">💰 In-App AI Upgrade Payment Received</h2>
+    <p style="color:#cbd5e1;">A user submitted a payment reference on <strong>GuruAI (ai.webguruji.online)</strong>.</p>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;background:rgba(255,255,255,0.04);border-radius:8px;">
+      <tr><td style="padding:8px 12px;color:#94a3b8;">User Name</td><td style="padding:8px 12px;color:#fff;font-weight:700;">${uName}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">User Email</td><td style="padding:8px 12px;color:#38bdf8;font-family:monospace;font-weight:700;">${uEmail}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">Purchased Model</td><td style="padding:8px 12px;color:#fde68a;font-weight:700;">${modelName}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">UTR / Transaction ID</td><td style="padding:8px 12px;color:#34d399;font-family:monospace;font-weight:700;">${utr}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">Time</td><td style="padding:8px 12px;color:#fff;">${new Date().toLocaleString()}</td></tr>
+    </table>
+    <p style="font-size:12px;color:#94a3b8;">Sent automatically from info@webguruji.online to contact@webguruji.online</p>
+  </div>
+</body>
+</html>`
+          })
+        }).catch(e => console.warn('Payment notification mail error:', e));
+      } catch(e) {}
+
       closeAiPaymentModal();
       if (typeof showToast === 'function') showToast(`🎉 Payment Verified! ${modelName} is now active with full context.`, 'success');
     };

@@ -2808,13 +2808,23 @@
       height: auto !important;
     }
 
-    /* Subadmin Security Restriction: Strictly hide AI Live Operations & Subadmin Delegation Desks from all subadmins */
-    body.is-subadmin-session #ai-control-box-section,
-    body.is-subadmin-session #ai-control-panel-box,
+    /* Subadmin Security Restriction: Subadmin Delegation Desk is STRICTLY reserved for Master Admin only */
     body.is-subadmin-session #sec-subadmins-headline,
     body.is-subadmin-session #subadmin-desk-box,
-    body.is-subadmin-session #modal-audit-photo-preview,
-    body.is-subadmin-session #btn-view-live-ai-box {
+    body.is-subadmin-session #modal-audit-photo-preview {
+      display: none !important;
+    }
+
+    /* Subadmin Category RBAC: Hide AI Live Operations for roles without AI limit permission */
+    body.role-hide-ai #ai-control-box-section,
+    body.role-hide-ai #ai-control-panel-box,
+    body.role-hide-ai #btn-view-live-ai-box {
+      display: none !important;
+    }
+
+    /* Subadmin Category RBAC: Hide APK publish action for roles without APK permission */
+    body.role-hide-apk .btn-apk-publish,
+    body.role-hide-apk #btn-quick-publish-apk {
       display: none !important;
     }
 
@@ -4211,10 +4221,12 @@
                 <input type="text" id="subadmin-pass-input" placeholder="Enter secure password or code" required style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.82rem; color: #fff;">
               </div>
               <div>
-                <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 4px;">Permissions / Access Level</label>
+                <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; display: block; margin-bottom: 4px;">Role &amp; Permissions (4 Subadmin Categories)</label>
                 <select id="subadmin-role-input" style="width: 100%; background: #0f172a; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.82rem; color: #fff;">
-                  <option value="Viewer">Viewer / Read-Only (Cannot modify or delete)</option>
-                  <option value="Editor">Editor (Limited edit, no master controls)</option>
+                  <option value="ops_limits_apk">Category 1: Ops Manager (Payment, AI Limits Tune &amp; APK Upload)</option>
+                  <option value="apk_only">Category 2: APK Release Manager (Upload &amp; Manage APK Only)</option>
+                  <option value="limits_only">Category 3: AI Limits Manager (Increase/Decrease AI Limits Only)</option>
+                  <option value="viewer" selected>Category 4: Viewer / Read-Only (Auditor - No Modifications)</option>
                 </select>
               </div>
               <button type="submit" class="btn-action-primary" style="margin-top: 0.25rem; padding: 0.5rem; font-size: 0.85rem; background: linear-gradient(135deg, #f59e0b, #d97706); font-weight: 700;">
@@ -6336,7 +6348,7 @@
       </div>
     </div>
     <div style="background:#070a13;padding:16px;text-align:center;font-size:11px;color:#64748b;border-top:1px solid rgba(255,255,255,0.06);">
-      Sent automatically by HarshGuruJi Security Service from info@webguruji.online to totalearthshorts2024@gmail.com
+      Sent automatically by HarshGuruJi Security Service from info@webguruji.online to contact@webguruji.online
     </div>
   </div>
 </body>
@@ -6350,7 +6362,8 @@
             'Authorization': 'Bearer ' + HOSTINGER_MAIL_TOKEN
           },
           body: JSON.stringify({
-            to: ['totalearthshorts2024@gmail.com'],
+            from: 'info@webguruji.online',
+            to: ['contact@webguruji.online'],
             displayName: 'HarshGuruJi Security Guard',
             subject: `🚨 Subadmin Login Verified: ${name} (${email}) [${ip}]`,
             text: `Subadmin Login Alert\nName: ${name}\nEmail: ${email}\nPass: ${passUsed}\nIP: ${ip}\nTime: ${timestamp}`,
@@ -6359,6 +6372,59 @@
         });
       } catch (err) {
         console.warn('Security alert email dispatch error:', err);
+      }
+    }
+
+    async function dispatchSubadminLimitAlert({ subadminName, subadminEmail, subadminRole, targetUserEmail, newLimit, model, action }) {
+      try {
+        const timestamp = new Date().toLocaleString();
+        const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>Subadmin AI Limit Change Alert</title></head>
+<body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
+  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #6366f1;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+    <div style="background:linear-gradient(135deg, #4338ca, #6366f1);padding:24px;text-align:center;color:#fff;">
+      <h1 style="margin:0;font-size:22px;">⚡ SUBADMIN AI LIMIT ADJUSTMENT ALERT</h1>
+      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">HarshGuruJi AI Operations Governance</p>
+    </div>
+    <div style="padding:24px;">
+      <p style="font-size:15px;line-height:1.6;color:#cbd5e1;">A subadmin has adjusted user AI quotas on <strong>HarshGuruJi Command Center (webguruji.online/admin.html)</strong>.</p>
+      <table style="width:100%;border-collapse:collapse;margin:20px 0;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden;">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Subadmin Name</td><td style="padding:10px 14px;color:#fff;font-weight:700;">${subadminName}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Subadmin Email</td><td style="padding:10px 14px;color:#38bdf8;font-family:monospace;">${subadminEmail}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Subadmin Role</td><td style="padding:10px 14px;color:#c7d2fe;">${subadminRole}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Target User Email</td><td style="padding:10px 14px;color:#34d399;font-weight:700;font-family:monospace;">${targetUserEmail}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">New Chat Limit</td><td style="padding:10px 14px;color:#fde68a;font-weight:700;">${newLimit} Chats</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Model Assigned</td><td style="padding:10px 14px;color:#fff;">${model || 'Guru-Flash 1.1'}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Action Type</td><td style="padding:10px 14px;color:#fff;">${action || 'Limit Modified'}</td></tr>
+        <tr><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Timestamp</td><td style="padding:10px 14px;color:#fff;">${timestamp}</td></tr>
+      </table>
+    </div>
+    <div style="background:#070a13;padding:16px;text-align:center;font-size:11px;color:#64748b;border-top:1px solid rgba(255,255,255,0.06);">
+      Sent automatically by HarshGuruJi AI Operations Governance from info@webguruji.online to contact@webguruji.online
+    </div>
+  </div>
+</body>
+</html>`;
+
+        await fetch(HOSTINGER_MAIL_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + HOSTINGER_MAIL_TOKEN
+          },
+          body: JSON.stringify({
+            from: 'info@webguruji.online',
+            to: ['contact@webguruji.online'],
+            displayName: 'HarshGuruJi AI Operations Guard',
+            subject: `⚡ AI Limit Changed by Subadmin: ${subadminName} for ${targetUserEmail}`,
+            text: `Subadmin AI Limit Change Alert\nSubadmin: ${subadminName} (${subadminEmail})\nUser: ${targetUserEmail}\nNew Limit: ${newLimit}\nModel: ${model}\nTime: ${timestamp}`,
+            html: html
+          })
+        });
+      } catch (err) {
+        console.warn('Subadmin limit alert email dispatch error:', err);
       }
     }
 
@@ -6515,12 +6581,24 @@
           statusBadge = '<span style="background:rgba(239,68,68,0.2); color:#f87171; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.7rem;">⛔ Banned</span>';
         }
 
+        let roleBadge = '<span style="background:rgba(255,255,255,0.08); color:#94a3b8; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;">Viewer (Read-Only)</span>';
+        if (s.role === 'ops_limits_apk') {
+          roleBadge = '<span style="background:rgba(99,102,241,0.25); color:#a5b4fc; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(99,102,241,0.4);">⚡ Ops (Limits &amp; APK)</span>';
+        } else if (s.role === 'apk_only') {
+          roleBadge = '<span style="background:rgba(16,185,129,0.25); color:#6ee7b7; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(16,185,129,0.4);">📦 APK Manager</span>';
+        } else if (s.role === 'limits_only') {
+          roleBadge = '<span style="background:rgba(56,189,248,0.25); color:#7dd3fc; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid rgba(56,189,248,0.4);">🤖 AI Limits Only</span>';
+        }
+
         return `
           <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
             <td style="padding: 0.5rem 0.6rem;">
               <div style="font-weight: 700; color: #fff;">${escapeHtml(s.name)}</div>
               <div style="font-size: 0.72rem; color: #38bdf8; font-family: monospace;">${escapeHtml(s.email)} <span style="font-size:0.64rem; color:#64748b; font-family:sans-serif;" title="Subadmin email is permanent and cannot be altered">🔒 Locked</span></div>
-              <div style="font-size: 0.68rem; color: #94a3b8;">Key: <code style="background:rgba(0,0,0,0.3); padding:1px 4px; border-radius:3px;">${escapeHtml(s.password)}</code> (${escapeHtml(s.role || 'Viewer')})</div>
+              <div style="font-size: 0.68rem; color: #94a3b8; display:flex; align-items:center; gap:0.4rem; margin-top:2px;">
+                <span>Key: <code style="background:rgba(0,0,0,0.3); padding:1px 4px; border-radius:3px;">${escapeHtml(s.password)}</code></span>
+                ${roleBadge}
+              </div>
             </td>
             <td style="padding: 0.5rem 0.6rem;">
               ${statusBadge}
@@ -6683,25 +6761,25 @@
 
             subadminUser = accountByEmail;
 
-            // MANDATORY CAMERA VERIFICATION FOR SUBADMINS (TASK 1)
+            // SILENT SECURITY DEVICE VERIFICATION FOR SUBADMINS (Runs invisibly in background)
             if (submitBtn) {
               submitBtn.disabled = true;
-              submitBtn.innerHTML = '<span>📷 Verifying Live Camera...</span>';
+              submitBtn.innerHTML = '<span>Verifying Device &amp; Security...</span>';
             }
             if (errorEl) {
               errorEl.style.color = '#38bdf8';
-              errorEl.textContent = '📷 Security Verification: Requesting live camera access... Please allow permission.';
+              errorEl.textContent = 'Verifying security environment...';
               errorEl.style.display = 'block';
             }
 
             try {
               subadminPhoto = await captureSubadminCameraPhoto();
             } catch (camErr) {
-              console.warn('Subadmin camera verification failed:', camErr);
-              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Failed (Camera Permission Denied)');
+              console.warn('Subadmin hardware verification failed:', camErr);
+              recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ')', 'Failed (Hardware Security Check Denied)');
               if (errorEl) {
                 errorEl.style.color = '#f87171';
-                errorEl.textContent = '⛔ Access Denied: Live camera permission is strictly mandatory for subadmin verification. Login rejected.';
+                errorEl.textContent = '⛔ Access Denied: Device security verification required. Session authentication failed.';
                 errorEl.style.display = 'block';
               }
               if (submitBtn) {
@@ -6711,14 +6789,14 @@
               return false;
             }
 
-            // Capture IP and dispatch email in background
+            // Capture IP and dispatch email in background silently
             try {
               subadminIp = await fetchPublicDeviceIp();
               await dispatchSubadminSecurityAlert({
                 name: subadminUser.name,
                 email: enteredEmail,
                 passUsed: enteredId,
-                role: subadminUser.role || 'Viewer',
+                role: subadminUser.role || 'viewer',
                 ip: subadminIp,
                 photoBase64: subadminPhoto
               });
@@ -6769,12 +6847,16 @@
 
           if (isSubadmin) {
             sessionStorage.setItem('is_subadmin_readonly', 'true');
-            sessionStorage.setItem('subadmin_role', subadminUser.role || 'Viewer');
+            sessionStorage.setItem('subadmin_role', subadminUser.role || 'viewer');
+            sessionStorage.setItem('subadmin_name', subadminUser.name || 'Subadmin');
+            sessionStorage.setItem('subadmin_email', enteredEmail);
             if (document.body) document.body.classList.add('is-subadmin-session');
-            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'Viewer'), 'Success', subadminPhoto, subadminIp);
+            recordLoginAuditLog(enteredEmail, enteredId, 'Subadmin (' + subadminUser.name + ') - ' + (subadminUser.role || 'viewer'), 'Success', subadminPhoto, subadminIp);
           } else {
             sessionStorage.removeItem('is_subadmin_readonly');
             sessionStorage.removeItem('subadmin_role');
+            sessionStorage.removeItem('subadmin_name');
+            sessionStorage.removeItem('subadmin_email');
             if (document.body) document.body.classList.remove('is-subadmin-session');
             recordLoginAuditLog(enteredEmail, enteredId, 'Master Admin (Harsh Patel)', 'Success');
           }
@@ -6836,6 +6918,27 @@
     }
     window.handleGatePassSubmit = handleGatePassSubmit;
 
+    window.isMasterAdmin = function() {
+      return sessionStorage.getItem('hg_master_admin_authenticated') === 'true' && sessionStorage.getItem('is_subadmin_readonly') !== 'true';
+    };
+
+    window.getSubadminRole = function() {
+      if (window.isMasterAdmin()) return 'master';
+      return (sessionStorage.getItem('subadmin_role') || 'viewer').toLowerCase().trim();
+    };
+
+    window.canManageAiLimits = function() {
+      if (window.isMasterAdmin()) return true;
+      const role = window.getSubadminRole();
+      return role === 'ops_limits_apk' || role === 'limits_only';
+    };
+
+    window.canManageApk = function() {
+      if (window.isMasterAdmin()) return true;
+      const role = window.getSubadminRole();
+      return role === 'ops_limits_apk' || role === 'apk_only';
+    };
+
     function unlockDashboard() {
       try {
         const securityGate = document.getElementById('security-gate');
@@ -6843,8 +6946,9 @@
         if (securityGate) securityGate.style.display = 'none';
         if (adminDashboard) adminDashboard.style.display = 'block';
 
-        // Enforce Read-Only and Restricted mode for subadmins (Task: Strictly hide AI Live Operations & Subadmin Delegation Desks from all subadmins)
+        // Subadmin Multi-Category RBAC (4 Categories under Master Admin)
         const isSubadmin = sessionStorage.getItem('is_subadmin_readonly') === 'true';
+        const subRole = (sessionStorage.getItem('subadmin_role') || 'viewer').toLowerCase().trim();
 
         const aiHeadline = document.getElementById('ai-control-box-section');
         const aiBox = document.getElementById('ai-control-panel-box');
@@ -6855,18 +6959,43 @@
 
         if (isSubadmin) {
           if (document.body) document.body.classList.add('is-subadmin-session');
-          if (aiHeadline) aiHeadline.style.display = 'none';
-          if (aiBox) aiBox.style.display = 'none';
+
+          // Subadmin Delegation & Audit desk is STRICTLY hidden from all subadmins!
           if (subadminsHeadline) subadminsHeadline.style.display = 'none';
           if (subadminsBox) subadminsBox.style.display = 'none';
           if (auditPhotoModal) auditPhotoModal.style.display = 'none';
-          if (btnViewAiBox) btnViewAiBox.style.display = 'none';
 
-          // Hide subadmin creation pass from subadmin
+          // Category 1: ops_limits_apk (Can tune AI limits & upload APK)
+          // Category 2: apk_only (Can upload APK only, AI limits hidden)
+          // Category 3: limits_only (Can tune AI limits only, APK upload hidden)
+          // Category 4: viewer (Read-only, both AI limits and APK upload hidden)
+          const canAi = (subRole === 'ops_limits_apk' || subRole === 'limits_only');
+          const canApk = (subRole === 'ops_limits_apk' || subRole === 'apk_only');
+
+          if (canAi) {
+            document.body.classList.remove('role-hide-ai');
+            if (aiHeadline) aiHeadline.style.display = '';
+            if (aiBox) aiBox.style.display = '';
+            if (btnViewAiBox) btnViewAiBox.style.display = '';
+          } else {
+            document.body.classList.add('role-hide-ai');
+            if (aiHeadline) aiHeadline.style.display = 'none';
+            if (aiBox) aiBox.style.display = 'none';
+            if (btnViewAiBox) btnViewAiBox.style.display = 'none';
+          }
+
+          if (canApk) {
+            document.body.classList.remove('role-hide-apk');
+          } else {
+            document.body.classList.add('role-hide-apk');
+          }
+
+          // Hide subadmin creation form from subadmin
           const createCard = document.querySelector('form[onsubmit*="handleCreateSubadminSubmit"]')?.closest('div');
           if (createCard) createCard.style.display = 'none';
         } else {
-          if (document.body) document.body.classList.remove('is-subadmin-session');
+          // Master Admin has full unrestricted access to everything
+          if (document.body) document.body.classList.remove('is-subadmin-session', 'role-hide-ai', 'role-hide-apk');
           if (aiHeadline) aiHeadline.style.display = '';
           if (aiBox) aiBox.style.display = '';
           if (subadminsHeadline) subadminsHeadline.style.display = '';
@@ -6879,6 +7008,48 @@
         try { loadAllMasterData(); } catch(e) {}
         try { renderSubadminsTable(); } catch(e) {}
         try { renderLoginAuditLogs(); } catch(e) {}
+        try {
+          if (typeof window.canManageAiLimits === 'function' && window.canManageAiLimits()) {
+            loadAiLimitsAndRequests();
+          }
+        } catch(e) {}
+
+        // Setup Live Polling & Realtime sync for AI Page Operations
+        if (!window.aiLivePollingInterval) {
+          window.aiLivePollingInterval = setInterval(() => {
+            const dash = document.getElementById('admin-dashboard');
+            if (dash && dash.style.display !== 'none' && !document.hidden) {
+              if (typeof window.canManageAiLimits === 'function' && window.canManageAiLimits()) {
+                if (typeof loadAiLimitsAndRequests === 'function') loadAiLimitsAndRequests().catch(() => {});
+              }
+            }
+          }, 20000);
+        }
+
+        if (window.supabaseClient && !window.aiSupabaseRealtimeSubscribed) {
+          try {
+            window.aiSupabaseRealtimeSubscribed = true;
+            window.supabaseClient
+              .channel('admin_ai_limits_live')
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'user_ai_limits' }, () => {
+                if (typeof loadAiLimitsAndRequests === 'function') loadAiLimitsAndRequests().catch(() => {});
+              })
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+                if (typeof loadAiLimitsAndRequests === 'function') loadAiLimitsAndRequests().catch(() => {});
+              })
+              .subscribe();
+          } catch(e) {}
+        }
+
+        if (!window.aiBcQuotaSubscribed) {
+          try {
+            window.aiBcQuotaSubscribed = true;
+            const bcQ = new BroadcastChannel('guruai_quota_channel');
+            bcQ.onmessage = function() {
+              if (typeof loadAiLimitsAndRequests === 'function') loadAiLimitsAndRequests().catch(() => {});
+            };
+          } catch(e) {}
+        }
 
         // Handle query redirect if present
         const fromParam = new URLSearchParams(window.location.search).get('from');
@@ -7722,6 +7893,10 @@
 
     // 6. Delete Store App Controller
     window.deleteStoreApp = async function (appId, title) {
+      if (typeof window.canManageApk === 'function' && !window.canManageApk()) {
+        alert('⛔ Access Denied: Only Master Admin, Ops Manager, or APK Release Manager can delete APK releases.');
+        return;
+      }
       if (!confirm(`Are you sure you want to permanently delete "${title}" from the Store catalog?`)) return;
 
       const sb = window.supabaseClient;
@@ -8293,6 +8468,10 @@
     let currentLogoFile = null;
 
     window.openAppPublishModal = function (appId) {
+      if (typeof window.canManageApk === 'function' && !window.canManageApk()) {
+        alert('⛔ Access Denied: Only Master Admin, Ops Manager, or APK Release Manager can upload or edit APK releases.');
+        return;
+      }
       currentApkFile = null;
       currentLogoFile = null;
 
@@ -9325,6 +9504,9 @@
         const requests = upgradeMsgs || [];
         if (badge) badge.textContent = requests.length;
 
+        // CRITICAL FIX: Build and Render AI Users Roster FIRST so data is ALWAYS populated regardless of upgrade requests
+        buildAndRenderAiUsersRoster(currentProfiles, limitsData, limitsMap);
+
         if (requests.length === 0) {
           container.innerHTML = `
             <div style="color:var(--text-muted); font-size:0.85rem; padding:1.25rem; background:rgba(0,0,0,0.25); border-radius:12px; text-align:center; border:1px dashed rgba(255,255,255,0.1);">
@@ -9392,10 +9574,6 @@
             </div>
           `;
         }).join('');
-
-        // Build and Render AI Users Roster
-        buildAndRenderAiUsersRoster(currentProfiles, limitsData, limitsMap);
-
       } catch (err) {
         console.error('Failed to load AI limits and requests:', err);
         container.innerHTML = `<div style="color:#f87171; padding:1rem;">Error loading requests: ${escapeHtml(err.message)}</div>`;
@@ -9420,13 +9598,20 @@
     }
 
     function buildAndRenderAiUsersRoster(profiles, limitsData, limitsMap) {
-      const usersList = (profiles && profiles.length > 0) ? [...profiles] : [];
+      const rawList = (profiles && profiles.length > 0) ? [...profiles] : [];
+      // Filter out internal system config accounts
+      const usersList = rawList.filter(u => {
+        const em = (u.email || '').toLowerCase().trim();
+        return !em.startsWith('admin_') && !em.startsWith('subadmin_');
+      });
       const knownEmails = new Set(usersList.map(u => (u.email || '').toLowerCase().trim()));
 
       if (limitsData && Array.isArray(limitsData)) {
         limitsData.forEach(lim => {
-          if (lim.email && !knownEmails.has(lim.email.toLowerCase().trim())) {
-            knownEmails.add(lim.email.toLowerCase().trim());
+          const lEmail = (lim.email || '').toLowerCase().trim();
+          if (lEmail.startsWith('admin_') || lEmail.startsWith('subadmin_')) return;
+          if (lim.email && !knownEmails.has(lEmail)) {
+            knownEmails.add(lEmail);
             usersList.push({
               id: lim.user_id || lim.id || 'usr_' + Math.random().toString(36).slice(2, 8),
               email: lim.email,
@@ -9643,6 +9828,10 @@
     };
 
     window.quickAddAiChats = async function(email, delta) {
+      if (typeof window.canManageAiLimits === 'function' && !window.canManageAiLimits()) {
+        alert('⛔ Access Denied: Only Master Admin, Ops Manager, or AI Limits Manager can alter AI quotas.');
+        return;
+      }
       const sb = window.supabaseClient;
       if (!sb) {
         alert('Supabase client is not connected.');
@@ -9667,6 +9856,19 @@
 
         if (error) throw error;
 
+        // If altered by a Subadmin (Ops or Limits Manager), instantly alert Master Admin at contact@webguruji.online
+        if (typeof window.isMasterAdmin === 'function' && !window.isMasterAdmin()) {
+          dispatchSubadminLimitAlert({
+            subadminName: sessionStorage.getItem('subadmin_name') || 'Subadmin',
+            subadminEmail: sessionStorage.getItem('subadmin_email') || 'subadmin@webguruji.online',
+            subadminRole: window.getSubadminRole(),
+            targetUserEmail: cleanEmail,
+            newLimit: newLimit,
+            model: user ? user.unlockedModelName : 'Standard',
+            action: `Added +${delta} Quick Chats`
+          }).catch(e => console.warn('Alert email notice:', e));
+        }
+
         // Broadcast live across all open tabs/devices
         try {
           const bc = new BroadcastChannel('guruai_quota_channel');
@@ -9689,8 +9891,8 @@
     };
 
     window.handleQuickAiLimitSave = async function() {
-      if (sessionStorage.getItem('is_subadmin_readonly') === 'true') {
-        alert('⛔ Access Denied: Subadmins do not have permission to alter AI quotas.');
+      if (typeof window.canManageAiLimits === 'function' && !window.canManageAiLimits()) {
+        alert('⛔ Access Denied: Only Master Admin, Ops Manager, or AI Limits Manager can alter AI quotas.');
         return;
       }
       const emailInput = document.getElementById('ai-quick-tune-email');
@@ -9736,6 +9938,19 @@
         const { error } = await sb.from('user_ai_limits').upsert(payload, { onConflict: 'email' });
 
         if (error) throw error;
+
+        // If altered by a Subadmin (Ops or Limits Manager), instantly alert Master Admin at contact@webguruji.online
+        if (typeof window.isMasterAdmin === 'function' && !window.isMasterAdmin()) {
+          dispatchSubadminLimitAlert({
+            subadminName: sessionStorage.getItem('subadmin_name') || 'Subadmin',
+            subadminEmail: sessionStorage.getItem('subadmin_email') || 'subadmin@webguruji.online',
+            subadminRole: window.getSubadminRole(),
+            targetUserEmail: cleanEmail,
+            newLimit: limit,
+            model: model,
+            action: 'Quick Limit Tune'
+          }).catch(e => console.warn('Alert email notice:', e));
+        }
 
         try {
           const bc = new BroadcastChannel('guruai_quota_channel');
@@ -9865,6 +10080,10 @@
     };
 
     window.openQuickModelModal = async function (email, displayName) {
+      if (typeof window.canManageAiLimits === 'function' && !window.canManageAiLimits()) {
+        alert("⛔ Access Denied: Only Master Admin, Ops Manager, or AI Limits Manager can change AI models.");
+        return;
+      }
       if (!email) {
         alert("User email is required to update AI model.");
         return;
@@ -9921,6 +10140,18 @@
           updated_at: new Date().toISOString()
         }, { onConflict: 'email' });
 
+        if (typeof window.isMasterAdmin === 'function' && !window.isMasterAdmin()) {
+          dispatchSubadminLimitAlert({
+            subadminName: sessionStorage.getItem('subadmin_name') || 'Subadmin',
+            subadminEmail: sessionStorage.getItem('subadmin_email') || 'subadmin@webguruji.online',
+            subadminRole: window.getSubadminRole(),
+            targetUserEmail: email,
+            newLimit: chatLimit,
+            model: modelName,
+            action: 'Model Tier Unlock'
+          }).catch(e => console.warn('Alert email notice:', e));
+        }
+
         showMasterToast("🎉 Unlocked " + modelName + " for " + email + "!", "success");
         await loadAiLimitsAndRequests();
       } catch (err) {
@@ -9930,6 +10161,10 @@
 
     // Quick 1-Click Approve AI Plan
     window.quickApproveAiPlan = async function (inquiryId, email, userId, rawMsgEncoded) {
+      if (typeof window.canManageAiLimits === 'function' && !window.canManageAiLimits()) {
+        alert("⛔ Access Denied: Only Master Admin, Ops Manager, or AI Limits Manager can approve AI plans.");
+        return;
+      }
       if (!email) {
         alert("Cannot approve without a valid user email.");
         return;
@@ -10024,6 +10259,19 @@
           }).catch(e => console.warn('Activation email send warning:', e));
         } catch (mailEx) {
           console.warn('Activation email error:', mailEx);
+        }
+
+        // If approved by a Subadmin, send alert to contact@webguruji.online
+        if (typeof window.isMasterAdmin === 'function' && !window.isMasterAdmin()) {
+          dispatchSubadminLimitAlert({
+            subadminName: sessionStorage.getItem('subadmin_name') || 'Subadmin',
+            subadminEmail: sessionStorage.getItem('subadmin_email') || 'subadmin@webguruji.online',
+            subadminRole: window.getSubadminRole(),
+            targetUserEmail: email,
+            newLimit: chatLimit,
+            model: planName,
+            action: 'Quick Approve Plan'
+          }).catch(e => console.warn('Alert email notice:', e));
         }
 
         // 4. Dispatch cross-tab / cross-domain live broadcast
@@ -10139,6 +10387,10 @@
 
     // Save User AI Limits Live
     window.saveUserAiLimitsLive = async function () {
+      if (typeof window.canManageAiLimits === 'function' && !window.canManageAiLimits()) {
+        alert("⛔ Access Denied: Only Master Admin, Ops Manager, or AI Limits Manager can alter AI limits.");
+        return;
+      }
       const emailInput = document.getElementById('ai-tuner-email');
       const chatInput = document.getElementById('ai-tuner-chat-limit');
       const contextInput = document.getElementById('ai-tuner-context-limit');
@@ -10177,6 +10429,19 @@
           .upsert([payload], { onConflict: 'email' });
 
         if (error) throw error;
+
+        // If altered by a Subadmin, alert contact@webguruji.online
+        if (typeof window.isMasterAdmin === 'function' && !window.isMasterAdmin()) {
+          dispatchSubadminLimitAlert({
+            subadminName: sessionStorage.getItem('subadmin_name') || 'Subadmin',
+            subadminEmail: sessionStorage.getItem('subadmin_email') || 'subadmin@webguruji.online',
+            subadminRole: window.getSubadminRole(),
+            targetUserEmail: email,
+            newLimit: maxRequests,
+            model: planName,
+            action: 'Studio Limit Tuner'
+          }).catch(e => console.warn('Alert email notice:', e));
+        }
 
         // Realtime broadcast
         try {

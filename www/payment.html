@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+
+  <!-- EMAIL LINK GATEWAY GUARD: Only authorized email links can access this payment desk -->
+  <script>
+    (function() {
+      function generatePaymentToken(emailStr) {
+        if (!emailStr) return '';
+        let hash = 0;
+        const str = emailStr.toLowerCase().trim() + '::HarshGuruJiPaymentAuth2026';
+        for (let i = 0; i < str.length; i++) {
+          hash = ((hash << 5) - hash) + str.charCodeAt(i);
+          hash |= 0;
+        }
+        return 'hg_token_' + Math.abs(hash).toString(36);
+      }
+
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get('email');
+        const token = params.get('token');
+
+        // Check if user has an authorized email token matching their email
+        const isValid = email && token && (token === generatePaymentToken(email));
+        if (!isValid) {
+          // Direct access, search engine click, or missing token -> Redirect immediately to main site
+          window.location.replace('https://webguruji.online/');
+          return;
+        }
+      } catch (err) {
+        window.location.replace('https://webguruji.online/');
+      }
+    })();
+  </script>
+  <title>HarshGuruJi Instant Payment Desk — Unlock AI Premium Models</title>
+  <meta name="description" content="Official HarshGuruJi instant payment portal. Verify your order, scan the UPI QR code, and instantly unlock Guru-Flash 1.3, Guru-Argon 1.4, and Guru-Argon 1.5." />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="canonical" href="https://payment.webguruji.online" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#6366f1', 600: '#4f46e5' },
+            gold: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' },
+            cyanAccent: '#06b6d4'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            heading: ['Outfit',  'sans-serif'],
+            mono: ['Fira Code', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-head.js"></script>
+
+  <style>
+    body {
+      background-color: #030712;
+      color: #f8fafc;
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .ambient-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.15;
+    }
+    
+    /* Holographic Scanner Animation */
+    @keyframes scanBeam {
+      0% { top: 0%; opacity: 0.8; }
+      50% { top: 96%; opacity: 1; }
+      100% { top: 0%; opacity: 0.8; }
+    }
+    .scan-beam {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #06b6d4, #6366f1, #ffd700, transparent);
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.9), 0 0 28px rgba(99, 102, 241, 0.6);
+      animation: scanBeam 2.4s ease-in-out infinite;
+      border-radius: 4px;
+    }
+    .qr-frame {
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.25), inset 0 0 25px rgba(245, 158, 11, 0.15);
+    }
+  </style>
+  <link rel="stylesheet" href="footer-premium.css" />
+</head>
+<body class="flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950 relative">
+
+  <!-- Ambient Glows -->
+  <div class="ambient-glow -top-32 -left-32 bg-indigo-600"></div>
+  <div class="ambient-glow -bottom-32 -right-32 bg-amber-500"></div>
+
+  <!-- TOP NAVIGATION BAR WITH LOGO (NO NAVIGATION BUTTONS AS REQUESTED) -->
+  <header class="w-full bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 sticky top-0 z-40 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <!-- Logo + Brand (No Navigation Links) -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl p-0.5 bg-gradient-to-tr from-indigo-500 via-amber-400 to-cyan-400 shadow-md shadow-indigo-500/20 flex-shrink-0">
+          <img src="logo.png" alt="HarshGuruJi Logo" class="w-full h-full object-cover rounded-[14px]" />
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-heading font-black text-white text-base tracking-wide">HarshGuruJi</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold">Payment Desk</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-mono hidden sm:block">Instant AI Model Upgrade &amp; Verification</p>
+        </div>
+      </div>
+
+      <!-- Right Secure SSL Badge Only (No Navigation Buttons) -->
+      <div class="flex items-center gap-2 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>256-Bit SSL Secured Gateway</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 flex items-center justify-center px-4 sm:px-6 py-6 relative z-10 w-full max-w-lg mx-auto">
+    
+    <!-- STEP 1: EMAIL VERIFICATION CARD -->
+    <div id="step1Card" class="w-full bg-slate-900/90 backdrop-blur-2xl border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
+          <span>⚡</span> Verify Claim Email
+        </div>
+        <h2 class="text-2xl font-bold font-heading text-white tracking-tight">Claim Your Model Unlock</h2>
+        <p class="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
+          Enter the email address you submitted on the GuruAI contact form to verify your order and generate your QR invoice.
+        </p>
+      </div>
+
+      <!-- Error / Notice Box -->
+      <div id="step1Error" class="hidden p-3.5 rounded-2xl bg-rose-950/70 border border-rose-800 text-xs text-rose-200 space-y-1.5">
+        <div class="font-bold flex items-center gap-1.5 text-rose-300">
+          <span>⚠️</span> <span id="step1ErrorTitle">Write correct email address</span>
+        </div>
+        <p id="step1ErrorMsg" class="text-[11px] text-rose-300/90 leading-relaxed">
+          Notice: Agar aapne AI page se contact message send nahi kiya hai toh payment cancel ho jayegi. Pehle model select karke inquiry form submit karein.
+        </p>
+        <div class="pt-1">
+          <a href="https://webguruji.online/contact.html?subject=ai_upgrade" target="_blank" class="text-amber-400 hover:underline font-bold text-[11px]">
+            Go to Contact Form to Submit Request ↗
+          </a>
+        </div>
+      </div>
+
+      <form id="step1Form" onsubmit="handleVerifyEmail(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Your Registered Email Address *</label>
+          <div class="relative">
+            <input type="email" id="claimEmailInput" required placeholder="e.g. yourname@gmail.com"
+              class="w-full bg-slate-950/90 border border-slate-700/80 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 font-mono transition" />
+            <span class="absolute right-3.5 top-3 text-slate-500 text-sm">✉️</span>
+          </div>
+        </div>
+
+        <button type="submit" id="verifyBtn"
+          class="w-full py-3 px-5 rounded-2xl font-heading font-bold text-sm text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:to-amber-300 transition shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 active:scale-98">
+          <span>Verify &amp; Generate QR Invoice</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </form>
+
+      <div class="pt-2 border-t border-slate-800/80 text-center">
+        <span class="text-[11px] text-slate-400">Supported: GPay • PhonePe • Paytm • BHIM UPI • NetBanking</span>
+      </div>
+    </div>
+
+    <!-- STEP 2: INVOICE & FULL-SIZE ANIMATED QR CODE PAYMENT CARD -->
+    <div id="step2Card" class="hidden w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+      
+      <!-- User Greeting & Model Pill -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block font-bold">✓ Verified Order</span>
+          <h2 id="clientGreeting" class="text-lg font-bold font-heading text-white">Welcome, User!</h2>
+        </div>
+        <span id="requestedModelBadge" class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+          Guru-Flash 1.3
+        </span>
+      </div>
+
+      <!-- Price & Plan Summary -->
+      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Total Payable Amount</span>
+          <div class="flex items-baseline gap-2 mt-0.5">
+            <span id="planPriceInr" class="text-2xl font-black font-heading text-white">₹420</span>
+            <span id="planPriceUsd" class="text-xs text-slate-400 font-mono">($5.00 USD)</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Unlock Target</span>
+          <span id="planContextSummary" class="text-xs font-bold text-cyan-300 font-mono">128K Token Window</span>
+        </div>
+      </div>
+
+      <!-- Server Error Box replacing QR Code and UPI ID -->
+      <div class="py-10 px-4 rounded-3xl bg-rose-950/20 border border-rose-500/30 text-center space-y-3 my-4 shadow-xl">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-xl sm:text-2xl font-black font-heading text-rose-400 tracking-wide">server error wait 7days.</h3>
+          <p class="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
+            Payment gateway and UPI server connection is currently unavailable. Please wait 7 days.
+          </p>
+        </div>
+      </div>
+
+      <!-- Transaction Confirmation Form (Disabled during server error) -->
+      <div class="space-y-3 pt-2 border-t border-slate-800">
+        <button type="button" disabled
+          class="w-full py-3 px-5 rounded-2xl font-heading font-bold text-sm text-slate-400 bg-slate-800/60 border border-slate-700/50 cursor-not-allowed flex items-center justify-center gap-2">
+          <span>Server Error: Transactions Paused (Wait 7 Days)</span>
+        </button>
+      </div>
+
+      <button type="button" onclick="backToEmailStep()" class="w-full text-center text-xs text-slate-500 hover:text-slate-400 transition">
+        ← Change email address
+      </button>
+    </div>
+
+    <!-- STEP 3: SUCCESS CELEBRATION CARD -->
+    <div id="step3Success" class="hidden w-full bg-slate-900/95 backdrop-blur-2xl border border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl text-center space-y-5 animate-fade-in">
+      <div class="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-3xl flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/30">
+        ✓
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold font-heading text-white">Payment Done!</h2>
+        <p class="text-sm text-emerald-300 font-semibold mt-1">
+          You can now use your model: <span id="successModelName" class="text-white underline font-bold">Guru-Flash 1.3</span>
+        </p>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 text-left space-y-2">
+        <p>• Confirmation email sent from <strong>info@webguruji.online</strong>.</p>
+        <p>• Your purchased model has been unlocked in your browser, web account, and synced into the HarshGuruJi APK.</p>
+      </div>
+
+      <a href="https://ai.webguruji.online" class="w-full py-3.5 px-6 rounded-2xl font-heading font-bold text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 hover:opacity-95 transition shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-2">
+        <span>Launch GuruAI with Unlocked Model 🚀</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- Minimal Footer -->
+  <footer class="py-6 text-center text-xs text-slate-400 relative z-10 border-t border-slate-800/60 max-w-5xl mx-auto w-full px-4">
+    <p>© 2026 HarshGuruJi Ecosystem • All Rights Reserved • Official Payment Support: <a href="mailto:info@webguruji.online" class="text-cyan-400 hover:underline">info@webguruji.online</a></p>
+  </footer>
+
+  <!-- CONTROLLER SCRIPT -->
+  <script>
+    let activePaymentConfig = {
+      maintenance: false,
+      upi_id: 'harshguruji01@oksbi',
+      qr_url: '',
+      instructions: ''
+    };
+
+    async function checkPaymentGatewayConfig() {
+      // 1. Check Cookie
+      try {
+        const raw = document.cookie.split('; ').find(row => row.startsWith('hg_payment_config='));
+        if (raw) {
+          activePaymentConfig = Object.assign(activePaymentConfig, JSON.parse(decodeURIComponent(raw.split('=')[1])));
+        }
+      } catch(e) {}
+
+      // 2. Check localStorage
+      try {
+        const local = localStorage.getItem('hg_payment_config');
+        if (local) {
+          activePaymentConfig = Object.assign(activePaymentConfig, JSON.parse(local));
+        }
+      } catch(e) {}
+
+      // 3. Check Supabase
+      try {
+        const sb = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+        if (sb) {
+          const { data } = await sb.from('user_ai_limits').select('plan_name').eq('email', 'admin_payment_config@webguruji.online').maybeSingle();
+          if (data?.plan_name) {
+            activePaymentConfig = Object.assign(activePaymentConfig, JSON.parse(data.plan_name));
+          }
+        }
+      } catch(e) {}
+
+      if (activePaymentConfig.maintenance === true) {
+        const mainCard = document.getElementById('step1Card') || document.getElementById('step2Card');
+        if (mainCard && mainCard.parentElement) {
+          mainCard.parentElement.innerHTML = `
+            <div class="w-full bg-slate-900/95 backdrop-blur-2xl border border-rose-500/30 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-4">
+              <div class="text-5xl">⚠️</div>
+              <h2 class="text-2xl font-extrabold text-rose-400">Server error wait 7 days</h2>
+              <p class="text-sm text-slate-300 leading-relaxed max-w-md mx-auto">
+                The HarshGuruJi Payment Gateway is currently undergoing essential maintenance and security audits. Please check back after 7 days or contact administration at <strong class="text-indigo-400">info@webguruji.online</strong>.
+              </p>
+              <a href="https://webguruji.online/" class="inline-block px-6 py-2.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition">Return to HarshGuruJi Home</a>
+            </div>
+          `;
+        }
+        return true;
+      }
+
+      // Update dynamic UPI display and QR image in invoice if available
+      const upiIdDisplay = document.getElementById('upiIdDisplay');
+      if (upiIdDisplay && activePaymentConfig.upi_id) {
+        upiIdDisplay.textContent = activePaymentConfig.upi_id;
+      }
+      return false;
+    }
+
+    let verifiedClientData = null;
+
+    // Check query params on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const email = params.get('email') || localStorage.getItem('guru_ai_last_upgrade_email');
+      if (email) {
+        document.getElementById('claimEmailInput').value = email;
+        // Automatically verify
+        verifyEmailAddress(email);
+      }
+    });
+
+    function handleVerifyEmail(e) {
+      e.preventDefault();
+      const email = document.getElementById('claimEmailInput').value.trim();
+      if (!email) return;
+      verifyEmailAddress(email);
+    }
+
+    async function verifyEmailAddress(email) {
+      const btn = document.getElementById('verifyBtn');
+      const errBox = document.getElementById('step1Error');
+      errBox.classList.add('hidden');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>Verifying with Database...</span>';
+
+      try {
+        let matchedRecord = null;
+
+        // 1. Query Supabase contact_messages & user_ai_limits
+        if (window.supabase) {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (client) {
+            try {
+              const { data, error } = await client
+                .from('contact_messages')
+                .select('*')
+                .ilike('email', email)
+                .order('created_at', { ascending: false });
+
+              if (!error && data && data.length > 0) {
+                matchedRecord = data.find(r => r.subject === 'AI_UPGRADE' || (r.message && r.message.includes('GuruAI Premium'))) || data[0];
+              }
+            } catch(e) {}
+
+            // Check user_ai_limits table (readable)
+            if (!matchedRecord) {
+              try {
+                const { data: limitData } = await client
+                  .from('user_ai_limits')
+                  .select('*')
+                  .ilike('email', email)
+                  .maybeSingle();
+
+                if (limitData) {
+                  matchedRecord = {
+                    name: email.split('@')[0],
+                    email: email,
+                    message: 'GuruAI Premium Request for: ' + (limitData.plan_name || 'Guru-Argon 1.5'),
+                    created_at: limitData.updated_at || new Date().toISOString()
+                  };
+                }
+              } catch(e) {}
+            }
+          }
+        }
+
+        // 2. Check query token from authorized email link
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        if (!matchedRecord && urlToken) {
+          const storedModel = localStorage.getItem('guru_ai_requested_model') || 'Guru-Argon 1.5';
+          matchedRecord = {
+            name: email.split('@')[0],
+            email: email,
+            message: 'GuruAI Premium Request for: ' + storedModel,
+            created_at: new Date().toISOString()
+          };
+        }
+
+        // 3. Check local fallback storage if network or offline
+        if (!matchedRecord) {
+          const localEmail = localStorage.getItem('guru_ai_last_upgrade_email');
+          if (localEmail && localEmail.toLowerCase() === email.toLowerCase()) {
+            matchedRecord = {
+              name: email.split('@')[0],
+              email: email,
+              message: 'GuruAI Premium Request for: ' + (localStorage.getItem('guru_ai_requested_model') || 'Guru-Flash 1.3'),
+              created_at: new Date().toISOString()
+            };
+          }
+        }
+
+        // IF NOT FOUND -> REJECT PER REQUIREMENT
+        if (!matchedRecord) {
+          errBox.classList.remove('hidden');
+          document.getElementById('step1ErrorTitle').textContent = 'Please write correct email address.';
+          document.getElementById('step1ErrorMsg').textContent = 'Notice: Agar aapne AI page se contact message send nahi kiya hai toh payment cancel ho jayegi. Pehle model select karke inquiry form submit karein.';
+          btn.disabled = false;
+          btn.innerHTML = '<span>Verify & Generate QR Invoice</span>';
+          return;
+        }
+
+        // SUCCESS! Extract model details
+        verifiedClientData = matchedRecord;
+        renderInvoice(matchedRecord);
+
+      } catch (err) {
+        console.error('Verification error:', err);
+        errBox.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = '<span>Verify & Generate QR Invoice</span>';
+      }
+    }
+
+    function renderInvoice(record) {
+      const msg = record.message || '';
+      let model = 'Guru-Flash 1.3';
+      let inr = 420;
+      let usd = '$5.00';
+      let context = '64K Tokens (Thinking Bolt)';
+
+      if (msg.includes('Guru-Argon 1.5') || msg.includes('$25')) {
+        model = 'Guru-Argon 1.5';
+        inr = 2100;
+        usd = '$25.00';
+        context = '128K Tokens (1T Vision)';
+      } else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15')) {
+        model = 'Guru-Argon 1.4';
+        inr = 1250;
+        usd = '$15.00';
+        context = '128K Tokens (Deep Math)';
+      } else if (msg.includes('Guru-Flash 1.3') || msg.includes('$5')) {
+        model = 'Guru-Flash 1.3';
+        inr = 420;
+        usd = '$5.00';
+        context = '64K Tokens (Thinking Bolt)';
+      }
+
+      const clientName = record.name || record.email.split('@')[0];
+      document.getElementById('clientGreeting').textContent = `Welcome, ${clientName}!`;
+      document.getElementById('requestedModelBadge').textContent = model;
+      document.getElementById('planPriceInr').textContent = `₹${inr}`;
+      document.getElementById('planPriceUsd').textContent = `(${usd} USD)`;
+      document.getElementById('planContextSummary').textContent = context;
+
+      // Build dynamic UPI QR code & App Intent from configured Admin UPI ID
+      const targetUpiId = activePaymentConfig?.upi_id || 'harshguruji01@oksbi';
+      const upiString = `upi://pay?pa=${encodeURIComponent(targetUpiId)}&pn=HarshGuruJi&am=${inr}&cu=INR&tn=GuruAI_${encodeURIComponent(model.replace(/ /g, '_'))}`;
+      const qrApiUrl = activePaymentConfig?.qr_url || `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(upiString)}`;
+      const qrEl = document.getElementById('upiQrImage'); if (qrEl) qrEl.src = qrApiUrl;
+      const payBtnEl = document.getElementById('payAppBtn'); if (payBtnEl) payBtnEl.href = upiString;
+      const upiIdTextEl = document.getElementById('upiIdDisplay'); if (upiIdTextEl) upiIdTextEl.textContent = targetUpiId;
+
+      // Show Step 2
+      document.getElementById('step1Card').classList.add('hidden');
+      document.getElementById('step2Card').classList.remove('hidden');
+    }
+
+    function backToEmailStep() {
+      document.getElementById('step2Card').classList.add('hidden');
+      document.getElementById('step1Card').classList.remove('hidden');
+      const btn = document.getElementById('verifyBtn');
+      btn.disabled = false;
+      btn.innerHTML = '<span>Verify & Generate QR Invoice</span>';
+    }
+
+    function copyUpiId() {
+      const upiToCopy = activePaymentConfig?.upi_id || 'harshguruji01@oksbi';
+      navigator.clipboard.writeText(upiToCopy).then(() => {
+        const text = document.getElementById('copyUpiText');
+        text.textContent = 'Copied! ✓';
+        setTimeout(() => { text.textContent = 'Copy'; }, 2000);
+      });
+    }
+
+    async function handleConfirmPayment(event) {
+      event.preventDefault();
+      const utr = document.getElementById('utrInput').value.trim();
+      if (!utr) return;
+
+      const btn = document.getElementById('confirmPaymentBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span>Activating Your AI Model...</span>';
+
+      const email = verifiedClientData?.email || document.getElementById('claimEmailInput').value.trim();
+      const model = document.getElementById('requestedModelBadge').textContent.trim();
+
+      try {
+        // 1. Update Supabase contact_messages & user_ai_limits
+        if (window.supabase) {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (client) {
+            // Update message status
+            await client.from('contact_messages')
+              .update({ status: 'Payment Completed', utr_ref: utr })
+              .ilike('email', email);
+
+            // Activate user model in user_ai_limits
+            await client.from('user_ai_limits').upsert({
+              email: email.toLowerCase().trim(),
+              plan_name: model,
+              max_requests: 350,
+              context_limit: 325000,
+              is_active: true,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'email' });
+          }
+        }
+
+        // 2. Persist locally for instant browser & app sync
+        localStorage.setItem('guru_ai_user_paid', 'true');
+        localStorage.setItem('guru_ai_unlocked_model', model.toLowerCase().replace(/ /g, '-'));
+
+        // 3. Send automated confirmation email from info@webguruji.online
+        try {
+          const confirmSubject = 'Payment Done & Model Activated: ' + model;
+          const confirmHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:20px;background:#07090e;font-family:-apple-system,BlinkMacSystemFont,Roboto,sans-serif;color:#f8fafc;"><div style="max-width:580px;margin:20px auto;background:#0d121f;border:1px solid rgba(16,185,129,0.4);border-radius:24px;overflow:hidden;padding:32px;text-align:center;"><div style="font-size:42px;margin-bottom:12px;">🎉✓</div><h1 style="color:#34d399;font-size:24px;font-weight:800;margin:0 0 10px 0;">Payment Done &amp; Model Activated!</h1><p style="font-size:15px;color:#e2e8f0;line-height:1.6;margin-bottom:24px;">Confirmation done! Your payment has been received and verified. You can now use your model: <strong style="color:#38bdf8;">' + model + '</strong>.</p><div style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:16px;padding:22px;margin:24px 0;text-align:center;"><p style="font-size:14px;color:#a7f3d0;margin:0 0 16px 0;font-weight:600;">Kripya niche diye gaye link par visit karke apna unlocked model use karein:</p><h2 style="margin:16px 0 12px 0;"><a href="https://ai.webguruji.online" style="display:inline-block;background:linear-gradient(135deg,#10b981,#059669);color:#ffffff;text-decoration:none;padding:12px 30px;border-radius:12px;font-size:18px;font-weight:800;box-shadow:0 4px 20px rgba(16,185,129,0.4);">🚀 https://ai.webguruji.online</a></h2><h4 style="margin:16px 0 0 0;font-size:14px;"><a href="https://webguruji.online" style="color:#60a5fa;text-decoration:none;">🌐 https://webguruji.online</a></h4></div><p style="font-size:12px;color:#64748b;line-height:1.5;margin-top:24px;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;">Official confirmation sent from <strong>info@webguruji.online</strong>.<br>Account: <strong>' + email + '</strong> &bull; HarshGuruJi All Rights Reserved.</p></div></body></html>';
+
+          let mailSent = false;
+          try {
+            const res = await fetch('https://ai.webguruji.online/api/mail/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                to: email,
+                subject: confirmSubject,
+                html: confirmHtml,
+                displayName: 'HarshGuruJi AI Activation'
+              })
+            });
+            if (res.ok) mailSent = true;
+          } catch(e) {}
+
+          if (!mailSent) {
+            try {
+              await fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
+                },
+                body: JSON.stringify({
+                  from: 'info@webguruji.online',
+                  to: [email],
+                  subject: confirmSubject,
+                  html: confirmHtml
+                })
+              });
+            } catch(e) {}
+          }
+        } catch(e) {}
+
+        // 3b. Dispatch Purchase Notification to Master Admin at contact@webguruji.online
+        try {
+          const clientName = verifiedClientData?.name || email.split('@')[0];
+          const adminAlertHtml = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>New AI Premium Order Payment</title></head>
+<body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
+  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #10b981;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+    <div style="background:linear-gradient(135deg, #059669, #10b981);padding:24px;text-align:center;color:#fff;">
+      <h1 style="margin:0;font-size:22px;">💰 NEW AI MODEL PREMIUM PAYMENT RECEIVED</h1>
+      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">HarshGuruJi Instant Payment Portal</p>
+    </div>
+    <div style="padding:24px;">
+      <p style="font-size:15px;line-height:1.6;color:#cbd5e1;">A customer has completed an order on <strong>HarshGuruJi Instant Payment Gateway (payment.webguruji.online)</strong>.</p>
+      <table style="width:100%;border-collapse:collapse;margin:20px 0;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden;">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Customer Name</td><td style="padding:10px 14px;color:#fff;font-weight:700;">${clientName}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Customer Email</td><td style="padding:10px 14px;color:#38bdf8;font-family:monospace;font-weight:700;">${email}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Purchased Model</td><td style="padding:10px 14px;color:#fde68a;font-weight:700;">${model}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Transaction / UTR</td><td style="padding:10px 14px;color:#34d399;font-family:monospace;font-weight:700;">${utr}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Payment Source</td><td style="padding:10px 14px;color:#fff;">https://payment.webguruji.online/payment.html</td></tr>
+        <tr><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Date &amp; Time</td><td style="padding:10px 14px;color:#fff;">${new Date().toLocaleString()}</td></tr>
+      </table>
+      <div style="margin-top:20px;padding:12px;background:rgba(16,185,129,0.1);border-left:4px solid #10b981;border-radius:6px;font-size:12px;color:#a7f3d0;">
+        💡 <strong>Action for Master Admin:</strong> Verify bank account credits. You or your Ops Manager / AI Limits Manager subadmin can tune/expand this user's quota in the Admin Control Panel.
+      </div>
+    </div>
+    <div style="background:#070a13;padding:16px;text-align:center;font-size:11px;color:#64748b;border-top:1px solid rgba(255,255,255,0.06);">
+      Sent automatically by HarshGuruJi Payment Gateway from info@webguruji.online to contact@webguruji.online
+    </div>
+  </div>
+</body>
+</html>`;
+
+          await fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
+            },
+            body: JSON.stringify({
+              from: 'info@webguruji.online',
+              to: ['contact@webguruji.online'],
+              displayName: 'HarshGuruJi Payment Desk',
+              subject: `💰 New AI Purchase: ${clientName} (${email}) - ${model} [UTR: ${utr}]`,
+              text: `New AI Premium Purchase Received!\nCustomer: ${clientName}\nEmail: ${email}\nModel/Tier: ${model}\nUTR Ref: ${utr}\nTime: ${new Date().toLocaleString()}`,
+              html: adminAlertHtml
+            })
+          });
+        } catch(adminMailErr) {
+          console.warn('Master admin payment alert mail warning:', adminMailErr);
+        }
+
+        // 4. Reveal Step 3
+        document.getElementById('step2Card').classList.add('hidden');
+        document.getElementById('successModelName').textContent = model;
+        document.getElementById('step3Success').classList.remove('hidden');
+
+      } catch (err) {
+        console.error('Activation error:', err);
+        // Fallback local unlock
+        localStorage.setItem('guru_ai_user_paid', 'true');
+        localStorage.setItem('guru_ai_unlocked_model', model.toLowerCase().replace(/ /g, '-'));
+        document.getElementById('step2Card').classList.add('hidden');
+        document.getElementById('successModelName').textContent = model;
+        document.getElementById('step3Success').classList.remove('hidden');
+      }
+    }
+      // Auto-fill and auto-verify from authorized email link
+    window.addEventListener('DOMContentLoaded', async () => {
+      const isMaint = await checkPaymentGatewayConfig();
+      if (isMaint) return;
+      const urlParams = new URLSearchParams(window.location.search);
+      const emailParam = urlParams.get('email');
+      const tokenParam = urlParams.get('token');
+      if (emailParam && tokenParam) {
+        const emailInput = document.getElementById('claimEmailInput');
+        if (emailInput) {
+          emailInput.value = emailParam;
+          setTimeout(() => {
+            const form = document.getElementById('claimEmailForm');
+            if (form) verifyClaimEmail(new Event('submit'));
+          }, 300);
+        }
+      }
+    });
+  </script>
+  <script src="footer-premium.js"></script>
+</body>
+</html>
