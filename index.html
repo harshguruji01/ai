@@ -588,6 +588,7 @@
   <link rel="stylesheet" href="loading-lines.css">
   <link rel="stylesheet" href="ai-loader.css">
   <script src="ai-loader.js" defer></script>
+  <link rel="stylesheet" href="ai-chat-input.css" />
 </head>
 
 <body class="h-screen w-screen overflow-hidden flex flex-col font-sans-mode text-size-medium select-none">
@@ -1213,7 +1214,7 @@
           </div>
 
 
-          <form id="chatForm" action="javascript:void(0);" onsubmit="if(window.handleChatSubmit){window.handleChatSubmit(event);}return false;" class="relative rounded-2xl border transition-all duration-200 backdrop-blur-2xl bg-white/[0.03] dark:bg-white/[0.02] border-white/[0.08] dark:border-white/[0.05] shadow-2xl focus-within:ring-2 focus-within:ring-violet-500/30 focus-within:border-violet-500/40">
+          <form id="chatForm" action="javascript:void(0);" onsubmit="if(window.handleChatSubmit){window.handleChatSubmit(event);}return false;" class="guru-ai-input-wrapper relative w-full">
             
             <!-- Command Palette Dropdown (Triggered by / or ⌘ button) -->
             <div id="commandPalette" class="hidden absolute left-3 right-3 bottom-full mb-2 backdrop-blur-xl bg-slate-950/95 border border-white/10 rounded-xl z-50 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-150">
@@ -1261,101 +1262,134 @@
               </div>
             </div>
 
-            <!-- Auto-resize Textarea Input (Slim Breadth & Ask Anything To GuruAI ) -->
-            <div class="px-3 sm:px-4 pt-2 pb-0.5">
-              <textarea id="promptInput" rows="1" placeholder="Apna sawaal GuruAI se poochhein…"
-                class="w-full px-1.5 py-1 resize-none bg-transparent border-none text-[14px] leading-snug text-white/90 placeholder-white/40 focus:outline-none min-h-[34px] max-h-40 disabled:opacity-60"></textarea>
-            </div>
-
-            <!-- In-Capsule Attachments Chip Container -->
-            <div id="attachmentChipContainer" class="hidden px-4 pb-2.5 flex gap-2 flex-wrap">
-              <div class="inline-flex items-center gap-2 text-xs bg-white/[0.04] py-1 px-3 rounded-lg text-white/80 border border-white/10">
-                <span id="attachmentFileName" class="truncate max-w-xs font-mono">file.pdf</span>
-                <button type="button" id="removeAttachmentBtn" class="text-white/40 hover:text-white transition-colors">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+            <!-- 21st.dev Animated Attachment Tray (Sliding Drawer Above Capsule) -->
+            <div id="guru-ai-tray" class="guru-ai-tray">
+              <div id="guru-ai-tray-inner" class="guru-ai-tray-inner">
+                <!-- In-Capsule Attachments Chip Container -->
+                <div id="attachmentChipContainer" class="hidden flex items-center gap-2 py-1 px-3 rounded-xl bg-slate-900/90 border border-indigo-500/30 text-xs text-slate-200">
+                  <span id="attachmentFileName" class="truncate max-w-xs font-mono text-cyan-300">file.pdf</span>
+                  <button type="button" id="removeAttachmentBtn" class="text-white/40 hover:text-rose-400 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <!-- Bottom Action Toolbar with Left Plus Menu & Models Selector -->
-            <div class="px-2.5 sm:px-3.5 py-2 border-t border-white/[0.06] flex items-center justify-between gap-2 relative">
-              <div class="flex items-center gap-2">
-                
-                <!-- 1. Left Side: Plus (+) Icon Menu Button -->
-                <div class="relative">
-                  <button type="button" id="chatbarPlusBtn" onclick="toggleChatbarPlusMenu(event)"
-                    class="w-8 h-8 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white/80 hover:text-white flex items-center justify-center transition border border-white/10 shadow-sm"
-                    title="Add attachments, mic voice, or image studio">
-                    <svg class="w-4 h-4 transition-transform duration-200" id="chatbarPlusIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                  </button>
+            <!-- Main Spring-Physics AI Chat Capsule (from @jahed/components/ai-chat-input) -->
+            <div id="guru-ai-capsule" class="guru-ai-capsule relative flex flex-col rounded-2xl sm:rounded-3xl border border-indigo-500/25 bg-[#0e1424]/90 backdrop-blur-2xl shadow-2xl transition-all duration-300 focus-within:border-indigo-500/50 focus-within:shadow-[0_0_35px_rgba(99,102,241,0.2)]">
+              
+              <div class="guru-ai-fade top pointer-events-none"></div>
+              <div class="guru-ai-fade bottom pointer-events-none"></div>
 
-                  <!-- Plus Icon Dropdown Popup (Mic, Files, Images) -->
-                  <div id="chatbarPlusMenu" class="hidden absolute bottom-full left-0 mb-2.5 w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-700/70 rounded-2xl p-1.5 shadow-2xl z-50 space-y-1 animate-fade-in">
-                    <button type="button" onclick="triggerFileAttach()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
-                      <span class="text-base p-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:scale-110 transition-transform">📁</span>
-                      <div>
-                        <div class="font-semibold text-white">Attach File / Docs</div>
-                        <div class="text-[10px] text-slate-400">PDF, TXT, JSON, CSV</div>
-                      </div>
+              <!-- Auto-resize Textarea Input with Smooth Typography -->
+              <div class="px-4 pt-3 pb-1">
+                <textarea id="promptInput" rows="1" placeholder="Apna sawaal GuruAI se poochhein… (Enter to send 🚀)"
+                  class="guru-ai-textarea w-full px-1 py-1 resize-none bg-transparent border-none text-[14px] sm:text-[15px] leading-relaxed text-white placeholder-slate-400/60 focus:outline-none min-h-[38px] max-h-44 disabled:opacity-60"
+                  aria-label="GuruAI Prompt Input"></textarea>
+              </div>
+
+              <!-- Bottom Action Toolbar with Left Plus Menu & Models Selector -->
+              <div class="guru-ai-toolbar px-3 py-2.5 border-t border-white/[0.06] flex items-center justify-between gap-2 relative">
+                
+                <div class="guru-ai-toolbar-left flex items-center gap-2">
+                  
+                  <!-- 1. Left Side: Plus (+) Icon Menu Button -->
+                  <div class="relative">
+                    <button type="button" id="chatbarPlusBtn" onclick="toggleChatbarPlusMenu(event)"
+                      class="guru-ai-btn w-8 h-8 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white/80 hover:text-white flex items-center justify-center transition border border-white/10 shadow-sm"
+                      title="Add attachments, mic voice, or image studio">
+                      <svg class="w-4 h-4 transition-transform duration-200" id="chatbarPlusIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                      </svg>
                     </button>
-                    <button type="button" onclick="triggerVoiceInput()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
-                      <span class="text-base p-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-transform">🎤</span>
-                      <div>
-                        <div class="font-semibold text-white">Voice Dictation</div>
-                        <div class="text-[10px] text-slate-400">Speech-to-text mic input</div>
-                      </div>
-                    </button>
-                    <button type="button" onclick="triggerImageStudio()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-purple-300 transition text-left group">
-                      <span class="text-base p-1 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform">🖼️</span>
-                      <div>
-                        <div class="font-semibold text-white">Image Studio &amp; Vision</div>
-                        <div class="text-[10px] text-slate-400">Attach photo or 8K render</div>
-                      </div>
+
+                    <!-- Plus Icon Dropdown Popup (Mic, Files, Images) -->
+                    <div id="chatbarPlusMenu" class="hidden absolute bottom-full left-0 mb-2.5 w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-700/70 rounded-2xl p-1.5 shadow-2xl z-50 space-y-1 animate-fade-in">
+                      <button type="button" onclick="triggerFileAttach()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:scale-110 transition-transform">📁</span>
+                        <div>
+                          <div class="font-semibold text-white">Attach File / Docs</div>
+                          <div class="text-[10px] text-slate-400">PDF, TXT, JSON, CSV</div>
+                        </div>
+                      </button>
+                      <button type="button" onclick="triggerVoiceInput()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-transform">🎤</span>
+                        <div>
+                          <div class="font-semibold text-white">Voice Dictation</div>
+                          <div class="text-[10px] text-slate-400">Speech-to-text mic input</div>
+                        </div>
+                      </button>
+                      <button type="button" onclick="triggerImageStudio()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-purple-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform">🖼️</span>
+                        <div>
+                          <div class="font-semibold text-white">Image Studio &amp; Vision</div>
+                          <div class="text-[10px] text-slate-400">Attach photo or 8K render</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Hidden system elements wired to plus menu -->
+                  <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
+                  <button type="button" id="attachFileBtn" class="hidden"></button>
+                  <button type="button" id="voiceDictationBtn" class="hidden"></button>
+                  <button type="button" id="imageModeBtn" class="hidden"></button>
+
+                  <!-- 2. Models Chooser Chip (Spring Animated) -->
+                  <div class="relative">
+                    <button type="button" id="chatbarModelsBtn" onclick="openModelPickerSheet()"
+                      class="guru-ai-chip flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-200 hover:text-white border border-indigo-500/30 text-xs font-semibold transition shadow-sm"
+                      title="Choose AI Model">
+                      <span class="guru-ai-model-dot w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span id="chatbarActiveModelLabel" class="font-heading">Guru-Flash 1.1</span>
+                      <svg class="w-3.5 h-3.5 text-indigo-300 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                   </div>
+
+                  <!-- 3. Thinking Effort Button (from @jahed/components/ai-chat-input) -->
+                  <button type="button" id="chatbarEffortBtn" onclick="cycleChatEffort()"
+                    class="guru-ai-chip flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-700/70 border border-slate-700/60 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-medium transition shadow-sm"
+                    title="Cycle Thinking Effort (Low / Medium / High)">
+                    <svg class="guru-ai-effort-icon w-3.5 h-3.5 text-indigo-400" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <rect class="bar bar-1" x="1.5" y="8" width="2.5" height="4.5" rx="1" fill="currentColor"></rect>
+                      <rect class="bar bar-2" x="5.5" y="5" width="2.5" height="7.5" rx="1" fill="currentColor"></rect>
+                      <rect class="bar bar-3" x="9.5" y="2" width="2.5" height="10.5" rx="1" fill="currentColor"></rect>
+                    </svg>
+                    <span id="chatbarEffortLabel" class="hidden sm:inline text-[11px] font-mono">Medium</span>
+                  </button>
+
                 </div>
 
-                <!-- Hidden system elements wired to plus menu -->
-                <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
-                <button type="button" id="attachFileBtn" class="hidden"></button>
-                <button type="button" id="voiceDictationBtn" class="hidden"></button>
-                <button type="button" id="imageModeBtn" class="hidden"></button>
+                <!-- Right Side: Morphing Send / Stop / Mic Action Button -->
+                <div class="guru-ai-toolbar-right flex items-center gap-2">
+                  <!-- Stop Generation Button -->
+                  <button type="button" id="stopGenBtn"
+                    class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition animate-pulse">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <rect x="6" y="6" width="12" height="12" rx="2" />
+                    </svg>
+                    <span>Stop</span>
+                  </button>
 
-                <!-- 2. Just to the Right: Models Chooser Button -->
-                <div class="relative">
-                  <button type="button" id="chatbarModelsBtn" onclick="openModelPickerSheet()"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500/15 to-purple-500/15 hover:from-indigo-500/25 hover:to-purple-500/25 text-indigo-200 hover:text-white border border-indigo-500/30 text-xs font-semibold transition shadow-sm"
-                    title="Choose AI Model">
-                    <span class="text-cyan-400 text-sm">⚡</span>
-                    <span id="chatbarActiveModelLabel" class="font-heading">Models</span>
-                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                  <!-- Unified Morphing Action Button (Send / Mic / Waves) -->
+                  <button type="button" id="sendBtn" onclick="handleUnifiedActionClick(event)"
+                    class="guru-ai-action-btn relative px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Send Message or Voice Dictation">
+                    
+                    <!-- Voice Wave Visualizer Bars (Shown when recording) -->
+                    <div id="guru-ai-voice-waves" class="guru-ai-voice-waves hidden flex items-center gap-0.5 h-3.5">
+                      <span class="w-0.5 h-full bg-cyan-400 rounded-full animate-bounce"></span>
+                      <span class="w-0.5 h-2/3 bg-cyan-300 rounded-full animate-bounce [animation-delay:0.15s]"></span>
+                      <span class="w-0.5 h-full bg-cyan-400 rounded-full animate-bounce [animation-delay:0.3s]"></span>
+                    </div>
+
+                    <!-- Morphing Icon: Arrow Send or Mic -->
+                    <svg id="sendBtnIcon" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-6 6m6-6l6 6" />
+                    </svg>
+                    <span id="sendBtnText" class="hidden sm:inline">Send</span>
                   </button>
                 </div>
-
-              </div>
-
-              <div class="flex items-center gap-2">
-                <!-- Stop Generation Button -->
-                <button type="button" id="stopGenBtn"
-                  class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition">
-                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                    <rect x="6" y="6" width="12" height="12" rx="2" />
-                  </svg>
-                  <span>Stop</span>
-                </button>
-
-                <!-- Send Button (from Animated AI Chat) -->
-                <button type="button" id="sendBtn" onclick="if(window.handleChatSubmit){window.handleChatSubmit(event);}"
-                  class="px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-white text-[#0A0A0B] shadow-lg shadow-white/10 hover:opacity-95 active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
-                  title="Send Message">
-                  <svg id="sendBtnIcon" class="w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                  <span>Send</span>
-                </button>
               </div>
             </div>
           </form>
@@ -6326,6 +6360,211 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       if (typeof closeModelDetailsModal === 'function') closeModelDetailsModal();
       openAiPaymentModal(modelKey, priceVal);
     };
+  
+    // ══════════════════════════════════════════════════════════════════════════
+    // 21st.dev Modern AI Chat Input Enhanced Controller (@jahed/components/ai-chat-input)
+    // ══════════════════════════════════════════════════════════════════════════
+
+    // Effort Cycling
+    const CHAT_EFFORT_LEVELS = ['Low', 'Medium', 'High'];
+    let currentChatEffortIdx = 1; // Default Medium
+
+    window.cycleChatEffort = function() {
+      currentChatEffortIdx = (currentChatEffortIdx + 1) % CHAT_EFFORT_LEVELS.length;
+      const level = CHAT_EFFORT_LEVELS[currentChatEffortIdx];
+      const labelEl = document.getElementById('chatbarEffortLabel');
+      if (labelEl) labelEl.textContent = level;
+
+      const icon = document.querySelector('.guru-ai-effort-icon');
+      if (icon) {
+        const b1 = icon.querySelector('.bar-1');
+        const b2 = icon.querySelector('.bar-2');
+        const b3 = icon.querySelector('.bar-3');
+        if (level === 'Low') {
+          if (b1) b1.setAttribute('height', '4.5');
+          if (b2) b2.setAttribute('height', '3.5');
+          if (b3) b3.setAttribute('height', '2.5');
+        } else if (level === 'Medium') {
+          if (b1) b1.setAttribute('height', '4.5');
+          if (b2) b2.setAttribute('height', '7.5');
+          if (b3) b3.setAttribute('height', '4.5');
+        } else {
+          if (b1) b1.setAttribute('height', '6.5');
+          if (b2) b2.setAttribute('height', '9.5');
+          if (b3) b3.setAttribute('height', '12.5');
+        }
+      }
+      try {
+        localStorage.setItem('guru_ai_effort', level);
+      } catch (e) {}
+      if (typeof showToast === 'function') showToast('⚡ Thinking Effort set to ' + level, 'info');
+    };
+
+    // Plus (+) Menu Toggle
+    window.toggleChatbarPlusMenu = function(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('chatbarPlusMenu');
+      const icon = document.getElementById('chatbarPlusIcon');
+      if (menu) {
+        menu.classList.toggle('hidden');
+        if (!menu.classList.contains('hidden')) {
+          if (icon) icon.style.transform = 'rotate(45deg)';
+          const closeMenu = (evt) => {
+            if (!menu.contains(evt.target) && evt.target.id !== 'chatbarPlusBtn') {
+              menu.classList.add('hidden');
+              if (icon) icon.style.transform = 'rotate(0deg)';
+              document.removeEventListener('click', closeMenu);
+            }
+          };
+          setTimeout(() => document.addEventListener('click', closeMenu), 50);
+        } else {
+          if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+      }
+    };
+
+    window.triggerFileAttach = function() {
+      const fileInput = document.getElementById('fileAttachmentInput');
+      if (fileInput) fileInput.click();
+      const menu = document.getElementById('chatbarPlusMenu');
+      if (menu) menu.classList.add('hidden');
+    };
+
+    window.triggerVoiceInput = function() {
+      const menu = document.getElementById('chatbarPlusMenu');
+      if (menu) menu.classList.add('hidden');
+
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        if (typeof showToast === 'function') showToast('⚠️ Web Speech API not supported in this browser.', 'warning');
+        return;
+      }
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'hi-IN';
+      recognition.interimResults = false;
+
+      const waves = document.getElementById('guru-ai-voice-waves');
+      const btnText = document.getElementById('sendBtnText');
+      if (waves) waves.classList.remove('hidden');
+      if (btnText) btnText.textContent = 'Listening…';
+      if (typeof showToast === 'function') showToast('🎤 Listening... Speak now in Hindi or English', 'info');
+
+      recognition.onresult = (evt) => {
+        const transcript = evt.results[0][0].transcript;
+        const promptInput = document.getElementById('promptInput');
+        if (promptInput) {
+          promptInput.value = (promptInput.value ? promptInput.value + ' ' : '') + transcript;
+          promptInput.dispatchEvent(new Event('input'));
+          promptInput.focus();
+        }
+      };
+
+      recognition.onend = () => {
+        if (waves) waves.classList.add('hidden');
+        updateActionMorphState();
+      };
+
+      recognition.onerror = () => {
+        if (waves) waves.classList.add('hidden');
+        updateActionMorphState();
+      };
+
+      try {
+        recognition.start();
+      } catch (err) {
+        if (waves) waves.classList.add('hidden');
+        updateActionMorphState();
+      }
+    };
+
+    window.triggerImageStudio = function() {
+      const menu = document.getElementById('chatbarPlusMenu');
+      if (menu) menu.classList.add('hidden');
+      if (typeof showToast === 'function') showToast('🖼️ Opening GuruAI Image Studio...', 'info');
+      setTimeout(() => {
+        window.location.href = 'image.html';
+      }, 400);
+    };
+
+    // Unified Morphing Action Button Click
+    window.handleUnifiedActionClick = function(e) {
+      if (e) e.preventDefault();
+      const promptInput = document.getElementById('promptInput');
+      const hasText = promptInput && promptInput.value.trim().length > 0;
+      if (hasText) {
+        if (typeof window.handleChatSubmit === 'function') {
+          window.handleChatSubmit(e);
+        } else {
+          const form = document.getElementById('chatForm');
+          if (form) form.dispatchEvent(new Event('submit'));
+        }
+      } else {
+        triggerVoiceInput();
+      }
+    };
+
+    // Live Morphing Update for Action Button (Mic vs Send)
+    function updateActionMorphState() {
+      const promptInput = document.getElementById('promptInput');
+      const sendBtn = document.getElementById('sendBtn');
+      const sendIcon = document.getElementById('sendBtnIcon');
+      const sendText = document.getElementById('sendBtnText');
+      if (!promptInput || !sendBtn) return;
+
+      const hasText = promptInput.value.trim().length > 0;
+      if (hasText) {
+        if (sendText) sendText.textContent = 'Send';
+        if (sendIcon) {
+          sendIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-6 6m6-6l6 6" />';
+        }
+        sendBtn.title = 'Send Message (Enter)';
+      } else {
+        if (sendText) sendText.textContent = 'Voice';
+        if (sendIcon) {
+          sendIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />';
+        }
+        sendBtn.title = 'Voice Dictation or Type Prompt';
+      }
+    }
+
+    // Attach File Event Listener to Show Sliding Tray
+    document.addEventListener('DOMContentLoaded', () => {
+      const fileInput = document.getElementById('fileAttachmentInput');
+      const tray = document.getElementById('guru-ai-tray');
+      const chipContainer = document.getElementById('attachmentChipContainer');
+      const fileNameSpan = document.getElementById('attachmentFileName');
+      const removeBtn = document.getElementById('removeAttachmentBtn');
+
+      if (fileInput) {
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            if (fileNameSpan) fileNameSpan.textContent = file.name;
+            if (chipContainer) chipContainer.classList.remove('hidden');
+            if (tray) tray.classList.add('has-attachments');
+            if (typeof showToast === 'function') showToast('📎 File attached: ' + file.name, 'success');
+          }
+        });
+      }
+
+      if (removeBtn) {
+        removeBtn.addEventListener('click', (e) => {
+          if (e) e.stopPropagation();
+          if (fileInput) fileInput.value = '';
+          if (chipContainer) chipContainer.classList.add('hidden');
+          if (tray) tray.classList.remove('has-attachments');
+        });
+      }
+
+      const pInput = document.getElementById('promptInput');
+      if (pInput) {
+        pInput.addEventListener('input', updateActionMorphState);
+        pInput.addEventListener('change', updateActionMorphState);
+      }
+      updateActionMorphState();
+    });
+
   </script>
 
 </body>
