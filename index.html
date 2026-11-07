@@ -747,13 +747,13 @@
           <span class="text-[10px] text-cyan-400 font-mono">Open &rarr;</span>
         </a>
 
-        <!-- Dynamic Quota Status -->
-        <div class="px-2 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-between">
+        <!-- Dynamic Quota Status (Hidden until <= 3 chats remain) -->
+        <div id="sidebarQuotaWidget" class="hidden px-2 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[11px] text-slate-400 items-center justify-between" style="display:none;">
           <span class="flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
             <span>AI Credits:</span>
           </span>
-          <span class="font-mono text-cyan-300 font-semibold" id="quotaSidebarText">10 Free Daily</span>
+          <span class="font-mono text-amber-300 font-semibold" id="quotaSidebarText">Sirf 3 Bachi Hain</span>
         </div>
 
         <div class="pt-1 space-y-2">
@@ -842,24 +842,28 @@
             </div>
           </a>
 
-          <!-- Center/Left: Current Active Model Badge -->
+          <!-- Center/Left: Current Active Model Badge (Hidden from top nav per user instruction) -->
           <div
-            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700/80 hover:border-indigo-500/60 transition cursor-pointer shadow-sm group"
-            id="modelSelectorBadge" onclick="openModelPickerSheet()" title="AI Model: Guru-Flash 1.1 (Tap to switch)">
+            class="hidden"
+            id="modelSelectorBadge" style="display:none !important;" title="AI Model: Guru-Flash 1.1">
             <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" id="headerModelDot"></span>
             <span class="font-bold text-xs tracking-wide text-white font-heading" id="headerActiveModelName">Guru-Flash 1.1</span>
             <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hidden sm:inline">Guru-Flash 1.1 & SDXL</span>
-            <svg class="w-3 h-3 text-slate-400 group-hover:text-cyan-300 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </div>
         </div>
 
         <!-- Right: Buttons in Exact Specified Order -->
         <div class="flex items-center gap-1 sm:gap-1.5">
           
-          <!-- Request Counter Pill (Near user area) -->
+          <!-- Request Counter Pill (Shown ONLY when <= 3 chats remain) -->
           <div id="headerQuotaBadge"
-            class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 shadow-sm transition">
-            <span id="headerQuotaText">8 requests left</span>
+            class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 shadow-sm transition animate-pulse cursor-pointer"
+            style="display:none;"
+            onclick="openUpgradeModal()"
+            title="Chat Limit Warning - Tap to upgrade">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span id="headerQuotaText">Sirf 3 chats bachi hain</span>
             <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-indigo-950/60 text-indigo-200 hidden" id="headerTierText">Guest</span>
           </div>
 
@@ -4503,6 +4507,9 @@ COMPLETENESS MANDATE:
             localStorage.setItem(key, JSON.stringify(stored));
           }
         }
+        if (remainingAllowance === 3 && typeof showToast === 'function') {
+          showToast('⚠️ Reminder: Sirf 3 chat limit bachi hain.', 'warning');
+        }
         updateQuotaUI();
       }
     }
@@ -4510,10 +4517,7 @@ COMPLETENESS MANDATE:
     function updateQuotaUI() {
       const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
       const quotaSidebarEl = document.getElementById('quotaSidebarText');
-      if (quotaSidebarEl) {
-        quotaSidebarEl.textContent = isMember ? `${remainingAllowance}/50 Left` : `${remainingAllowance}/25 Left`;
-      }
-
+      const sidebarQuotaWidget = document.getElementById('sidebarQuotaWidget');
       const headerQuotaBadge = document.getElementById('headerQuotaBadge');
       const headerQuotaText = document.getElementById('headerQuotaText');
       const footerQuotaText = document.getElementById('footerQuotaText');
@@ -4525,42 +4529,61 @@ COMPLETENESS MANDATE:
         if (headerQuotaBadge) {
           headerQuotaBadge.classList.remove('hidden');
           headerQuotaBadge.classList.add('inline-flex');
-          headerQuotaBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 border border-rose-500/30 text-rose-300 shadow-sm transition';
+          headerQuotaBadge.style.display = 'inline-flex';
+          headerQuotaBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 border border-rose-500/30 text-rose-300 shadow-sm transition';
           if (headerQuotaText) headerQuotaText.textContent = 'Limit reached';
+        }
+        if (sidebarQuotaWidget) {
+          sidebarQuotaWidget.classList.remove('hidden');
+          sidebarQuotaWidget.classList.add('flex');
+          sidebarQuotaWidget.style.display = 'flex';
+          if (quotaSidebarEl) quotaSidebarEl.textContent = 'Limit Reached';
         }
         if (footerQuotaText) {
           footerQuotaText.classList.remove('hidden');
           footerQuotaText.textContent = 'Aaj ki free limit khatam ho gayi';
           footerQuotaText.className = 'font-mono text-rose-400 font-semibold text-[11px]';
         }
-      } else if (remainingAllowance <= 2) {
-        // Subtle warning badge: Sirf 2 requests bache hain
+      } else if (remainingAllowance <= 3) {
+        // Warning: Remind user only when <= 3 chat limits remain
         if (limitCard) limitCard.classList.add('hidden');
         if (headerQuotaBadge) {
           headerQuotaBadge.classList.remove('hidden');
           headerQuotaBadge.classList.add('inline-flex');
-          headerQuotaBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 shadow-sm transition animate-pulse';
-          if (headerQuotaText) headerQuotaText.textContent = `Sirf ${remainingAllowance} requests bache hain`;
+          headerQuotaBadge.style.display = 'inline-flex';
+          headerQuotaBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 shadow-sm transition animate-pulse cursor-pointer';
+          if (headerQuotaText) headerQuotaText.textContent = `Sirf ${remainingAllowance} chat${remainingAllowance > 1 ? 's' : ''} bachi hain`;
+        }
+        if (sidebarQuotaWidget) {
+          sidebarQuotaWidget.classList.remove('hidden');
+          sidebarQuotaWidget.classList.add('flex');
+          sidebarQuotaWidget.style.display = 'flex';
+          if (quotaSidebarEl) quotaSidebarEl.textContent = `Sirf ${remainingAllowance} Bachi Hain`;
         }
         if (footerQuotaText) {
           footerQuotaText.classList.remove('hidden');
-          footerQuotaText.textContent = `Sirf ${remainingAllowance} requests bache hain`;
+          footerQuotaText.textContent = `Sirf ${remainingAllowance} chat limit bachi hai`;
           footerQuotaText.className = 'font-mono text-amber-400 font-semibold text-[11px]';
         }
       } else {
-        // Normal quota
+        // Normal quota: Keep limit section completely HIDDEN
         if (limitCard) limitCard.classList.add('hidden');
         if (headerQuotaBadge) {
-          headerQuotaBadge.classList.remove('hidden');
-          headerQuotaBadge.classList.add('inline-flex');
-          headerQuotaBadge.className = 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 shadow-sm transition';
-          if (headerQuotaText) {
-            headerQuotaText.textContent = isMember ? `${remainingAllowance} requests / 12h left` : `${remainingAllowance} requests left`;
-          }
+          headerQuotaBadge.classList.add('hidden');
+          headerQuotaBadge.classList.remove('inline-flex');
+          headerQuotaBadge.style.display = 'none';
+        }
+        if (sidebarQuotaWidget) {
+          sidebarQuotaWidget.classList.add('hidden');
+          sidebarQuotaWidget.classList.remove('flex');
+          sidebarQuotaWidget.style.display = 'none';
         }
         if (footerQuotaText) {
           footerQuotaText.classList.add('hidden');
           footerQuotaText.textContent = '';
+        }
+        if (quotaSidebarEl) {
+          quotaSidebarEl.textContent = isMember ? `${remainingAllowance}/50 Left` : `${remainingAllowance}/25 Left`;
         }
       }
     }
