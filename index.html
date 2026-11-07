@@ -2197,9 +2197,9 @@
       <div class="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/50 text-xs text-indigo-200 flex items-center justify-between flex-wrap gap-3">
         <div class="flex items-center gap-2">
           <span class="text-lg">🛡️</span>
-          <span>Clicking any plan redirects to <strong>webguruji.online/contact.html</strong>. Once your request is submitted, HarshGuruJi Admin activates your new limit live!</span>
+          <span>Instant UPI Gateway &amp; Live Database activation. Your chosen AI model unlocks automatically across all devices once payment is verified!</span>
         </div>
-        <span class="text-[11px] font-mono text-cyan-300 bg-slate-900 px-2 py-1 rounded">Live Admin Sync</span>
+        <span class="text-[11px] font-mono text-cyan-300 bg-slate-900 px-2 py-1 rounded">Automated Sync</span>
       </div>
 
     </div>
@@ -2228,23 +2228,74 @@
       'guru-argon-1.5': 5
     };
 
+    // Single bulletproof source of truth for paid tier determination
+    window.getUserPaidTierInfo = function() {
+      // 1. Check verified database limits from Supabase
+      const row = window.currentUserLimits;
+      if (row && row.is_active === true) {
+        const p = (row.plan_name || '').toLowerCase();
+        // Ignore internal admin records
+        if (!row.email || (!row.email.startsWith('admin_') && !row.email.includes('config') && !row.email.includes('roster'))) {
+          if (p.includes('1.5') || p.includes('grandmaster') || p.includes('argon 1.5') || p.includes('argon-1.5')) {
+            return { tier: 5, modelKey: 'guru-argon-1.5', name: 'Guru-Argon 1.5' };
+          }
+          if (p.includes('1.4') || p.includes('power') || p.includes('scholar') || p.includes('argon 1.4') || p.includes('argon-1.4')) {
+            return { tier: 4, modelKey: 'guru-argon-1.4', name: 'Guru-Argon 1.4' };
+          }
+          if (p.includes('1.3') || p.includes('starter') || p.includes('flash 1.3') || p.includes('flash-1.3')) {
+            return { tier: 3, modelKey: 'guru-flash-1.3', name: 'Guru-Flash 1.3' };
+          }
+        }
+      }
+
+      // 2. Check user metadata from Supabase Auth
+      if (currentUser && currentUser.user_metadata) {
+        const meta = currentUser.user_metadata;
+        const plan = (meta.plan || '').toLowerCase();
+        if (meta.is_paid === true || (plan && plan !== 'free' && plan !== 'standard')) {
+          if (plan.includes('1.5') || plan.includes('grandmaster')) return { tier: 5, modelKey: 'guru-argon-1.5', name: 'Guru-Argon 1.5' };
+          if (plan.includes('1.4') || plan.includes('power') || plan.includes('scholar')) return { tier: 4, modelKey: 'guru-argon-1.4', name: 'Guru-Argon 1.4' };
+          if (plan.includes('1.3') || plan.includes('starter') || plan.includes('pro')) return { tier: 3, modelKey: 'guru-flash-1.3', name: 'Guru-Flash 1.3' };
+        }
+      }
+
+      // 3. Check verified cached unlock token (strictly verified by email token match)
+      const verifiedEmail = localStorage.getItem('guru_ai_verified_email');
+      const verifiedModel = localStorage.getItem('guru_ai_unlocked_model');
+      const verifiedToken = localStorage.getItem('guru_ai_payment_token');
+      if (verifiedEmail && verifiedModel && verifiedToken) {
+        if (typeof generatePaymentToken === 'function' && verifiedToken === generatePaymentToken(verifiedEmail)) {
+          const tier = MODEL_TIER_HIERARCHY[verifiedModel] || 1;
+          if (tier >= 3) {
+            return { tier: tier, modelKey: verifiedModel, name: (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[verifiedModel]?.name) || verifiedModel };
+          }
+        }
+      }
+
+      return null;
+    };
+
     window.isUserPaidPlan = function() {
-      if (!currentUser) return false;
-      const meta = currentUser.user_metadata || {};
-      if (meta.is_paid === true) return true;
-      if (meta.plan && meta.plan !== 'free') return true;
-      if (localStorage.getItem('guru_ai_user_paid') === 'true') return true;
-      if (window.currentUserLimits && (window.currentUserLimits.is_active === true || window.currentUserLimits.is_paid === true || window.currentUserLimits.plan_name)) return true;
-      return false;
+      return !!getUserPaidTierInfo();
     };
 
     window.isModelKeyUnlocked = function(modelKey) {
-      if (!MODEL_TIER_HIERARCHY[modelKey] || MODEL_TIER_HIERARCHY[modelKey] <= 1) return true;
-      if (!isUserPaidPlan()) return false;
-      const unlocked = localStorage.getItem('guru_ai_unlocked_model') || window.currentUserUnlockedModel || 'guru-argon-1.5';
-      const userLevel = MODEL_TIER_HIERARCHY[unlocked] || 5;
       const targetLevel = MODEL_TIER_HIERARCHY[modelKey] || 1;
-      return userLevel >= targetLevel;
+      // Level 1 (Guru-Flash 1.1) is always unlocked for everyone (guests & logged-in)
+      if (targetLevel <= 1) return true;
+
+      const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
+
+      // Level 2 (Guru-Flash 1.2) is free for all logged-in members
+      if (targetLevel === 2) {
+        return isMember;
+      }
+
+      // Level 3, 4, 5 REQUIRE a confirmed paid plan:
+      const paidInfo = getUserPaidTierInfo();
+      if (!paidInfo) return false;
+
+      return paidInfo.tier >= targetLevel;
     };
 
     window.selectAiModel = function(modelId, modelName, isLocked, requiredPlan) {
@@ -2256,14 +2307,20 @@
       }
       modelName = modelName || modelId;
 
-      if (isLocked) {
-        if (!isModelKeyUnlocked(modelId)) {
+      if (!isModelKeyUnlocked(modelId)) {
+        const targetTier = MODEL_TIER_HIERARCHY[modelId] || 1;
+        if (targetTier === 2) {
+          showToast('🔒 ' + modelName + ' exclusively for signed-in members. Please sign in!', 'warning');
+          if (typeof openAuthModal === 'function') openAuthModal('login');
+        } else {
           showToast('🔒 ' + modelName + ' payment ke baad hi unlock hota hai. Kripya upgrade karein!', 'warning');
-          if (typeof openUpgradeModal === 'function') {
+          if (typeof openAiPaymentModal === 'function') {
+            openAiPaymentModal(modelId, targetTier === 5 ? 25 : (targetTier === 4 ? 15 : 5));
+          } else if (typeof openUpgradeModal === 'function') {
             openUpgradeModal();
           }
-          return;
         }
+        return;
       }
 
       currentSelectedModel = modelId;
@@ -2287,33 +2344,23 @@
     };
 
     window.handlePlanBuy = function(planName, contextLimit, price) {
-      if (!currentUser || currentUser.is_guest || !currentUser.email) {
-        showToast('🔒 Guest user bina login ke contact link par redirect nahi ho sakte. Kripya pehle sign in karein!', 'warning');
-        if (typeof openAuthModal === 'function') openAuthModal('login');
-        return;
-      }
       closeUpgradeModal();
-      let modelName = 'Guru-Flash 1.3';
       let planId = 'guru-flash-1.3';
-      if (price === 15 || (typeof planName === 'string' && (planName.includes('Scholar') || planName.includes('15')))) {
-        modelName = 'Guru-Argon 1.4';
+      let inr = 499;
+      if (price === 15 || (typeof planName === 'string' && (planName.includes('Scholar') || planName.includes('15') || planName.includes('1.4')))) {
         planId = 'guru-argon-1.4';
-      } else if (price === 25 || (typeof planName === 'string' && (planName.includes('Master') || planName.includes('25')))) {
-        modelName = 'Guru-Argon 1.5';
+        inr = 999;
+      } else if (price === 25 || (typeof planName === 'string' && (planName.includes('Master') || planName.includes('25') || planName.includes('1.5')))) {
         planId = 'guru-argon-1.5';
+        inr = 1999;
       }
-      showToast(`Redirecting to inquiry confirmation for ${planName}...`, 'info');
-      const params = new URLSearchParams({
-        subject: 'ai_upgrade',
-        plan_id: planId,
-        plan: planName,
-        model: modelName,
-        price: price,
-        email: currentUser.email
-      });
-      setTimeout(() => {
-        window.location.href = `https://webguruji.online/contact.html?${params.toString()}`;
-      }, 350);
+      if (typeof openAiPaymentModal === 'function') {
+        openAiPaymentModal(planId, price);
+      } else {
+        const email = (currentUser && currentUser.email) ? currentUser.email : '';
+        const token = (typeof generatePaymentToken === 'function') ? generatePaymentToken(email) : '';
+        window.location.href = `https://payment.webguruji.online/payment.html?plan=${encodeURIComponent(planId)}&amount=${inr}&email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`;
+      }
     };
 
     
@@ -3504,6 +3551,7 @@
         `;
       }
 
+      const activeModelLabel = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[currentSelectedModel]?.name) || 'Guru-Flash 1.1';
       msgDiv.innerHTML = `
         <div class="w-8 h-8 rounded-full bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden mt-0.5">
           <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
@@ -3511,7 +3559,7 @@
         <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1.5 min-w-0">
           <div class="flex items-center gap-2 text-[11px] text-slate-400">
             <span class="font-bold text-white font-heading">GuruAI</span>
-            <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Guru-Flash 1.1</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">${activeModelLabel}</span>
           </div>
 
           <div class="rounded-2xl px-1 sm:px-2 py-1 text-sm bg-[var(--bubble-assistant)] text-[var(--text-primary)] leading-relaxed select-text prose-ai">
@@ -3555,6 +3603,13 @@
 
       deductAllowance();
 
+      // Double Guard: Verify model unlock state before streaming
+      if (typeof isModelKeyUnlocked === 'function' && !isModelKeyUnlocked(currentSelectedModel)) {
+        currentSelectedModel = 'guru-flash-1.1';
+      }
+
+      const activeModelLabel = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[currentSelectedModel]?.name) || 'Guru-Flash 1.1';
+
       const bubbleId = 'stream-bubble-' + Date.now();
       const assistantMsgDiv = document.createElement('div');
       assistantMsgDiv.className = 'flex gap-3 md:gap-4 justify-start';
@@ -3565,7 +3620,7 @@
         <div class="max-w-[85%] md:max-w-[80%] flex flex-col space-y-1.5 min-w-0">
           <div class="flex items-center gap-2 text-[11px] text-slate-400">
             <span class="font-bold text-white font-heading">GuruAI</span>
-            <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Guru-Flash 1.1</span>
+            <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">${activeModelLabel}</span>
           </div>
           <div id="${bubbleId}" class="rounded-2xl px-1 sm:px-2 py-1 text-sm bg-[var(--bubble-assistant)] text-[var(--text-primary)] leading-relaxed select-text prose-ai">
             <div id="${bubbleId}-generating" class="flex items-center gap-2.5 py-1.5 my-1">
@@ -4179,6 +4234,24 @@ COMPLETENESS MANDATE:
       const text = promptInput ? promptInput.value.trim() : '';
       if (!text || isGenerating) return false;
 
+      // Strict Rule 0: Enforce Model Unlock Access
+      if (typeof isModelKeyUnlocked === 'function' && !isModelKeyUnlocked(currentSelectedModel)) {
+        const mName = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[currentSelectedModel]?.name) || currentSelectedModel;
+        const targetTier = (typeof MODEL_TIER_HIERARCHY !== 'undefined' && MODEL_TIER_HIERARCHY[currentSelectedModel]) || 1;
+        if (targetTier === 2) {
+          showToast('🔒 ' + mName + ' is exclusively for logged-in members. Please sign in!', 'warning');
+          if (typeof openAuthModal === 'function') openAuthModal('login');
+        } else {
+          showToast('🔒 ' + mName + ' payment ke baad hi unlock hota hai. Kripya upgrade karein!', 'warning');
+          if (typeof openAiPaymentModal === 'function') {
+            openAiPaymentModal(currentSelectedModel, targetTier === 5 ? 25 : (targetTier === 4 ? 15 : 5));
+          } else if (typeof openUpgradeModal === 'function') {
+            openUpgradeModal();
+          }
+        }
+        return false;
+      }
+
       const isImageIntent = isImageMode || /^\/(image|imagine)\b/i.test(text) || /^(generate|create|draw|make|paint|render)\s+(an?\s+)?(image|photo|picture|artwork|illustration|wallpaper|portrait|drawing|visual|graphic)\b/i.test(text);
 
       // Strict Rule 1: Guest users CANNOT create images
@@ -4271,42 +4344,91 @@ COMPLETENESS MANDATE:
         }
         remainingAllowance = stored.remaining;
 
-        // Check for Live Custom Admin Quotas (lookup by user_id OR email)
-        if (supabaseClient) {
-          const emailQuery = user.email ? `,email.ilike.${user.email.toLowerCase().trim()}` : '';
-          supabaseClient.from('user_ai_limits').select('*').or(`user_id.eq.${user.id}${emailQuery}`).maybeSingle().then(({ data }) => {
-            if (data) {
-              if (data.is_active === true || data.is_paid === true || data.plan_name || data.active_model) {
-                window.currentUserLimits = data;
-                localStorage.setItem('guru_ai_user_paid', 'true');
-                const rawName = (data.plan_name || data.active_model || 'guru-argon-1.5').toLowerCase();
-                let modelKey = 'guru-flash-1.3';
-                if (rawName.includes('argon 1.5') || rawName.includes('argon-1.5') || rawName.includes('grandmaster')) {
-                  modelKey = 'guru-argon-1.5';
-                } else if (rawName.includes('argon 1.4') || rawName.includes('argon-1.4') || rawName.includes('enterprise')) {
-                  modelKey = 'guru-argon-1.4';
-                } else if (rawName.includes('flash 1.3') || rawName.includes('flash-1.3') || rawName.includes('pro')) {
-                  modelKey = 'guru-flash-1.3';
-                } else if (rawName.includes('flash 1.2') || rawName.includes('flash-1.2')) {
-                  modelKey = 'guru-flash-1.2';
+        // Check for Live Custom Admin Quotas & Paid Subscriptions (lookup by user_id OR email)
+        if (supabaseClient && user) {
+          const cleanEmail = (user.email || '').toLowerCase().trim();
+          let query = supabaseClient.from('user_ai_limits').select('*');
+          if (user.id && cleanEmail) {
+            query = query.or(`user_id.eq.${user.id},email.ilike.${cleanEmail}`);
+          } else if (user.id) {
+            query = query.eq('user_id', user.id);
+          } else if (cleanEmail) {
+            query = query.ilike('email', cleanEmail);
+          } else {
+            query = null;
+          }
+
+          if (query) {
+            query.order('updated_at', { ascending: false }).limit(5).then(({ data }) => {
+              if (data && data.length > 0) {
+                let highestPaidRow = null;
+                let highestTier = 1;
+
+                for (const row of data) {
+                  if (!row.is_active) continue;
+                  // Skip system config / roster rows
+                  if (row.email && (row.email.startsWith('admin_') || row.email.includes('config') || row.email.includes('roster'))) continue;
+
+                  const p = (row.plan_name || '').toLowerCase();
+                  let tier = 1;
+                  let mKey = null;
+                  if (p.includes('1.5') || p.includes('grandmaster') || p.includes('argon 1.5') || p.includes('argon-1.5')) {
+                    tier = 5; mKey = 'guru-argon-1.5';
+                  } else if (p.includes('1.4') || p.includes('power') || p.includes('scholar') || p.includes('argon 1.4') || p.includes('argon-1.4')) {
+                    tier = 4; mKey = 'guru-argon-1.4';
+                  } else if (p.includes('1.3') || p.includes('starter') || p.includes('flash 1.3') || p.includes('flash-1.3')) {
+                    tier = 3; mKey = 'guru-flash-1.3';
+                  }
+
+                  if (tier > highestTier) {
+                    highestTier = tier;
+                    highestPaidRow = Object.assign({}, row, { resolvedTier: tier, resolvedModelKey: mKey });
+                  }
                 }
-                localStorage.setItem('guru_ai_unlocked_model', modelKey);
-                window.currentUserUnlockedModel = modelKey;
+
+                if (highestPaidRow) {
+                  window.currentUserLimits = highestPaidRow;
+                  localStorage.setItem('guru_ai_user_paid', 'true');
+                  localStorage.setItem('guru_ai_unlocked_model', highestPaidRow.resolvedModelKey);
+                  localStorage.setItem('guru_ai_verified_email', cleanEmail);
+                  if (typeof generatePaymentToken === 'function') {
+                    localStorage.setItem('guru_ai_payment_token', generatePaymentToken(cleanEmail));
+                  }
+                  window.currentUserUnlockedModel = highestPaidRow.resolvedModelKey;
+
+                  // Link user_id in database if empty
+                  if (!highestPaidRow.user_id && user.id) {
+                    supabaseClient.from('user_ai_limits').update({ user_id: user.id }).eq('id', highestPaidRow.id).catch(() => {});
+                  }
+                } else {
+                  // Standard free member: Ensure NO fake unlock in localStorage
+                  window.currentUserLimits = data[0];
+                  localStorage.removeItem('guru_ai_user_paid');
+                  localStorage.removeItem('guru_ai_unlocked_model');
+                  localStorage.removeItem('guru_ai_payment_token');
+                  window.currentUserUnlockedModel = null;
+                }
+
+                const limitRow = highestPaidRow || data[0];
+                if (limitRow && typeof limitRow.max_requests === 'number' && limitRow.max_requests > 0) {
+                  maxRequests = limitRow.max_requests;
+                  if (stored.remaining < maxRequests) {
+                    stored.remaining = maxRequests;
+                    localStorage.setItem(key, JSON.stringify(stored));
+                  }
+                  remainingAllowance = stored.remaining;
+                  updateQuotaUI();
+                  if (userTierLabel) userTierLabel.textContent = limitRow.plan_name || `Member (${maxRequests}/24h)`;
+                  if (headerTierText) headerTierText.textContent = highestPaidRow ? (highestPaidRow.resolvedModelKey) : 'Member';
+                }
+              } else {
+                localStorage.removeItem('guru_ai_user_paid');
+                localStorage.removeItem('guru_ai_unlocked_model');
+                localStorage.removeItem('guru_ai_payment_token');
+                window.currentUserUnlockedModel = null;
               }
-            }
-            if (data && typeof data.max_requests === 'number' && data.max_requests > 0) {
-              maxRequests = data.max_requests;
-              if (stored.remaining < maxRequests) {
-                // If admin upgraded user, expand their remaining quota immediately
-                stored.remaining = maxRequests;
-                localStorage.setItem(key, JSON.stringify(stored));
-              }
-              remainingAllowance = stored.remaining;
-              updateQuotaUI();
-              if (userTierLabel) userTierLabel.textContent = data.plan_name || `Member (${maxRequests}/24h)`;
-              if (headerTierText) headerTierText.textContent = data.plan_tier || (data.plan_name ? data.plan_name.replace(' Enterprise', '') : 'Pro');
-            }
-          }).catch(() => {});
+            }).catch(() => {});
+          }
 
           // Supabase Realtime table listener for instant cross-device live effect
           try {
@@ -4879,7 +5001,7 @@ COMPLETENESS MANDATE:
       }
     }
 
-    // Capacitor App URL Open listener for deep linking (online.webguruji.ai:// or guruai://)
+    // Capacitor App URL Open listener for deep linking (online.harshguruji.ai:// or guruai://)
     try {
       if (typeof window !== 'undefined' && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
         window.Capacitor.Plugins.App.addListener('appUrlOpen', async (event) => {
@@ -5552,22 +5674,16 @@ COMPLETENESS MANDATE:
           selectAiModel(modelKey, m.name, false);
         };
       } else {
-        const isGuestUser = !currentUser || currentUser.is_guest || !currentUser.email;
-        if (isGuestUser) {
-          primaryBtn.textContent = 'Sign In to Select Premium (' + m.price + ')';
-          primaryBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:opacity-95 transition shadow-lg shadow-cyan-500/20';
-          primaryBtn.onclick = () => {
-            closeModelDetailsModal();
-            showToast('🔒 Guest user bina login ke contact page par redirect nahi ho sakte. Kripya pehle sign in karein!', 'warning');
-            if (typeof openAuthModal === 'function') openAuthModal('login');
-          };
-        } else {
-          primaryBtn.textContent = 'Select Premium (' + m.price + ') →';
-          primaryBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 transition shadow-lg shadow-amber-500/25';
-          primaryBtn.onclick = () => {
-            selectPremiumAndRedirect(modelKey, m.planName, m.priceVal);
-          };
-        }
+        primaryBtn.textContent = 'Unlock Premium (' + m.price + ') →';
+        primaryBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 transition shadow-lg shadow-amber-500/25';
+        primaryBtn.onclick = () => {
+          closeModelDetailsModal();
+          if (typeof openAiPaymentModal === 'function') {
+            openAiPaymentModal(modelKey, m.priceVal);
+          } else if (typeof openUpgradeModal === 'function') {
+            openUpgradeModal();
+          }
+        };
       }
     }
 
@@ -5579,21 +5695,14 @@ COMPLETENESS MANDATE:
     if (modal) modal.classList.add('hidden');
   };
 
-  // Redirect to contact page with pre-selected model
+  // Redirect to official gateway or payment modal with pre-selected model
   window.selectPremiumAndRedirect = function(modelKey, planName, priceVal) {
-    if (!currentUser || currentUser.is_guest || !currentUser.email) {
-      closeModelDetailsModal();
-      showToast('🔒 Guest user bina login ke contact page par redirect nahi ho sakte. Kripya pehle sign in karein!', 'warning');
-      if (typeof openAuthModal === 'function') openAuthModal('login');
-      return;
-    }
-
     closeModelDetailsModal();
-    showToast(`Redirecting to contact page for ${GURU_MODELS[modelKey]?.name || modelKey}...`, 'info');
-    const contactUrl = `https://webguruji.online/contact.html?subject=ai_upgrade&plan_id=${encodeURIComponent(modelKey)}&model=${encodeURIComponent(GURU_MODELS[modelKey]?.name || modelKey)}&plan=${encodeURIComponent(planName)}&price=${priceVal}&email=${encodeURIComponent(currentUser.email)}`;
-    setTimeout(() => {
-      window.location.href = contactUrl;
-    }, 400);
+    if (typeof openAiPaymentModal === 'function') {
+      openAiPaymentModal(modelKey, priceVal);
+    } else if (typeof openUpgradeModal === 'function') {
+      openUpgradeModal();
+    }
   };
 
   window.GURU_MODELS = GURU_MODELS;
@@ -6150,12 +6259,18 @@ COMPLETENESS MANDATE:
           Payment Done? Enter 12-Digit UPI Transaction / UTR ID:
         </label>
         <div class="flex gap-2">
-          <input type="text" id="payUtrInput" placeholder="e.g. 412389123456" maxlength="24"
+          <input type="text" id="payUtrInput" placeholder="e.g. 412389123456" maxlength="16"
             class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400 transition" />
-          <button type="button" onclick="submitUtrVerification()"
+          <button type="button" id="payUtrSubmitBtn" onclick="submitUtrVerification()"
             class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition active:scale-95 flex-shrink-0">
-            Verify &amp; Activate
+            Submit UTR
           </button>
+        </div>
+        <div id="payModalStatusBox" class="hidden p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-xs text-indigo-200">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span id="payModalStatusText">Submitting reference to payment ledger...</span>
+          </div>
         </div>
       </div>
 
@@ -6165,12 +6280,27 @@ COMPLETENESS MANDATE:
           class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 hover:opacity-95 transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5">
           <span>Pay via HarshGuruJi Secure Gateway ↗</span>
         </button>
-
-        <button type="button" onclick="instantDemoUnlockModel()"
-          class="w-full py-2 px-3 rounded-xl text-[11px] font-semibold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 transition flex items-center justify-center gap-1.5">
-          <span>⚡ Instant Test Activation (1-Click Trial Unlock)</span>
-        </button>
       </div>
+
+      <!-- Restore / Check Existing Payment -->
+      <div class="pt-2 border-t border-slate-800/80">
+        <details class="text-xs text-slate-400 group">
+          <summary class="cursor-pointer font-semibold text-slate-300 hover:text-white transition flex items-center justify-between py-1">
+            <span>Already paid or need to restore access?</span>
+            <span class="text-indigo-400 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-2 p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
+            <label class="block text-[11px] text-slate-400">Enter the Email you used during payment:</label>
+            <div class="flex gap-2">
+              <input type="email" id="restoreEmailInput" placeholder="name@example.com" class="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400" />
+              <button type="button" onclick="checkAndRestorePaidAccess()" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">
+                Verify &amp; Unlock
+              </button>
+            </div>
+          </div>
+        </details>
+      </div>
+
     </div>
   </div>
 
@@ -6195,6 +6325,7 @@ COMPLETENESS MANDATE:
     window.activeBuyModelKey = 'guru-flash-1.3';
     window.activeBuyPlanName = 'Scholar Pro';
     window.activeBuyPrice = 499;
+    let utrVerificationPollingTimer = null;
 
     window.openAiPaymentModal = function(modelKey, priceVal) {
       activeBuyModelKey = modelKey || 'guru-flash-1.3';
@@ -6226,11 +6357,23 @@ COMPLETENESS MANDATE:
       const utrInput = document.getElementById('payUtrInput');
       if (utrInput) utrInput.value = '';
 
+      const statusBox = document.getElementById('payModalStatusBox');
+      if (statusBox) statusBox.classList.add('hidden');
+
+      const restoreInput = document.getElementById('restoreEmailInput');
+      if (restoreInput && currentUser && currentUser.email) {
+        restoreInput.value = currentUser.email;
+      }
+
       const modal = document.getElementById('aiPaymentModal');
       if (modal) modal.classList.remove('hidden');
     };
 
     window.closeAiPaymentModal = function() {
+      if (utrVerificationPollingTimer) {
+        clearInterval(utrVerificationPollingTimer);
+        utrVerificationPollingTimer = null;
+      }
       const modal = document.getElementById('aiPaymentModal');
       if (modal) modal.classList.add('hidden');
     };
@@ -6248,34 +6391,64 @@ COMPLETENESS MANDATE:
       });
     };
 
-    window.submitUtrVerification = function() {
+    // Authentic UTR Verification: Submits to database and polls for confirmation without fake unlock
+    window.submitUtrVerification = async function() {
       const utrInput = document.getElementById('payUtrInput');
       const utr = utrInput ? utrInput.value.trim() : '';
-      if (!utr || utr.length < 6) {
+      if (!utr || utr.length !== 12) {
         if (typeof showToast === 'function') showToast('⚠️ Please enter a valid 12-digit UPI Transaction / UTR ID.', 'warning');
         return;
       }
 
-      // Unlock Model Immediately in LocalStorage
-      let unlocked = localStorage.getItem('guru_ai_unlocked_model') || '';
-      if (!unlocked.includes(activeBuyModelKey)) {
-        unlocked = unlocked ? `${unlocked},${activeBuyModelKey}` : activeBuyModelKey;
-        localStorage.setItem('guru_ai_unlocked_model', unlocked);
+      const btn = document.getElementById('payUtrSubmitBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
       }
-      localStorage.setItem('guru_ai_user_paid', 'true');
 
-      // Switch model immediately!
+      const statusBox = document.getElementById('payModalStatusBox');
+      const statusText = document.getElementById('payModalStatusText');
+      if (statusBox) statusBox.classList.remove('hidden');
+      if (statusText) statusText.textContent = `Submitted UTR ${utr}. Checking bank & gateway ledger...`;
+
       const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[activeBuyModelKey]) ? GURU_MODELS[activeBuyModelKey] : null;
       const modelName = m ? m.name : activeBuyModelKey;
-      if (typeof selectAiModel === 'function') {
-        selectAiModel(activeBuyModelKey, modelName, false);
+
+      const uEmail = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email.toLowerCase().trim() : (document.getElementById('restoreEmailInput')?.value || '').toLowerCase().trim();
+      const uName = (typeof currentUser !== 'undefined' && currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name)) ? (currentUser.user_metadata.full_name || currentUser.user_metadata.name) : (uEmail ? uEmail.split('@')[0] : 'Customer');
+
+      if (!uEmail || !uEmail.includes('@')) {
+        if (typeof showToast === 'function') showToast('Please enter your email below to bind your payment.', 'warning');
+        const rInput = document.getElementById('restoreEmailInput');
+        if (rInput) {
+          rInput.focus();
+          rInput.scrollIntoView({ behavior: 'smooth' });
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Submit UTR';
+        }
+        return;
       }
 
-      // Dispatch Payment Alert to Master Admin at contact@webguruji.online
+      // 1. Record into Supabase contact_messages
       try {
-        const uEmail = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : (localStorage.getItem('guru_ai_last_upgrade_email') || 'ai_customer@webguruji.online');
-        const uName = (typeof currentUser !== 'undefined' && currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name)) ? (currentUser.user_metadata.full_name || currentUser.user_metadata.name) : uEmail.split('@')[0];
-        
+        const sb = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+        if (sb) {
+          await sb.from('contact_messages').insert({
+            email: uEmail,
+            name: uName,
+            subject: 'AI_PREMIUM_UPGRADE',
+            message: `[In-App UTR Submission] Model: ${modelName} (${activeBuyModelKey}) | Price: ₹${activeBuyPrice} | UTR: ${utr}`,
+            status: 'Pending Admin Review'
+          });
+        }
+      } catch(dbErr) {
+        console.warn('Contact message submission notice:', dbErr);
+      }
+
+      // 2. Dispatch Payment Alert to Master Admin at contact@webguruji.online
+      try {
         fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
           method: 'POST',
           headers: {
@@ -6287,18 +6460,19 @@ COMPLETENESS MANDATE:
             to: ['contact@webguruji.online'],
             displayName: 'HarshGuruJi AI Payment Desk',
             subject: `💰 In-App AI Upgrade Payment: ${uName} (${uEmail}) - ${modelName} [UTR: ${utr}]`,
-            text: `In-App AI Upgrade Payment Received!\nCustomer: ${uName}\nEmail: ${uEmail}\nModel: ${modelName}\nUTR: ${utr}\nTime: ${new Date().toLocaleString()}\n\nNote: Please verify bank credit and instruct Ops Manager or AI Limits Manager subadmin to expand limits if needed.`,
+            text: `In-App AI Upgrade Payment Reference Submitted!\nCustomer: ${uName}\nEmail: ${uEmail}\nModel: ${modelName}\nPrice: ₹${activeBuyPrice}\nUTR: ${utr}\nTime: ${new Date().toLocaleString()}\n\nNote: Please verify bank receipt or 1-Click Approve in Admin Desk to activate user.`,
             html: `
 <!DOCTYPE html>
 <html>
 <body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
   <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #10b981;padding:24px;">
-    <h2 style="color:#34d399;margin-top:0;">💰 In-App AI Upgrade Payment Received</h2>
-    <p style="color:#cbd5e1;">A user submitted a payment reference on <strong>GuruAI (ai.webguruji.online)</strong>.</p>
+    <h2 style="color:#34d399;margin-top:0;">💰 In-App AI Upgrade UTR Submitted</h2>
+    <p style="color:#cbd5e1;">A user submitted an authentic payment reference on <strong>GuruAI (ai.webguruji.online)</strong>.</p>
     <table style="width:100%;border-collapse:collapse;margin:16px 0;background:rgba(255,255,255,0.04);border-radius:8px;">
       <tr><td style="padding:8px 12px;color:#94a3b8;">User Name</td><td style="padding:8px 12px;color:#fff;font-weight:700;">${uName}</td></tr>
       <tr><td style="padding:8px 12px;color:#94a3b8;">User Email</td><td style="padding:8px 12px;color:#38bdf8;font-family:monospace;font-weight:700;">${uEmail}</td></tr>
       <tr><td style="padding:8px 12px;color:#94a3b8;">Purchased Model</td><td style="padding:8px 12px;color:#fde68a;font-weight:700;">${modelName}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">Amount</td><td style="padding:8px 12px;color:#34d399;font-weight:800;">₹${activeBuyPrice}</td></tr>
       <tr><td style="padding:8px 12px;color:#94a3b8;">UTR / Transaction ID</td><td style="padding:8px 12px;color:#34d399;font-family:monospace;font-weight:700;">${utr}</td></tr>
       <tr><td style="padding:8px 12px;color:#94a3b8;">Time</td><td style="padding:8px 12px;color:#fff;">${new Date().toLocaleString()}</td></tr>
     </table>
@@ -6310,33 +6484,202 @@ COMPLETENESS MANDATE:
         }).catch(e => console.warn('Payment notification mail error:', e));
       } catch(e) {}
 
-      closeAiPaymentModal();
-      if (typeof showToast === 'function') showToast(`🎉 Payment Verified! ${modelName} is now active with full context.`, 'success');
+      // 3. Start live polling against Supabase user_ai_limits (stops when database confirms activation)
+      if (utrVerificationPollingTimer) clearInterval(utrVerificationPollingTimer);
+      let pollCount = 0;
+      utrVerificationPollingTimer = setInterval(async () => {
+        pollCount++;
+        try {
+          const sb = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (sb) {
+            const { data } = await sb.from('user_ai_limits')
+              .select('*')
+              .ilike('email', uEmail)
+              .order('updated_at', { ascending: false })
+              .limit(1);
+
+            const row = (data && data.length > 0) ? data[0] : null;
+            if (row && row.is_active && (row.plan_name || '').toUpperCase().includes(activeBuyModelKey.toUpperCase().replace('GURU-', ''))) {
+              clearInterval(utrVerificationPollingTimer);
+              utrVerificationPollingTimer = null;
+
+              window.currentUserLimits = row;
+              localStorage.setItem('guru_ai_user_paid', 'true');
+              localStorage.setItem('guru_ai_unlocked_model', activeBuyModelKey);
+              localStorage.setItem('guru_ai_verified_email', uEmail);
+              localStorage.setItem('guru_ai_payment_token', generatePaymentToken(uEmail));
+              window.currentUserUnlockedModel = activeBuyModelKey;
+
+              if (typeof selectAiModel === 'function') {
+                selectAiModel(activeBuyModelKey, modelName, false);
+              }
+              closeAiPaymentModal();
+              if (typeof showToast === 'function') {
+                showToast(`🎉 Payment Confirmed in database! ${modelName} is now permanently unlocked.`, 'success');
+              }
+            }
+          }
+        } catch(e) {}
+
+        if (pollCount > 30) { // 2 minutes timeout
+          clearInterval(utrVerificationPollingTimer);
+          utrVerificationPollingTimer = null;
+          if (statusText) statusText.textContent = `UTR ${utr} recorded! Verification is in progress with the bank. You will be activated shortly.`;
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Submit UTR';
+          }
+        }
+      }, 4000);
+
+      if (typeof showToast === 'function') {
+        showToast(`UTR ${utr} submitted for verification. Polling database for confirmation...`, 'info');
+      }
     };
 
-    window.instantDemoUnlockModel = function() {
-      let unlocked = localStorage.getItem('guru_ai_unlocked_model') || '';
-      if (!unlocked.includes(activeBuyModelKey)) {
-        unlocked = unlocked ? `${unlocked},${activeBuyModelKey}` : activeBuyModelKey;
-        localStorage.setItem('guru_ai_unlocked_model', unlocked);
+    // Restore Access & Verify Paid Plan from Supabase
+    window.checkAndRestorePaidAccess = async function() {
+      const emailInput = document.getElementById('restoreEmailInput');
+      const email = (emailInput?.value || (currentUser?.email) || '').toLowerCase().trim();
+      if (!email || !email.includes('@')) {
+        if (typeof showToast === 'function') showToast('Please enter a valid email address.', 'warning');
+        return;
       }
-      localStorage.setItem('guru_ai_user_paid', 'true');
 
-      const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[activeBuyModelKey]) ? GURU_MODELS[activeBuyModelKey] : null;
-      const modelName = m ? m.name : activeBuyModelKey;
-      if (typeof selectAiModel === 'function') {
-        selectAiModel(activeBuyModelKey, modelName, false);
+      if (typeof showToast === 'function') showToast(`Verifying subscription for ${email}...`, 'info');
+
+      try {
+        const sb = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+        if (!sb) {
+          if (typeof showToast === 'function') showToast('Database connection unavailable. Please retry in a moment.', 'warning');
+          return;
+        }
+
+        const { data } = await sb.from('user_ai_limits')
+          .select('*')
+          .ilike('email', email)
+          .order('updated_at', { ascending: false })
+          .limit(3);
+
+        if (data && data.length > 0) {
+          let highestRow = null;
+          let highestTier = 1;
+
+          for (const row of data) {
+            if (!row.is_active) continue;
+            if (row.email && (row.email.startsWith('admin_') || row.email.includes('config') || row.email.includes('roster'))) continue;
+
+            const p = (row.plan_name || '').toLowerCase();
+            let tier = 1;
+            let mKey = null;
+            if (p.includes('1.5') || p.includes('grandmaster') || p.includes('argon 1.5') || p.includes('argon-1.5')) {
+              tier = 5; mKey = 'guru-argon-1.5';
+            } else if (p.includes('1.4') || p.includes('power') || p.includes('scholar') || p.includes('argon 1.4') || p.includes('argon-1.4')) {
+              tier = 4; mKey = 'guru-argon-1.4';
+            } else if (p.includes('1.3') || p.includes('starter') || p.includes('flash 1.3') || p.includes('flash-1.3')) {
+              tier = 3; mKey = 'guru-flash-1.3';
+            }
+
+            if (tier > highestTier) {
+              highestTier = tier;
+              highestRow = Object.assign({}, row, { resolvedTier: tier, resolvedModelKey: mKey });
+            }
+          }
+
+          if (highestRow) {
+            window.currentUserLimits = highestRow;
+            localStorage.setItem('guru_ai_user_paid', 'true');
+            localStorage.setItem('guru_ai_unlocked_model', highestRow.resolvedModelKey);
+            localStorage.setItem('guru_ai_verified_email', email);
+            localStorage.setItem('guru_ai_payment_token', generatePaymentToken(email));
+            window.currentUserUnlockedModel = highestRow.resolvedModelKey;
+
+            const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[highestRow.resolvedModelKey]) ? GURU_MODELS[highestRow.resolvedModelKey] : null;
+            const modelName = m ? m.name : highestRow.resolvedModelKey;
+
+            if (typeof selectAiModel === 'function') {
+              selectAiModel(highestRow.resolvedModelKey, modelName, false);
+            }
+            closeAiPaymentModal();
+            if (typeof showToast === 'function') {
+              showToast(`🎉 Verified Active Subscription! ${modelName} is now unlocked.`, 'success');
+            }
+            return;
+          }
+        }
+
+        if (typeof showToast === 'function') {
+          showToast(`No active paid plan found for ${email}. If you recently paid via UPI, verification may take 1-2 minutes.`, 'warning');
+        }
+      } catch(e) {
+        console.error('Restore verification error:', e);
+        if (typeof showToast === 'function') showToast('Verification check error. Please retry.', 'warning');
       }
-      closeAiPaymentModal();
-      if (typeof showToast === 'function') showToast(`⚡ ${modelName} unlocked for testing!`, 'success');
     };
 
     window.goToOfficialPaymentGateway = function() {
-      const email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : 'guest@webguruji.online';
+      let email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : (document.getElementById('restoreEmailInput')?.value || '').trim();
+      if (!email) {
+        email = prompt('Enter your email address to receive your invoice & model unlock receipt:') || '';
+        email = email.trim();
+        if (!email || !email.includes('@')) {
+          if (typeof showToast === 'function') showToast('A valid email address is required to process payment.', 'warning');
+          return;
+        }
+      }
       const token = generatePaymentToken(email);
       const payUrl = `https://payment.webguruji.online/payment.html?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}&plan=${encodeURIComponent(activeBuyModelKey)}&amount=${activeBuyPrice}`;
       window.open(payUrl, '_blank');
     };
+
+    // Auto-verify return from Payment Gateway if redirect URL includes activation parameters
+    (async function checkPaymentReturnUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const paidParam = params.get('paid');
+        const emailParam = params.get('email');
+        const unlockedParam = params.get('unlocked');
+        const tokenParam = params.get('token');
+
+        if ((paidParam === '1' || paidParam === 'true') && emailParam && unlockedParam && tokenParam) {
+          const cleanEmail = emailParam.toLowerCase().trim();
+          if (typeof generatePaymentToken === 'function' && tokenParam === generatePaymentToken(cleanEmail)) {
+            const sb = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+            if (sb) {
+              const { data } = await sb.from('user_ai_limits')
+                .select('*')
+                .ilike('email', cleanEmail)
+                .order('updated_at', { ascending: false })
+                .limit(1);
+
+              if (data && data.length > 0 && data[0].is_active) {
+                window.currentUserLimits = data[0];
+                localStorage.setItem('guru_ai_user_paid', 'true');
+                localStorage.setItem('guru_ai_unlocked_model', unlockedParam);
+                localStorage.setItem('guru_ai_verified_email', cleanEmail);
+                localStorage.setItem('guru_ai_payment_token', tokenParam);
+                window.currentUserUnlockedModel = unlockedParam;
+
+                const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[unlockedParam]) ? GURU_MODELS[unlockedParam] : null;
+                const modelName = m ? m.name : unlockedParam;
+
+                if (typeof selectAiModel === 'function') {
+                  selectAiModel(unlockedParam, modelName, false);
+                }
+                if (typeof showToast === 'function') {
+                  showToast(`🎉 Payment Verified! ${modelName} is now permanently unlocked!`, 'success');
+                }
+              }
+            }
+          }
+          // Clean sensitive query parameters from browser URL bar
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
+      } catch(e) {
+        console.warn('Payment return sync notice:', e);
+      }
+    })();
 
     // Robust Initialization & Event Bindings
     function initAiPageImprovements() {

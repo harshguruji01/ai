@@ -5729,22 +5729,49 @@
             </div>
           </div>
 
-          <!-- Summary Metric Cards -->
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+          <!-- Summary Metric Cards & Live Gateway Revenue -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
             <div style="background:rgba(15,23,42,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:1rem 1.25rem;">
-              <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; font-weight:700;">Total Purchase Requests</div>
-              <div id="stat-premium-total" style="font-size:1.8rem; font-weight:800; color:#ffffff; margin:0.25rem 0;">0</div>
-              <div style="font-size:0.75rem; color:#64748b;">All models combined</div>
+              <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700;">Total Purchase Requests</div>
+              <div id="stat-premium-total" style="font-size:1.7rem; font-weight:800; color:#ffffff; margin:0.25rem 0;">0</div>
+              <div style="font-size:0.72rem; color:#64748b;">All models combined</div>
+            </div>
+            <div style="background:rgba(15,23,42,0.7); border:1px solid rgba(56,189,248,0.3); border-radius:14px; padding:1rem 1.25rem;">
+              <div style="font-size:0.72rem; text-transform:uppercase; color:#38bdf8; font-weight:700;">🚨 UTR Review Queue</div>
+              <div id="stat-premium-utr-count" style="font-size:1.7rem; font-weight:800; color:#38bdf8; margin:0.25rem 0;">0</div>
+              <div style="font-size:0.72rem; color:#64748b;">Awaiting bank credit confirmation</div>
             </div>
             <div style="background:rgba(15,23,42,0.7); border:1px solid rgba(245,158,11,0.25); border-radius:14px; padding:1rem 1.25rem;">
-              <div style="font-size:0.75rem; text-transform:uppercase; color:#f59e0b; font-weight:700;">Pending Review / Action</div>
-              <div id="stat-premium-pending" style="font-size:1.8rem; font-weight:800; color:#f59e0b; margin:0.25rem 0;">0</div>
-              <div style="font-size:0.75rem; color:#64748b;">Awaiting link dispatch / verification</div>
+              <div style="font-size:0.72rem; text-transform:uppercase; color:#f59e0b; font-weight:700;">Pending Inquiries</div>
+              <div id="stat-premium-pending" style="font-size:1.7rem; font-weight:800; color:#f59e0b; margin:0.25rem 0;">0</div>
+              <div style="font-size:0.72rem; color:#64748b;">Awaiting payment link dispatch</div>
             </div>
             <div style="background:rgba(15,23,42,0.7); border:1px solid rgba(16,185,129,0.25); border-radius:14px; padding:1rem 1.25rem;">
-              <div style="font-size:0.75rem; text-transform:uppercase; color:#10b981; font-weight:700;">Active / Unlocked Models</div>
-              <div id="stat-premium-active" style="font-size:1.8rem; font-weight:800; color:#10b981; margin:0.25rem 0;">0</div>
-              <div style="font-size:0.75rem; color:#64748b;">Live subscribers</div>
+              <div style="font-size:0.72rem; text-transform:uppercase; color:#10b981; font-weight:700;">Active / Unlocked Models</div>
+              <div id="stat-premium-active" style="font-size:1.7rem; font-weight:800; color:#10b981; margin:0.25rem 0;">0</div>
+              <div style="font-size:0.72rem; color:#64748b;">Live subscribers</div>
+            </div>
+            <div style="background:rgba(15,23,42,0.7); border:1px solid rgba(16,185,129,0.3); border-radius:14px; padding:1rem 1.25rem;">
+              <div style="font-size:0.72rem; text-transform:uppercase; color:#34d399; font-weight:700;">Est. Verified Revenue</div>
+              <div id="stat-premium-revenue" style="font-size:1.7rem; font-weight:800; color:#34d399; margin:0.25rem 0;">₹0</div>
+              <div style="font-size:0.72rem; color:#64748b;">Direct bank credit (0% fee)</div>
+            </div>
+          </div>
+
+          <!-- 🚨 Live UPI Payment UTR Review Queue Container -->
+          <div id="live-utr-review-queue" style="display:none; margin-bottom:1.5rem; background:radial-gradient(circle at top left, rgba(56,189,248,0.12), transparent 70%), rgba(15,23,42,0.9); border:1px solid rgba(56,189,248,0.4); border-radius:16px; padding:1.25rem; box-shadow:0 8px 25px rgba(0,0,0,0.4);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span style="font-size:1.3rem;">⚡</span>
+                <div>
+                  <h4 style="margin:0; font-size:1rem; font-weight:800; color:#fff;">Pending UTR Review Queue (1-Click Activation Desk)</h4>
+                  <p style="margin:2px 0 0; font-size:0.74rem; color:#94a3b8;">Review customer-submitted 12-digit UTR references against your bank/UPI notifications and click to unlock.</p>
+                </div>
+              </div>
+              <span id="badge-utr-pending-count" style="background:#38bdf8; color:#0f172a; font-weight:800; font-size:0.75rem; padding:3px 10px; border-radius:50px;">0 Awaiting Review</span>
+            </div>
+            <div id="pending-utrs-cards-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:0.9rem;">
+              <!-- Dynamic Cards generated by JavaScript -->
             </div>
           </div>
 
@@ -6238,14 +6265,14 @@
       </div>
 
       <!-- 👥 ALL REGISTERED USERS & AI MODEL UNLOCKS GOVERNANCE TABLE -->
-      <!-- Admin Payment Configuration Center -->
-      <div class="admin-card" style="margin-bottom:1.75rem; background:radial-gradient(circle at top right, rgba(99,102,241,0.15), transparent 70%), rgba(15,23,42,0.9); border:1px solid rgba(99,102,241,0.4); border-radius:20px; padding:1.75rem; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+      <!-- Admin Payment & Multi-Account UPI Rotation Center -->
+      <div id="admin-payment-config-center-card" class="admin-card" style="margin-bottom:1.75rem; background:radial-gradient(circle at top right, rgba(99,102,241,0.15), transparent 70%), rgba(15,23,42,0.9); border:1px solid rgba(99,102,241,0.4); border-radius:20px; padding:1.75rem; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:1rem;">
           <div style="display:flex; align-items:center; gap:0.85rem;">
             <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, #10b981, #059669); display:flex; align-items:center; justify-content:center; font-size:1.5rem;">💳</div>
             <div>
-              <h3 style="font-size:1.25rem; font-weight:800; color:#ffffff; margin:0;">Admin Payment Configuration Center</h3>
-              <p style="font-size:0.82rem; color:#94a3b8; margin:2px 0 0 0;">Configure dynamic UPI ID, QR scanner image, payment instructions, and toggle gateway maintenance mode across <strong>webguruji.online</strong>.</p>
+              <h3 style="font-size:1.25rem; font-weight:800; color:#ffffff; margin:0;">Admin Payment &amp; Multi-Account UPI Rotation Center</h3>
+              <p style="font-size:0.82rem; color:#94a3b8; margin:2px 0 0 0;">Manage multiple UPI IDs, account rotation, daily transaction limits, QR image, and toggle gateway maintenance across <strong>webguruji.online</strong>.</p>
             </div>
           </div>
           <span id="payment-gateway-live-status-badge" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.35); font-size:0.8rem; font-weight:700; padding:6px 14px; border-radius:50px;">🟢 Live &amp; Accepting Payments</span>
@@ -6263,22 +6290,110 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" style="font-weight:700; color:#e2e8f0;">Admin Official UPI ID *</label>
-              <input type="text" id="cfg-payment-upi-id" class="form-input" placeholder="e.g. merchant@upi" value="" required style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
-              <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Users can copy this UPI ID to pay using GPay, PhonePe, Paytm, BHIM.</div>
+              <label class="form-label" style="font-weight:700; color:#e2e8f0;">Primary Merchant UPI ID (Optional / Set on Render)</label>
+              <input type="text" id="cfg-payment-upi-id" class="form-input" placeholder="e.g. merchant@upi (Or configure directly on Render)" value="" style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
+              <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Default VPA used for dynamic QR codes. If blank, gateway accounts from Render will be used.</div>
+            </div>
+          </div>
+
+          <!-- Multi-Account Rotation Desk -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.25rem; margin-bottom:1.25rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-weight:700; color:#e2e8f0;">Backup UPI ID 1 (Overflow / Rotation)</label>
+              <input type="text" id="cfg-payment-backup-upi" class="form-input" placeholder="e.g. backup@upi" value="" style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
+              <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Used when primary account reaches daily cap or when in random rotation.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight:700; color:#e2e8f0;">Backup UPI ID 2 (Optional)</label>
+              <input type="text" id="cfg-payment-backup-upi2" class="form-input" placeholder="e.g. backup2@upi" value="" style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
+              <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Third standby account for high-traffic payment distribution.</div>
             </div>
           </div>
 
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.25rem; margin-bottom:1.25rem;">
             <div class="form-group">
-              <label class="form-label" style="font-weight:700; color:#e2e8f0;">Admin UPI QR Code Image URL</label>
-              <input type="url" id="cfg-payment-qr-url" class="form-input" placeholder="https://webguruji.online/assets/upi-qr.png" value="https://webguruji.online/logo-512.png" style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
-              <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Image displayed inside scanner frame on payment.webguruji.online.</div>
+              <label class="form-label" style="font-weight:700; color:#e2e8f0;">Daily Limit per Account (₹ INR)</label>
+              <input type="number" id="cfg-payment-daily-limit" class="form-input" placeholder="50000" value="50000" min="1000" max="1000000" style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
+              <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Protects individual bank accounts from NPCI daily transaction caps.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight:700; color:#e2e8f0;">Account Rotation Strategy *</label>
+              <select id="cfg-payment-rotation-mode" class="form-select" style="background:#0f172a; border-color:rgba(255,255,255,0.15);">
+                <option value="default">Default First (Use Primary, overflow to Backup on limit)</option>
+                <option value="random">Random Load Balancing (Evenly distribute across all active UPIs)</option>
+              </select>
+              <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Determines how incoming checkout QR codes choose an active UPI VPA.</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.25rem; margin-bottom:1.25rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-weight:700; color:#e2e8f0;">Admin UPI QR Code Image URL (Optional Override)</label>
+              <input type="url" id="cfg-payment-qr-url" class="form-input" placeholder="Leave empty for dynamic high-res SVG QR" value="" style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
+              <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Leave empty to automatically generate dynamic QR with exact order amount &amp; ref.</div>
             </div>
 
             <div class="form-group">
               <label class="form-label" style="font-weight:700; color:#e2e8f0;">Payment Note / Instructions</label>
               <input type="text" id="cfg-payment-instructions" class="form-input" placeholder="e.g. Scan QR using any UPI app and enter 12-digit UTR below." value="Scan QR code using Google Pay, PhonePe, Paytm or any UPI app, then submit the 12-digit UTR reference." style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
+            </div>
+          </div>
+
+          <!-- Phase 2: Self-Hosted Automated Gateway API & Webhook Desk -->
+          <div style="margin-top:1.5rem; margin-bottom:1.5rem; padding:1.25rem; background:rgba(30,41,59,0.7); border:1px solid rgba(129,140,248,0.35); border-radius:14px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:0.75rem;">
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <span style="font-size:1.3rem;">⚡</span>
+                <div>
+                  <h4 style="margin:0; font-size:1rem; font-weight:800; color:#fff;">Phase 2: Self-Hosted Automated Gateway API &amp; Webhooks</h4>
+                  <span style="font-size:0.75rem; color:#94a3b8;">Direct bridge to Laravel 12 UPI Gateway (pay.webguruji.online) for instant Paytm/PhonePe automated checks.</span>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span id="gateway-api-ping-badge" style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:50px; background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid rgba(148,163,184,0.3);">Standby / Unchecked</span>
+                <button type="button" class="btn-action-outline" onclick="pingGatewayApiHealth()" style="font-size:0.72rem; padding:4px 10px;">
+                  <span>📡 Test API Ping</span>
+                </button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-bottom:1rem;">
+              <div class="form-group">
+                <label class="form-label" style="font-weight:700; color:#e2e8f0; font-size:0.8rem;">Gateway API Endpoint URL</label>
+                <input type="url" id="cfg-gateway-api-url" class="form-input" placeholder="https://upi-gateway-oy63.onrender.com/api/v1" value="https://upi-gateway-oy63.onrender.com/api/v1" style="background:#0f172a; border-color:rgba(255,255,255,0.15); font-size:0.82rem;" />
+                <div style="font-size:0.7rem; color:#94a3b8; margin-top:3px;">Base URL of the self-hosted Laravel UPI Gateway orders API.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" style="font-weight:700; color:#e2e8f0; font-size:0.8rem;">Merchant API Key (X-Api-Key)</label>
+                <input type="text" id="cfg-gateway-api-key" class="form-input" placeholder="key_..." value="key_c74uFNnzj9Q9M2PFncMRGvD9" style="background:#0f172a; border-color:rgba(255,255,255,0.15); font-size:0.82rem; font-family:monospace;" />
+                <div style="font-size:0.7rem; color:#94a3b8; margin-top:3px;">Generated in UPI Gateway Dashboard &rarr; Developers &rarr; API Keys.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" style="font-weight:700; color:#e2e8f0; font-size:0.8rem;">Merchant API Secret (X-Api-Secret)</label>
+                <input type="password" id="cfg-gateway-api-secret" class="form-input" placeholder="sec_..." value="sec_TmpFtgb65Qi0c980xtfg1vN4rISP1HvTd5CdUY7g" style="background:#0f172a; border-color:rgba(255,255,255,0.15); font-size:0.82rem; font-family:monospace;" />
+                <div style="font-size:0.7rem; color:#94a3b8; margin-top:3px;">Used for signed webhook HMAC-SHA256 verification and order checking.</div>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem; background:rgba(15,23,42,0.6); padding:0.85rem 1rem; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="display:flex; align-items:center; gap:0.75rem;">
+                <input type="checkbox" id="cfg-gateway-auto-unlock" style="width:18px; height:18px; accent-color:#6366f1; cursor:pointer;" checked />
+                <label for="cfg-gateway-auto-unlock" style="font-size:0.82rem; color:#f1f5f9; font-weight:600; cursor:pointer; margin:0;">
+                  ⚡ Instant Auto-Unlock (Unlock user AI token quota automatically when Paytm / PhonePe verifies payment)
+                </label>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <a href="https://pay.webguruji.online/dashboard" target="_blank" rel="noopener" class="btn-action-outline" style="font-size:0.75rem; padding:4px 10px; color:#818cf8; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                  <span>🚀 Open Gateway Console &rarr;</span>
+                </a>
+                <a href="https://pay.webguruji.online/docs" target="_blank" rel="noopener" class="btn-action-outline" style="font-size:0.75rem; padding:4px 10px; color:#94a3b8; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                  <span>📖 API Docs</span>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -8074,6 +8189,13 @@
             document.body.classList.add('role-hide-apk');
           }
 
+          // Payment & Multi-Account UPI Rotation Desk: Limited to Master Admin and Category 1 (Ops Manager)
+          const canManagePayments = (subRole === 'ops_limits_apk');
+          const paymentCard = document.getElementById('admin-payment-config-center-card');
+          if (paymentCard) {
+            paymentCard.style.display = canManagePayments ? '' : 'none';
+          }
+
           // Hide subadmin creation form from subadmin
           const createCard = document.querySelector('form[onsubmit*="handleCreateSubadminSubmit"]')?.closest('div');
           if (createCard) createCard.style.display = 'none';
@@ -8085,6 +8207,8 @@
           if (subadminsHeadline) subadminsHeadline.style.display = '';
           if (subadminsBox) subadminsBox.style.display = '';
           if (btnViewAiBox) btnViewAiBox.style.display = '';
+          const paymentCard = document.getElementById('admin-payment-config-center-card');
+          if (paymentCard) paymentCard.style.display = '';
         }
 
         try { startLiveSessionCountdown(); } catch(e) {}
@@ -8776,6 +8900,9 @@
         renderMessages();
         renderContributors();
         renderUsers();
+        if (typeof window.loadPaymentGatewayConfigAdmin === 'function') {
+          window.loadPaymentGatewayConfigAdmin();
+        }
 
         if (showToastNotice) {
           showMasterToast("✅ Telemetry & site data refreshed successfully!", "success");
@@ -11283,18 +11410,24 @@
       let chatLimit = 50;
       let contextLimit = 50000;
 
-      if (rawMsg.includes('Grandmaster') || rawMsg.includes('$25')) {
+      if (rawMsg.includes('Grandmaster') || rawMsg.includes('$25') || rawMsg.includes('Argon 1.5') || rawMsg.includes('argon-1.5') || rawMsg.includes('1.5')) {
         planKey = 'grandmaster';
-        planName = 'Grandmaster Enterprise';
+        planName = 'Guru-Argon 1.5 (Grandmaster Enterprise)';
         planPrice = 25;
         chatLimit = 350;
         contextLimit = 325000;
-      } else if (rawMsg.includes('Power') || rawMsg.includes('$15')) {
+      } else if (rawMsg.includes('Power') || rawMsg.includes('$15') || rawMsg.includes('Argon 1.4') || rawMsg.includes('argon-1.4') || rawMsg.includes('1.4')) {
         planKey = 'power';
-        planName = 'Power Scholar';
+        planName = 'Guru-Argon 1.4 (Power Scholar)';
         planPrice = 15;
         chatLimit = 150;
         contextLimit = 175000;
+      } else {
+        planKey = 'starter';
+        planName = 'Guru-Flash 1.3 (Starter Pro)';
+        planPrice = 5;
+        chatLimit = 50;
+        contextLimit = 64000;
       }
 
       if (!confirm(`Confirm activation of ${planName} ($${planPrice}) for ${email}?\n\n• Chat Quota: ${chatLimit} requests / 12h\n• Context Limit: ${contextLimit.toLocaleString()} tokens\n• Realtime Live Effect: YES`)) {
@@ -12232,6 +12365,86 @@
       }
     };
 
+    window.loadPaymentGatewayConfigAdmin = async function() {
+      try {
+        let cfg = null;
+        const local = localStorage.getItem('hg_payment_config');
+        if (local) {
+          try { cfg = JSON.parse(local); } catch(e) {}
+        }
+        if (window.supabaseClient) {
+          try {
+            const { data } = await window.supabaseClient.from('user_ai_limits').select('plan_name').eq('email', 'admin_payment_config@webguruji.online').maybeSingle();
+            if (data?.plan_name) cfg = Object.assign(cfg || {}, JSON.parse(data.plan_name));
+          } catch(e) {}
+        }
+        if (cfg) {
+          if (document.getElementById('cfg-payment-maintenance')) document.getElementById('cfg-payment-maintenance').value = cfg.maintenance ? 'true' : 'false';
+          if (document.getElementById('cfg-payment-upi-id') && cfg.upi_id) document.getElementById('cfg-payment-upi-id').value = cfg.upi_id;
+          if (document.getElementById('cfg-payment-backup-upi') && cfg.backup_upi) document.getElementById('cfg-payment-backup-upi').value = cfg.backup_upi;
+          if (document.getElementById('cfg-payment-backup-upi2') && cfg.backup_upi2) document.getElementById('cfg-payment-backup-upi2').value = cfg.backup_upi2;
+          if (document.getElementById('cfg-payment-daily-limit') && cfg.daily_limit) document.getElementById('cfg-payment-daily-limit').value = cfg.daily_limit;
+          if (document.getElementById('cfg-payment-rotation-mode') && cfg.rotation_mode) document.getElementById('cfg-payment-rotation-mode').value = cfg.rotation_mode;
+          if (document.getElementById('cfg-payment-qr-url') && cfg.qr_url) document.getElementById('cfg-payment-qr-url').value = cfg.qr_url;
+          if (document.getElementById('cfg-payment-instructions') && cfg.instructions) document.getElementById('cfg-payment-instructions').value = cfg.instructions;
+          if (document.getElementById('cfg-gateway-api-url') && cfg.gateway_api_url) document.getElementById('cfg-gateway-api-url').value = cfg.gateway_api_url;
+          if (document.getElementById('cfg-gateway-api-key') && cfg.gateway_api_key) document.getElementById('cfg-gateway-api-key').value = cfg.gateway_api_key;
+          if (document.getElementById('cfg-gateway-api-secret') && cfg.gateway_api_secret) document.getElementById('cfg-gateway-api-secret').value = cfg.gateway_api_secret;
+          if (document.getElementById('cfg-gateway-auto-unlock') && typeof cfg.auto_unlock !== 'undefined') document.getElementById('cfg-gateway-auto-unlock').checked = !!cfg.auto_unlock;
+          updatePaymentLiveStatusBadge(cfg.maintenance);
+        }
+      } catch(e) {}
+    };
+
+    window.pingGatewayApiHealth = async function() {
+      const badge = document.getElementById('gateway-api-ping-badge');
+      const apiUrl = document.getElementById('cfg-gateway-api-url')?.value.trim() || 'https://pay.webguruji.online/api/v1';
+      const apiKey = document.getElementById('cfg-gateway-api-key')?.value.trim();
+      const apiSecret = document.getElementById('cfg-gateway-api-secret')?.value.trim();
+
+      if (badge) {
+        badge.textContent = 'Pinging...';
+        badge.style.background = 'rgba(234,179,8,0.18)';
+        badge.style.color = '#fde047';
+        badge.style.borderColor = 'rgba(234,179,8,0.4)';
+      }
+
+      const startTime = performance.now();
+      try {
+        const res = await fetch(`${apiUrl.replace(/\/+$/, '')}/accounts`, {
+          headers: {
+            'X-Api-Key': apiKey || 'ping_test',
+            'X-Api-Secret': apiSecret || ''
+          }
+        });
+        const latency = Math.round(performance.now() - startTime);
+        if (res.status === 200 || res.status === 401 || res.status === 403) {
+          if (badge) {
+            badge.textContent = `🟢 Online (${latency}ms)`;
+            badge.style.background = 'rgba(16,185,129,0.18)';
+            badge.style.color = '#34d399';
+            badge.style.borderColor = 'rgba(16,185,129,0.4)';
+          }
+          showMasterToast(`✓ Gateway API online! Latency: ${latency}ms`, 'success');
+        } else {
+          if (badge) {
+            badge.textContent = `🟡 Server Resp ${res.status}`;
+            badge.style.background = 'rgba(234,179,8,0.18)';
+            badge.style.color = '#fde047';
+            badge.style.borderColor = 'rgba(234,179,8,0.4)';
+          }
+        }
+      } catch(e) {
+        if (badge) {
+          badge.textContent = '⚪ Standby (Supabase fallback active)';
+          badge.style.background = 'rgba(148,163,184,0.15)';
+          badge.style.color = '#94a3b8';
+          badge.style.borderColor = 'rgba(148,163,184,0.3)';
+        }
+        showMasterToast('Gateway server offline. Client using resilient Supabase mode.', 'info');
+      }
+    };
+
     window.handleSaveAdminPaymentConfig = async function(event) {
       if (event) event.preventDefault();
       const btn = document.getElementById('btn-save-payment-config');
@@ -12239,14 +12452,30 @@
 
       const maintenance = document.getElementById('cfg-payment-maintenance')?.value === 'true';
       const upiId = document.getElementById('cfg-payment-upi-id')?.value.trim() || '';
+      const backupUpi = document.getElementById('cfg-payment-backup-upi')?.value.trim() || '';
+      const backupUpi2 = document.getElementById('cfg-payment-backup-upi2')?.value.trim() || '';
+      const dailyLimit = parseFloat(document.getElementById('cfg-payment-daily-limit')?.value) || 50000;
+      const rotationMode = document.getElementById('cfg-payment-rotation-mode')?.value || 'default';
       const qrUrl = document.getElementById('cfg-payment-qr-url')?.value.trim() || '';
       const instructions = document.getElementById('cfg-payment-instructions')?.value.trim() || '';
+      const gatewayApiUrl = document.getElementById('cfg-gateway-api-url')?.value.trim() || 'https://pay.webguruji.online/api/v1';
+      const gatewayApiKey = document.getElementById('cfg-gateway-api-key')?.value.trim() || '';
+      const gatewayApiSecret = document.getElementById('cfg-gateway-api-secret')?.value.trim() || '';
+      const gatewayAutoUnlock = document.getElementById('cfg-gateway-auto-unlock') ? document.getElementById('cfg-gateway-auto-unlock').checked : true;
 
       const configObj = {
         maintenance: maintenance,
         upi_id: upiId,
+        backup_upi: backupUpi,
+        backup_upi2: backupUpi2,
+        daily_limit: dailyLimit,
+        rotation_mode: rotationMode,
         qr_url: qrUrl,
         instructions: instructions,
+        gateway_api_url: gatewayApiUrl,
+        gateway_api_key: gatewayApiKey,
+        gateway_api_secret: gatewayApiSecret,
+        auto_unlock: gatewayAutoUnlock,
         updated_at: new Date().toISOString()
       };
 
@@ -12276,7 +12505,7 @@
         localStorage.setItem('hg_payment_config', JSON.stringify(configObj));
 
         updatePaymentLiveStatusBadge(maintenance);
-        showMasterToast('✓ Payment Gateway Configuration saved and synced live across webguruji.online!', 'success');
+        showMasterToast('✓ Payment Gateway Configuration & UPI Rotation saved live across webguruji.online!', 'success');
       } catch (err) {
         console.error('Config save error:', err);
         showMasterToast('Failed to save payment settings: ' + err.message, 'error');
@@ -12285,8 +12514,9 @@
       }
     };
 
-    window.verifyAndUnlockModel = async function(inquiryId, userEmail, modelName) {
-      if (!confirm(`Are you sure you want to verify payment and UNLOCK ${modelName} for ${userEmail}?`)) return;
+    window.verifyAndUnlockModel = async function(inquiryId, userEmail, modelName, utrRef) {
+      const utrMsg = utrRef ? ` (UTR: ${utrRef})` : '';
+      if (!confirm(`Are you sure you want to verify payment${utrMsg} and UNLOCK ${modelName} for ${userEmail}?`)) return;
 
       const waitForSupabase = () => new Promise(resolve => {
         if (window.supabaseClient) return resolve(window.supabaseClient);
@@ -12296,22 +12526,36 @@
       showMasterToast(`Unlocking ${modelName} for ${userEmail}...`, 'info');
 
       try {
-        // 1. Update contact_messages status to 'Active'
+        // 1. Update contact_messages status to 'Active' / 'Payment Verified'
         if (inquiryId) {
-          await sb.from('contact_messages').update({ status: 'Active' }).eq('id', inquiryId);
+          await sb.from('contact_messages').update({ 
+            status: 'Active',
+            admin_reply: `Payment verified via UTR: ${utrRef || 'Direct Verification'}`
+          }).eq('id', inquiryId);
         }
 
-        // 2. Upsert valid record into user_ai_limits
+        // 2. Determine model quotas
+        let maxReq = 350;
+        let ctxLimit = 325000;
+        if (modelName.includes('Guru-Flash 1.3')) {
+          maxReq = 150;
+          ctxLimit = 64000;
+        } else if (modelName.includes('Guru-Argon 1.4')) {
+          maxReq = 250;
+          ctxLimit = 128000;
+        }
+
+        // 3. Upsert valid record into user_ai_limits
         await sb.from('user_ai_limits').upsert({
-          email: userEmail,
+          email: userEmail.toLowerCase().trim(),
           plan_name: modelName,
           is_active: true,
-          max_requests: 100,
-          context_limit: 64000,
+          max_requests: maxReq,
+          context_limit: ctxLimit,
           updated_at: new Date().toISOString()
         }, { onConflict: 'email' });
 
-        // 3. Dispatch automated activation email from info@webguruji.online
+        // 4. Dispatch automated activation email to Customer from info@webguruji.online
         try {
           const mailApi = 'https://ai.webguruji.online/api/mail/send';
           await fetch(mailApi, {
@@ -12325,12 +12569,76 @@
           });
         } catch(e) {}
 
+        // 5. Dispatch confirmation notice to Master Admin at contact@webguruji.online
+        try {
+          await fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
+            },
+            body: JSON.stringify({
+              from: 'info@webguruji.online',
+              to: ['contact@webguruji.online'],
+              displayName: 'HarshGuruJi Payment Audit',
+              subject: `✅ [Payment Verified] ${modelName} Unlocked for ${userEmail}`,
+              text: `Payment Approved & Model Unlocked!\nCustomer: ${userEmail}\nModel: ${modelName}\nUTR: ${utrRef || 'N/A'}\nVerified At: ${new Date().toLocaleString()}`,
+              html: `<p>Payment approved and unlocked for <strong>${userEmail}</strong> (Model: <strong>${modelName}</strong>, UTR: <strong>${utrRef || 'Direct'}</strong>).</p>`
+            })
+          });
+        } catch(e) {}
+
         showMasterToast(`🎉 Successfully verified and unlocked ${modelName} for ${userEmail}!`, 'success');
         await loadAllMasterData(true);
 
       } catch (err) {
         console.error('Model unlock error:', err);
         showMasterToast(`Failed to unlock model: ${err.message}`, 'error');
+      }
+    };
+
+    window.rejectAiPaymentUtr = async function(inquiryId, userEmail, modelName, utrRef) {
+      const reason = prompt(`Enter rejection reason for UTR ${utrRef} (${userEmail}):`, 'UTR reference not found in bank account statement.');
+      if (reason === null) return;
+
+      const waitForSupabase = () => new Promise(resolve => {
+        if (window.supabaseClient) return resolve(window.supabaseClient);
+        const t = setInterval(() => { if (window.supabaseClient) { clearInterval(t); resolve(window.supabaseClient); } }, 80);
+      });
+      const sb = await waitForSupabase();
+      showMasterToast(`Rejecting UTR for ${userEmail}...`, 'info');
+
+      try {
+        if (inquiryId) {
+          await sb.from('contact_messages').update({ 
+            status: 'Rejected',
+            admin_reply: reason
+          }).eq('id', inquiryId);
+        }
+
+        // Notify user via email
+        try {
+          await fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
+            },
+            body: JSON.stringify({
+              from: 'info@webguruji.online',
+              to: [userEmail],
+              displayName: 'HarshGuruJi Payment Desk',
+              subject: `UTR Verification Update: Action Required for ${modelName}`,
+              text: `Hello,\n\nYour submitted UTR ${utrRef} could not be verified: ${reason}\n\nPlease check your UPI payment app receipt and submit your correct 12-digit UTR on https://payment.webguruji.online/payment.html\n\nHarshGuruJi Administration`,
+              html: `<p>Your submitted UTR <strong>${utrRef}</strong> could not be verified.</p><p>Reason: <em>${reason}</em></p><p>Please re-check your payment receipt and submit your correct 12-digit UTR on <a href="https://payment.webguruji.online/payment.html">HarshGuruJi Payment Portal</a>.</p>`
+            })
+          });
+        } catch(e) {}
+
+        showMasterToast(`UTR marked as rejected for ${userEmail}.`, 'warning');
+        await loadAllMasterData(true);
+      } catch(err) {
+        showMasterToast(`Failed to reject UTR: ${err.message}`, 'error');
       }
     };
 
@@ -12362,8 +12670,24 @@
         return sub.includes('AI') || msg.includes('GURUAI') || msg.includes('SELECTED MODEL:') || msg.includes('GURU-FLASH') || msg.includes('GURU-ARGON');
       });
 
+      // Filter UTR Review Queue (Pending review with UTR)
+      const utrReviewQueue = aiRequests.filter(r => {
+        const isApproved = (r.status || '').toLowerCase() === 'active';
+        const hasUtr = Boolean(r.utr_ref || (r.status && r.status.includes('Review')) || (r.message && r.message.includes('UTR:')));
+        return hasUtr && !isApproved;
+      });
+
       const pendingCount = aiRequests.filter(r => (r.status || 'Pending').toLowerCase() !== 'active').length;
       const activeCount = aiRequests.filter(r => (r.status || '').toLowerCase() === 'active').length;
+
+      // Calculate Total Revenue from Active/Verified Subscriptions
+      let totalRevenue = 0;
+      aiRequests.filter(r => (r.status || '').toLowerCase() === 'active').forEach(r => {
+        const msg = r.message || '';
+        if (msg.includes('Guru-Argon 1.5') || msg.includes('$25')) totalRevenue += 2100;
+        else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15')) totalRevenue += 1250;
+        else totalRevenue += 420;
+      });
 
       const pill = document.getElementById('mpill-premium-requests');
       if (pill) pill.textContent = pendingCount.toString();
@@ -12372,10 +12696,79 @@
       if (statTotal) statTotal.textContent = aiRequests.length.toString();
 
       const statPending = document.getElementById('stat-premium-pending');
-      if (statPending) statPending.textContent = pendingCount.toString();
+      if (statPending) statPending.textContent = (pendingCount - utrReviewQueue.length).toString();
+
+      const statUtrCount = document.getElementById('stat-premium-utr-count');
+      if (statUtrCount) statUtrCount.textContent = utrReviewQueue.length.toString();
 
       const statActive = document.getElementById('stat-premium-active');
       if (statActive) statActive.textContent = activeCount.toString();
+
+      const statRevenue = document.getElementById('stat-premium-revenue');
+      if (statRevenue) statRevenue.textContent = `₹${totalRevenue.toLocaleString()}`;
+
+      // Render Dedicated 1-Click UTR Review Cards Deck
+      const utrQueueBox = document.getElementById('live-utr-review-queue');
+      const utrCardsContainer = document.getElementById('pending-utrs-cards-container');
+      const utrBadgeCount = document.getElementById('badge-utr-pending-count');
+
+      if (utrQueueBox && utrCardsContainer) {
+        if (utrReviewQueue.length > 0) {
+          utrQueueBox.style.display = 'block';
+          if (utrBadgeCount) utrBadgeCount.textContent = `${utrReviewQueue.length} Awaiting Verification`;
+
+          let cardsHtml = '';
+          utrReviewQueue.forEach(req => {
+            const msg = req.message || '';
+            let model = 'Guru-Flash 1.3';
+            let price = '₹420';
+            if (msg.includes('Guru-Argon 1.5') || msg.includes('$25')) {
+              model = 'Guru-Argon 1.5';
+              price = '₹2,100';
+            } else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15')) {
+              model = 'Guru-Argon 1.4';
+              price = '₹1,250';
+            }
+            const extractedUtr = req.utr_ref || (msg.match(/UTR:\s*([A-Za-z0-9]+)/i)?.[1] || 'N/A');
+            const extractedOrder = (msg.match(/\[Order:\s*([A-Za-z0-9]+)\]/i)?.[1] || 'ORD-LIVE');
+            const dateStr = req.created_at ? new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent';
+
+            cardsHtml += `
+              <div style="background:rgba(15,23,42,0.95); border:1px solid rgba(56,189,248,0.3); border-radius:14px; padding:1rem; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 6px 20px rgba(0,0,0,0.5);">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                    <span style="font-family:monospace; font-size:0.75rem; background:rgba(99,102,241,0.25); color:#c7d2fe; padding:2px 7px; border-radius:5px; font-weight:700;">${escapeHtml(extractedOrder)}</span>
+                    <span style="font-size:0.8rem; font-weight:800; color:#34d399;">${price}</span>
+                  </div>
+                  <div style="font-weight:700; color:#fff; font-size:0.88rem;">${escapeHtml(req.name || 'User')}</div>
+                  <div style="font-family:monospace; font-size:0.75rem; color:#38bdf8; margin-bottom:0.5rem;">${escapeHtml(req.email || '')}</div>
+                  <div style="display:flex; align-items:center; gap:5px; font-weight:700; color:#fde68a; font-size:0.8rem; margin-bottom:0.6rem;">
+                    👑 ${escapeHtml(model)}
+                  </div>
+                  <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:6px 10px; margin-bottom:0.8rem; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                      <div style="font-size:0.68rem; color:#94a3b8; text-transform:uppercase;">Bank UTR:</div>
+                      <div style="font-family:monospace; font-size:0.85rem; font-weight:800; color:#34d399; letter-spacing:0.04em;">${escapeHtml(extractedUtr)}</div>
+                    </div>
+                    <button type="button" class="btn-action-outline" style="padding:2px 7px; font-size:0.7rem;" onclick="navigator.clipboard.writeText('${escapeHtml(extractedUtr)}'); showMasterToast('UTR Copied! ✓', 'info')">📋 Copy</button>
+                  </div>
+                </div>
+                <div style="display:flex; gap:0.4rem;">
+                  <button type="button" class="btn-action-primary" style="flex:1; padding:6px; font-size:0.75rem; background:#10b981; border-color:#10b981; font-weight:800;" onclick="verifyAndUnlockModel('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}', '${escapeHtml(extractedUtr)}')">
+                    <span>✅ 1-Click Unlock</span>
+                  </button>
+                  <button type="button" class="btn-action-danger" style="padding:6px 10px; font-size:0.75rem;" onclick="rejectAiPaymentUtr('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}', '${escapeHtml(extractedUtr)}')">
+                    <span>❌ Reject</span>
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+          utrCardsContainer.innerHTML = cardsHtml;
+        } else {
+          utrQueueBox.style.display = 'none';
+        }
+      }
 
       const filtered = aiRequests.filter(r => {
         if (!searchVal) return true;
@@ -12403,32 +12796,36 @@
         const msg = req.message || '';
         let model = 'Guru-Flash 1.3';
         let plan = 'Starter Premium ($5)';
-        let price = '$5.00';
+        let price = '₹420 ($5.00)';
 
         if (msg.includes('Guru-Argon 1.5') || msg.includes('$25')) {
           model = 'Guru-Argon 1.5';
           plan = 'Power User ($25)';
-          price = '$25.00';
+          price = '₹2,100 ($25.00)';
         } else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15')) {
           model = 'Guru-Argon 1.4';
           plan = 'Pro Premium ($15)';
-          price = '$15.00';
+          price = '₹1,250 ($15.00)';
         } else if (msg.includes('Guru-Flash 1.3') || msg.includes('$5')) {
           model = 'Guru-Flash 1.3';
           plan = 'Starter Premium ($5)';
-          price = '$5.00';
+          price = '₹420 ($5.00)';
         }
 
         const isApproved = (req.status || '').toLowerCase() === 'active';
         const isPaymentSent = req.status === 'Payment Link Sent';
         const isRejected = (req.status || '').toLowerCase() === 'rejected';
+        const isUtrSubmitted = Boolean(req.utr_ref || (req.status && req.status.includes('Review')) || msg.includes('UTR:'));
+        const extractedUtr = req.utr_ref || (msg.match(/UTR:\s*([A-Za-z0-9]+)/i)?.[1] || '');
         const dateStr = req.created_at ? new Date(req.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent';
 
         let statusBadge = '<span style="color:#fbbf24; font-weight:700; font-size:0.75rem; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3); padding:3px 10px; border-radius:50px;">⏳ Pending</span>';
         if (isApproved) {
           statusBadge = '<span style="color:#10b981; font-weight:700; font-size:0.75rem; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:3px 10px; border-radius:50px;">✓ Active 👑</span>';
+        } else if (isUtrSubmitted) {
+          statusBadge = '<span style="color:#38bdf8; font-weight:800; font-size:0.75rem; background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); padding:3px 10px; border-radius:50px;">🚨 UTR Review</span>';
         } else if (isPaymentSent) {
-          statusBadge = '<span style="color:#38bdf8; font-weight:700; font-size:0.75rem; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); padding:3px 10px; border-radius:50px;">✉️ Payment Link Sent</span>';
+          statusBadge = '<span style="color:#38bdf8; font-weight:700; font-size:0.75rem; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); padding:3px 10px; border-radius:50px;">✉️ Link Sent</span>';
         } else if (isRejected) {
           statusBadge = '<span style="color:#ef4444; font-weight:700; font-size:0.75rem; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); padding:3px 10px; border-radius:50px;">❌ Rejected</span>';
         }
@@ -12441,13 +12838,13 @@
         } else {
           actionBtns = `
             <div style="display:flex; justify-content:flex-end; gap:0.4rem;">
-              ${!isPaymentSent ? `<button type="button" class="btn-action-primary" style="padding:4px 9px; font-size:0.75rem; background:#10b981; border-color:#10b981;" onclick="acceptAiPremiumInquiry('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}')">
+              ${!isPaymentSent && !isUtrSubmitted ? `<button type="button" class="btn-action-primary" style="padding:4px 9px; font-size:0.75rem; background:#10b981; border-color:#10b981;" onclick="acceptAiPremiumInquiry('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}')">
                 <span>✅ Accept</span>
               </button>` : ''}
-              <button type="button" class="btn-action-primary" style="padding:4px 9px; font-size:0.75rem; background:#6366f1; border-color:#6366f1;" onclick="verifyAndUnlockModel('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}')">
-                <span>⚡ Unlock</span>
+              <button type="button" class="btn-action-primary" style="padding:4px 9px; font-size:0.75rem; background:${isUtrSubmitted ? '#10b981' : '#6366f1'}; border-color:${isUtrSubmitted ? '#10b981' : '#6366f1'}; font-weight:${isUtrSubmitted ? '800' : '600'};" onclick="verifyAndUnlockModel('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}', '${escapeHtml(extractedUtr)}')">
+                <span>${isUtrSubmitted ? '⚡ Unlock UTR' : '⚡ Unlock'}</span>
               </button>
-              <button type="button" class="btn-action-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="rejectAiPremiumInquiry('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}')">
+              <button type="button" class="btn-action-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="${isUtrSubmitted ? `rejectAiPaymentUtr('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}', '${escapeHtml(extractedUtr)}')` : `rejectAiPremiumInquiry('${req.id}', '${escapeHtml(req.email || '')}', '${escapeHtml(model)}')`}">
                 <span>❌</span>
               </button>
             </div>
@@ -12468,6 +12865,7 @@
                 👑 ${escapeHtml(model)}
               </span>
               <div style="font-size:0.72rem; color:#94a3b8;">${escapeHtml(plan)}</div>
+              ${extractedUtr ? `<div style="font-family:monospace; font-size:0.75rem; color:#38bdf8; font-weight:700; margin-top:2px;">UTR: <strong>${escapeHtml(extractedUtr)}</strong></div>` : ''}
             </td>
             <td style="padding:0.85rem 1rem;">
               <span style="font-weight:700; color:#34d399; font-size:0.85rem;">${escapeHtml(price)}</span>
