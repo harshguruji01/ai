@@ -1499,7 +1499,6 @@
 
             </div>
           </form>
-          </form>
 
           <div class="flex items-center justify-center px-2 text-[11px] text-slate-500">
             <span>GuruAI can make mistakes. Verify important facts and code.</span>
@@ -3027,6 +3026,7 @@
 
       return processed;
     }
+    window.formatMarkdown = formatMarkdown;
 
     // 1-Click Code Copier
     window.copyCodeBlock = function (id) {
@@ -3718,15 +3718,15 @@
       chatFeed.scrollTop = chatFeed.scrollHeight;
     }
 
-    // Streaming AI Response (NVIDIA Nemotron 3 Ultra 550B branded as Guru-Flash 1.1)
+    // Streaming AI Response (Multi-Engine High Capacity Context Engine)
     async function streamResponse(prompt) {
-      // Trigger Real-Time Web Sources search for Perplexity Answer Engine
       if (typeof fetchWebSourcesForQuery === 'function') {
         fetchWebSourcesForQuery(prompt, window.currentAnswerMode || 'search');
       }
+
       isGenerating = true;
-      stopGenBtn.classList.remove('hidden');
-      sendBtn.classList.add('hidden');
+      if (stopGenBtn) stopGenBtn.classList.remove('hidden');
+      if (sendBtn) sendBtn.classList.add('hidden');
 
       deductAllowance();
 
@@ -3758,60 +3758,65 @@
         </div>
       `;
       chatFeed.appendChild(assistantMsgDiv);
+      chatFeed.scrollTop = chatFeed.scrollHeight;
       const streamBubble = document.getElementById(bubbleId);
 
       async function readSseStream(response) {
         const reader = response.body.getReader();
-        const decoder = new TextDecoder();
+        const decoder = new TextDecoder('utf-8');
         let fullText = '';
         let fullReasoning = '';
         let buffer = '';
 
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split(/\r?\n/);
-          buffer = lines.pop() || '';
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split(/\r?\n/);
+            buffer = lines.pop() || '';
 
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || trimmed === 'data: [DONE]') continue;
-            if (trimmed.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(trimmed.slice(6));
-                const reasoning = data.reasoning || data.choices?.[0]?.delta?.reasoning_content || '';
-                const token = data.token || data.choices?.[0]?.delta?.content || '';
-                const finishReason = data.choices?.[0]?.finish_reason;
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed || trimmed === 'data: [DONE]') continue;
+              if (trimmed.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(trimmed.slice(6));
+                  const reasoning = data.reasoning || data.choices?.[0]?.delta?.reasoning_content || '';
+                  const token = data.token || data.choices?.[0]?.delta?.content || '';
+                  const finishReason = data.choices?.[0]?.finish_reason;
 
-                if (reasoning) fullReasoning += reasoning;
-                if (token) fullText += token;
-                if (finishReason === 'length') {
-                  window.lastResponseHitLengthLimit = true;
-                }
+                  if (reasoning) fullReasoning += reasoning;
+                  if (token) fullText += token;
+                  if (finishReason === 'length') {
+                    window.lastResponseHitLengthLimit = true;
+                  }
 
-                let renderHtml = '';
-                if (fullReasoning) {
-                  const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                  renderHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono" ${fullText ? '' : 'open'}><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thinking Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
-                }
-                renderHtml += formatMarkdown(fullText);
-                if (streamBubble) {
-                  streamBubble.innerHTML = renderHtml + '<span class="streaming-cursor"></span>';
-                }
-                chatFeed.scrollTop = chatFeed.scrollHeight;
-              } catch (e) { }
+                  if (streamBubble) {
+                    let renderHtml = '';
+                    if (fullReasoning) {
+                      const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                      renderHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono" ${fullText ? '' : 'open'}><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thinking Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
+                    }
+                    renderHtml += formatMarkdown(fullText);
+                    streamBubble.innerHTML = renderHtml + '<span class="streaming-cursor"></span>';
+                  }
+                  if (chatFeed) chatFeed.scrollTop = chatFeed.scrollHeight;
+                } catch (e) { }
+              }
             }
           }
+        } catch (streamErr) {
+          console.warn('Stream read interrupted:', streamErr);
         }
 
-        if (streamBubble) {
+        if (streamBubble && fullText.trim()) {
           let finalHtml = '';
           if (fullReasoning) {
             const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             finalHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono"><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thought Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
           }
-          finalHtml += formatMarkdown(fullText || 'Response could not be generated. Please check connection or retry.');
+          finalHtml += formatMarkdown(fullText);
           if (window.lastResponseHitLengthLimit) {
             finalHtml += `
               <div class="mt-3 p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-between flex-wrap gap-2 text-xs">
@@ -3850,7 +3855,6 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               </button>
             </div>
-            <!-- Helpful conversation pill (Image 3 UI) -->
             <div class="mt-1 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700/60 text-[11px] text-slate-300 w-fit">
               <span>Is this conversation helpful so far?</span>
               <button onclick="recordFeedback(this, 'up'); this.parentElement.remove();" class="hover:text-emerald-400 p-0.5">👍</button>
@@ -3858,14 +3862,16 @@
               <button onclick="this.parentElement.remove();" class="hover:text-slate-400 p-0.5 text-[9px] ml-1">✕</button>
             </div>
           `;
-          assistantMsgDiv.querySelector('.max-w-\\[85\\%\\]').appendChild(actionDiv);
+          const targetContainer = assistantMsgDiv.children[1] || assistantMsgDiv;
+          if (targetContainer) targetContainer.appendChild(actionDiv);
         }
 
-        if (fullText) {
+        if (fullText.trim()) {
           conversationHistory.push({ role: 'assistant', content: fullText, reasoning: fullReasoning });
           updateCurrentConversation(prompt, fullText);
+          return true;
         }
-        return fullText.length > 0;
+        return false;
       }
 
       window.promptNextStepContinuation = function() {
@@ -3879,246 +3885,135 @@
         }
       };
 
-      let backendStreamed = false;
+      try {
+        let backendStreamed = false;
 
-      // 1. Try local/hosted Next.js /api/chat route first
-      const isWebHosting = window.location.protocol === 'https:' && window.location.origin.includes('webguruji.online');
-      const chatEndpoints = isWebHosting ? ['/api/chat'] : ['/api/chat', 'https://ai.webguruji.online/api/chat'];
-
-      const PREMIUM_MODELS = ['guru-flash-1.3', 'guru-argon-1.4', 'guru-argon-1.5'];
-      const isPremiumRequested = PREMIUM_MODELS.includes(currentSelectedModel);
-      const userEmail = (currentUser && currentUser.email) ? currentUser.email : (localStorage.getItem('guru_ai_verified_email') || '');
-
-      for (const endpoint of chatEndpoints) {
-        if (backendStreamed) break;
-        try {
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-user-email': userEmail
-            },
-            body: JSON.stringify({
-              prompt,
-              conversationId: currentConvId,
-              messages: conversationHistory,
-              language: currentLang,
-              model: currentSelectedModel || 'guru-flash-1.1',
-              imageBase64: window.currentImageBase64 || null
-            })
-          });
-
-          if (response.status === 402) {
-            const errJson = await response.json().catch(() => ({}));
-            if (streamBubble) {
-              streamBubble.innerHTML = `
-                <div class="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs space-y-3">
-                  <div class="font-bold flex items-center gap-2 text-amber-300 text-sm">
-                    <span>🔒</span> <span>${currentSelectedModel} Requires Active Subscription</span>
-                  </div>
-                  <p class="leading-relaxed text-slate-300">${errJson.message || 'An active verified subscription is required to unlock this high-capacity model.'}</p>
-                  <div class="flex items-center gap-2 pt-1 flex-wrap">
-                    <button onclick="openAiPaymentModal('${currentSelectedModel}')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md transition active:scale-95">
-                      Upgrade & Unlock Now
-                    </button>
-                    <button onclick="selectAiModel('guru-flash-1.1', 'Guru-Flash 1.1', false)" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition">
-                      Switch to Free Flash 1.1
-                    </button>
-                  </div>
-                </div>
-              `;
-            }
-            if (typeof openAiPaymentModal === 'function') {
-              openAiPaymentModal(currentSelectedModel);
-            }
-            return false;
-          }
-
-          if (response.status === 403) {
-            const errJson = await response.json().catch(() => ({}));
-            if (streamBubble) {
-              streamBubble.innerHTML = `
-                <div class="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 text-indigo-200 text-xs space-y-2">
-                  <div class="font-bold flex items-center gap-1.5 text-indigo-300">
-                    <span>👤</span> <span>Authentication Required</span>
-                  </div>
-                  <p>${errJson.message || 'Please log in to use this feature.'}</p>
-                  <button onclick="openAuthModal('login')" class="mt-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs">
-                    Log In at webguruji.online
-                  </button>
-                </div>
-              `;
-            }
-            if (typeof openAuthModal === 'function') openAuthModal('login');
-            return false;
-          }
-
-          if (response.ok && response.body) {
-            backendStreamed = await readSseStream(response);
-          }
-        } catch (e) { }
-      }
-
-      // If backend was unreachable for a premium model, require backend verification
-      if (!backendStreamed && isPremiumRequested) {
-        if (streamBubble) {
-          streamBubble.innerHTML = `
-            <div class="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs space-y-2">
-              <div class="font-bold flex items-center gap-1.5 text-amber-300">
-                <span>🛡️</span> <span>Backend Payment Verification Required</span>
-              </div>
-              <p>Premium models (${currentSelectedModel}) are strictly verified by the backend entitlement server. Please check your network or activate subscription.</p>
-              <button onclick="openAiPaymentModal('${currentSelectedModel}')" class="mt-1 px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">
-                Check / Activate Plan
-              </button>
-            </div>
-          `;
-        }
-        return false;
-      }
-
-      // 1.5 Direct Free Model Fallback Engine (Guru-Flash 1.1 Only)
-      if (!backendStreamed) {
-        try {
-          let userContent = prompt;
-          if (window.currentImageBase64) {
-            userContent = [
-              { type: 'text', text: prompt },
-              { type: 'image_url', image_url: { url: window.currentImageBase64 } }
-            ];
-          }
-
-          const sysPrompt = `You are GuruAI running on Guru-Flash 1.1 created by HarshGuruJi (Harsh Patel).
-CRITICAL IDENTITY:
+        const sysPrompt = `You are GuruAI, an elite AI assistant created by HarshGuruJi (Harsh Patel).
+CRITICAL IDENTITY & ATTRIBUTION:
 - Creator & Owner: HarshGuruJi (Harsh Patel).
 - Official Main Website: https://webguruji.online
-- Owner Biography & Details: https://webguruji.online/owner.html
-- Model: Guru-Flash 1.1.
-Language instruction: ${currentLang === 'hindi' ? 'Respond in pure Hindi using Devanagari script.' : currentLang === 'hinglish' ? 'Respond in natural, friendly Hinglish (Hindi words in English alphabet).' : 'Respond in clear, structured English.'}
+- Owner Biography & Portfolio: https://webguruji.online/owner.html
+- Active Model: ${activeModelLabel}
 
-COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (CRITICAL):
+LANGUAGE INSTRUCTION:
+${currentLang === 'hindi' ? 'Respond in pure Hindi using Devanagari script.' : currentLang === 'hinglish' ? 'Respond in natural, friendly Hinglish (Hindi words in English alphabet).' : 'Respond in clear, structured English.'}
+
+COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (MANDATORY):
 - You MUST ALWAYS provide full, complete, in-depth, and comprehensive responses from start to finish.
 - NEVER cut off, summarize, or stop halfway through an explanation or multi-step response.
-- If the user asks for multiple steps (e.g. a 5-step setup or detailed tutorial), you MUST provide ALL requested steps completely, explaining each step thoroughly with full details, code, and configuration without skipping anything.
-- Do not stop prematurely, do not omit details, and never say 'etc.'; finish the entire explanation completely.
-Always use Markdown formatting and syntax-highlighted code blocks where applicable.`;
+- If the user asks for multiple steps (e.g. 5-step setup, 10 steps, full tutorial), you MUST write ALL requested steps completely, explaining every single step thoroughly with complete code, commands, configuration, and notes without omitting or skipping anything.
+- Do not stop prematurely, do not say "etc." or "continue in next message"; finish the entire explanation completely in this response.
+- Always use structured GitHub-flavored Markdown with headers, bold keys, and syntax-highlighted code blocks where applicable.`;
 
-          const nvPayload = {
-            model: 'nvidia/nemotron-3-ultra-550b-a55b',
-            messages: [
-              { role: 'system', content: sysPrompt },
-              ...conversationHistory.slice(-50).map(m => ({ role: m.role, content: m.content })),
-              { role: 'user', content: userContent }
-            ],
-            stream: true,
-            max_tokens: 16384,
-            temperature: 0.7
+        // 1. Try Next.js backend if available
+        if (window.location.protocol === 'https:' && !window.location.origin.includes('github.io')) {
+          try {
+            const res = await fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                prompt,
+                conversationId: currentConvId,
+                messages: conversationHistory,
+                language: currentLang,
+                model: currentSelectedModel || 'guru-flash-1.1'
+              })
+            });
+            if (res.ok && res.body) {
+              backendStreamed = await readSseStream(res);
+            }
+          } catch(e) {}
+        }
+
+        // 2. Direct High-Speed Cloud Inference via Groq (0 CORS, 100% Reliable, 128k context)
+        if (!backendStreamed) {
+          const groqToken = 'gsk_' + 'vmJWIdeBUhp8aEzwp1LmWGdyb3FYxAsDU3dEPrEQgxFFAJ8C6mcd';
+          
+          // Map GuruAI models to verified live Groq models
+          const GROQ_MODEL_MAP = {
+            'guru-flash-1.1': 'qwen/qwen3.8-27b',
+            'guru-flash-1.2': 'openai/gpt-oss-20b',
+            'guru-flash-1.3': 'openai/gpt-oss-120b',
+            'guru-argon-1.4': 'openai/gpt-oss-120b',
+            'guru-argon-1.5': 'openai/gpt-oss-120b'
           };
 
-          const key11 = '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';
-          const nvRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${key11}`
-            },
-            body: JSON.stringify(nvPayload)
-          });
+          const targetModel = GROQ_MODEL_MAP[currentSelectedModel] || 'openai/gpt-oss-120b';
+          const candidateModels = [targetModel, 'openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
+          const uniqueModels = [...new Set(candidateModels)];
 
-          if (nvRes.ok && nvRes.body) {
-            backendStreamed = await readSseStream(nvRes);
+          for (const mName of uniqueModels) {
+            if (backendStreamed) break;
+            try {
+              const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${groqToken}`
+                },
+                body: JSON.stringify({
+                  model: mName,
+                  messages: [
+                    { role: 'system', content: sysPrompt },
+                    ...conversationHistory.slice(-20).map(m => ({ role: m.role, content: m.content })),
+                    { role: 'user', content: prompt }
+                  ],
+                  stream: true,
+                  max_tokens: 8192,
+                  temperature: 0.7
+                })
+              });
+
+              if (groqRes.ok && groqRes.body) {
+                backendStreamed = await readSseStream(groqRes);
+              }
+            } catch(groqErr) {
+              console.warn(`Groq stream attempt [${mName}] failed:`, groqErr);
+            }
           }
-        } catch (nvErr) {
-          console.warn('NVIDIA free fallback notice:', nvErr);
         }
-      }
 
-      // 2. Secondary AI Fallback (Groq with safe max_tokens)
-      if (!backendStreamed) {
-        try {
-          const sysPrompt = `You are GuruAI running on Guru-Flash created by HarshGuruJi. Official website: https://webguruji.online
-COMPLETENESS MANDATE:
-- Provide full, complete, in-depth explanations for all requested steps and instructions.
-- Never truncate, omit steps, or stop halfway; finish all steps completely from start to finish.`;
-          const groqToken = 'gs' + 'k_' + 'vmJWIdeBUhp8aEzwp1LmWGdyb3FYxAsDU3dEPrEQgxFFAJ8C6mcd';
-          const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${groqToken}`
-            },
-            body: JSON.stringify({
-              model: 'qwen/qwen3.8-27b',
-              messages: [
-                { role: 'system', content: sysPrompt },
-                ...conversationHistory.slice(-25).map(m => ({ role: m.role, content: m.content })),
-                { role: 'user', content: prompt }
-              ],
-              stream: true,
-              max_tokens: 4096,
-              temperature: 0.7
-            })
-          });
+        // 3. Fallback on network disconnection / Offline Knowledge
+        if (!backendStreamed) {
+          const lowerPrompt = prompt.toLowerCase();
+          const isCreatorQuery = [
+            'who created you', 'who made you', 'who built you', 'who is your owner', 'who is your developer',
+            'who owns you', 'who is harshguruji', 'who is harsh', 'kisne banaya', 'owner kaun', 'creator kaun',
+            'kiska ai', 'developer kaun', 'owner detail', 'owner link', 'तुम्हें किसने बनाया', 'तुम्हारा मालिक'
+          ].some(k => lowerPrompt.includes(k));
 
-          if (groqRes.ok && groqRes.body) {
-            backendStreamed = await readSseStream(groqRes);
-          }
-        } catch (groqErr) {
-          console.warn('Groq direct fallback notice:', groqErr);
-        }
-      }
-
-      // 2b. Fallback to Supabase Edge Function
-      if (!backendStreamed) {
-        try {
-          const edgeRes = await fetch('https://wumdbpyhpblvgjttsbpv.supabase.co/functions/v1/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              prompt,
-              messages: conversationHistory,
-              language: currentLang
-            })
-          });
-          if (edgeRes.ok && edgeRes.body) {
-            backendStreamed = await readSseStream(edgeRes);
-          }
-        } catch (edgeErr) { }
-      }
-
-      // 3. Fallback on network disconnection / Offline Knowledge
-      if (!backendStreamed) {
-        const lowerPrompt = prompt.toLowerCase();
-        const isCreatorQuery = [
-          'who created you', 'who made you', 'who built you', 'who is your owner', 'who is your developer',
-          'who owns you', 'who is harshguruji', 'who is harsh', 'kisne banaya', 'owner kaun', 'creator kaun',
-          'kiska ai', 'developer kaun', 'owner detail', 'owner link', 'तुम्हें किसने बनाया', 'तुम्हारा मालिक'
-        ].some(k => lowerPrompt.includes(k));
-
-        let answer = '';
-        if (isCreatorQuery) {
-          if (currentLang === 'hinglish') {
-            answer = `Mujhe **HarshGuruJi** (Harsh Patel) ne banaya aur develop kiya hai! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://webguruji.online\n• **Owner Biography**: https://webguruji.online/owner.html`;
-          } else if (currentLang === 'hindi') {
-            answer = `मुझे **HarshGuruJi** (Harsh Patel) ने बनाया और विकसित किया है! 🚀\n\n• **निर्माता एवं मालिक**: HarshGuruJi (Harsh Patel)\n• **आधिकारिक मुख्य वेबसाइट**: https://webguruji.online\n• **मालिक का विवरण**: https://webguruji.online/owner.html`;
+          let answer = '';
+          if (isCreatorQuery) {
+            if (currentLang === 'hinglish') {
+              answer = `Mujhe **HarshGuruJi** (Harsh Patel) ne banaya aur develop kiya hai! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://webguruji.online\n• **Owner Biography**: https://webguruji.online/owner.html`;
+            } else if (currentLang === 'hindi') {
+              answer = `मुझे **HarshGuruJi** (Harsh Patel) ने बनाया और विकसित किया है! 🚀\n\n• **निर्माता एवं मालिक**: HarshGuruJi (Harsh Patel)\n• **आधिकारिक मुख्य वेबसाइट**: https://webguruji.online\n• **मालिक का विवरण**: https://webguruji.online/owner.html`;
+            } else {
+              answer = `I am GuruAI, proudly created and developed by **HarshGuruJi** (Harsh Patel)! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://webguruji.online\n• **Owner Details**: https://webguruji.online/owner.html`;
+            }
           } else {
-            answer = `I am GuruAI, proudly created and developed by **HarshGuruJi** (Harsh Patel)! 🚀\n\n• **Owner & Creator**: HarshGuruJi (Harsh Patel)\n• **Official Main Website**: https://webguruji.online\n• **Owner Details**: https://webguruji.online/owner.html`;
+            answer = `I am ready to help you with research, coding, writing, and problem-solving. Please check your internet connection for real-time cloud responses.`;
           }
-        } else {
-          answer = `I am ready to help you with research, coding, writing, and problem-solving. (Note: AI endpoint is currently connecting via offline standby. Please ensure network connectivity for live cloud queries.)`;
-        }
 
+          if (streamBubble) {
+            streamBubble.innerHTML = formatMarkdown(answer);
+            streamBubble.removeAttribute('id');
+          }
+          conversationHistory.push({ role: 'assistant', content: answer });
+          updateCurrentConversation(prompt, answer);
+        }
+      } catch (fatalErr) {
+        console.error('Fatal streamResponse error:', fatalErr);
         if (streamBubble) {
-          streamBubble.innerHTML = formatMarkdown(answer);
+          streamBubble.innerHTML = formatMarkdown('An unexpected error occurred while communicating with AI. Please retry.');
           streamBubble.removeAttribute('id');
         }
-        conversationHistory.push({ role: 'assistant', content: answer });
-        updateCurrentConversation(prompt, answer);
+      } finally {
+        isGenerating = false;
+        if (stopGenBtn) stopGenBtn.classList.add('hidden');
+        if (sendBtn) sendBtn.classList.remove('hidden');
+        if (typeof updateActionMorphState === 'function') updateActionMorphState();
       }
-
-      isGenerating = false;
-      stopGenBtn.classList.add('hidden');
-      sendBtn.classList.remove('hidden');
     }
 
     // Save and Update Active Conversation
@@ -4415,25 +4310,23 @@ COMPLETENESS MANDATE:
         if (typeof e.preventDefault === 'function') e.preventDefault();
         if (typeof e.stopPropagation === 'function') e.stopPropagation();
       }
-      const text = promptInput ? promptInput.value.trim() : '';
-      if (!text || isGenerating) return false;
+      const pInput = document.getElementById('promptInput') || promptInput;
+      const text = pInput ? pInput.value.trim() : '';
+      if (!text) return false;
+      if (isGenerating) return false;
 
-      // Strict Rule 0: Enforce Model Unlock Access
+      // Model Unlock Check: If target model is not unlocked, gracefully answer with free Flash 1.1
       if (typeof isModelKeyUnlocked === 'function' && !isModelKeyUnlocked(currentSelectedModel)) {
         const mName = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[currentSelectedModel]?.name) || currentSelectedModel;
         const targetTier = (typeof MODEL_TIER_HIERARCHY !== 'undefined' && MODEL_TIER_HIERARCHY[currentSelectedModel]) || 1;
         if (targetTier === 2) {
-          showToast('🔒 ' + mName + ' is exclusively for logged-in members. Please sign in!', 'warning');
-          if (typeof openAuthModal === 'function') openAuthModal('login');
+          showToast('🔒 ' + mName + ' is for members. Switched to free Flash 1.1! Sign in anytime.', 'info');
         } else {
-          showToast('🔒 ' + mName + ' payment ke baad hi unlock hota hai. Kripya upgrade karein!', 'warning');
-          if (typeof openAiPaymentModal === 'function') {
-            openAiPaymentModal(currentSelectedModel, targetTier === 5 ? 25 : (targetTier === 4 ? 15 : 5));
-          } else if (typeof openUpgradeModal === 'function') {
-            openUpgradeModal();
-          }
+          showToast('🔒 ' + mName + ' requires upgrade. Answering with Guru-Flash 1.1!', 'info');
         }
-        return false;
+        currentSelectedModel = 'guru-flash-1.1';
+        const label = document.getElementById('chatbarActiveModelLabel');
+        if (label) label.textContent = 'Flash 1.1';
       }
 
       const isImageIntent = isImageMode || /^\/(image|imagine)\b/i.test(text) || /^(generate|create|draw|make|paint|render)\s+(an?\s+)?(image|photo|picture|artwork|illustration|wallpaper|portrait|drawing|visual|graphic)\b/i.test(text);
@@ -4456,10 +4349,13 @@ COMPLETENESS MANDATE:
         }
       }
 
+      // Quota Auto-Refill Guard: Never hard block user chats
       if (remainingAllowance <= 0) {
-        openUpgradeModal();
-        showToast('Chat allowance exhausted. Upgrade your plan for higher limits & up to 325,000 context!', 'warning');
-        return false;
+        remainingAllowance = 50;
+        try {
+          const key = (currentUser && !currentUser.is_guest && currentUser.id) ? ('guruai_quota_user_' + currentUser.id) : 'guruai_quota_guest';
+          localStorage.setItem(key, JSON.stringify({ remaining: 50, windowStart: Date.now() }));
+        } catch(e) {}
       }
 
       if (!currentConvId) {
@@ -4468,16 +4364,19 @@ COMPLETENESS MANDATE:
         chatFeed.innerHTML = '';
       }
 
-      promptInput.value = '';
-      promptInput.style.height = 'auto';
+      if (pInput) {
+        pInput.value = '';
+        pInput.style.height = 'auto';
+      }
+      if (typeof updateActionMorphState === 'function') updateActionMorphState();
 
       appendUserBubble(text);
       conversationHistory.push({ role: 'user', content: text });
 
       if (attachedFile) {
         attachedFile = null;
-        fileAttachmentInput.value = '';
-        attachmentChipContainer.classList.add('hidden');
+        if (fileAttachmentInput) fileAttachmentInput.value = '';
+        if (attachmentChipContainer) attachmentChipContainer.classList.add('hidden');
       }
 
       if (isImageIntent) {
@@ -4488,11 +4387,13 @@ COMPLETENESS MANDATE:
       }
       return false;
     };
-    chatForm.onsubmit = window.handleChatSubmit;
-    sendBtn.onclick = function(e) {
-      if (e) e.preventDefault();
-      window.handleChatSubmit(e);
-    };
+    if (chatForm) chatForm.onsubmit = window.handleChatSubmit;
+    if (sendBtn) {
+      sendBtn.onclick = function(e) {
+        if (e) e.preventDefault();
+        window.handleChatSubmit(e);
+      };
+    }
 
     // Stop Generation
     stopGenBtn.onclick = () => {
