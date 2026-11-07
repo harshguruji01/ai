@@ -641,7 +641,7 @@
 
     <!-- 1. LEFT SIDEBAR (EXACT MATCH TO sc3.png) -->
     <aside id="sidebar"
-      class="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] min-h-0 overflow-hidden bg-[#080c16] border-r border-[#182033] flex flex-col justify-between transition-all duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0 shadow-2xl">
+      class="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] min-h-0 overflow-hidden bg-[var(--bg-secondary)] border-r border-[#182033] flex flex-col justify-between transition-all duration-300 ease-in-out -translate-x-full md:relative md:translate-x-0 shadow-2xl">
 
       <!-- Top Header of Drawer (sc3.png) -->
       <div class="p-4 flex items-center justify-between border-b border-[#182033]/80 flex-shrink-0">
@@ -733,6 +733,22 @@
 
       <!-- Divider (sc3.png) -->
       <div class="border-t border-[#182033]/80 mx-3 my-1.5 flex-shrink-0"></div>
+
+      <!-- User Dashboard Link (shown only when logged in) -->
+      <div class="px-3 py-1">
+        <a href="dashboard.html" id="sidebarDashboardLink"
+          class="hidden flex items-center justify-between p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 text-xs font-semibold transition group">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 12a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1v-7z" />
+            </svg>
+            <span>Dashboard</span>
+          </div>
+          <span class="text-[10px] text-cyan-400/80">Manage &rarr;</span>
+        </a>
+      </div>
 
       <!-- Scrollable History List (sc3.png) -->
       <div id="historyList" class="flex-1 overflow-y-auto px-3 py-1 space-y-1 custom-scrollbar">
@@ -995,6 +1011,7 @@
             id="modelSelectorBadge" onclick="openModelPickerSheet()" title="AI Model (Tap to switch)">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" id="headerModelDot"></span>
             <span class="font-bold text-xs sm:text-sm tracking-wide text-white font-heading truncate max-w-[120px] sm:max-w-[180px]" id="headerActiveModelName">Guru-Flash 1.1</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hidden sm:inline">Guru-Flash 1.1 & SDXL</span>
             <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-300 transition-transform group-hover:translate-y-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </button>
 
@@ -2796,8 +2813,8 @@
     let attachedFile = null;
     let currentTheme = localStorage.getItem('guruai_theme') || 'dark';
     let currentLang = localStorage.getItem('guruai_lang') || 'english';
-    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '25', 10);
-    let maxRequests = 25;
+    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '20', 10);
+    let maxRequests = 20;
     let speechRecognition = null;
     let isListening = false;
     let currentUtterance = null;

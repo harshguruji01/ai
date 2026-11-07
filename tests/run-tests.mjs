@@ -58,8 +58,8 @@ test('Validation: Accepts Hinglish and Hindi language tags', () => {
   assert.strictEqual(invalidRes.success, false);
 });
 
-test('Validation: Rejects chat prompt exceeding 4000 characters', () => {
-  const longPrompt = 'a'.repeat(4001);
+test('Validation: Rejects chat prompt exceeding maximum length', () => {
+  const longPrompt = 'a'.repeat(50001);
   const result = chatRequestSchema.safeParse({ prompt: longPrompt });
   assert.strictEqual(result.success, false);
 });
