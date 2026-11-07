@@ -2280,6 +2280,9 @@
     };
 
     window.isModelKeyUnlocked = function(modelKey) {
+      if (window.serverUnlockedModels && window.serverUnlockedModels.has(modelKey)) {
+        return true;
+      }
       const targetLevel = MODEL_TIER_HIERARCHY[modelKey] || 1;
       // Level 1 (Guru-Flash 1.1) is always unlocked for everyone (guests & logged-in)
       if (targetLevel <= 1) return true;
@@ -3659,8 +3662,8 @@
 
                 if (reasoning) fullReasoning += reasoning;
                 if (token) fullText += token;
-                if (finishReason === 'length' && fullText && !fullText.includes('(Response continued below)')) {
-                  fullText += '\n\n*(Note: Model reached maximum response output. You can reply "continue" to carry on.)*';
+                if (finishReason === 'length') {
+                  window.lastResponseHitLengthLimit = true;
                 }
 
                 let renderHtml = '';
@@ -3684,7 +3687,18 @@
             const safeReasoning = fullReasoning.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             finalHtml += `<details class="mb-3 rounded-xl border border-cyan-500/20 bg-slate-900/60 p-2.5 text-xs text-slate-400 font-mono"><summary class="cursor-pointer text-cyan-300 font-medium select-none flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg> Thought Process</summary><div class="mt-2 whitespace-pre-wrap">${safeReasoning}</div></details>`;
           }
-          finalHtml += formatMarkdown(fullText || 'Completed.');
+          finalHtml += formatMarkdown(fullText || 'Response could not be generated. Please check connection or retry.');
+          if (window.lastResponseHitLengthLimit) {
+            finalHtml += `
+              <div class="mt-3 p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-between flex-wrap gap-2 text-xs">
+                <span class="text-indigo-200">The model output was long. Would you like to continue to the remaining steps?</span>
+                <button type="button" onclick="promptNextStepContinuation()" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-500 hover:opacity-90 text-white font-bold transition shadow">
+                  ⚡ Continue Next Steps
+                </button>
+              </div>
+            `;
+            window.lastResponseHitLengthLimit = false;
+          }
           streamBubble.innerHTML = finalHtml;
           streamBubble.removeAttribute('id');
 
@@ -3730,18 +3744,36 @@
         return fullText.length > 0;
       }
 
+      window.promptNextStepContinuation = function() {
+        const continuationPrompt = "Please continue immediately from where you stopped. Provide all the next and remaining steps in full, complete, in-depth detail without skipping any steps.";
+        const input = document.getElementById('promptInput');
+        if (input) input.value = continuationPrompt;
+        if (typeof handleSendMessage === 'function') {
+          handleSendMessage();
+        } else if (typeof streamResponse === 'function') {
+          streamResponse(continuationPrompt);
+        }
+      };
+
       let backendStreamed = false;
 
       // 1. Try local/hosted Next.js /api/chat route first
       const isWebHosting = window.location.protocol === 'https:' && window.location.origin.includes('webguruji.online');
       const chatEndpoints = isWebHosting ? ['/api/chat'] : ['/api/chat', 'https://ai.webguruji.online/api/chat'];
 
+      const PREMIUM_MODELS = ['guru-flash-1.3', 'guru-argon-1.4', 'guru-argon-1.5'];
+      const isPremiumRequested = PREMIUM_MODELS.includes(currentSelectedModel);
+      const userEmail = (currentUser && currentUser.email) ? currentUser.email : (localStorage.getItem('guru_ai_verified_email') || '');
+
       for (const endpoint of chatEndpoints) {
         if (backendStreamed) break;
         try {
           const response = await fetch(endpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'x-user-email': userEmail
+            },
             body: JSON.stringify({
               prompt,
               conversationId: currentConvId,
@@ -3751,44 +3783,78 @@
               imageBase64: window.currentImageBase64 || null
             })
           });
+
+          if (response.status === 402) {
+            const errJson = await response.json().catch(() => ({}));
+            if (streamBubble) {
+              streamBubble.innerHTML = `
+                <div class="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs space-y-3">
+                  <div class="font-bold flex items-center gap-2 text-amber-300 text-sm">
+                    <span>🔒</span> <span>${currentSelectedModel} Requires Active Subscription</span>
+                  </div>
+                  <p class="leading-relaxed text-slate-300">${errJson.message || 'An active verified subscription is required to unlock this high-capacity model.'}</p>
+                  <div class="flex items-center gap-2 pt-1 flex-wrap">
+                    <button onclick="openAiPaymentModal('${currentSelectedModel}')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md transition active:scale-95">
+                      Upgrade & Unlock Now
+                    </button>
+                    <button onclick="selectAiModel('guru-flash-1.1', 'Guru-Flash 1.1', false)" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition">
+                      Switch to Free Flash 1.1
+                    </button>
+                  </div>
+                </div>
+              `;
+            }
+            if (typeof openAiPaymentModal === 'function') {
+              openAiPaymentModal(currentSelectedModel);
+            }
+            return false;
+          }
+
+          if (response.status === 403) {
+            const errJson = await response.json().catch(() => ({}));
+            if (streamBubble) {
+              streamBubble.innerHTML = `
+                <div class="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 text-indigo-200 text-xs space-y-2">
+                  <div class="font-bold flex items-center gap-1.5 text-indigo-300">
+                    <span>👤</span> <span>Authentication Required</span>
+                  </div>
+                  <p>${errJson.message || 'Please log in to use this feature.'}</p>
+                  <button onclick="openAuthModal('login')" class="mt-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs">
+                    Log In at webguruji.online
+                  </button>
+                </div>
+              `;
+            }
+            if (typeof openAuthModal === 'function') openAuthModal('login');
+            return false;
+          }
+
           if (response.ok && response.body) {
             backendStreamed = await readSseStream(response);
           }
         } catch (e) { }
       }
 
-      // 1.5 Direct High-Performance NVIDIA NIM Multi-Model Stream Engine
-      // Official APIs provided for Guru-Flash 1.1, 1.2, 1.3, and Guru-Argon 1.4, 1.5
-      if (!backendStreamed) {
-        const GURU_NVIDIA_MAP = {
-          'guru-flash-1.1': {
-            model: 'nvidia/nemotron-3-ultra-550b-a55b',
-            apiKey: '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',
-            name: 'Guru-Flash 1.1'
-          },
-          'guru-flash-1.2': {
-            model: 'nvidia/nemotron-3-ultra-550b-a55b',
-            apiKey: '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',
-            name: 'Guru-Flash 1.2'
-          },
-          'guru-flash-1.3': {
-            model: 'nvidia/nemotron-3.5-bolt-e4b',
-            apiKey: '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',
-            name: 'Guru-Flash 1.3 High-Context Pro'
-          },
-          'guru-argon-1.4': {
-            model: 'nvidia/nemotron-3-ultra-550b-a55b',
-            apiKey: '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',
-            name: 'Guru-Argon 1.4'
-          },
-          'guru-argon-1.5': {
-            model: 'mistralai/mistral-large-4-1t-a52b',
-            apiKey: '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',
-            name: 'Guru-Argon 1.5 Ultra'
-          }
-        };
+      // If backend was unreachable for a premium model, require backend verification
+      if (!backendStreamed && isPremiumRequested) {
+        if (streamBubble) {
+          streamBubble.innerHTML = `
+            <div class="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs space-y-2">
+              <div class="font-bold flex items-center gap-1.5 text-amber-300">
+                <span>🛡️</span> <span>Backend Payment Verification Required</span>
+              </div>
+              <p>Premium models (${currentSelectedModel}) are strictly verified by the backend entitlement server. Please check your network or activate subscription.</p>
+              <button onclick="openAiPaymentModal('${currentSelectedModel}')" class="mt-1 px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">
+                Check / Activate Plan
+              </button>
+            </div>
+          `;
+        }
+        return false;
+      }
 
-        const activeModelConfig = GURU_NVIDIA_MAP[currentSelectedModel] || GURU_NVIDIA_MAP['guru-flash-1.1'];
+      // 1.5 Direct Free Model Fallback Engine (Guru-Flash 1.1 Only)
+      if (!backendStreamed) {
         try {
           let userContent = prompt;
           if (window.currentImageBase64) {
@@ -3798,12 +3864,12 @@
             ];
           }
 
-          const sysPrompt = `You are GuruAI running on ${activeModelConfig.name} created by HarshGuruJi (Harsh Patel).
+          const sysPrompt = `You are GuruAI running on Guru-Flash 1.1 created by HarshGuruJi (Harsh Patel).
 CRITICAL IDENTITY:
 - Creator & Owner: HarshGuruJi (Harsh Patel).
 - Official Main Website: https://webguruji.online
 - Owner Biography & Details: https://webguruji.online/owner.html
-- Model: ${activeModelConfig.name}.
+- Model: Guru-Flash 1.1.
 Language instruction: ${currentLang === 'hindi' ? 'Respond in pure Hindi using Devanagari script.' : currentLang === 'hinglish' ? 'Respond in natural, friendly Hinglish (Hindi words in English alphabet).' : 'Respond in clear, structured English.'}
 
 COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (CRITICAL):
@@ -3814,29 +3880,23 @@ COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (CRITICAL):
 Always use Markdown formatting and syntax-highlighted code blocks where applicable.`;
 
           const nvPayload = {
-            model: activeModelConfig.model,
+            model: 'nvidia/nemotron-3-ultra-550b-a55b',
             messages: [
               { role: 'system', content: sysPrompt },
-              ...conversationHistory.slice(-25).map(m => ({ role: m.role, content: m.content })),
+              ...conversationHistory.slice(-50).map(m => ({ role: m.role, content: m.content })),
               { role: 'user', content: userContent }
             ],
             stream: true,
-            max_tokens: 8192,
-            temperature: 0.6
+            max_tokens: 16384,
+            temperature: 0.7
           };
 
-          if (currentSelectedModel === 'guru-flash-1.3') {
-            nvPayload.chat_template_kwargs = { enable_thinking: true };
-          }
-          if (currentSelectedModel === 'guru-argon-1.5') {
-            nvPayload.reasoning_effort = 'high';
-          }
-
+          const key11 = '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';
           const nvRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${activeModelConfig.apiKey}`
+              'Authorization': `Bearer ${key11}`
             },
             body: JSON.stringify(nvPayload)
           });
@@ -3845,7 +3905,7 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
             backendStreamed = await readSseStream(nvRes);
           }
         } catch (nvErr) {
-          console.warn('NVIDIA primary model inference notice:', nvErr);
+          console.warn('NVIDIA free fallback notice:', nvErr);
         }
       }
 
@@ -6209,7 +6269,7 @@ COMPLETENESS MANDATE:
        IN-APP MODEL BUY & PAYMENT SYSTEM MODAL (HarshGuruJi Instant Desk)
        ═════════════════════════════════════════════════════════════════════════ -->
   <div id="aiPaymentModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl hidden flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200">
-    <div class="relative w-full max-w-lg bg-[#090e1a]/95 border border-indigo-500/35 rounded-3xl p-5 sm:p-7 text-slate-100 shadow-2xl shadow-indigo-950/80 space-y-5 max-h-[92vh] overflow-y-auto">
+    <div class="relative w-full max-w-lg bg-[#090e1a]/95 border border-indigo-500/35 rounded-3xl p-5 sm:p-7 text-slate-100 shadow-2xl shadow-indigo-950/80 space-y-4 max-h-[92vh] overflow-y-auto">
       
       <!-- Close Button -->
       <button type="button" onclick="closeAiPaymentModal()" class="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition" aria-label="Close Payment Modal">
@@ -6226,79 +6286,161 @@ COMPLETENESS MANDATE:
             <h3 id="payModalModelName" class="font-bold font-heading text-lg text-white">Guru-Argon 1.4</h3>
             <span id="payModalPriceBadge" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">₹999 / $15</span>
           </div>
-          <p id="payModalContextDesc" class="text-xs text-slate-400">125,000 Token Context Window • High-Speed Reasoning</p>
+          <p id="payModalContextDesc" class="text-xs text-slate-400">128,000 Token Massive Context Window • Deep Reasoning</p>
         </div>
       </div>
 
-      <!-- Payment Method 1: QR & UPI ID -->
-      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3 text-center">
-        <div class="flex items-center justify-center gap-2 text-xs font-semibold text-slate-300">
-          <span>📲</span>
-          <span>Instant UPI Payment (GPay • PhonePe • Paytm • BHIM)</span>
+      <!-- State 1: Ready to Pay (Default) -->
+      <div id="payStateReady" class="space-y-4">
+        <!-- Order Meta Badge -->
+        <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-slate-300">
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            <span>Order Ref: <strong id="payOrderRefDisplay" class="text-white">ORD-INIT</strong></span>
+          </span>
+          <span id="payOrderStatusTag" class="text-amber-400 font-semibold">Ready to Pay</span>
         </div>
 
-        <!-- Dynamic QR Container -->
-        <div class="relative w-44 h-44 mx-auto rounded-2xl bg-white p-2.5 shadow-xl flex items-center justify-center border-2 border-indigo-500/30">
-          <img id="payModalQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=%26pn=HarshGuruJi%26cu=INR" alt="HarshGuruJi UPI QR Code" class="w-full h-full object-contain rounded-lg" />
-        </div>
+        <!-- Payment Method 1: QR & UPI ID -->
+        <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3 text-center">
+          <div class="flex items-center justify-center gap-2 text-xs font-semibold text-slate-300">
+            <span>📲</span>
+            <span>Scan UPI QR Code (GPay • PhonePe • Paytm • BHIM)</span>
+          </div>
 
-        <!-- UPI ID Row with 1-Click Copy -->
-        <div class="flex items-center justify-center gap-2">
-          <span class="text-xs text-slate-400">UPI ID:</span>
-          <code id="payModalUpiId" class="text-xs font-mono font-bold text-cyan-300 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-700 select-all"></code>
-          <button type="button" onclick="copyUpiId()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-[11px] font-semibold text-white transition active:scale-95 flex items-center gap-1 shadow-sm">
-            <span>📋</span>
-            <span>Copy</span>
-          </button>
-        </div>
-      </div>
+          <!-- Dynamic QR Container -->
+          <div class="relative w-44 h-44 mx-auto rounded-2xl bg-white p-2.5 shadow-xl flex items-center justify-center border-2 border-indigo-500/30">
+            <img id="payModalQrImg" src="" alt="HarshGuruJi UPI QR Code" class="w-full h-full object-contain rounded-lg" />
+          </div>
 
-      <!-- Payment Method 2: UTR Reference Input & Activation -->
-      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3">
-        <label class="block text-xs font-semibold text-slate-300">
-          Payment Done? Enter 12-Digit UPI Transaction / UTR ID:
-        </label>
-        <div class="flex gap-2">
-          <input type="text" id="payUtrInput" placeholder="e.g. 412389123456" maxlength="16"
-            class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400 transition" />
-          <button type="button" id="payUtrSubmitBtn" onclick="submitUtrVerification()"
-            class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition active:scale-95 flex-shrink-0">
-            Submit UTR
-          </button>
-        </div>
-        <div id="payModalStatusBox" class="hidden p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-xs text-indigo-200">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-            <span id="payModalStatusText">Submitting reference to payment ledger...</span>
+          <!-- Direct Mobile Intent Link -->
+          <div class="pt-1">
+            <a id="payIntentBtn" href="#" target="_blank" class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 via-indigo-600 to-purple-600 hover:opacity-95 transition shadow-md shadow-indigo-600/30 active:scale-95">
+              <span>⚡ Open in UPI App / GPay / PhonePe</span>
+            </a>
+          </div>
+
+          <!-- UPI ID Row with 1-Click Copy -->
+          <div class="flex items-center justify-center gap-2 pt-1">
+            <span class="text-xs text-slate-400">UPI ID:</span>
+            <code id="payModalUpiId" class="text-xs font-mono font-bold text-cyan-300 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-700 select-all"></code>
+            <button type="button" onclick="copyUpiId()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-[11px] font-semibold text-white transition active:scale-95 flex items-center gap-1 shadow-sm">
+              <span>📋 Copy</span>
+            </button>
           </div>
         </div>
+
+        <!-- Payment Method 2: UTR Reference Input & Fast Activation -->
+        <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3">
+          <label class="block text-xs font-semibold text-slate-300">
+            Payment Completed? Enter 12-Digit UPI Transaction / UTR ID:
+          </label>
+          <div class="flex gap-2">
+            <input type="text" id="payUtrInput" placeholder="e.g. 412389123456" maxlength="22"
+              class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400 transition" />
+            <button type="button" id="payUtrSubmitBtn" onclick="submitUtrVerification()"
+              class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition active:scale-95 flex-shrink-0">
+              Verify UTR
+            </button>
+          </div>
+        </div>
+
+        <!-- Official Payment Portal Link -->
+        <div class="space-y-2 pt-1">
+          <button type="button" onclick="goToOfficialPaymentGateway()"
+            class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 transition flex items-center justify-center gap-1.5 border border-slate-700">
+            <span>Open Dedicated Payment Gateway Desk ↗</span>
+          </button>
+        </div>
+
+        <!-- Restore / Check Existing Payment -->
+        <div class="pt-2 border-t border-slate-800/80">
+          <details class="text-xs text-slate-400 group">
+            <summary class="cursor-pointer font-semibold text-slate-300 hover:text-white transition flex items-center justify-between py-1">
+              <span>Already paid or need to restore access?</span>
+              <span class="text-indigo-400 group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="mt-2 p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
+              <label class="block text-[11px] text-slate-400">Enter your account email to restore access:</label>
+              <div class="flex gap-2">
+                <input type="email" id="restoreEmailInput" placeholder="name@example.com" class="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400" />
+                <button type="button" onclick="checkAndRestorePaidAccess()" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">
+                  Restore Access
+                </button>
+              </div>
+            </div>
+          </details>
+        </div>
       </div>
 
-      <!-- Action Buttons Row -->
-      <div class="space-y-2 pt-1">
-        <button type="button" onclick="goToOfficialPaymentGateway()"
-          class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 hover:opacity-95 transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5">
-          <span>Pay via HarshGuruJi Secure Gateway ↗</span>
+      <!-- State 2: Pending Verification -->
+      <div id="payStatePending" class="hidden p-6 rounded-2xl bg-indigo-950/40 border border-indigo-500/40 text-center space-y-4">
+        <div class="w-14 h-14 mx-auto rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-2xl text-amber-300 animate-pulse">
+          ⏳
+        </div>
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold uppercase mb-2">
+            Pending Verification
+          </div>
+          <h4 class="text-base font-bold text-white">Payment Received &amp; Verifying with Bank</h4>
+          <p id="payPendingStatusMsg" class="text-xs text-slate-300 mt-1 max-w-sm mx-auto leading-relaxed">
+            Please wait while we confirm your payment with the banking gateway. Premium models will unlock automatically once confirmed.
+          </p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-400 text-left space-y-1">
+          <div>Order Reference: <code id="payPendingOrderId" class="text-cyan-300 font-mono"></code></div>
+          <div>Target Plan: <strong id="payPendingPlanName" class="text-white"></strong></div>
+          <div>Amount: <strong id="payPendingAmount" class="text-emerald-400"></strong></div>
+        </div>
+        <div class="flex flex-col gap-2 pt-2">
+          <button type="button" onclick="manualRetryStatusCheck()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2">
+            <span>🔄 Retry Status Check</span>
+          </button>
+          <button type="button" onclick="switchToPaymentState('ready')" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+            Back to QR / Enter UTR
+          </button>
+        </div>
+      </div>
+
+      <!-- State 3: Success / Activated -->
+      <div id="payStateSuccess" class="hidden p-6 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 text-center space-y-4">
+        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-3xl text-emerald-300 shadow-lg shadow-emerald-500/30">
+          ✓
+        </div>
+        <div>
+          <h4 class="text-xl font-black font-heading text-emerald-400">Payment Verified!</h4>
+          <p id="paySuccessModelTitle" class="text-sm font-bold text-white mt-1">Guru-Argon 1.4 Unlocked Successfully</p>
+          <p class="text-xs text-slate-300 mt-1">Your premium entitlement is active in the database across all your devices.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 text-left space-y-1.5 font-mono">
+          <div class="flex justify-between"><span>Status:</span> <strong class="text-emerald-400">ACTIVE</strong></div>
+          <div class="flex justify-between"><span>Validity:</span> <strong class="text-white">30 Days</strong></div>
+          <div class="flex justify-between"><span>Allowed Models:</span> <strong id="paySuccessAllowedModels" class="text-cyan-300 text-[11px]">All Pro Models</strong></div>
+        </div>
+        <button type="button" onclick="finishAndLaunchModel()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/30 hover:opacity-95 transition active:scale-95">
+          🚀 Start Chatting with Premium Model Now
         </button>
       </div>
 
-      <!-- Restore / Check Existing Payment -->
-      <div class="pt-2 border-t border-slate-800/80">
-        <details class="text-xs text-slate-400 group">
-          <summary class="cursor-pointer font-semibold text-slate-300 hover:text-white transition flex items-center justify-between py-1">
-            <span>Already paid or need to restore access?</span>
-            <span class="text-indigo-400 group-open:rotate-180 transition-transform">▼</span>
-          </summary>
-          <div class="mt-2 p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
-            <label class="block text-[11px] text-slate-400">Enter the Email you used during payment:</label>
-            <div class="flex gap-2">
-              <input type="email" id="restoreEmailInput" placeholder="name@example.com" class="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400" />
-              <button type="button" onclick="checkAndRestorePaidAccess()" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">
-                Verify &amp; Unlock
-              </button>
-            </div>
-          </div>
-        </details>
+      <!-- State 4: Failed / Expired -->
+      <div id="payStateFailed" class="hidden p-6 rounded-2xl bg-rose-950/40 border border-rose-500/50 text-center space-y-4">
+        <div class="w-14 h-14 mx-auto rounded-full bg-rose-500/20 border-2 border-rose-400 flex items-center justify-center text-2xl text-rose-300">
+          ✕
+        </div>
+        <div>
+          <h4 class="text-base font-bold text-white">Payment Unconfirmed or Expired</h4>
+          <p id="payFailedReasonMsg" class="text-xs text-slate-300 mt-1 leading-relaxed">
+            We could not verify this transaction with the payment gateway. If your account was debited, please submit your 12-digit UTR ID.
+          </p>
+        </div>
+        <div class="flex flex-col gap-2 pt-2">
+          <button type="button" onclick="switchToPaymentState('ready')" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-xs shadow transition active:scale-95">
+            Try Again / Enter UTR
+          </button>
+          <a href="https://webguruji.online/contact.html?subject=ai_payment_help" target="_blank" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition inline-block">
+            Contact Support Desk
+          </a>
+        </div>
       </div>
 
     </div>
@@ -6306,10 +6448,30 @@ COMPLETENESS MANDATE:
 
   <script>
     // =========================================================================
-    // HARSHGURUJI AI ENHANCED CONTROLLERS (PROFILE, CHATBAR, SIDEBAR, PAYMENT)
+    // HARSHGURUJI AI PRODUCTION PAYMENT & ENTITLEMENT CONTROLLER
     // =========================================================================
 
-    // 1. Payment Token Generator (Matching payment.html security guard)
+    window.activeBuyModelKey = 'guru-flash-1.3';
+    window.activeBuyPlanName = 'Guru-Flash 1.3';
+    window.activeBuyPrice = 499;
+    window.activeOrderId = null;
+    window.activeGatewayOrderId = null;
+    window.activePaymentPollingTimer = null;
+    window.serverUnlockedModels = new Set(['guru-flash-1.1']);
+
+    // State Switcher for In-App Payment Modal: 'ready', 'pending', 'success', 'failed'
+    window.switchToPaymentState = function(state) {
+      const readyEl = document.getElementById('payStateReady');
+      const pendingEl = document.getElementById('payStatePending');
+      const successEl = document.getElementById('payStateSuccess');
+      const failedEl = document.getElementById('payStateFailed');
+
+      if (readyEl) readyEl.classList.toggle('hidden', state !== 'ready');
+      if (pendingEl) pendingEl.classList.toggle('hidden', state !== 'pending');
+      if (successEl) successEl.classList.toggle('hidden', state !== 'success');
+      if (failedEl) failedEl.classList.toggle('hidden', state !== 'failed');
+    };
+
     window.generatePaymentToken = function(emailStr) {
       if (!emailStr) return '';
       let hash = 0;
@@ -6321,58 +6483,105 @@ COMPLETENESS MANDATE:
       return 'hg_token_' + Math.abs(hash).toString(36);
     };
 
-    // Active Buy Model State
-    window.activeBuyModelKey = 'guru-flash-1.3';
-    window.activeBuyPlanName = 'Scholar Pro';
-    window.activeBuyPrice = 499;
-    let utrVerificationPollingTimer = null;
-
-    window.openAiPaymentModal = function(modelKey, priceVal) {
+    window.openAiPaymentModal = async function(modelKey, priceVal) {
       activeBuyModelKey = modelKey || 'guru-flash-1.3';
       const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[activeBuyModelKey]) ? GURU_MODELS[activeBuyModelKey] : null;
       activeBuyPlanName = m ? m.name : activeBuyModelKey;
 
       let inrPrice = 499;
-      if (priceVal === 15 || activeBuyModelKey === 'guru-argon-1.4') inrPrice = 999;
-      else if (priceVal === 25 || activeBuyModelKey === 'guru-argon-1.5') inrPrice = 1999;
-      else if (priceVal === 5 || activeBuyModelKey === 'guru-flash-1.3') inrPrice = 499;
+      let usdPrice = 5;
+      let contextTokens = '64,000';
+      if (priceVal === 15 || activeBuyModelKey === 'guru-argon-1.4') {
+        inrPrice = 999; usdPrice = 15; contextTokens = '128,000';
+      } else if (priceVal === 25 || activeBuyModelKey === 'guru-argon-1.5') {
+        inrPrice = 1999; usdPrice = 25; contextTokens = '325,000';
+      }
       activeBuyPrice = inrPrice;
 
-      // Update Modal UI
+      // Update Modal Header & UI
       const titleEl = document.getElementById('payModalModelName');
       const priceEl = document.getElementById('payModalPriceBadge');
       const descEl = document.getElementById('payModalContextDesc');
-      const qrImg = document.getElementById('payModalQrImg');
+      const refEl = document.getElementById('payOrderRefDisplay');
+      const statusTag = document.getElementById('payOrderStatusTag');
 
       if (titleEl) titleEl.textContent = activeBuyPlanName;
-      if (priceEl) priceEl.textContent = '₹' + inrPrice + ' (' + (m && m.price ? m.price : ('$' + (priceVal || 5) + '/mo')) + ')';
-      if (descEl && m) descEl.textContent = `${m.contextTokens || '100,000+'} Tokens Context Limit • Priority GPU Speed`;
+      if (priceEl) priceEl.textContent = `₹${inrPrice} ($${usdPrice}/mo)`;
+      if (descEl) descEl.textContent = `${contextTokens} Token Context Limit • Dedicated GPU Pipeline`;
+      if (refEl) refEl.textContent = 'Generating...';
+      if (statusTag) statusTag.textContent = 'Connecting...';
 
-      // Dynamic QR with exact amount
-      if (qrImg) {
-        const upiUrl = `upi://pay?pa=&pn=HarshGuruJi&cu=INR&am=${inrPrice}`;
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUrl)}`;
-      }
+      const restoreInput = document.getElementById('restoreEmailInput');
+      const userEmail = (currentUser && currentUser.email) ? currentUser.email : (localStorage.getItem('guru_ai_verified_email') || '');
+      if (restoreInput && userEmail) restoreInput.value = userEmail;
 
       const utrInput = document.getElementById('payUtrInput');
       if (utrInput) utrInput.value = '';
 
-      const statusBox = document.getElementById('payModalStatusBox');
-      if (statusBox) statusBox.classList.add('hidden');
-
-      const restoreInput = document.getElementById('restoreEmailInput');
-      if (restoreInput && currentUser && currentUser.email) {
-        restoreInput.value = currentUser.email;
-      }
+      // Reset state to ready
+      switchToPaymentState('ready');
 
       const modal = document.getElementById('aiPaymentModal');
       if (modal) modal.classList.remove('hidden');
+
+      // Call Backend /api/payment/create-order
+      try {
+        const orderRes = await fetch('/api/payment/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-email': userEmail },
+          body: JSON.stringify({
+            planId: activeBuyModelKey,
+            email: userEmail || (userEmail.includes('@') ? userEmail : 'member@webguruji.online'),
+            name: (currentUser && currentUser.user_metadata?.full_name) || 'HarshGuruJi Member'
+          })
+        });
+
+        if (orderRes.ok) {
+          const orderJson = await orderRes.json();
+          if (orderJson.success) {
+            activeOrderId = orderJson.orderId;
+            activeGatewayOrderId = orderJson.gatewayOrderId;
+
+            if (refEl) refEl.textContent = orderJson.orderId;
+            if (statusTag) statusTag.textContent = 'Awaiting Payment';
+
+            const qrEl = document.getElementById('payModalQrImg');
+            if (qrEl) {
+              const intentData = orderJson.upiIntent || orderJson.qrData;
+              qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(intentData)}`;
+            }
+
+            const intentBtn = document.getElementById('payIntentBtn');
+            if (intentBtn && orderJson.upiIntent) {
+              intentBtn.href = orderJson.upiIntent;
+            }
+
+            // Start live verification polling
+            startLivePaymentPolling(orderJson.orderId, activeBuyModelKey);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('API create-order fallback to direct gateway config:', err);
+      }
+
+      // Client Fallback if API route is building
+      const fallbackOrderId = `ORD_${Date.now().toString(36).toUpperCase()}`;
+      activeOrderId = fallbackOrderId;
+      if (refEl) refEl.textContent = fallbackOrderId;
+      if (statusTag) statusTag.textContent = 'Ready to Pay';
+
+      const fallbackUpi = `upi://pay?pn=HarshGuruJi&am=${inrPrice}&cu=INR&tr=${fallbackOrderId}&tn=GuruAI_${activeBuyModelKey}`;
+      const qrEl = document.getElementById('payModalQrImg');
+      if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(fallbackUpi)}`;
+      const intentBtn = document.getElementById('payIntentBtn');
+      if (intentBtn) intentBtn.href = fallbackUpi;
     };
 
     window.closeAiPaymentModal = function() {
-      if (utrVerificationPollingTimer) {
-        clearInterval(utrVerificationPollingTimer);
-        utrVerificationPollingTimer = null;
+      if (activePaymentPollingTimer) {
+        clearInterval(activePaymentPollingTimer);
+        activePaymentPollingTimer = null;
       }
       const modal = document.getElementById('aiPaymentModal');
       if (modal) modal.classList.add('hidden');
@@ -6381,172 +6590,234 @@ COMPLETENESS MANDATE:
     window.copyUpiId = function() {
       const upiId = (typeof activePaymentConfig !== 'undefined' && activePaymentConfig?.upi_id) ? activePaymentConfig.upi_id : '';
       if (!upiId) {
-        if (typeof showToast === 'function') showToast('UPI ID is being configured on Render gateway. Check back shortly.', 'info');
+        showToast('UPI ID is configured on Render gateway. Use the QR code or click Open in UPI App.', 'info');
         return;
       }
       navigator.clipboard.writeText(upiId).then(() => {
-        if (typeof showToast === 'function') showToast('📋 UPI ID copied: ' + upiId, 'success');
+        showToast('📋 UPI ID copied: ' + upiId, 'success');
       }).catch(() => {
-        if (typeof showToast === 'function') showToast('UPI ID: ' + upiId, 'info');
+        showToast('UPI ID: ' + upiId, 'info');
       });
     };
 
-    // Authentic UTR Verification: Submits to database and polls for confirmation without fake unlock
+    // Live Polling Mechanism
+    function startLivePaymentPolling(orderId, modelKey) {
+      if (activePaymentPollingTimer) clearInterval(activePaymentPollingTimer);
+      let pollCount = 0;
+
+      activePaymentPollingTimer = setInterval(async () => {
+        pollCount++;
+        try {
+          const res = await fetch(`/api/payment/status?orderId=${encodeURIComponent(orderId)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.order && data.order.status === 'paid') {
+              clearInterval(activePaymentPollingTimer);
+              activePaymentPollingTimer = null;
+              handlePaymentSuccessActivation(data);
+              return;
+            }
+          }
+        } catch (e) {}
+
+        if (pollCount > 60) { // 4 minutes timeout
+          clearInterval(activePaymentPollingTimer);
+          activePaymentPollingTimer = null;
+        }
+      }, 4000);
+    }
+
+    // Submit UTR Reference for Instant Verification
     window.submitUtrVerification = async function() {
       const utrInput = document.getElementById('payUtrInput');
       const utr = utrInput ? utrInput.value.trim() : '';
-      if (!utr || utr.length !== 12) {
-        if (typeof showToast === 'function') showToast('⚠️ Please enter a valid 12-digit UPI Transaction / UTR ID.', 'warning');
+      if (!utr || utr.length < 10) {
+        showToast('⚠️ Please enter a valid 12-digit UPI Transaction / UTR ID.', 'warning');
         return;
       }
 
       const btn = document.getElementById('payUtrSubmitBtn');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Submitting...';
-      }
+      if (btn) { btn.disabled = true; btn.textContent = 'Verifying...'; }
 
-      const statusBox = document.getElementById('payModalStatusBox');
-      const statusText = document.getElementById('payModalStatusText');
-      if (statusBox) statusBox.classList.remove('hidden');
-      if (statusText) statusText.textContent = `Submitted UTR ${utr}. Checking bank & gateway ledger...`;
+      // Update state to pending
+      switchToPaymentState('pending');
 
-      const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[activeBuyModelKey]) ? GURU_MODELS[activeBuyModelKey] : null;
-      const modelName = m ? m.name : activeBuyModelKey;
+      const userEmail = (currentUser && currentUser.email) ? currentUser.email : (document.getElementById('restoreEmailInput')?.value || '').toLowerCase().trim();
+      const pOrderId = document.getElementById('payPendingOrderId');
+      const pPlan = document.getElementById('payPendingPlanName');
+      const pAmt = document.getElementById('payPendingAmount');
 
-      const uEmail = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email.toLowerCase().trim() : (document.getElementById('restoreEmailInput')?.value || '').toLowerCase().trim();
-      const uName = (typeof currentUser !== 'undefined' && currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name)) ? (currentUser.user_metadata.full_name || currentUser.user_metadata.name) : (uEmail ? uEmail.split('@')[0] : 'Customer');
+      if (pOrderId) pOrderId.textContent = activeOrderId || 'ORD-ACTIVE';
+      if (pPlan) pPlan.textContent = activeBuyPlanName;
+      if (pAmt) pAmt.textContent = `₹${activeBuyPrice}`;
 
-      if (!uEmail || !uEmail.includes('@')) {
-        if (typeof showToast === 'function') showToast('Please enter your email below to bind your payment.', 'warning');
-        const rInput = document.getElementById('restoreEmailInput');
-        if (rInput) {
-          rInput.focus();
-          rInput.scrollIntoView({ behavior: 'smooth' });
-        }
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = 'Submit UTR';
-        }
-        return;
-      }
-
-      // 1. Record into Supabase contact_messages
       try {
-        const sb = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
-        if (sb) {
-          await sb.from('contact_messages').insert({
-            email: uEmail,
-            name: uName,
-            subject: 'AI_PREMIUM_UPGRADE',
-            message: `[In-App UTR Submission] Model: ${modelName} (${activeBuyModelKey}) | Price: ₹${activeBuyPrice} | UTR: ${utr}`,
-            status: 'Pending Admin Review'
-          });
-        }
-      } catch(dbErr) {
-        console.warn('Contact message submission notice:', dbErr);
-      }
-
-      // 2. Dispatch Payment Alert to Master Admin at contact@webguruji.online
-      try {
-        fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
+        const verifyRes = await fetch('/api/payment/verify', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
-          },
+          headers: { 'Content-Type': 'application/json', 'x-user-email': userEmail },
           body: JSON.stringify({
-            from: 'info@webguruji.online',
-            to: ['contact@webguruji.online'],
-            displayName: 'HarshGuruJi AI Payment Desk',
-            subject: `💰 In-App AI Upgrade Payment: ${uName} (${uEmail}) - ${modelName} [UTR: ${utr}]`,
-            text: `In-App AI Upgrade Payment Reference Submitted!\nCustomer: ${uName}\nEmail: ${uEmail}\nModel: ${modelName}\nPrice: ₹${activeBuyPrice}\nUTR: ${utr}\nTime: ${new Date().toLocaleString()}\n\nNote: Please verify bank receipt or 1-Click Approve in Admin Desk to activate user.`,
-            html: `
-<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
-  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #10b981;padding:24px;">
-    <h2 style="color:#34d399;margin-top:0;">💰 In-App AI Upgrade UTR Submitted</h2>
-    <p style="color:#cbd5e1;">A user submitted an authentic payment reference on <strong>GuruAI (ai.webguruji.online)</strong>.</p>
-    <table style="width:100%;border-collapse:collapse;margin:16px 0;background:rgba(255,255,255,0.04);border-radius:8px;">
-      <tr><td style="padding:8px 12px;color:#94a3b8;">User Name</td><td style="padding:8px 12px;color:#fff;font-weight:700;">${uName}</td></tr>
-      <tr><td style="padding:8px 12px;color:#94a3b8;">User Email</td><td style="padding:8px 12px;color:#38bdf8;font-family:monospace;font-weight:700;">${uEmail}</td></tr>
-      <tr><td style="padding:8px 12px;color:#94a3b8;">Purchased Model</td><td style="padding:8px 12px;color:#fde68a;font-weight:700;">${modelName}</td></tr>
-      <tr><td style="padding:8px 12px;color:#94a3b8;">Amount</td><td style="padding:8px 12px;color:#34d399;font-weight:800;">₹${activeBuyPrice}</td></tr>
-      <tr><td style="padding:8px 12px;color:#94a3b8;">UTR / Transaction ID</td><td style="padding:8px 12px;color:#34d399;font-family:monospace;font-weight:700;">${utr}</td></tr>
-      <tr><td style="padding:8px 12px;color:#94a3b8;">Time</td><td style="padding:8px 12px;color:#fff;">${new Date().toLocaleString()}</td></tr>
-    </table>
-    <p style="font-size:12px;color:#94a3b8;">Sent automatically from info@webguruji.online to contact@webguruji.online</p>
-  </div>
-</body>
-</html>`
+            orderId: activeOrderId,
+            gatewayOrderId: activeGatewayOrderId,
+            utr,
+            planId: activeBuyModelKey,
+            email: userEmail
           })
-        }).catch(e => console.warn('Payment notification mail error:', e));
-      } catch(e) {}
+        });
 
-      // 3. Start live polling against Supabase user_ai_limits (stops when database confirms activation)
-      if (utrVerificationPollingTimer) clearInterval(utrVerificationPollingTimer);
-      let pollCount = 0;
-      utrVerificationPollingTimer = setInterval(async () => {
-        pollCount++;
-        try {
-          const sb = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
-          if (sb) {
-            const { data } = await sb.from('user_ai_limits')
-              .select('*')
-              .ilike('email', uEmail)
-              .order('updated_at', { ascending: false })
-              .limit(1);
-
-            const row = (data && data.length > 0) ? data[0] : null;
-            if (row && row.is_active && (row.plan_name || '').toUpperCase().includes(activeBuyModelKey.toUpperCase().replace('GURU-', ''))) {
-              clearInterval(utrVerificationPollingTimer);
-              utrVerificationPollingTimer = null;
-
-              window.currentUserLimits = row;
-              localStorage.setItem('guru_ai_user_paid', 'true');
-              localStorage.setItem('guru_ai_unlocked_model', activeBuyModelKey);
-              localStorage.setItem('guru_ai_verified_email', uEmail);
-              localStorage.setItem('guru_ai_payment_token', generatePaymentToken(uEmail));
-              window.currentUserUnlockedModel = activeBuyModelKey;
-
-              if (typeof selectAiModel === 'function') {
-                selectAiModel(activeBuyModelKey, modelName, false);
-              }
-              closeAiPaymentModal();
-              if (typeof showToast === 'function') {
-                showToast(`🎉 Payment Confirmed in database! ${modelName} is now permanently unlocked.`, 'success');
-              }
-            }
-          }
-        } catch(e) {}
-
-        if (pollCount > 30) { // 2 minutes timeout
-          clearInterval(utrVerificationPollingTimer);
-          utrVerificationPollingTimer = null;
-          if (statusText) statusText.textContent = `UTR ${utr} recorded! Verification is in progress with the bank. You will be activated shortly.`;
-          if (btn) {
-            btn.disabled = false;
-            btn.textContent = 'Submit UTR';
+        if (verifyRes.ok) {
+          const verifyJson = await verifyRes.json();
+          if (verifyJson.success && verifyJson.status === 'paid') {
+            handlePaymentSuccessActivation(verifyJson);
+            return;
           }
         }
-      }, 4000);
+      } catch (err) {
+        console.warn('API payment/verify error:', err);
+      }
 
-      if (typeof showToast === 'function') {
-        showToast(`UTR ${utr} submitted for verification. Polling database for confirmation...`, 'info');
+      // If pending, keep state in pending and start checking
+      const statusMsg = document.getElementById('payPendingStatusMsg');
+      if (statusMsg) {
+        statusMsg.textContent = `UTR ${utr} recorded. Checking gateway confirmation... Click 'Retry Status Check' anytime.`;
+      }
+      if (btn) { btn.disabled = false; btn.textContent = 'Verify UTR'; }
+    };
+
+    // Manual Retry Status Check
+    window.manualRetryStatusCheck = async function() {
+      showToast('Querying payment gateway for latest status...', 'info');
+      const userEmail = (currentUser && currentUser.email) ? currentUser.email : (document.getElementById('restoreEmailInput')?.value || '').toLowerCase().trim();
+
+      try {
+        const res = await fetch('/api/payment/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-email': userEmail },
+          body: JSON.stringify({
+            orderId: activeOrderId,
+            gatewayOrderId: activeGatewayOrderId,
+            planId: activeBuyModelKey,
+            email: userEmail
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.status === 'paid') {
+            handlePaymentSuccessActivation(data);
+            return;
+          } else {
+            showToast(`Status: ${data.message || 'Still pending bank clearance. Please wait a moment.'}`, 'info');
+          }
+        }
+      } catch (e) {
+        showToast('Status check check error. Please retry shortly.', 'warning');
       }
     };
 
-    // Restore Access & Verify Paid Plan from Supabase
+    // Handle Payment Success & Model Activation
+    function handlePaymentSuccessActivation(data) {
+      if (activePaymentPollingTimer) {
+        clearInterval(activePaymentPollingTimer);
+        activePaymentPollingTimer = null;
+      }
+
+      switchToPaymentState('success');
+
+      const titleEl = document.getElementById('paySuccessModelTitle');
+      if (titleEl) titleEl.textContent = `${activeBuyPlanName} Unlocked Successfully`;
+
+      const allowedModelsEl = document.getElementById('paySuccessAllowedModels');
+      if (allowedModelsEl && Array.isArray(data.allowedModels)) {
+        allowedModelsEl.textContent = data.allowedModels.join(', ');
+      }
+
+      // Record in local cache
+      const userEmail = (currentUser && currentUser.email) ? currentUser.email : (document.getElementById('restoreEmailInput')?.value || '').toLowerCase().trim();
+      if (userEmail) {
+        localStorage.setItem('guru_ai_user_paid', 'true');
+        localStorage.setItem('guru_ai_unlocked_model', activeBuyModelKey);
+        localStorage.setItem('guru_ai_verified_email', userEmail);
+        localStorage.setItem('guru_ai_payment_token', generatePaymentToken(userEmail));
+      }
+      window.currentUserUnlockedModel = activeBuyModelKey;
+      serverUnlockedModels.add(activeBuyModelKey);
+      if (Array.isArray(data.allowedModels)) {
+        data.allowedModels.forEach(m => serverUnlockedModels.add(m));
+      }
+
+      showToast(`🎉 Payment Verified! ${activeBuyPlanName} is unlocked!`, 'success');
+    }
+
+    // Launch Model after payment verified
+    window.finishAndLaunchModel = function() {
+      closeAiPaymentModal();
+      if (typeof selectAiModel === 'function') {
+        selectAiModel(activeBuyModelKey, activeBuyPlanName, false);
+      }
+      showToast(`⚡ Switched to ${activeBuyPlanName}. Full context and premium reasoning active!`, 'success');
+    };
+
+    // Restore Access & Verify Paid Plan from Server API
     window.checkAndRestorePaidAccess = async function() {
       const emailInput = document.getElementById('restoreEmailInput');
       const email = (emailInput?.value || (currentUser?.email) || '').toLowerCase().trim();
       if (!email || !email.includes('@')) {
-        if (typeof showToast === 'function') showToast('Please enter a valid email address.', 'warning');
+        showToast('Please enter a valid email address.', 'warning');
         return;
       }
 
-      if (typeof showToast === 'function') showToast(`Verifying subscription for ${email}...`, 'info');
+      showToast(`Verifying subscription for ${email}...`, 'info');
+
+      try {
+        const res = await fetch(`/api/payment/status?email=${encodeURIComponent(email)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.hasPremium && data.unlockedModels && data.unlockedModels.length > 0) {
+            // Find highest unlocked model
+            let highestModel = 'guru-flash-1.3';
+            if (data.unlockedModels.includes('guru-argon-1.5')) highestModel = 'guru-argon-1.5';
+            else if (data.unlockedModels.includes('guru-argon-1.4')) highestModel = 'guru-argon-1.4';
+
+            data.unlockedModels.forEach(m => serverUnlockedModels.add(m));
+
+            localStorage.setItem('guru_ai_user_paid', 'true');
+            localStorage.setItem('guru_ai_unlocked_model', highestModel);
+            localStorage.setItem('guru_ai_verified_email', email);
+            localStorage.setItem('guru_ai_payment_token', generatePaymentToken(email));
+            window.currentUserUnlockedModel = highestModel;
+
+            const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[highestModel]) ? GURU_MODELS[highestModel] : null;
+            const modelName = m ? m.name : highestModel;
+
+            if (typeof selectAiModel === 'function') {
+              selectAiModel(highestModel, modelName, false);
+            }
+            closeAiPaymentModal();
+            showToast(`🎉 Verified Active Subscription! ${modelName} is now unlocked.`, 'success');
+            return;
+          }
+        }
+
+        showToast(`No active paid plan found for ${email}. If you recently paid, verification may take 1-2 minutes.`, 'warning');
+      } catch(e) {
+        showToast('Verification check error. Please retry.', 'warning');
+      }
+    };
+
+    window.goToOfficialPaymentGateway = function() {
+      let email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : (document.getElementById('restoreEmailInput')?.value || '').trim();
+      if (!email) {
+        email = prompt('Enter your email address to receive your invoice & model unlock receipt:') || '';
+        email = email.trim();
+        if (!email || !email.includes('@')) {
+          showToast('A valid email address is required to process payment.', 'warning');
+          return;
+        }
+      }
+      const token = generatePaymentToken(email);
+      const payUrl = `https://payment.webguruji.online/payment.html?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}&plan=${encodeURIComponent(activeBuyModelKey)}&amount=${activeBuyPrice}`;
+      window.open(payUrl, '_blank');
+    };
 
       try {
         const sb = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);

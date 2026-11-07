@@ -5,9 +5,11 @@ import { chatRequestSchema } from '@/lib/validation';
 import { checkAndReserveAllowance, refundUsageAllowance } from '@/lib/rate-limit';
 import { streamNvidiaTextChat, isImageIntent } from '@/lib/ai/nvidia';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { PaymentRepository } from '@/lib/payment/repository';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 120;
 
 export async function POST(request) {
   let reserved = false;
@@ -35,6 +37,7 @@ export async function POST(request) {
     const authState = await getAuthenticatedUser();
     const isLoggedIn = authState.isLoggedIn;
     userId = authState.userId;
+    const userEmail = (authState.user?.email || request.headers.get('x-user-email') || '').toLowerCase().trim();
 
     // 3. Client Signals & Guest Privacy Hash
     const clientIp = extractClientIp(request);
@@ -55,18 +58,11 @@ export async function POST(request) {
       );
     }
 
-    // 4b. Access Gating for Tiered AI Models (Tier 1 to Tier 5)
-    const MODEL_TIERS = {
-      'guru-flash-1.1': 1,
-      'guru-flash-1.2': 2,
-      'guru-flash-1.3': 3,
-      'guru-argon-1.4': 4,
-      'guru-argon-1.5': 5,
-    };
-    const targetModelTier = MODEL_TIERS[model] || 1;
+    // 4b. Strict Server-Side Access Gating for AI Models
+    const targetModel = model || 'guru-flash-1.1';
 
-    // Guru-Flash 1.2: Logged-in members only (Free)
-    if (targetModelTier === 2 && !isLoggedIn) {
+    // Guru-Flash 1.2: Free for logged-in members only
+    if (targetModel === 'guru-flash-1.2' && !isLoggedIn) {
       return NextResponse.json(
         {
           error: 'Authentication Required',
@@ -77,81 +73,34 @@ export async function POST(request) {
       );
     }
 
-    // Guru-Flash 1.3 (Tier 3), Guru-Argon 1.4 (Tier 4), Guru-Argon 1.5 (Tier 5): Paid Premium Models
-    if (targetModelTier >= 3) {
-      let userUnlockedTier = 1;
+    // Guru-Flash 1.3, Guru-Argon 1.4, Guru-Argon 1.5: Paid Premium Models
+    const PREMIUM_MODELS = ['guru-flash-1.3', 'guru-argon-1.4', 'guru-argon-1.5'];
+    if (PREMIUM_MODELS.includes(targetModel)) {
+      const activeEntitlements = await PaymentRepository.getUserActiveEntitlements(userId, userEmail);
 
-      // 1. Check logged-in user metadata from Supabase Auth
-      if (isLoggedIn && authState.user) {
-        const userMeta = authState.user.user_metadata || {};
-        const metaPlan = (userMeta.plan || '').toLowerCase();
-        if (userMeta.is_paid === true || (metaPlan && metaPlan !== 'free' && metaPlan !== 'standard')) {
-          if (metaPlan.includes('1.5') || metaPlan.includes('grandmaster')) userUnlockedTier = 5;
-          else if (metaPlan.includes('1.4') || metaPlan.includes('power') || metaPlan.includes('scholar')) userUnlockedTier = 4;
-          else userUnlockedTier = 3;
+      let isAllowed = false;
+      for (const ent of activeEntitlements) {
+        if (Array.isArray(ent.allowed_models) && ent.allowed_models.includes(targetModel)) {
+          isAllowed = true;
+          break;
         }
       }
 
-      // 2. Query user_ai_limits by user_id OR email (from auth or verified header)
-      const userEmail = (authState.user?.email || request.headers.get('x-user-email') || '').toLowerCase().trim();
-
-      if (userUnlockedTier < targetModelTier) {
-        try {
-          let query = supabaseAdmin.from('user_ai_limits').select('*');
-          if (userId && userEmail) {
-            query = query.or(`user_id.eq.${userId},email.ilike.${userEmail}`);
-          } else if (userId) {
-            query = query.eq('user_id', userId);
-          } else if (userEmail) {
-            query = query.ilike('email', userEmail);
-          } else {
-            query = null;
-          }
-
-          if (query) {
-            const { data: limitRows } = await query.order('updated_at', { ascending: false }).limit(5);
-            if (limitRows && limitRows.length > 0) {
-              for (const row of limitRows) {
-                if (!row.is_active) continue;
-                // Exclude system config rows
-                if (row.email && (row.email.startsWith('admin_') || row.email.includes('config') || row.email.includes('roster'))) continue;
-
-                const p = (row.plan_name || '').toLowerCase();
-                let rowTier = 1;
-                if (p.includes('1.5') || p.includes('grandmaster') || p.includes('argon 1.5') || p.includes('argon-1.5')) {
-                  rowTier = 5;
-                } else if (p.includes('1.4') || p.includes('power') || p.includes('scholar') || p.includes('argon 1.4') || p.includes('argon-1.4')) {
-                  rowTier = 4;
-                } else if (p.includes('1.3') || p.includes('starter') || p.includes('flash 1.3') || p.includes('flash-1.3')) {
-                  rowTier = 3;
-                }
-
-                if (rowTier > userUnlockedTier) {
-                  userUnlockedTier = rowTier;
-                }
-              }
-            }
-          }
-        } catch (dbErr) {
-          console.error('Server-side user_ai_limits verification notice:', dbErr);
-        }
-      }
-
-      if (userUnlockedTier < targetModelTier) {
+      if (!isAllowed) {
         const modelDisplayNames = {
-          'guru-flash-1.3': 'Guru-Flash 1.3 ($5 Starter Premium)',
-          'guru-argon-1.4': 'Guru-Argon 1.4 ($15 Pro Premium)',
-          'guru-argon-1.5': 'Guru-Argon 1.5 ($25 Power User Mistral 1T)',
+          'guru-flash-1.3': 'Guru-Flash 1.3 (₹499 / $5 Starter Premium)',
+          'guru-argon-1.4': 'Guru-Argon 1.4 (₹999 / $15 Power Scholar)',
+          'guru-argon-1.5': 'Guru-Argon 1.5 (₹1999 / $25 Grandmaster Enterprise)',
         };
-        const displayName = modelDisplayNames[model] || model;
+        const displayName = modelDisplayNames[targetModel] || targetModel;
 
         return NextResponse.json(
           {
             error: 'Payment Required',
             requiresPayment: true,
-            model,
-            message: `${displayName} payment ke baad hi unlock hota hai. Kripya apna plan upgrade karke payment complete karein.`,
-            upgradeUrl: `https://webguruji.online/payment.html?plan=${encodeURIComponent(model)}`,
+            model: targetModel,
+            message: `${displayName} requires an active verified subscription. Please upgrade to unlock immediate access.`,
+            upgradeUrl: `https://webguruji.online/payment.html?plan=${encodeURIComponent(targetModel)}`,
           },
           { status: 402 }
         );
@@ -272,11 +221,13 @@ export async function POST(request) {
     const decoder = new TextDecoder();
     let accumulatedContent = '';
     let accumulatedReasoning = '';
+    let streamBuffer = '';
 
     const transformStream = new TransformStream({
       async transform(chunk, controller) {
-        const text = decoder.decode(chunk, { stream: true });
-        const lines = text.split('\n');
+        streamBuffer += decoder.decode(chunk, { stream: true });
+        const lines = streamBuffer.split(/\r?\n/);
+        streamBuffer = lines.pop() || '';
 
         for (const line of lines) {
           const trimmed = line.trim();
@@ -318,6 +269,26 @@ export async function POST(request) {
         }
       },
       async flush(controller) {
+        // Flush any remaining buffer line
+        if (streamBuffer.trim().startsWith('data: ')) {
+          try {
+            const parsed = JSON.parse(streamBuffer.trim().slice(6));
+            const delta = parsed.choices?.[0]?.delta || {};
+            const token = delta.content || '';
+            if (token) {
+              accumulatedContent += token;
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({
+                    token,
+                    conversationId: activeConversationId,
+                  })}\n\n`
+                )
+              );
+            }
+          } catch(e) {}
+        }
+
         // Send final metadata event with usage and complete content
         controller.enqueue(
           encoder.encode(

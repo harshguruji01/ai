@@ -197,61 +197,170 @@
       </div>
     </div>
 
-    <!-- STEP 2: INVOICE & FULL-SIZE ANIMATED QR CODE PAYMENT CARD -->
-    <div id="step2Card" class="hidden w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+    <!-- STEP 2: INVOICE & DYNAMIC UPI QR CODE PAYMENT CARD -->
+    <div id="step2Card" class="hidden w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-5">
       
       <!-- User Greeting & Model Pill -->
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div>
-          <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block font-bold">✓ Verified Order</span>
-          <h2 id="clientGreeting" class="text-lg font-bold font-heading text-white">Welcome, User!</h2>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block font-bold">✓ Verified Order</span>
+            <span id="orderIdBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-bold">ORD...</span>
+          </div>
+          <h2 id="clientGreeting" class="text-base sm:text-lg font-bold font-heading text-white">Welcome, User!</h2>
         </div>
         <span id="requestedModelBadge" class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
           Guru-Flash 1.3
         </span>
       </div>
 
-      <!-- Price & Plan Summary -->
-      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+      <!-- Price & Plan Summary + 15-Minute Countdown Ring -->
+      <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-950/80 border border-slate-800/90 flex items-center justify-between gap-3">
         <div>
           <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Total Payable Amount</span>
           <div class="flex items-baseline gap-2 mt-0.5">
-            <span id="planPriceInr" class="text-2xl font-black font-heading text-white">₹420</span>
+            <span id="planPriceInr" class="text-2xl sm:text-3xl font-black font-heading text-white">₹420</span>
             <span id="planPriceUsd" class="text-xs text-slate-400 font-mono">($5.00 USD)</span>
           </div>
+          <span id="planContextSummary" class="text-[11px] font-bold text-cyan-300 font-mono block mt-1">128K Token Window</span>
         </div>
-        <div class="text-right">
-          <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Unlock Target</span>
-          <span id="planContextSummary" class="text-xs font-bold text-cyan-300 font-mono">128K Token Window</span>
+
+        <!-- 15-Min Circular Countdown Ring -->
+        <div class="flex items-center gap-2.5 bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-2xl flex-shrink-0">
+          <div class="relative w-10 h-10">
+            <svg viewBox="0 0 36 36" class="w-10 h-10 -rotate-90">
+              <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" />
+              <circle id="countdownRing" cx="18" cy="18" r="16" fill="none" stroke="#818cf8" stroke-width="3" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0" style="transition: stroke-dashoffset 1s linear" />
+            </svg>
+            <div id="countdownTimer" class="absolute inset-0 grid place-items-center font-mono text-[10px] font-bold text-indigo-300">15:00</div>
+          </div>
+          <div class="text-left hidden sm:block">
+            <div class="text-[10px] font-bold text-slate-300 uppercase">Valid Window</div>
+            <div class="text-[9px] text-slate-400 font-mono">Auto-Expires</div>
+          </div>
         </div>
       </div>
 
-      <!-- Server Error Box replacing QR Code and UPI ID -->
-      <div class="py-10 px-4 rounded-3xl bg-rose-950/20 border border-rose-500/30 text-center space-y-3 my-4 shadow-xl">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-          </svg>
-        </div>
-        <div class="space-y-1">
-          <h3 class="text-xl sm:text-2xl font-black font-heading text-rose-400 tracking-wide">server error wait 7days.</h3>
-          <p class="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
-            Payment gateway and UPI server connection is currently unavailable. Please wait 7 days.
-          </p>
-        </div>
+      <!-- Maintenance Alert (if toggled by admin) -->
+      <div id="paymentMaintenanceBox" class="hidden py-8 px-4 rounded-3xl bg-rose-950/25 border border-rose-500/30 text-center space-y-3">
+        <div class="w-12 h-12 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 text-xl font-bold">⚠️</div>
+        <h3 class="text-lg font-black font-heading text-rose-400">Server error wait 7 days</h3>
+        <p class="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
+          The payment gateway is undergoing security upgrades. Please check back later or contact <strong class="text-indigo-400">info@webguruji.online</strong>.
+        </p>
       </div>
 
-      <!-- Transaction Confirmation Form (Disabled during server error) -->
-      <div class="space-y-3 pt-2 border-t border-slate-800">
-        <button type="button" disabled
-          class="w-full py-3 px-5 rounded-2xl font-heading font-bold text-sm text-slate-400 bg-slate-800/60 border border-slate-700/50 cursor-not-allowed flex items-center justify-center gap-2">
-          <span>Server Error: Transactions Paused (Wait 7 Days)</span>
-        </button>
+      <!-- Active Payment Area -->
+      <div id="paymentActiveBox" class="space-y-4">
+        
+        <!-- Holographic QR Scanner Frame -->
+        <div class="relative mx-auto p-3 rounded-2xl bg-white/95 ring-2 ring-indigo-500/40 shadow-xl max-w-[240px] text-center overflow-hidden">
+          <div class="scan-beam"></div>
+          <span class="absolute top-1 left-1 w-4 h-4 border-t-2 border-l-2 border-indigo-600"></span>
+          <span class="absolute top-1 right-1 w-4 h-4 border-t-2 border-r-2 border-indigo-600"></span>
+          <span class="absolute bottom-1 left-1 w-4 h-4 border-b-2 border-l-2 border-indigo-600"></span>
+          <span class="absolute bottom-1 right-1 w-4 h-4 border-b-2 border-r-2 border-indigo-600"></span>
+          <img id="upiQrImage" src="" alt="HarshGuruJi UPI QR Code" class="w-48 h-48 sm:w-52 sm:h-52 mx-auto object-contain" />
+          <div class="mt-1 text-[10px] font-mono font-bold text-slate-700 tracking-wider">SCAN WITH ANY UPI APP</div>
+        </div>
+
+        <!-- 1-Tap Mobile Intent Buttons -->
+        <div class="space-y-2">
+          <div class="flex items-center gap-2 text-[10px] text-slate-400 justify-center uppercase font-mono">
+            <span class="h-px flex-1 bg-slate-800"></span>
+            <span>Or Pay With Mobile App</span>
+            <span class="h-px flex-1 bg-slate-800"></span>
+          </div>
+          <div class="grid grid-cols-4 gap-1.5 sm:gap-2">
+            <a id="intentGPay" href="#" class="py-2 px-1 text-center rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 transition flex flex-col items-center gap-1 group">
+              <span class="text-xs font-black text-[#4285F4]">GPay</span>
+              <span class="text-[9px] text-slate-400">Instant</span>
+            </a>
+            <a id="intentPhonePe" href="#" class="py-2 px-1 text-center rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 transition flex flex-col items-center gap-1 group">
+              <span class="text-xs font-black text-[#5f259f]">PhonePe</span>
+              <span class="text-[9px] text-slate-400">Instant</span>
+            </a>
+            <a id="intentPaytm" href="#" class="py-2 px-1 text-center rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 transition flex flex-col items-center gap-1 group">
+              <span class="text-xs font-black text-[#00baf2]">Paytm</span>
+              <span class="text-[9px] text-slate-400">Instant</span>
+            </a>
+            <a id="intentBhim" href="#" class="py-2 px-1 text-center rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 transition flex flex-col items-center gap-1 group">
+              <span class="text-xs font-black text-[#f47920]">BHIM</span>
+              <span class="text-[9px] text-slate-400">UPI</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Copy UPI ID Strip -->
+        <div class="flex items-center justify-between gap-3 p-3 rounded-2xl bg-slate-950/80 border border-slate-800">
+          <div class="min-w-0">
+            <span class="text-[10px] text-slate-400 block font-mono">Merchant UPI ID:</span>
+            <span id="upiIdDisplay" class="font-mono text-xs sm:text-sm font-bold text-amber-300 truncate block">Awaiting Setup</span>
+          </div>
+          <button type="button" onclick="copyUpiId()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 transition flex-shrink-0 flex items-center gap-1">
+            <span>📋</span> <span id="copyUpiText">Copy</span>
+          </button>
+        </div>
+
+        <!-- 12-Digit UTR Submission Form -->
+        <form id="confirmPaymentForm" onsubmit="handleConfirmPayment(event)" class="space-y-3 pt-2 border-t border-slate-800/80">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">
+              After Payment, Enter 12-Digit UTR / Ref Number *
+            </label>
+            <div class="relative">
+              <input type="text" id="utrInput" required maxlength="12" pattern="\d{12}" placeholder="e.g. 431289564721"
+                class="w-full bg-slate-950/90 border border-slate-700/90 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 font-mono tracking-widest text-center transition"
+                oninput="validateUtrInput(this)" />
+              <span id="utrCheckmark" class="hidden absolute right-3.5 top-3 text-emerald-400 font-bold">✓</span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">
+              You will find this 12-digit number (UTR / UPI Ref ID) in your GPay, PhonePe, or Paytm receipt.
+            </p>
+          </div>
+
+          <button type="submit" id="confirmPaymentBtn"
+            class="w-full py-3.5 px-5 rounded-2xl font-heading font-bold text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 hover:opacity-95 transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-98">
+            <span>Confirm Payment &amp; Submit UTR</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+          </button>
+        </form>
+
       </div>
 
-      <button type="button" onclick="backToEmailStep()" class="w-full text-center text-xs text-slate-500 hover:text-slate-400 transition">
-        ← Change email address
+      <button type="button" onclick="backToEmailStep()" class="w-full text-center text-xs text-slate-500 hover:text-slate-400 transition pt-1">
+        ← Back to email step
       </button>
+    </div>
+
+    <!-- STEP 2B: PAYMENT UNDER REVIEW (SUBMITTED UTR) -->
+    <div id="step2ReviewCard" class="hidden w-full bg-slate-900/95 backdrop-blur-2xl border border-sky-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl text-center space-y-5 animate-fade-in">
+      <div class="relative w-16 h-16 mx-auto grid place-items-center">
+        <svg class="w-16 h-16 animate-spin text-sky-500" viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="36" stroke="currentColor" stroke-opacity=".15" stroke-width="4"/>
+          <path d="M76 40A36 36 0 0 0 40 4" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span class="absolute text-2xl">🛡️</span>
+      </div>
+
+      <div class="space-y-1">
+        <span class="text-[10px] font-mono text-sky-400 uppercase tracking-wider font-bold">Verification in Progress</span>
+        <h2 class="text-xl sm:text-2xl font-bold font-heading text-white">Verifying Your Payment</h2>
+        <p class="text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
+          HarshGuruJi Administration is confirming your 12-digit UTR with our bank. This window will automatically update as soon as approval is confirmed.
+        </p>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs space-y-2.5 max-w-xs mx-auto text-left font-mono">
+        <div class="flex justify-between text-slate-400"><span>Order ID:</span><span id="reviewOrderId" class="text-indigo-300 font-bold">ORD...</span></div>
+        <div class="flex justify-between text-slate-400"><span>Submitted UTR:</span><span id="reviewUtr" class="text-amber-300 font-bold">123456789012</span></div>
+        <div class="flex justify-between text-slate-400"><span>Purchased Model:</span><span id="reviewModel" class="text-white font-bold">Guru-Flash 1.3</span></div>
+        <div class="flex justify-between text-slate-400"><span>Status:</span><span class="text-sky-400 font-bold animate-pulse">⏳ Under Review</span></div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200/90 text-left">
+        ⚠️ <strong>Notice:</strong> Please do not close or refresh this tab. Do not pay twice. Confirmation email will also be dispatched from <strong>info@webguruji.online</strong> upon approval.
+      </div>
     </div>
 
     <!-- STEP 3: SUCCESS CELEBRATION CARD -->
@@ -271,7 +380,7 @@
         <p>• Your purchased model has been unlocked in your browser, web account, and synced into the HarshGuruJi APK.</p>
       </div>
 
-      <a href="https://ai.webguruji.online" class="w-full py-3.5 px-6 rounded-2xl font-heading font-bold text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 hover:opacity-95 transition shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-2">
+      <a id="launchGuruAiBtn" href="https://ai.webguruji.online" class="w-full py-3.5 px-6 rounded-2xl font-heading font-bold text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 hover:opacity-95 transition shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-2">
         <span>Launch GuruAI with Unlocked Model 🚀</span>
       </a>
     </div>
@@ -288,8 +397,16 @@
     let activePaymentConfig = {
       maintenance: false,
       upi_id: '',
+      backup_upi: '',
+      backup_upi2: '',
+      daily_limit: 50000,
+      rotation_mode: 'default',
       qr_url: '',
-      instructions: ''
+      instructions: '',
+      gateway_api_url: 'https://upi-gateway-oy63.onrender.com/api/v1',
+      gateway_api_key: 'key_GnDKpMuQWj9lYcqrWhzG0ifD',
+      gateway_api_secret: 'sec_D1MMJuvhwfceK43MkCtj3iYmoGbgzcwzlWqEWVVu',
+      auto_unlock: true
     };
 
     async function checkPaymentGatewayConfig() {
@@ -320,21 +437,42 @@
         }
       } catch(e) {}
 
+      // 4. Fetch dynamic active accounts from Render Gateway if available
+      if (activePaymentConfig.gateway_api_url && activePaymentConfig.gateway_api_key) {
+        try {
+          const accRes = await fetch(`${activePaymentConfig.gateway_api_url.replace(/\/+$/, '')}/accounts`, {
+            headers: {
+              'X-Api-Key': activePaymentConfig.gateway_api_key,
+              'X-Api-Secret': activePaymentConfig.gateway_api_secret || ''
+            }
+          });
+          if (accRes.ok) {
+            const accJson = await accRes.json();
+            if (accJson && accJson.success && Array.isArray(accJson.data) && accJson.data.length > 0) {
+              const activeAcc = accJson.data.find(a => a.is_active && a.is_default) || accJson.data.find(a => a.is_active) || accJson.data[0];
+              if (activeAcc && activeAcc.upi_id) {
+                activePaymentConfig.upi_id = activeAcc.upi_id;
+              }
+            }
+          }
+        } catch(e) {}
+      }
+
       if (activePaymentConfig.maintenance === true) {
-        const mainCard = document.getElementById('step1Card') || document.getElementById('step2Card');
-        if (mainCard && mainCard.parentElement) {
-          mainCard.parentElement.innerHTML = `
-            <div class="w-full bg-slate-900/95 backdrop-blur-2xl border border-rose-500/30 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-4">
-              <div class="text-5xl">⚠️</div>
-              <h2 class="text-2xl font-extrabold text-rose-400">Server error wait 7 days</h2>
-              <p class="text-sm text-slate-300 leading-relaxed max-w-md mx-auto">
-                The HarshGuruJi Payment Gateway is currently undergoing essential maintenance and security audits. Please check back after 7 days or contact administration at <strong class="text-indigo-400">info@webguruji.online</strong>.
-              </p>
-              <a href="https://webguruji.online/" class="inline-block px-6 py-2.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition">Return to HarshGuruJi Home</a>
-            </div>
-          `;
+        const maintBox = document.getElementById('paymentMaintenanceBox');
+        const activeBox = document.getElementById('paymentActiveBox');
+        if (maintBox && activeBox) {
+          maintBox.classList.remove('hidden');
+          activeBox.classList.add('hidden');
         }
         return true;
+      } else {
+        const maintBox = document.getElementById('paymentMaintenanceBox');
+        const activeBox = document.getElementById('paymentActiveBox');
+        if (maintBox && activeBox) {
+          maintBox.classList.add('hidden');
+          activeBox.classList.remove('hidden');
+        }
       }
 
       // Update dynamic UPI display and QR image in invoice if available
@@ -462,6 +600,53 @@
       }
     }
 
+    let currentOrderNo = '';
+    let countdownInterval = null;
+    let approvalPollInterval = null;
+
+    function startPaymentCountdown(seconds) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      const ring = document.getElementById('countdownRing');
+      const timer = document.getElementById('countdownTimer');
+      const total = seconds;
+      let remaining = seconds;
+
+      function updateTimer() {
+        if (remaining <= 0) {
+          clearInterval(countdownInterval);
+          if (timer) timer.textContent = '00:00';
+          if (ring) {
+            ring.style.strokeDashoffset = '100.5';
+            ring.style.stroke = '#f87171';
+          }
+          return;
+        }
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        if (timer) timer.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        if (ring) {
+          ring.style.strokeDashoffset = (100.5 * (1 - remaining / total)).toFixed(2);
+          ring.style.stroke = remaining < 120 ? '#f87171' : '#818cf8';
+        }
+        remaining--;
+      }
+      updateTimer();
+      countdownInterval = setInterval(updateTimer, 1000);
+    }
+
+    function validateUtrInput(input) {
+      const clean = input.value.replace(/\D/g, '').slice(0, 12);
+      input.value = clean;
+      const check = document.getElementById('utrCheckmark');
+      if (check) {
+        if (clean.length === 12) {
+          check.classList.remove('hidden');
+        } else {
+          check.classList.add('hidden');
+        }
+      }
+    }
+
     function renderInvoice(record) {
       const msg = record.message || '';
       let model = 'Guru-Flash 1.3';
@@ -493,21 +678,262 @@
       document.getElementById('planPriceUsd').textContent = `(${usd} USD)`;
       document.getElementById('planContextSummary').textContent = context;
 
-      // Build dynamic UPI QR code & App Intent from configured Admin UPI ID
+      // Generate Unique Order Reference
+      currentOrderNo = 'ORD' + Math.random().toString(36).substring(2, 9).toUpperCase() + Date.now().toString(36).slice(-5).toUpperCase();
+      const orderEl = document.getElementById('orderIdBadge');
+      if (orderEl) orderEl.textContent = currentOrderNo;
+
+      // Start 15-Minute Countdown Timer
+      startPaymentCountdown(15 * 60);
+
+      // Build dynamic UPI QR code & App Intent with transaction reference
       const targetUpiId = activePaymentConfig?.upi_id || '';
-      const upiString = `upi://pay?pa=${encodeURIComponent(targetUpiId)}&pn=HarshGuruJi&am=${inr}&cu=INR&tn=GuruAI_${encodeURIComponent(model.replace(/ /g, '_'))}`;
-      const qrApiUrl = activePaymentConfig?.qr_url || `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(upiString)}`;
-      const qrEl = document.getElementById('upiQrImage'); if (qrEl) qrEl.src = qrApiUrl;
-      const payBtnEl = document.getElementById('payAppBtn'); if (payBtnEl) payBtnEl.href = upiString;
-      const upiIdTextEl = document.getElementById('upiIdDisplay'); if (upiIdTextEl) upiIdTextEl.textContent = targetUpiId;
+      if (targetUpiId) {
+        const upiString = `upi://pay?pa=${encodeURIComponent(targetUpiId)}&pn=HarshGuruJi&am=${inr}&cu=INR&tr=${currentOrderNo}&tn=GuruAI_${encodeURIComponent(model.replace(/ /g, '_'))}`;
+        const qrApiUrl = (activePaymentConfig?.qr_url && activePaymentConfig.qr_url.trim() && !activePaymentConfig.qr_url.includes('logo-512.png')) 
+          ? activePaymentConfig.qr_url 
+          : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(upiString)}&margin=10`;
+
+        const qrEl = document.getElementById('upiQrImage'); if (qrEl) qrEl.src = qrApiUrl;
+        const upiIdTextEl = document.getElementById('upiIdDisplay'); if (upiIdTextEl) upiIdTextEl.textContent = targetUpiId;
+
+        // Mobile Intent Deep Links
+        const intentGPay = document.getElementById('intentGPay');
+        if (intentGPay) intentGPay.href = upiString.replace('upi://pay', 'tez://upi/pay');
+        const intentPhonePe = document.getElementById('intentPhonePe');
+        if (intentPhonePe) intentPhonePe.href = upiString.replace('upi://pay', 'phonepe://pay');
+        const intentPaytm = document.getElementById('intentPaytm');
+        if (intentPaytm) intentPaytm.href = upiString.replace('upi://pay', 'paytmmp://pay');
+        const intentBhim = document.getElementById('intentBhim');
+        if (intentBhim) intentBhim.href = upiString;
+      } else {
+        const upiIdTextEl = document.getElementById('upiIdDisplay'); if (upiIdTextEl) upiIdTextEl.textContent = 'Awaiting Setup on Render';
+      }
+
+      // Phase 2: Attempt Gateway API Order Creation (with seamless local fallback)
+      initGatewayOrder(inr, model, clientName, record.email).then(gwOrder => {
+        if (gwOrder) {
+          currentOrderNo = gwOrder.order_id;
+          const orderEl = document.getElementById('orderIdBadge');
+          if (orderEl) orderEl.textContent = currentOrderNo;
+          if (gwOrder.upi_intent) {
+            const gwIntent = gwOrder.upi_intent;
+            const intentGPay = document.getElementById('intentGPay');
+            const intentPhonePe = document.getElementById('intentPhonePe');
+            const intentPaytm = document.getElementById('intentPaytm');
+            const intentBhim = document.getElementById('intentBhim');
+            const qrEl = document.getElementById('upiQrImage');
+            if (intentGPay) intentGPay.href = gwIntent.replace('upi://pay', 'tez://upi/pay');
+            if (intentPhonePe) intentPhonePe.href = gwIntent.replace('upi://pay', 'phonepe://pay');
+            if (intentPaytm) intentPaytm.href = gwIntent.replace('upi://pay', 'paytmmp://pay');
+            if (intentBhim) intentBhim.href = gwIntent;
+            if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(gwIntent)}&margin=10`;
+          }
+          startGatewayPolling(gwOrder.order_id, record.email, model, inr);
+        }
+      });
 
       // Show Step 2
       document.getElementById('step1Card').classList.add('hidden');
       document.getElementById('step2Card').classList.remove('hidden');
     }
 
+    let gatewayPollInterval = null;
+
+    async function initGatewayOrder(inr, model, clientName, email) {
+      if (!activePaymentConfig.gateway_api_url || !activePaymentConfig.gateway_api_key) return null;
+      try {
+        const res = await fetch(`${activePaymentConfig.gateway_api_url.replace(/\/+$/, '')}/orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Api-Key': activePaymentConfig.gateway_api_key,
+            'X-Api-Secret': activePaymentConfig.gateway_api_secret || ''
+          },
+          body: JSON.stringify({
+            amount: Number(inr).toFixed(2),
+            client_order_id: currentOrderNo,
+            customer_name: clientName,
+            customer_email: email,
+            note: `HarshGuruJi AI ${model}`
+          })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.success && json.data) {
+            return json.data;
+          }
+        }
+      } catch(e) {
+        console.warn('Gateway API offline, using resilient Supabase direct mode:', e);
+      }
+      return null;
+    }
+
+    function startGatewayPolling(orderId, email, targetModel, inr) {
+      if (gatewayPollInterval) clearInterval(gatewayPollInterval);
+      if (!activePaymentConfig.gateway_api_url || !activePaymentConfig.gateway_api_key) return;
+
+      gatewayPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`${activePaymentConfig.gateway_api_url.replace(/\/+$/, '')}/orders/${encodeURIComponent(orderId)}`, {
+            headers: {
+              'X-Api-Key': activePaymentConfig.gateway_api_key,
+              'X-Api-Secret': activePaymentConfig.gateway_api_secret || ''
+            }
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json && json.success && json.data && json.data.status === 'paid') {
+              clearInterval(gatewayPollInterval);
+              if (countdownInterval) clearInterval(countdownInterval);
+              if (approvalPollInterval) clearInterval(approvalPollInterval);
+
+              await autoUnlockModelForUser(email, targetModel, json.data.utr || orderId, `₹${inr}`);
+            }
+          }
+        } catch(e) {}
+      }, 4000);
+    }
+
+    let isAutoUnlocked = false;
+    async function autoUnlockModelForUser(email, targetModel, utr, inrText) {
+      if (isAutoUnlocked) return;
+      isAutoUnlocked = true;
+
+      try {
+        const cleanEmail = (email || '').toLowerCase().trim();
+        let modelKey = 'guru-flash-1.3';
+        if (targetModel.includes('1.5') || targetModel.includes('Grandmaster') || targetModel.includes('Argon 1.5')) {
+          modelKey = 'guru-argon-1.5';
+        } else if (targetModel.includes('1.4') || targetModel.includes('Scholar') || targetModel.includes('Argon 1.4')) {
+          modelKey = 'guru-argon-1.4';
+        }
+        const launchToken = generatePaymentToken(cleanEmail);
+        const aiLaunchUrl = `https://ai.webguruji.online/?email=${encodeURIComponent(cleanEmail)}&unlocked=${encodeURIComponent(modelKey)}&token=${encodeURIComponent(launchToken)}&paid=1`;
+
+        const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+        if (client) {
+          let maxReq = 350;
+          let ctxLimit = 325000;
+          if (targetModel.includes('Guru-Flash 1.3')) {
+            maxReq = 150;
+            ctxLimit = 64000;
+          } else if (targetModel.includes('Guru-Argon 1.4')) {
+            maxReq = 250;
+            ctxLimit = 128000;
+          }
+
+          // 1. Upsert limits in Supabase
+          await client.from('user_ai_limits').upsert({
+            email: cleanEmail,
+            max_requests: maxReq,
+            context_limit: ctxLimit,
+            plan_name: targetModel,
+            is_active: true,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'email' });
+
+          // 2. Update contact_messages
+          await client.from('contact_messages').update({
+            status: 'Active',
+            admin_reply: `Auto-verified via UPI Gateway (Order: ${currentOrderNo}, UTR: ${utr || 'PG-VERIFIED'})`
+          }).ilike('email', cleanEmail);
+
+          // 2b. Sync Entitlement with AI Backend
+          fetch('https://ai.webguruji.online/api/payment/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: currentOrderNo,
+              paymentId: utr || currentOrderNo,
+              utr: utr,
+              planId: modelKey,
+              email: cleanEmail
+            })
+          }).catch(() => {});
+        }
+
+        // 3. Dispatch automated confirmation receipt email
+        try {
+          const clientName = verifiedClientData?.name || cleanEmail.split('@')[0];
+          const receiptHtml = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/><title>Payment Confirmed - AI Model Unlocked</title></head>
+<body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
+  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #10b981;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+    <div style="background:linear-gradient(135deg, #059669, #10b981);padding:24px;text-align:center;color:#fff;">
+      <h1 style="margin:0;font-size:24px;">🎉 PAYMENT VERIFIED &amp; MODEL UNLOCKED!</h1>
+      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">HarshGuruJi AI Instant Payment Gateway</p>
+    </div>
+    <div style="padding:24px;">
+      <p style="font-size:16px;line-height:1.6;color:#cbd5e1;">Dear <strong>${clientName}</strong>,</p>
+      <p style="font-size:14px;line-height:1.6;color:#94a3b8;">Your payment for <strong>${targetModel}</strong> has been successfully verified via our Automated UPI Gateway. Your AI model is now permanently unlocked!</p>
+      <table style="width:100%;border-collapse:collapse;margin:20px 0;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden;">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Order ID</td><td style="padding:10px 14px;color:#38bdf8;font-family:monospace;font-weight:700;">${currentOrderNo}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Amount Paid</td><td style="padding:10px 14px;color:#34d399;font-weight:800;">${inrText}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Activated Model</td><td style="padding:10px 14px;color:#fde68a;font-weight:700;">${targetModel}</td></tr>
+        <tr><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Verification Status</td><td style="padding:10px 14px;color:#34d399;font-weight:700;">✓ Automated Success</td></tr>
+      </table>
+      <div style="text-align:center;margin-top:25px;">
+        <a href="${aiLaunchUrl}" style="display:inline-block;background:linear-gradient(135deg, #6366f1, #4f46e5);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:800;font-size:14px;">🚀 Launch HarshGuruJi AI Now</a>
+      </div>
+    </div>
+    <div style="background:#070a13;padding:16px;text-align:center;font-size:11px;color:#64748b;border-top:1px solid rgba(255,255,255,0.06);">
+      HarshGuruJi Official Payment Desk · info@webguruji.online
+    </div>
+  </div>
+ </body>
+ </html>`;
+
+          fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
+            },
+            body: JSON.stringify({
+              from: 'info@webguruji.online',
+              to: [cleanEmail],
+              displayName: 'HarshGuruJi Payment Desk',
+              subject: `🎉 Payment Confirmed: ${targetModel} Unlocked! [${currentOrderNo}]`,
+              text: `Payment Confirmed!\nYour ${targetModel} is unlocked for ${cleanEmail}.\nOrder: ${currentOrderNo}\nLaunch: ${aiLaunchUrl}`,
+              html: receiptHtml
+            })
+          }).catch(console.warn);
+        } catch(mailErr) {}
+
+        // 4. Update UI & launch link
+        localStorage.setItem('guru_ai_user_paid', 'true');
+        localStorage.setItem('guru_ai_unlocked_model', modelKey);
+        localStorage.setItem('guru_ai_verified_email', cleanEmail);
+        localStorage.setItem('guru_ai_payment_token', launchToken);
+
+        const launchBtn = document.getElementById('launchGuruAiBtn');
+        if (launchBtn) {
+          launchBtn.href = aiLaunchUrl;
+        }
+
+        const revCard = document.getElementById('step2ReviewCard');
+        if (revCard) revCard.classList.add('hidden');
+        document.getElementById('step2Card').classList.add('hidden');
+
+        document.getElementById('successModelName').textContent = targetModel;
+        document.getElementById('step3Success').classList.remove('hidden');
+
+      } catch(e) {
+        console.error('Auto-unlock error:', e);
+      }
+    }
+
     function backToEmailStep() {
+      if (countdownInterval) clearInterval(countdownInterval);
+      if (approvalPollInterval) clearInterval(approvalPollInterval);
+      if (gatewayPollInterval) clearInterval(gatewayPollInterval);
       document.getElementById('step2Card').classList.add('hidden');
+      const revCard = document.getElementById('step2ReviewCard');
+      if (revCard) revCard.classList.add('hidden');
       document.getElementById('step1Card').classList.remove('hidden');
       const btn = document.getElementById('verifyBtn');
       btn.disabled = false;
@@ -516,6 +942,10 @@
 
     function copyUpiId() {
       const upiToCopy = activePaymentConfig?.upi_id || '';
+      if (!upiToCopy) {
+        alert('UPI ID is being configured on Render by the administrator. Please check back shortly.');
+        return;
+      }
       navigator.clipboard.writeText(upiToCopy).then(() => {
         const text = document.getElementById('copyUpiText');
         text.textContent = 'Copied! ✓';
@@ -523,108 +953,112 @@
       });
     }
 
+    function startApprovalPolling(email, targetModel) {
+      if (approvalPollInterval) clearInterval(approvalPollInterval);
+      const cleanEmail = (email || '').toLowerCase().trim();
+      approvalPollInterval = setInterval(async () => {
+        try {
+          const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
+          if (!client) return;
+
+          const { data } = await client
+            .from('user_ai_limits')
+            .select('*')
+            .ilike('email', cleanEmail)
+            .order('updated_at', { ascending: false })
+            .limit(1);
+
+          const row = (data && data.length > 0) ? data[0] : null;
+          if (row && row.is_active && (row.plan_name || '').toUpperCase().includes(targetModel.toUpperCase())) {
+            clearInterval(approvalPollInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            let modelKey = 'guru-flash-1.3';
+            if (targetModel.includes('1.5') || targetModel.includes('Grandmaster') || targetModel.includes('Argon 1.5')) {
+              modelKey = 'guru-argon-1.5';
+            } else if (targetModel.includes('1.4') || targetModel.includes('Scholar') || targetModel.includes('Argon 1.4')) {
+              modelKey = 'guru-argon-1.4';
+            }
+            const launchToken = generatePaymentToken(cleanEmail);
+            const aiLaunchUrl = `https://ai.webguruji.online/?email=${encodeURIComponent(cleanEmail)}&unlocked=${encodeURIComponent(modelKey)}&token=${encodeURIComponent(launchToken)}&paid=1`;
+
+            localStorage.setItem('guru_ai_user_paid', 'true');
+            localStorage.setItem('guru_ai_unlocked_model', modelKey);
+            localStorage.setItem('guru_ai_verified_email', cleanEmail);
+            localStorage.setItem('guru_ai_payment_token', launchToken);
+
+            const launchBtn = document.getElementById('launchGuruAiBtn');
+            if (launchBtn) {
+              launchBtn.href = aiLaunchUrl;
+            }
+
+            const revCard = document.getElementById('step2ReviewCard');
+            if (revCard) revCard.classList.add('hidden');
+            document.getElementById('step2Card').classList.add('hidden');
+
+            document.getElementById('successModelName').textContent = targetModel;
+            document.getElementById('step3Success').classList.remove('hidden');
+          }
+        } catch (e) {}
+      }, 4000);
+    }
+
     async function handleConfirmPayment(event) {
       event.preventDefault();
       const utr = document.getElementById('utrInput').value.trim();
-      if (!utr) return;
+      if (!utr || utr.length !== 12) {
+        alert('Please enter a valid 12-digit UTR reference number.');
+        return;
+      }
 
       const btn = document.getElementById('confirmPaymentBtn');
       btn.disabled = true;
-      btn.innerHTML = '<span>Activating Your AI Model...</span>';
+      btn.innerHTML = '<span>Submitting for Verification...</span>';
 
       const email = verifiedClientData?.email || document.getElementById('claimEmailInput').value.trim();
       const model = document.getElementById('requestedModelBadge').textContent.trim();
+      const clientName = verifiedClientData?.name || email.split('@')[0];
+      const inrText = document.getElementById('planPriceInr').textContent.trim();
 
       try {
-        // 1. Update Supabase contact_messages & user_ai_limits
+        // 1. Update Supabase contact_messages with UTR and Review status
         if (window.supabase) {
           const client = window.supabaseClient || (window.SUPABASE_URL && window.SUPABASE_ANON_KEY ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null);
           if (client) {
-            // Update message status
             await client.from('contact_messages')
-              .update({ status: 'Payment Completed', utr_ref: utr })
+              .update({
+                status: 'Payment Submitted (Review)',
+                utr_ref: utr,
+                message: `[Order: ${currentOrderNo}] Model: ${model} | Amount: ${inrText} | UTR: ${utr}`
+              })
               .ilike('email', email);
-
-            // Activate user model in user_ai_limits
-            await client.from('user_ai_limits').upsert({
-              email: email.toLowerCase().trim(),
-              plan_name: model,
-              max_requests: 350,
-              context_limit: 325000,
-              is_active: true,
-              updated_at: new Date().toISOString()
-            }, { onConflict: 'email' });
           }
         }
 
-        // 2. Persist locally for instant browser & app sync
-        localStorage.setItem('guru_ai_user_paid', 'true');
-        localStorage.setItem('guru_ai_unlocked_model', model.toLowerCase().replace(/ /g, '-'));
-
-        // 3. Send automated confirmation email from info@webguruji.online
+        // 2. Dispatch Purchase Notification to Master Admin at contact@webguruji.online
         try {
-          const confirmSubject = 'Payment Done & Model Activated: ' + model;
-          const confirmHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:20px;background:#07090e;font-family:-apple-system,BlinkMacSystemFont,Roboto,sans-serif;color:#f8fafc;"><div style="max-width:580px;margin:20px auto;background:#0d121f;border:1px solid rgba(16,185,129,0.4);border-radius:24px;overflow:hidden;padding:32px;text-align:center;"><div style="font-size:42px;margin-bottom:12px;">🎉✓</div><h1 style="color:#34d399;font-size:24px;font-weight:800;margin:0 0 10px 0;">Payment Done &amp; Model Activated!</h1><p style="font-size:15px;color:#e2e8f0;line-height:1.6;margin-bottom:24px;">Confirmation done! Your payment has been received and verified. You can now use your model: <strong style="color:#38bdf8;">' + model + '</strong>.</p><div style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:16px;padding:22px;margin:24px 0;text-align:center;"><p style="font-size:14px;color:#a7f3d0;margin:0 0 16px 0;font-weight:600;">Kripya niche diye gaye link par visit karke apna unlocked model use karein:</p><h2 style="margin:16px 0 12px 0;"><a href="https://ai.webguruji.online" style="display:inline-block;background:linear-gradient(135deg,#10b981,#059669);color:#ffffff;text-decoration:none;padding:12px 30px;border-radius:12px;font-size:18px;font-weight:800;box-shadow:0 4px 20px rgba(16,185,129,0.4);">🚀 https://ai.webguruji.online</a></h2><h4 style="margin:16px 0 0 0;font-size:14px;"><a href="https://webguruji.online" style="color:#60a5fa;text-decoration:none;">🌐 https://webguruji.online</a></h4></div><p style="font-size:12px;color:#64748b;line-height:1.5;margin-top:24px;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;">Official confirmation sent from <strong>info@webguruji.online</strong>.<br>Account: <strong>' + email + '</strong> &bull; HarshGuruJi All Rights Reserved.</p></div></body></html>';
-
-          let mailSent = false;
-          try {
-            const res = await fetch('https://ai.webguruji.online/api/mail/send', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                to: email,
-                subject: confirmSubject,
-                html: confirmHtml,
-                displayName: 'HarshGuruJi AI Activation'
-              })
-            });
-            if (res.ok) mailSent = true;
-          } catch(e) {}
-
-          if (!mailSent) {
-            try {
-              await fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
-                },
-                body: JSON.stringify({
-                  from: 'info@webguruji.online',
-                  to: [email],
-                  subject: confirmSubject,
-                  html: confirmHtml
-                })
-              });
-            } catch(e) {}
-          }
-        } catch(e) {}
-
-        // 3b. Dispatch Purchase Notification to Master Admin at contact@webguruji.online
-        try {
-          const clientName = verifiedClientData?.name || email.split('@')[0];
           const adminAlertHtml = `
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"/><title>New AI Premium Order Payment</title></head>
+<head><meta charset="utf-8"/><title>New AI Premium Order Payment Submitted for Review</title></head>
 <body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
-  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #10b981;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.8);">
-    <div style="background:linear-gradient(135deg, #059669, #10b981);padding:24px;text-align:center;color:#fff;">
-      <h1 style="margin:0;font-size:22px;">💰 NEW AI MODEL PREMIUM PAYMENT RECEIVED</h1>
-      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">HarshGuruJi Instant Payment Portal</p>
+  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #38bdf8;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+    <div style="background:linear-gradient(135deg, #0284c7, #38bdf8);padding:24px;text-align:center;color:#fff;">
+      <h1 style="margin:0;font-size:22px;">💳 NEW UPI PAYMENT UTR SUBMITTED FOR REVIEW</h1>
+      <p style="margin:6px 0 0;font-size:13px;opacity:0.9;">HarshGuruJi Instant Payment Gateway</p>
     </div>
     <div style="padding:24px;">
-      <p style="font-size:15px;line-height:1.6;color:#cbd5e1;">A customer has completed an order on <strong>HarshGuruJi Instant Payment Gateway (payment.webguruji.online)</strong>.</p>
+      <p style="font-size:15px;line-height:1.6;color:#cbd5e1;">A customer has submitted a payment UTR on <strong>payment.webguruji.online</strong> and is waiting for bank review.</p>
       <table style="width:100%;border-collapse:collapse;margin:20px 0;background:rgba(255,255,255,0.04);border-radius:10px;overflow:hidden;">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Order ID</td><td style="padding:10px 14px;color:#38bdf8;font-family:monospace;font-weight:700;">${currentOrderNo}</td></tr>
         <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Customer Name</td><td style="padding:10px 14px;color:#fff;font-weight:700;">${clientName}</td></tr>
         <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Customer Email</td><td style="padding:10px 14px;color:#38bdf8;font-family:monospace;font-weight:700;">${email}</td></tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Purchased Model</td><td style="padding:10px 14px;color:#fde68a;font-weight:700;">${model}</td></tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Transaction / UTR</td><td style="padding:10px 14px;color:#34d399;font-family:monospace;font-weight:700;">${utr}</td></tr>
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Payment Source</td><td style="padding:10px 14px;color:#fff;">https://payment.webguruji.online/payment.html</td></tr>
-        <tr><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Date &amp; Time</td><td style="padding:10px 14px;color:#fff;">${new Date().toLocaleString()}</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Purchased Model</td><td style="padding:10px 14px;color:#fde68a;font-weight:700;">${model} (${inrText})</td></tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Submitted 12-Digit UTR</td><td style="padding:10px 14px;color:#34d399;font-family:monospace;font-weight:800;font-size:16px;">${utr}</td></tr>
+        <tr><td style="padding:10px 14px;color:#94a3b8;font-size:13px;font-weight:700;">Submission Timestamp</td><td style="padding:10px 14px;color:#fff;">${new Date().toLocaleString()}</td></tr>
       </table>
-      <div style="margin-top:20px;padding:12px;background:rgba(16,185,129,0.1);border-left:4px solid #10b981;border-radius:6px;font-size:12px;color:#a7f3d0;">
-        💡 <strong>Action for Master Admin:</strong> Verify bank account credits. You or your Ops Manager / AI Limits Manager subadmin can tune/expand this user's quota in the Admin Control Panel.
+      <div style="margin-top:20px;padding:12px;background:rgba(56,189,248,0.1);border-left:4px solid #38bdf8;border-radius:6px;font-size:12px;color:#bae6fd;">
+        ⚡ <strong>Action for Master Admin / Ops Manager:</strong> Confirm this UTR in your bank/UPI app. You can approve this payment with 1-click in the HarshGuruJi Admin Command Center (admin.webguruji.online).
       </div>
     </div>
     <div style="background:#070a13;padding:16px;text-align:center;font-size:11px;color:#64748b;border-top:1px solid rgba(255,255,255,0.06);">
@@ -644,28 +1078,33 @@
               from: 'info@webguruji.online',
               to: ['contact@webguruji.online'],
               displayName: 'HarshGuruJi Payment Desk',
-              subject: `💰 New AI Purchase: ${clientName} (${email}) - ${model} [UTR: ${utr}]`,
-              text: `New AI Premium Purchase Received!\nCustomer: ${clientName}\nEmail: ${email}\nModel/Tier: ${model}\nUTR Ref: ${utr}\nTime: ${new Date().toLocaleString()}`,
+              subject: `🚨 [Payment Review] New UTR: ${utr} (${clientName} - ${model}) [${currentOrderNo}]`,
+              text: `New AI Premium Payment UTR Submitted!\nOrder: ${currentOrderNo}\nCustomer: ${clientName}\nEmail: ${email}\nModel: ${model} (${inrText})\nUTR: ${utr}\nTime: ${new Date().toLocaleString()}`,
               html: adminAlertHtml
             })
           });
-        } catch(adminMailErr) {
-          console.warn('Master admin payment alert mail warning:', adminMailErr);
+        } catch(mailErr) {
+          console.warn('Admin payment alert email warning:', mailErr);
         }
 
-        // 4. Reveal Step 3
+        // 3. Flip to Step 2B: Under Review Screen
         document.getElementById('step2Card').classList.add('hidden');
-        document.getElementById('successModelName').textContent = model;
-        document.getElementById('step3Success').classList.remove('hidden');
+        const revCard = document.getElementById('step2ReviewCard');
+        if (revCard) {
+          document.getElementById('reviewOrderId').textContent = currentOrderNo;
+          document.getElementById('reviewUtr').textContent = utr;
+          document.getElementById('reviewModel').textContent = model;
+          revCard.classList.remove('hidden');
+        }
+
+        // 4. Start polling for admin approval
+        startApprovalPolling(email, model);
 
       } catch (err) {
-        console.error('Activation error:', err);
-        // Fallback local unlock
-        localStorage.setItem('guru_ai_user_paid', 'true');
-        localStorage.setItem('guru_ai_unlocked_model', model.toLowerCase().replace(/ /g, '-'));
-        document.getElementById('step2Card').classList.add('hidden');
-        document.getElementById('successModelName').textContent = model;
-        document.getElementById('step3Success').classList.remove('hidden');
+        console.error('Submission error:', err);
+        alert('There was a network issue submitting your UTR. Please check your connection and try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<span>Confirm Payment &amp; Submit UTR</span>';
       }
     }
       // Auto-fill and auto-verify from authorized email link
