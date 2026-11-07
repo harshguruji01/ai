@@ -96,11 +96,32 @@
       height: 100vh;
       height: 100dvh;
       min-height: 0;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body.h-screen {
       height: 100vh;
       height: 100dvh;
+    }
+
+    /* ChatGPT Signature Capsule & Device Responsiveness */
+    #guru-ai-capsule {
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    #guru-ai-capsule:focus-within {
+      border-color: rgba(99, 102, 241, 0.65);
+      box-shadow: 0 14px 36px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(99, 102, 241, 0.35);
+    }
+    @media (max-width: 640px) {
+      #promptInput {
+        font-size: 16px !important; /* Prevents iOS auto-zoom */
+      }
+      #chatFeed {
+        padding-bottom: 9.5rem !important;
+      }
     }
 
     :root {
@@ -955,42 +976,35 @@
     <!-- 2. MAIN WORKSPACE CANVAS -->
     <main id="mainWorkspace" class="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative bg-[var(--bg-primary)]">
 
-      <!-- Top Navigation Header -->
-      <!-- Top Navigation Header (Exact Match to sc2.png on mobile) -->
+      <!-- Top Navigation Header (ChatGPT Aesthetic & Fully Responsive) -->
       <header
-        class="h-14 border-b border-[var(--border-color)] px-3 sm:px-4 flex items-center justify-between bg-[var(--bg-secondary)]/80 backdrop-blur-md z-10 flex-shrink-0">
+        class="h-14 border-b border-[var(--border-color)] px-3 sm:px-4 flex items-center justify-between bg-[var(--bg-secondary)]/90 backdrop-blur-md z-10 flex-shrink-0">
         
-        <!-- Left: Sidebar Toggle + Brand Identity -->
-        <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Left: Sidebar Toggle + Brand / Model Selector Dropdown (ChatGPT Style) -->
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
           <button id="openSidebarBtn" aria-label="Open sidebar"
-            class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition active:scale-95 flex items-center justify-center">
+            class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition active:scale-95 flex items-center justify-center flex-shrink-0" title="Toggle sidebar">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
 
-          <!-- Brand Identity (sc2.png: Glowing Robot Logo + GuruAI) -->
-          <a href="https://webguruji.online" target="_blank" class="flex items-center gap-2.5 group transition-transform active:scale-95" title="HarshGuruJi Ecosystem Portal">
-            <div class="w-8 h-8 rounded-full bg-[#0A0E1A] border border-indigo-500/70 p-0.5 flex items-center justify-center shadow-md shadow-indigo-500/30 group-hover:border-indigo-400 group-hover:scale-105 transition-all overflow-hidden flex-shrink-0">
-              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-full" />
-            </div>
-            <div class="leading-tight">
-              <span class="font-bold text-sm sm:text-base text-white tracking-wide font-heading block">GuruAI</span>
-              <span class="text-[9px] text-slate-400 hidden sm:block -mt-0.5">by HarshGuruJi</span>
-            </div>
-          </a>
+          <!-- Model Selector Pill (ChatGPT Style Dropdown: Active & Visible on ALL Devices) -->
+          <button type="button"
+            class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 hover:border-indigo-500/60 hover:bg-slate-800/80 transition cursor-pointer shadow-sm group select-none flex-shrink-0"
+            id="modelSelectorBadge" onclick="openModelPickerSheet()" title="AI Model (Tap to switch)">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" id="headerModelDot"></span>
+            <span class="font-bold text-xs sm:text-sm tracking-wide text-white font-heading truncate max-w-[120px] sm:max-w-[180px]" id="headerActiveModelName">Guru-Flash 1.1</span>
+            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-300 transition-transform group-hover:translate-y-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
 
-          <!-- Desktop Current Active Model Badge -->
-          <div
-            class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700/80 hover:border-indigo-500/60 transition cursor-pointer shadow-sm group"
-            id="modelSelectorBadge" onclick="openModelPickerSheet()" title="AI Model: Guru-Flash 1.1 (Tap to switch)">
-            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" id="headerModelDot"></span>
-            <span class="font-bold text-xs tracking-wide text-white font-heading" id="headerActiveModelName">Guru-Flash 1.1</span>
-            <svg class="w-3 h-3 text-slate-400 group-hover:text-cyan-300 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </div>
+          <!-- Brand Identity (Desktop Subtitle) -->
+          <a href="https://webguruji.online" target="_blank" class="hidden xl:flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200 transition" title="HarshGuruJi Ecosystem">
+            <span class="text-[10px] text-slate-500 font-mono">by HarshGuruJi</span>
+          </a>
         </div>
 
-        <!-- Right: Actions matching sc2.png on mobile and rich toolbar on desktop -->
+        <!-- Right: Actions matching ChatGPT (Upgrade, New Chat, Menu, Profile) -->
         <div class="flex items-center gap-1.5 sm:gap-2">
           
           <!-- Request Counter Pill (Desktop only) -->
@@ -1008,58 +1022,37 @@
             <span id="headerSourcesLabel">Sources (0)</span>
           </button>
 
-          <!-- Free offer / Upgrade Pill Button (Desktop) -->
-          <button type="button" onclick="openUpgradeModal()" class="hidden md:flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 via-indigo-500/15 to-purple-500/15 hover:from-amber-500/25 hover:to-indigo-500/25 text-amber-300 hover:text-white border border-amber-500/30 text-xs font-semibold transition shadow-sm active:scale-95" title="Special Offers & Upgrade">
-            <span class="text-amber-400 text-xs">🎁</span>
-            <span class="font-heading">Free offer</span>
+          <!-- Free offer / Upgrade Pill Button (Mobile & Desktop) -->
+          <button type="button" onclick="openUpgradeModal()" class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 via-indigo-500/15 to-purple-500/15 hover:from-amber-500/25 hover:to-indigo-500/25 text-amber-300 hover:text-white border border-amber-500/30 text-xs font-semibold transition shadow-sm active:scale-95" title="Special Offers & Upgrade">
+            <span class="text-amber-400 text-xs">✨</span>
+            <span class="font-heading hidden sm:inline">Upgrade</span>
+            <span class="font-heading sm:hidden text-[11px]">Pro</span>
           </button>
 
-          <!-- New Chat (Desktop) -->
-          <button type="button" onclick="handleNewChat()" class="hidden md:flex p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-200 hover:text-white transition" title="New Chat (Ctrl+K)" aria-label="New chat">
+          <!-- New Chat Button (VISIBLE ON BOTH MOBILE & DESKTOP - ChatGPT signature) -->
+          <button type="button" id="newChatBtn" onclick="handleNewChat()" class="p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-200 hover:text-white transition active:scale-95 flex items-center justify-center" title="New Chat (Ctrl+K)" aria-label="New chat">
             <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-          </button>
-
-          <!-- Search Chats (sc2.png: Magnifier icon) -->
-          <button type="button" onclick="triggerMobileSearch()" class="p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition active:scale-95" title="Search chats" aria-label="Search chats">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-          </button>
-
-          <!-- Desktop Chat History (clock icon) -->
-          <button type="button" onclick="toggleSidebarDrawer()" class="hidden md:flex p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Chat History" aria-label="Chat history">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </button>
-
-          <!-- Desktop Preferences / Settings (gear icon) -->
-          <button type="button" onclick="openSettingsModal()" class="hidden md:flex p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Preferences & Settings" aria-label="Settings">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"/>
             </svg>
           </button>
 
           <!-- Desktop Theme Switcher -->
-          <button type="button" onclick="toggleThemeAction()" class="hidden md:flex p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Switch Theme (Dark, Slate Light, Cyberpunk)" aria-label="Toggle theme">
+          <button type="button" onclick="toggleThemeAction()" class="hidden md:flex p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition" title="Switch Theme" aria-label="Toggle theme">
             <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
             </svg>
           </button>
 
-          <!-- Three-Dot Menu (sc2.png: ⋮) -->
-          <button type="button" onclick="openChatActionsSheet()" class="p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition active:scale-95" title="Menu" aria-label="Open menu">
+          <!-- Three-Dot Menu (⋮) -->
+          <button type="button" onclick="openChatActionsSheet()" class="p-2 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-indigo-500/60 text-slate-300 hover:text-white transition active:scale-95 flex items-center justify-center" title="Menu" aria-label="Open menu">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
             </svg>
           </button>
 
-          <!-- User Account (Avatar Icon / Sign In) - Desktop -->
+          <!-- User Account (Avatar Icon / Sign In) - VISIBLE ON BOTH MOBILE & DESKTOP -->
           <button type="button" id="headerDashboardBtn" onclick="openUserDashboardModal()"
-            class="hidden md:flex relative w-9 h-9 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 hover:scale-105 active:scale-95 transition-all shadow-md shadow-indigo-600/30 items-center justify-center cursor-pointer group flex-shrink-0"
+            class="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 hover:scale-105 active:scale-95 transition-all shadow-md shadow-indigo-600/30 flex items-center justify-center cursor-pointer group flex-shrink-0"
             title="User Account & Profile" aria-label="User account">
             <div id="headerDashboardAvatar"
               class="w-full h-full rounded-full bg-[#0d121f] overflow-hidden flex items-center justify-center text-white text-xs font-bold">
@@ -1069,14 +1062,14 @@
             <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0d121f] animate-pulse"></span>
           </button>
 
-          <!-- Sign In Button (Shown on desktop for Guest) -->
+          <!-- Sign In Button (Shown when guest) -->
           <button id="headerSignInBtn" onclick="openAuthModal('login')"
-            class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95" aria-label="Sign in">
+            class="hidden items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition active:scale-95 flex-shrink-0" aria-label="Sign in">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
             </svg>
-            <span id="headerSignInBtnText">Sign In</span>
+            <span id="headerSignInBtnText" class="hidden sm:inline">Sign In</span>
           </button>
 
           <!-- Hidden compatibility elements -->
@@ -1178,23 +1171,62 @@
         </div>
       </div>
 
-<div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto pb-28 sm:pb-32 md:pb-36 px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto scroll-smooth">
-        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto py-8 animate-in fade-in duration-300">
-          <div class="space-y-3 max-w-xl mx-auto px-2">
-            <!-- Mascot / Logo with Glowing Ring (sc2.png) -->
-            <div class="w-16 h-16 rounded-full bg-[#0A0E1A] border-2 border-indigo-500/70 p-1 flex items-center justify-center shadow-2xl shadow-indigo-500/40 mx-auto overflow-hidden flex-shrink-0 mb-3 group hover:scale-105 transition-transform">
-              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-full" />
+<div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto pb-36 sm:pb-40 px-3 sm:px-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto scroll-smooth">
+        <div class="h-full min-h-[58vh] flex flex-col items-center justify-center text-center space-y-5 my-auto py-8 sm:py-12 animate-in fade-in duration-300">
+          <div class="space-y-4 max-w-xl mx-auto px-2">
+            <!-- Sleek Avatar / Logo (ChatGPT Style Centerpiece) -->
+            <div class="w-16 h-16 rounded-2xl bg-[#0d1322] border-2 border-indigo-500/60 p-2 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mx-auto overflow-hidden flex-shrink-0 group hover:scale-105 transition-transform">
+              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-xl" />
             </div>
             
-            <h1 id="mainGreetingTitle" class="text-3xl md:text-5xl font-extrabold tracking-tight text-white font-heading">
-              Hello! How can I help you today?
+            <h1 id="mainGreetingTitle" class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white font-heading">
+              What can I help with today?
             </h1>
-            <p class="text-xs md:text-sm text-slate-400 leading-relaxed max-w-lg mx-auto">
-              Ask anything to GuruAI with real-time web search, cited sources, and instant AI answers.
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
+              Ask anything with real-time web search, cited sources, and instant AI answers.
             </p>
 
-            <!-- Mode Selector Chips (Search, Deep Research, Academic, YouTube, Writing, Coding) -->
-            <div id="modeSelectorChips" class="flex items-center justify-center gap-1.5 flex-wrap pt-3 max-w-xl mx-auto">
+            <!-- 4 Modern ChatGPT Suggestion Cards (Responsive 2x2 Grid) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-3 max-w-2xl mx-auto w-full text-left">
+              <!-- Card 1: Explain & Learn -->
+              <button type="button" onclick="quickFillPrompt('Explain how photosynthesis works in simple Hindi with daily examples')" class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-emerald-500/50 transition group flex flex-col gap-1 shadow-sm text-left active:scale-[0.98]">
+                <div class="flex items-center gap-2 text-emerald-400 text-xs font-semibold">
+                  <span>💡</span>
+                  <span>Explain &amp; Learn</span>
+                </div>
+                <div class="text-xs sm:text-[13px] text-slate-200 group-hover:text-white leading-snug">Explain how photosynthesis works in simple Hindi with daily examples</div>
+              </button>
+
+              <!-- Card 2: Code & Debug -->
+              <button type="button" onclick="quickFillPrompt('Write a clean Python script to scrape and download data step by step')" class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-indigo-500/50 transition group flex flex-col gap-1 shadow-sm text-left active:scale-[0.98]">
+                <div class="flex items-center gap-2 text-indigo-400 text-xs font-semibold">
+                  <span>💻</span>
+                  <span>Code &amp; Debug</span>
+                </div>
+                <div class="text-xs sm:text-[13px] text-slate-200 group-hover:text-white leading-snug">Write a clean Python script to scrape and parse data step by step</div>
+              </button>
+
+              <!-- Card 3: Study & Exam Plan -->
+              <button type="button" onclick="quickFillPrompt('Create a 7-day high-scoring study timetable for board exams')" class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-amber-500/50 transition group flex flex-col gap-1 shadow-sm text-left active:scale-[0.98]">
+                <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold">
+                  <span>📊</span>
+                  <span>Study &amp; Plan</span>
+                </div>
+                <div class="text-xs sm:text-[13px] text-slate-200 group-hover:text-white leading-snug">Create a 7-day high-scoring study timetable for board exams</div>
+              </button>
+
+              <!-- Card 4: Image Studio -->
+              <button type="button" onclick="quickFillPrompt('/image A futuristic cyberpunk temple in Varanasi with glowing neon lights, 8k render')" class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-purple-500/50 transition group flex flex-col gap-1 shadow-sm text-left active:scale-[0.98]">
+                <div class="flex items-center gap-2 text-purple-400 text-xs font-semibold">
+                  <span>🎨</span>
+                  <span>Image Studio</span>
+                </div>
+                <div class="text-xs sm:text-[13px] text-slate-200 group-hover:text-white leading-snug">Generate a futuristic cyberpunk temple in Varanasi (8k render)</div>
+              </button>
+            </div>
+
+            <!-- Mode Selector Chips (Search, Deep Research, Academic, Coding, Writing) -->
+            <div id="modeSelectorChips" class="flex items-center justify-center gap-1.5 flex-wrap pt-2 max-w-xl mx-auto">
               <button type="button" onclick="selectAnswerMode('search')" id="mode-chip-search" class="mode-chip active flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-indigo-500/50 bg-indigo-500/20 text-indigo-300 transition shadow-sm">
                 <span>🔍</span>
                 <span>Search</span>
@@ -1207,66 +1239,13 @@
                 <span>🎓</span>
                 <span>Academic</span>
               </button>
-              <button type="button" onclick="selectAnswerMode('youtube')" id="mode-chip-youtube" class="mode-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:text-white hover:border-rose-500/50 transition shadow-sm">
-                <span>📺</span>
-                <span>YouTube</span>
-              </button>
-              <button type="button" onclick="selectAnswerMode('writing')" id="mode-chip-writing" class="mode-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:text-white hover:border-amber-500/50 transition shadow-sm">
-                <span>✍️</span>
-                <span>Writing</span>
-              </button>
               <button type="button" onclick="selectAnswerMode('coding')" id="mode-chip-coding" class="mode-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:text-white hover:border-purple-500/50 transition shadow-sm">
                 <span>💻</span>
                 <span>Coding</span>
               </button>
-            </div>
-
-            <!-- 4 Quick-Start Study Buttons (Student Friendly) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-4 max-w-2xl mx-auto w-full text-left">
-              <button type="button" onclick="quickFillPrompt('Photosynthesis simple Hindi me samjhao')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
-                <span class="text-base p-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 group-hover:scale-110 transition-transform">🌿</span>
-                <span class="truncate">Photosynthesis simple Hindi me samjhao</span>
-              </button>
-
-              <button type="button" onclick="quickFillPrompt('Class 10 Maths chapter 3 important questions')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
-                <span class="text-base p-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-transform">📐</span>
-                <span class="truncate">Class 10 Maths chapter 3 questions</span>
-              </button>
-
-              <button type="button" onclick="quickFillPrompt('Python list vs tuple difference with examples')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
-                <span class="text-base p-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:scale-110 transition-transform">🐍</span>
-                <span class="truncate">Python list vs tuple difference</span>
-              </button>
-
-              <button type="button" onclick="quickFillPrompt('UP Board exam timetable and key preparation strategy')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
-                <span class="text-base p-1 rounded-lg bg-amber-500/10 border border-amber-500/20 group-hover:scale-110 transition-transform">📅</span>
-                <span class="truncate">UP Board exam timetable</span>
-              </button>
-
-              <button type="button" onclick="quickFillPrompt('Best study plan for board exams to score 90%+')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
-                <span class="text-base p-1 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform">🎯</span>
-                <span class="truncate">Best study plan for board exams</span>
-              </button>
-
-              <button type="button" onclick="quickFillPrompt('NCERT book summary with key concepts and notes')" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 hover:border-indigo-500/50 text-xs font-medium text-slate-200 transition group shadow-sm">
-                <span class="text-base p-1 rounded-lg bg-rose-500/10 border border-rose-500/20 group-hover:scale-110 transition-transform">📖</span>
-                <span class="truncate">NCERT book summary</span>
-              </button>
-            </div>
-
-            <!-- 3 Creative Quick Starters (Image UI match) -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 pt-2 max-w-lg mx-auto w-full">
-              <button type="button" onclick="quickPromptAction('image')" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-[11px] font-medium text-slate-300 transition flex-1">
-                <span>🖼️</span>
-                <span>Create an image</span>
-              </button>
-              <button type="button" onclick="quickPromptAction('write')" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-[11px] font-medium text-slate-300 transition flex-1">
-                <span>✏️</span>
-                <span>Write or edit</span>
-              </button>
-              <button type="button" onclick="quickPromptAction('search')" class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-[11px] font-medium text-slate-300 transition flex-1">
-                <span>🌐</span>
-                <span>Search the web</span>
+              <button type="button" onclick="selectAnswerMode('writing')" id="mode-chip-writing" class="mode-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:text-white hover:border-amber-500/50 transition shadow-sm">
+                <span>✍️</span>
+                <span>Writing</span>
               </button>
             </div>
           </div>
@@ -1413,90 +1392,118 @@
               </div>
             </div>
 
-            <!-- Main Chat Input Capsule Layout (sc2.png Exact Match) -->
-            <div id="guru-ai-capsule" class="relative flex items-center gap-2 sm:gap-3 w-full">
+            <!-- Main Chat Input Capsule (Unified ChatGPT Signature Container) -->
+            <div id="guru-ai-capsule" class="relative w-full rounded-[26px] bg-[#1a2234]/95 border border-slate-700/70 shadow-2xl p-2 sm:p-2.5 flex flex-col focus-within:border-indigo-500/70 focus-within:ring-1 focus-within:ring-indigo-500/30 transition-all backdrop-blur-md">
               
-              <!-- 1. Left Side: Circular Plus (+) Icon Button (sc2.png) -->
-              <div class="relative flex-shrink-0">
-                <button type="button" id="chatbarPlusBtn" onclick="toggleChatbarPlusMenu(event)"
-                  class="w-11 h-11 rounded-full bg-[#121929] hover:bg-[#18233c] text-slate-300 hover:text-white flex items-center justify-center transition border border-[#1e2942] shadow-md active:scale-95 flex-shrink-0"
-                  title="Add attachments, mic voice, or image studio" aria-label="Add options">
-                  <svg class="w-5 h-5 transition-transform duration-200" id="chatbarPlusIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                  </svg>
-                </button>
+              <!-- 1. Textarea inside Unified Capsule -->
+              <textarea id="promptInput" rows="1" placeholder="Message GuruAI..."
+                class="w-full bg-transparent border-none text-[15px] sm:text-[16px] leading-relaxed text-white placeholder-slate-400 focus:outline-none resize-none px-3 py-1.5 min-h-[38px] max-h-48 disabled:opacity-60"
+                aria-label="GuruAI Prompt Input"></textarea>
 
-                <!-- Plus Icon Dropdown Popup (Mic, Files, Images) -->
-                <div id="chatbarPlusMenu" class="hidden absolute bottom-full left-0 mb-3 w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-700/70 rounded-2xl p-1.5 shadow-2xl z-50 space-y-1 animate-fade-in">
-                  <button type="button" onclick="triggerFileAttach()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
-                    <span class="text-base p-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:scale-110 transition-transform">📁</span>
-                    <div>
-                      <div class="font-semibold text-white">Attach File / Docs</div>
-                      <div class="text-[10px] text-slate-400">PDF, TXT, JSON, CSV</div>
+              <!-- 2. Bottom Controls Bar inside Unified Capsule -->
+              <div class="flex items-center justify-between pt-1 px-1">
+                
+                <!-- Left: Plus (+) Attachments Button & Mode Pills -->
+                <div class="flex items-center gap-1.5">
+                  <div class="relative flex-shrink-0">
+                    <button type="button" id="chatbarPlusBtn" onclick="toggleChatbarPlusMenu(event)"
+                      class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition border border-slate-700/60 active:scale-95 flex-shrink-0"
+                      title="Add attachments or photos" aria-label="Add options">
+                      <svg class="w-4 h-4 transition-transform duration-200" id="chatbarPlusIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                      </svg>
+                    </button>
+
+                    <!-- Plus Menu Popup Dropdown -->
+                    <div id="chatbarPlusMenu" class="hidden absolute bottom-full left-0 mb-3 w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-700/70 rounded-2xl p-1.5 shadow-2xl z-50 space-y-1 animate-fade-in">
+                      <button type="button" onclick="triggerFileAttach()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:scale-110 transition-transform">📁</span>
+                        <div>
+                          <div class="font-semibold text-white">Attach File / Docs</div>
+                          <div class="text-[10px] text-slate-400">PDF, TXT, JSON, CSV</div>
+                        </div>
+                      </button>
+                      <button type="button" onclick="triggerVoiceInput()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-transform">🎤</span>
+                        <div>
+                          <div class="font-semibold text-white">Voice Dictation</div>
+                          <div class="text-[10px] text-slate-400">Speech-to-text mic input</div>
+                        </div>
+                      </button>
+                      <button type="button" onclick="triggerImageStudio()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-purple-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform">🖼️</span>
+                        <div>
+                          <div class="font-semibold text-white">Image Studio &amp; Vision</div>
+                          <div class="text-[10px] text-slate-400">Attach photo or 8K render</div>
+                        </div>
+                      </button>
                     </div>
-                  </button>
-                  <button type="button" onclick="triggerVoiceInput()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
-                    <span class="text-base p-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-transform">🎤</span>
-                    <div>
-                      <div class="font-semibold text-white">Voice Dictation</div>
-                      <div class="text-[10px] text-slate-400">Speech-to-text mic input</div>
-                    </div>
-                  </button>
-                  <button type="button" onclick="triggerImageStudio()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-purple-300 transition text-left group">
-                    <span class="text-base p-1 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform">🖼️</span>
-                    <div>
-                      <div class="font-semibold text-white">Image Studio &amp; Vision</div>
-                      <div class="text-[10px] text-slate-400">Attach photo or 8K render</div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Hidden system elements wired to plus menu & form -->
-              <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
-              <button type="button" id="attachFileBtn" class="hidden"></button>
-              <button type="button" id="voiceDictationBtn" class="hidden"></button>
-              <button type="button" id="imageModeBtn" class="hidden"></button>
-              <button type="button" id="chatbarModelsBtn" onclick="openModelPickerSheet()" class="hidden"></button>
-              <button type="button" id="chatbarEffortBtn" onclick="cycleChatEffort()" class="hidden"></button>
-
-              <!-- 2. Center: Sleek Rounded Pill Input Box (sc2.png) -->
-              <div class="flex-1 flex items-center px-4 py-2 sm:py-2.5 rounded-full bg-[#121929] border border-[#1e2942] shadow-inner focus-within:border-indigo-500/60 focus-within:ring-1 focus-within:ring-indigo-500/40 transition">
-                <textarea id="promptInput" rows="1" placeholder="Message GuruAI..."
-                  class="w-full bg-transparent border-none text-[14px] sm:text-[15px] leading-relaxed text-white placeholder-slate-400/80 focus:outline-none resize-none py-1 min-h-[26px] max-h-36 disabled:opacity-60"
-                  aria-label="GuruAI Prompt Input"></textarea>
-              </div>
-
-              <!-- 3. Right Side: Circular Gradient Send / Stop Action Button (sc2.png) -->
-              <div class="relative flex-shrink-0 flex items-center">
-                <!-- Stop Generation Button -->
-                <button type="button" id="stopGenBtn"
-                  class="hidden w-11 h-11 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-600/30 transition animate-pulse flex-shrink-0"
-                  title="Stop generation">
-                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <rect x="6" y="6" width="12" height="12" rx="2" />
-                  </svg>
-                </button>
-
-                <!-- Circular Send Button (sc2.png: Upward Arrow in Gradient Circle) -->
-                <button type="button" id="sendBtn" onclick="handleUnifiedActionClick(event)"
-                  class="w-11 h-11 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-400 hover:to-purple-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 active:scale-95 transition flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
-                  title="Send message" aria-label="Send message">
-                  
-                  <!-- Voice Wave Visualizer Bars (Shown when recording) -->
-                  <div id="guru-ai-voice-waves" class="guru-ai-voice-waves hidden flex items-center gap-0.5 h-3.5">
-                    <span class="w-0.5 h-full bg-cyan-400 rounded-full animate-bounce"></span>
-                    <span class="w-0.5 h-2/3 bg-cyan-300 rounded-full animate-bounce [animation-delay:0.15s]"></span>
-                    <span class="w-0.5 h-full bg-cyan-400 rounded-full animate-bounce [animation-delay:0.3s]"></span>
                   </div>
 
-                  <!-- Send Icon: Upward Arrow ↑ (sc2.png) -->
-                  <svg id="sendBtnIcon" class="w-5 h-5 -rotate-45 translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-6 6m6-6l6 6" />
-                  </svg>
-                </button>
-              </div>
+                  <!-- Web Search Pill Button inside Composer -->
+                  <button type="button" onclick="selectAnswerMode('search')" id="composerWebSearchChip"
+                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 transition shadow-sm active:scale-95" title="Toggle Real-time Web Search">
+                    <span>🌐</span>
+                    <span class="hidden sm:inline">Search</span>
+                  </button>
 
+                  <!-- Model Indicator Chip inside Composer -->
+                  <button type="button" onclick="openModelPickerSheet()"
+                    class="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-slate-400 hover:text-slate-200 bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/40 transition">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span id="composerModelName">Flash 1.1</span>
+                  </button>
+                </div>
+
+                <!-- Hidden system elements wired to plus menu & form -->
+                <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
+                <button type="button" id="attachFileBtn" class="hidden"></button>
+                <button type="button" id="voiceDictationBtn" class="hidden"></button>
+                <button type="button" id="imageModeBtn" class="hidden"></button>
+                <button type="button" id="chatbarModelsBtn" onclick="openModelPickerSheet()" class="hidden"></button>
+                <button type="button" id="chatbarEffortBtn" onclick="cycleChatEffort()" class="hidden"></button>
+                <span id="sendBtnText" class="hidden">Send</span>
+
+                <!-- Right: Voice Mic & Circular Send/Stop Button (ChatGPT Style) -->
+                <div class="flex items-center gap-2">
+                  <!-- Dedicated Voice Mic Button -->
+                  <button type="button" id="voiceMicBtn" onclick="triggerVoiceInput()"
+                    class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition border border-slate-700/60 active:scale-95"
+                    title="Voice dictation (speech-to-text)" aria-label="Voice input">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                  </button>
+
+                  <!-- Stop Generation Button -->
+                  <button type="button" id="stopGenBtn"
+                    class="hidden w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white text-black hover:bg-slate-200 flex items-center justify-center shadow-lg transition active:scale-95 flex-shrink-0"
+                    title="Stop generation">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <rect x="6" y="6" width="12" height="12" rx="2" />
+                    </svg>
+                  </button>
+
+                  <!-- Circular Send Button (High Contrast White Circle - ChatGPT Signature) -->
+                  <button type="button" id="sendBtn" onclick="handleUnifiedActionClick(event)"
+                    class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white text-black hover:bg-slate-200 flex items-center justify-center shadow-lg active:scale-95 transition flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Send message" aria-label="Send message">
+                    
+                    <!-- Voice Wave Visualizer Bars (Shown when recording) -->
+                    <div id="guru-ai-voice-waves" class="guru-ai-voice-waves hidden flex items-center gap-0.5 h-3.5">
+                      <span class="w-0.5 h-full bg-black rounded-full animate-bounce"></span>
+                      <span class="w-0.5 h-2/3 bg-black rounded-full animate-bounce [animation-delay:0.15s]"></span>
+                      <span class="w-0.5 h-full bg-black rounded-full animate-bounce [animation-delay:0.3s]"></span>
+                    </div>
+
+                    <!-- Send Icon: Upward Arrow ↑ (ChatGPT signature) -->
+                    <svg id="sendBtnIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-6 6m6-6l6 6" />
+                    </svg>
+                  </button>
+                </div>
+
+              </div>
             </div>
           </form>
 
@@ -3572,21 +3579,85 @@
       showToast('Chat history exported successfully!', 'success');
     };
 
-    // Render Welcome Screen (Exact Match to sc2.png)
+    // Render Welcome Screen (ChatGPT Style Aesthetic)
     function renderWelcome() {
       chatFeed.innerHTML = `
-        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto py-12 animate-in fade-in duration-300">
-          <div class="space-y-3 max-w-xl mx-auto px-2">
-            <div class="w-16 h-16 rounded-full bg-[#0A0E1A] border-2 border-indigo-500/70 p-1 flex items-center justify-center shadow-2xl shadow-indigo-500/40 mx-auto overflow-hidden flex-shrink-0 mb-3 group hover:scale-105 transition-transform">
-              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-full" />
+        <div class="h-full min-h-[58vh] flex flex-col items-center justify-center text-center space-y-5 my-auto py-8 sm:py-12 animate-in fade-in duration-300">
+          <div class="space-y-4 max-w-xl mx-auto px-2">
+            <!-- Sleek Avatar / Logo (ChatGPT Style Centerpiece) -->
+            <div class="w-16 h-16 rounded-2xl bg-[#0d1322] border-2 border-indigo-500/60 p-2 flex items-center justify-center shadow-2xl shadow-indigo-500/30 mx-auto overflow-hidden flex-shrink-0 group hover:scale-105 transition-transform">
+              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-xl" />
             </div>
             
-            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white font-heading">
-              Hello! How can I help you today?
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white font-heading">
+              What can I help with today?
             </h1>
-            <p class="text-xs md:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
-              Ask anything to GuruAI in English, Hinglish, or Hindi.
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
+              Ask anything with real-time web search, cited sources, and instant AI answers.
             </p>
+
+            <!-- 4 Modern ChatGPT Suggestion Cards (Responsive 2x2 Grid) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-3 max-w-2xl mx-auto w-full text-left">
+              <!-- Card 1: Explain & Learn -->
+              <button type="button" onclick="quickFillPrompt('Explain how photosynthesis works in simple Hindi with daily examples')" class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-emerald-500/50 transition group flex flex-col gap-1 shadow-sm text-left active:scale-[0.98]">
+                <div class="flex items-center gap-2 text-emerald-400 text-xs font-semibold">
+                  <span>💡</span>
+                  <span>Explain &amp; Learn</span>
+                </div>
+                <div class="text-xs sm:text-[13px] text-slate-200 group-hover:text-white leading-snug">Explain how photosynthesis works in simple Hindi with daily examples</div>
+              </button>
+
+              <!-- Card 2: Code & Debug -->
+              <button type="button" onclick="quickFillPrompt('Write a clean Python script to scrape and download data step by step')" class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-indigo-500/50 transition group flex flex-col gap-1 shadow-sm text-left active:scale-[0.98]">
+                <div class="flex items-center gap-2 text-indigo-400 text-xs font-semibold">
+                  <span>💻</span>
+                  <span>Code &amp; Debug</span>
+                </div>
+                <div class="text-xs sm:text-[13px] text-slate-200 group-hover:text-white leading-snug">Write a clean Python script to scrape and parse data step by step</div>
+              </button>
+
+              <!-- Card 3: Study & Exam Plan -->
+              <button type="button" onclick="quickFillPrompt('Create a 7-day high-scoring study timetable for board exams')" class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-amber-500/50 transition group flex flex-col gap-1 shadow-sm text-left active:scale-[0.98]">
+                <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold">
+                  <span>📊</span>
+                  <span>Study &amp; Plan</span>
+                </div>
+                <div class="text-xs sm:text-[13px] text-slate-200 group-hover:text-white leading-snug">Create a 7-day high-scoring study timetable for board exams</div>
+              </button>
+
+              <!-- Card 4: Image Studio -->
+              <button type="button" onclick="quickFillPrompt('/image A futuristic cyberpunk temple in Varanasi with glowing neon lights, 8k render')" class="p-3 sm:p-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-purple-500/50 transition group flex flex-col gap-1 shadow-sm text-left active:scale-[0.98]">
+                <div class="flex items-center gap-2 text-purple-400 text-xs font-semibold">
+                  <span>🎨</span>
+                  <span>Image Studio</span>
+                </div>
+                <div class="text-xs sm:text-[13px] text-slate-200 group-hover:text-white leading-snug">Generate a futuristic cyberpunk temple in Varanasi (8k render)</div>
+              </button>
+            </div>
+
+            <!-- Mode Selector Chips (Search, Deep Research, Academic, Coding, Writing) -->
+            <div id="modeSelectorChips" class="flex items-center justify-center gap-1.5 flex-wrap pt-2 max-w-xl mx-auto">
+              <button type="button" onclick="selectAnswerMode('search')" id="mode-chip-search" class="mode-chip active flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-indigo-500/50 bg-indigo-500/20 text-indigo-300 transition shadow-sm">
+                <span>🔍</span>
+                <span>Search</span>
+              </button>
+              <button type="button" onclick="selectAnswerMode('research')" id="mode-chip-research" class="mode-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:text-white hover:border-cyan-500/50 transition shadow-sm">
+                <span>🔬</span>
+                <span>Deep Research</span>
+              </button>
+              <button type="button" onclick="selectAnswerMode('academic')" id="mode-chip-academic" class="mode-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:text-white hover:border-emerald-500/50 transition shadow-sm">
+                <span>🎓</span>
+                <span>Academic</span>
+              </button>
+              <button type="button" onclick="selectAnswerMode('coding')" id="mode-chip-coding" class="mode-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:text-white hover:border-purple-500/50 transition shadow-sm">
+                <span>💻</span>
+                <span>Coding</span>
+              </button>
+              <button type="button" onclick="selectAnswerMode('writing')" id="mode-chip-writing" class="mode-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-700/80 bg-slate-900/80 text-slate-300 hover:text-white hover:border-amber-500/50 transition shadow-sm">
+                <span>✍️</span>
+                <span>Writing</span>
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -3634,14 +3705,14 @@
       chatFeed.scrollTop = chatFeed.scrollHeight;
     }
 
-    // User Message Bubble (sc2.png: Sleek pill bubble aligned to right)
+    // User Message Bubble (ChatGPT Style Right-Aligned Pill)
     function appendUserBubble(text) {
       const msgDiv = document.createElement('div');
-      msgDiv.className = 'flex justify-end my-3 transition-all duration-200 animate-in fade-in';
+      msgDiv.className = 'flex justify-end my-3.5 transition-all duration-200 animate-in fade-in';
       const safeText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
       msgDiv.innerHTML = `
-        <div class="max-w-[85%] md:max-w-[70%] rounded-3xl rounded-br-md px-4 sm:px-5 py-2.5 sm:py-3 shadow-md text-sm bg-[#1c2438] border border-slate-700/50 text-white leading-relaxed whitespace-pre-wrap select-text break-words">
+        <div class="max-w-[85%] sm:max-w-[72%] rounded-[24px] rounded-br-[8px] px-5 py-3 shadow-md text-[15px] bg-[#232d42] border border-slate-700/60 text-white leading-relaxed whitespace-pre-wrap select-text break-words">
           ${safeText}
         </div>
       `;
@@ -3649,10 +3720,10 @@
       chatFeed.scrollTop = chatFeed.scrollHeight;
     }
 
-    // Assistant Message Bubble (sc2.png: Glowing avatar + sleek slate bubble)
+    // Assistant Message Bubble (ChatGPT Style Left-Aligned Clean Typography)
     function appendAssistantBubble(text, reasoning = null, imageUrl = null) {
       const msgDiv = document.createElement('div');
-      msgDiv.className = 'flex gap-3 md:gap-4 justify-start transition-all duration-200';
+      msgDiv.className = 'flex gap-3 sm:gap-4 justify-start transition-all duration-200 my-4';
 
       const formatted = formatMarkdown(text);
       let reasoningHtml = '';
@@ -3672,44 +3743,45 @@
       let imageHtml = '';
       if (imageUrl) {
         imageHtml = `
-          <div class="my-3 rounded-xl overflow-hidden border border-slate-700/80 bg-black/60 shadow-lg cursor-pointer" onclick="openLightbox('${imageUrl}', 'Artwork')">
-            <img src="${imageUrl}" alt="Artwork" class="w-full max-w-sm rounded-xl object-cover hover:scale-105 transition-transform duration-300" />
+          <div class="my-3 rounded-2xl overflow-hidden border border-slate-700/80 bg-black/60 shadow-xl cursor-pointer" onclick="openLightbox('${imageUrl}', 'Artwork')">
+            <img src="${imageUrl}" alt="Artwork" class="w-full max-w-sm rounded-2xl object-cover hover:scale-105 transition-transform duration-300" />
           </div>
         `;
       }
 
       const activeModelLabel = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[currentSelectedModel]?.name) || 'Guru-Flash 1.1';
       msgDiv.innerHTML = `
-        <div class="w-8 h-8 rounded-full bg-[#0A0E1A] border border-indigo-500/70 p-0.5 flex items-center justify-center flex-shrink-0 shadow-md shadow-indigo-500/20 overflow-hidden mt-0.5">
+        <div class="w-8 h-8 rounded-full bg-[#0d1322] border border-indigo-500/50 p-0.5 flex items-center justify-center flex-shrink-0 shadow-md shadow-indigo-500/20 overflow-hidden mt-0.5">
           <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover rounded-full" />
         </div>
-        <div class="max-w-[88%] md:max-w-[80%] flex flex-col space-y-1.5 min-w-0">
+        <div class="flex-1 max-w-[92%] sm:max-w-[85%] flex flex-col space-y-1.5 min-w-0">
           <div class="flex items-center gap-2 text-[11px] text-slate-400">
             <span class="font-bold text-white font-heading">GuruAI</span>
             <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">${activeModelLabel}</span>
           </div>
 
-          <div class="rounded-3xl rounded-tl-md px-4 py-3 text-sm bg-[#121827] border border-slate-800/80 text-slate-100 leading-relaxed select-text prose-ai shadow-md">
+          <div class="rounded-2xl px-1 sm:px-2 py-1 text-[15px] text-slate-100 leading-relaxed select-text prose-ai">
             ${reasoningHtml}
             ${imageHtml}
             ${formatted}
           </div>
 
-          <!-- Bottom Action Bar (Copy, Speak, Feedback, Share) -->
-          <div class="flex items-center gap-3 pt-1 text-xs text-slate-400">
-            <button onclick="copyBubbleText(this)" class="flex items-center gap-1 hover:text-white transition" title="Copy response">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-              <span>Copy</span>
+          <!-- Bottom Action Bar (ChatGPT Style Icons) -->
+          <div class="flex items-center gap-1.5 pt-1 text-slate-400">
+            <button onclick="copyBubbleText(this)" class="p-1.5 rounded-lg hover:bg-slate-800 hover:text-white transition" title="Copy response">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
             </button>
-            <button onclick="speakBubbleText(this)" class="flex items-center gap-1 hover:text-cyan-300 transition" title="Listen aloud">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
-              <span>Listen</span>
+            <button onclick="speakBubbleText(this)" class="p-1.5 rounded-lg hover:bg-slate-800 hover:text-cyan-300 transition" title="Listen aloud">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
             </button>
-            <button onclick="recordFeedback(this, 'up')" class="hover:text-emerald-400 transition" title="Good response">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
+            <button onclick="recordFeedback(this, 'up')" class="p-1.5 rounded-lg hover:bg-slate-800 hover:text-emerald-400 transition" title="Good response">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
             </button>
-            <button onclick="recordFeedback(this, 'down')" class="hover:text-rose-400 transition" title="Bad response">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76 1.04m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg>
+            <button onclick="recordFeedback(this, 'down')" class="p-1.5 rounded-lg hover:bg-slate-800 hover:text-rose-400 transition" title="Bad response">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76 1.04m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg>
+            </button>
+            <button onclick="shareBubbleText(this)" class="p-1.5 rounded-lg hover:bg-slate-800 hover:text-white transition" title="Share response">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
             </button>
           </div>
         </div>
@@ -5878,6 +5950,7 @@ COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (MANDATORY):
       input.focus();
       input.style.height = 'auto';
       input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+      if (typeof updateActionMorphState === 'function') updateActionMorphState();
     }
   };
 
@@ -7263,7 +7336,7 @@ COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (MANDATORY):
       }, 400);
     };
 
-    // Unified Morphing Action Button Click
+    // Unified ChatGPT Send Action
     window.handleUnifiedActionClick = function(e) {
       if (e) e.preventDefault();
       const promptInput = document.getElementById('promptInput');
@@ -7276,31 +7349,35 @@ COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (MANDATORY):
           if (form) form.dispatchEvent(new Event('submit'));
         }
       } else {
-        triggerVoiceInput();
+        if (promptInput) promptInput.focus();
       }
     };
 
-    // Live Morphing Update for Action Button (Mic vs Send)
+    // Live Dynamic State for Send Button (ChatGPT Signature Style)
     function updateActionMorphState() {
       const promptInput = document.getElementById('promptInput');
       const sendBtn = document.getElementById('sendBtn');
       const sendIcon = document.getElementById('sendBtnIcon');
-      const sendText = document.getElementById('sendBtnText');
+      const composerModelName = document.getElementById('composerModelName');
       if (!promptInput || !sendBtn) return;
 
       const hasText = promptInput.value.trim().length > 0;
       if (hasText) {
-        if (sendText) sendText.textContent = 'Send';
-        if (sendIcon) {
-          sendIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-6 6m6-6l6 6" />';
-        }
-        sendBtn.title = 'Send Message (Enter)';
+        sendBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+        sendBtn.classList.add('opacity-100', 'cursor-pointer', 'shadow-md');
+        sendBtn.title = 'Send message (Enter)';
       } else {
-        if (sendText) sendText.textContent = 'Voice';
-        if (sendIcon) {
-          sendIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />';
-        }
-        sendBtn.title = 'Voice Dictation or Type Prompt';
+        sendBtn.classList.remove('opacity-100', 'cursor-pointer', 'shadow-md');
+        sendBtn.classList.add('opacity-40', 'cursor-not-allowed');
+        sendBtn.title = 'Type a message to send';
+      }
+
+      if (sendIcon) {
+        sendIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-6 6m6-6l6 6" />';
+      }
+
+      if (composerModelName && typeof currentSelectedModel !== 'undefined' && typeof GURU_MODELS !== 'undefined' && GURU_MODELS[currentSelectedModel]) {
+        composerModelName.textContent = GURU_MODELS[currentSelectedModel].name.replace('Guru-', '');
       }
     }
 
