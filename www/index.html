@@ -588,6 +588,7 @@
   <link rel="stylesheet" href="loading-lines.css">
   <link rel="stylesheet" href="ai-loader.css">
   <script src="ai-loader.js" defer></script>
+  <link rel="stylesheet" href="ai-chat-input.css" />
 </head>
 
 <body class="h-screen w-screen overflow-hidden flex flex-col font-sans-mode text-size-medium select-none">
@@ -831,9 +832,14 @@
           </button>
 
           <!-- Brand Identity (Mobile / Tablet) -->
-          <a href="https://webguruji.online" target="_blank" class="flex md:hidden items-center gap-1.5">
-            <img src="logo.png" alt="GuruAI Logo" class="w-6 h-6 rounded-lg object-cover" />
-            <span class="font-bold text-xs text-white">GuruAI</span>
+          <a href="https://webguruji.online" target="_blank" class="flex items-center gap-2 group transition-transform active:scale-95" title="HarshGuruJi Ecosystem Portal">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:border-indigo-400 group-hover:scale-105 transition-all overflow-hidden flex-shrink-0">
+              <img src="logo.png" alt="GuruAI Logo" class="w-full h-full object-cover" />
+            </div>
+            <div class="leading-tight">
+              <span class="font-bold text-xs sm:text-sm text-white tracking-wide font-heading block">GuruAI</span>
+              <span class="text-[9px] text-slate-400 hidden sm:block -mt-0.5">by HarshGuruJi</span>
+            </div>
           </a>
 
           <!-- Center/Left: Current Active Model Badge -->
@@ -1034,7 +1040,7 @@
         </div>
       </div>
 
-<div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto pb-44 px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto">
+<div id="chatFeed" class="flex-1 min-h-0 overflow-y-auto pb-56 sm:pb-52 md:pb-48 px-4 py-6 md:px-8 space-y-6 max-w-4xl w-full mx-auto scroll-smooth">
         <div class="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto py-8 animate-in fade-in duration-300">
           <div class="space-y-3 max-w-xl mx-auto px-2">
             <!-- Mascot / Logo -->
@@ -1208,7 +1214,7 @@
           </div>
 
 
-          <form id="chatForm" action="javascript:void(0);" onsubmit="if(window.handleChatSubmit){window.handleChatSubmit(event);}return false;" class="relative rounded-2xl border transition-all duration-200 backdrop-blur-2xl bg-white/[0.03] dark:bg-white/[0.02] border-white/[0.08] dark:border-white/[0.05] shadow-2xl focus-within:ring-2 focus-within:ring-violet-500/30 focus-within:border-violet-500/40">
+          <form id="chatForm" action="javascript:void(0);" onsubmit="if(window.handleChatSubmit){window.handleChatSubmit(event);}return false;" class="guru-ai-input-wrapper relative w-full">
             
             <!-- Command Palette Dropdown (Triggered by / or ⌘ button) -->
             <div id="commandPalette" class="hidden absolute left-3 right-3 bottom-full mb-2 backdrop-blur-xl bg-slate-950/95 border border-white/10 rounded-xl z-50 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-150">
@@ -1256,101 +1262,134 @@
               </div>
             </div>
 
-            <!-- Auto-resize Textarea Input (Slim Breadth & Ask Anything To GuruAI ) -->
-            <div class="px-3 sm:px-4 pt-2 pb-0.5">
-              <textarea id="promptInput" rows="1" placeholder="Apna sawaal GuruAI se poochhein…"
-                class="w-full px-1.5 py-1 resize-none bg-transparent border-none text-[14px] leading-snug text-white/90 placeholder-white/40 focus:outline-none min-h-[34px] max-h-40 disabled:opacity-60"></textarea>
-            </div>
-
-            <!-- In-Capsule Attachments Chip Container -->
-            <div id="attachmentChipContainer" class="hidden px-4 pb-2.5 flex gap-2 flex-wrap">
-              <div class="inline-flex items-center gap-2 text-xs bg-white/[0.04] py-1 px-3 rounded-lg text-white/80 border border-white/10">
-                <span id="attachmentFileName" class="truncate max-w-xs font-mono">file.pdf</span>
-                <button type="button" id="removeAttachmentBtn" class="text-white/40 hover:text-white transition-colors">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+            <!-- 21st.dev Animated Attachment Tray (Sliding Drawer Above Capsule) -->
+            <div id="guru-ai-tray" class="guru-ai-tray">
+              <div id="guru-ai-tray-inner" class="guru-ai-tray-inner">
+                <!-- In-Capsule Attachments Chip Container -->
+                <div id="attachmentChipContainer" class="hidden flex items-center gap-2 py-1 px-3 rounded-xl bg-slate-900/90 border border-indigo-500/30 text-xs text-slate-200">
+                  <span id="attachmentFileName" class="truncate max-w-xs font-mono text-cyan-300">file.pdf</span>
+                  <button type="button" id="removeAttachmentBtn" class="text-white/40 hover:text-rose-400 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <!-- Bottom Action Toolbar with Left Plus Menu & Models Selector -->
-            <div class="px-2.5 sm:px-3.5 py-2 border-t border-white/[0.06] flex items-center justify-between gap-2 relative">
-              <div class="flex items-center gap-2">
-                
-                <!-- 1. Left Side: Plus (+) Icon Menu Button -->
-                <div class="relative">
-                  <button type="button" id="chatbarPlusBtn" onclick="toggleChatbarPlusMenu(event)"
-                    class="w-8 h-8 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white/80 hover:text-white flex items-center justify-center transition border border-white/10 shadow-sm"
-                    title="Add attachments, mic voice, or image studio">
-                    <svg class="w-4 h-4 transition-transform duration-200" id="chatbarPlusIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                  </button>
+            <!-- Main Spring-Physics AI Chat Capsule (from @jahed/components/ai-chat-input) -->
+            <div id="guru-ai-capsule" class="guru-ai-capsule relative flex flex-col rounded-2xl sm:rounded-3xl border border-indigo-500/25 bg-[#0e1424]/90 backdrop-blur-2xl shadow-2xl transition-all duration-300 focus-within:border-indigo-500/50 focus-within:shadow-[0_0_35px_rgba(99,102,241,0.2)]">
+              
+              <div class="guru-ai-fade top pointer-events-none"></div>
+              <div class="guru-ai-fade bottom pointer-events-none"></div>
 
-                  <!-- Plus Icon Dropdown Popup (Mic, Files, Images) -->
-                  <div id="chatbarPlusMenu" class="hidden absolute bottom-full left-0 mb-2.5 w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-700/70 rounded-2xl p-1.5 shadow-2xl z-50 space-y-1 animate-fade-in">
-                    <button type="button" onclick="triggerFileAttach()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
-                      <span class="text-base p-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:scale-110 transition-transform">📁</span>
-                      <div>
-                        <div class="font-semibold text-white">Attach File / Docs</div>
-                        <div class="text-[10px] text-slate-400">PDF, TXT, JSON, CSV</div>
-                      </div>
+              <!-- Auto-resize Textarea Input with Smooth Typography -->
+              <div class="px-4 pt-3 pb-1">
+                <textarea id="promptInput" rows="1" placeholder="Apna sawaal GuruAI se poochhein… (Enter to send 🚀)"
+                  class="guru-ai-textarea w-full px-1 py-1 resize-none bg-transparent border-none text-[14px] sm:text-[15px] leading-relaxed text-white placeholder-slate-400/60 focus:outline-none min-h-[38px] max-h-44 disabled:opacity-60"
+                  aria-label="GuruAI Prompt Input"></textarea>
+              </div>
+
+              <!-- Bottom Action Toolbar with Left Plus Menu & Models Selector -->
+              <div class="guru-ai-toolbar px-3 py-2.5 border-t border-white/[0.06] flex items-center justify-between gap-2 relative">
+                
+                <div class="guru-ai-toolbar-left flex items-center gap-2">
+                  
+                  <!-- 1. Left Side: Plus (+) Icon Menu Button -->
+                  <div class="relative">
+                    <button type="button" id="chatbarPlusBtn" onclick="toggleChatbarPlusMenu(event)"
+                      class="guru-ai-btn w-8 h-8 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white/80 hover:text-white flex items-center justify-center transition border border-white/10 shadow-sm"
+                      title="Add attachments, mic voice, or image studio">
+                      <svg class="w-4 h-4 transition-transform duration-200" id="chatbarPlusIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                      </svg>
                     </button>
-                    <button type="button" onclick="triggerVoiceInput()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
-                      <span class="text-base p-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-transform">🎤</span>
-                      <div>
-                        <div class="font-semibold text-white">Voice Dictation</div>
-                        <div class="text-[10px] text-slate-400">Speech-to-text mic input</div>
-                      </div>
-                    </button>
-                    <button type="button" onclick="triggerImageStudio()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-purple-300 transition text-left group">
-                      <span class="text-base p-1 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform">🖼️</span>
-                      <div>
-                        <div class="font-semibold text-white">Image Studio &amp; Vision</div>
-                        <div class="text-[10px] text-slate-400">Attach photo or 8K render</div>
-                      </div>
+
+                    <!-- Plus Icon Dropdown Popup (Mic, Files, Images) -->
+                    <div id="chatbarPlusMenu" class="hidden absolute bottom-full left-0 mb-2.5 w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-700/70 rounded-2xl p-1.5 shadow-2xl z-50 space-y-1 animate-fade-in">
+                      <button type="button" onclick="triggerFileAttach()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 group-hover:scale-110 transition-transform">📁</span>
+                        <div>
+                          <div class="font-semibold text-white">Attach File / Docs</div>
+                          <div class="text-[10px] text-slate-400">PDF, TXT, JSON, CSV</div>
+                        </div>
+                      </button>
+                      <button type="button" onclick="triggerVoiceInput()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-cyan-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:scale-110 transition-transform">🎤</span>
+                        <div>
+                          <div class="font-semibold text-white">Voice Dictation</div>
+                          <div class="text-[10px] text-slate-400">Speech-to-text mic input</div>
+                        </div>
+                      </button>
+                      <button type="button" onclick="triggerImageStudio()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-200 hover:bg-indigo-600/20 hover:text-purple-300 transition text-left group">
+                        <span class="text-base p-1 rounded-lg bg-purple-500/10 border border-purple-500/20 group-hover:scale-110 transition-transform">🖼️</span>
+                        <div>
+                          <div class="font-semibold text-white">Image Studio &amp; Vision</div>
+                          <div class="text-[10px] text-slate-400">Attach photo or 8K render</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Hidden system elements wired to plus menu -->
+                  <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
+                  <button type="button" id="attachFileBtn" class="hidden"></button>
+                  <button type="button" id="voiceDictationBtn" class="hidden"></button>
+                  <button type="button" id="imageModeBtn" class="hidden"></button>
+
+                  <!-- 2. Models Chooser Chip (Spring Animated) -->
+                  <div class="relative">
+                    <button type="button" id="chatbarModelsBtn" onclick="openModelPickerSheet()"
+                      class="guru-ai-chip flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-200 hover:text-white border border-indigo-500/30 text-xs font-semibold transition shadow-sm"
+                      title="Choose AI Model">
+                      <span class="guru-ai-model-dot w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span id="chatbarActiveModelLabel" class="font-heading">Guru-Flash 1.1</span>
+                      <svg class="w-3.5 h-3.5 text-indigo-300 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                   </div>
+
+                  <!-- 3. Thinking Effort Button (from @jahed/components/ai-chat-input) -->
+                  <button type="button" id="chatbarEffortBtn" onclick="cycleChatEffort()"
+                    class="guru-ai-chip flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-700/70 border border-slate-700/60 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-medium transition shadow-sm"
+                    title="Cycle Thinking Effort (Low / Medium / High)">
+                    <svg class="guru-ai-effort-icon w-3.5 h-3.5 text-indigo-400" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <rect class="bar bar-1" x="1.5" y="8" width="2.5" height="4.5" rx="1" fill="currentColor"></rect>
+                      <rect class="bar bar-2" x="5.5" y="5" width="2.5" height="7.5" rx="1" fill="currentColor"></rect>
+                      <rect class="bar bar-3" x="9.5" y="2" width="2.5" height="10.5" rx="1" fill="currentColor"></rect>
+                    </svg>
+                    <span id="chatbarEffortLabel" class="hidden sm:inline text-[11px] font-mono">Medium</span>
+                  </button>
+
                 </div>
 
-                <!-- Hidden system elements wired to plus menu -->
-                <input type="file" id="fileAttachmentInput" class="hidden" accept="image/*,.txt,.pdf,.json,.csv" />
-                <button type="button" id="attachFileBtn" class="hidden"></button>
-                <button type="button" id="voiceDictationBtn" class="hidden"></button>
-                <button type="button" id="imageModeBtn" class="hidden"></button>
+                <!-- Right Side: Morphing Send / Stop / Mic Action Button -->
+                <div class="guru-ai-toolbar-right flex items-center gap-2">
+                  <!-- Stop Generation Button -->
+                  <button type="button" id="stopGenBtn"
+                    class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition animate-pulse">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <rect x="6" y="6" width="12" height="12" rx="2" />
+                    </svg>
+                    <span>Stop</span>
+                  </button>
 
-                <!-- 2. Just to the Right: Models Chooser Button -->
-                <div class="relative">
-                  <button type="button" id="chatbarModelsBtn" onclick="openModelPickerSheet()"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500/15 to-purple-500/15 hover:from-indigo-500/25 hover:to-purple-500/25 text-indigo-200 hover:text-white border border-indigo-500/30 text-xs font-semibold transition shadow-sm"
-                    title="Choose AI Model">
-                    <span class="text-cyan-400 text-sm">⚡</span>
-                    <span id="chatbarActiveModelLabel" class="font-heading">Models</span>
-                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                  <!-- Unified Morphing Action Button (Send / Mic / Waves) -->
+                  <button type="button" id="sendBtn" onclick="handleUnifiedActionClick(event)"
+                    class="guru-ai-action-btn relative px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Send Message or Voice Dictation">
+                    
+                    <!-- Voice Wave Visualizer Bars (Shown when recording) -->
+                    <div id="guru-ai-voice-waves" class="guru-ai-voice-waves hidden flex items-center gap-0.5 h-3.5">
+                      <span class="w-0.5 h-full bg-cyan-400 rounded-full animate-bounce"></span>
+                      <span class="w-0.5 h-2/3 bg-cyan-300 rounded-full animate-bounce [animation-delay:0.15s]"></span>
+                      <span class="w-0.5 h-full bg-cyan-400 rounded-full animate-bounce [animation-delay:0.3s]"></span>
+                    </div>
+
+                    <!-- Morphing Icon: Arrow Send or Mic -->
+                    <svg id="sendBtnIcon" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-6 6m6-6l6 6" />
+                    </svg>
+                    <span id="sendBtnText" class="hidden sm:inline">Send</span>
                   </button>
                 </div>
-
-              </div>
-
-              <div class="flex items-center gap-2">
-                <!-- Stop Generation Button -->
-                <button type="button" id="stopGenBtn"
-                  class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-md transition">
-                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                    <rect x="6" y="6" width="12" height="12" rx="2" />
-                  </svg>
-                  <span>Stop</span>
-                </button>
-
-                <!-- Send Button (from Animated AI Chat) -->
-                <button type="button" id="sendBtn" onclick="if(window.handleChatSubmit){window.handleChatSubmit(event);}"
-                  class="px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-white text-[#0A0A0B] shadow-lg shadow-white/10 hover:opacity-95 active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
-                  title="Send Message">
-                  <svg id="sendBtnIcon" class="w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                  <span>Send</span>
-                </button>
               </div>
             </div>
           </form>
@@ -2594,8 +2633,8 @@
     let attachedFile = null;
     let currentTheme = localStorage.getItem('guruai_theme') || 'dark';
     let currentLang = localStorage.getItem('guruai_lang') || 'english';
-    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '8', 10);
-    let maxRequests = 2;
+    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '25', 10);
+    let maxRequests = 25;
     let speechRecognition = null;
     let isListening = false;
     let currentUtterance = null;
@@ -2624,66 +2663,80 @@
       const modal = document.getElementById('userDashboardModal');
       if (!modal) return;
       
-      const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
-      const name = isMember ? (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0]) : 'Guest Explorer';
-      const email = isMember ? currentUser.email : 'guest@webguruji.online';
-      const tierBadge = document.getElementById('dashModalTierBadge');
-      const avatarEl = document.getElementById('dashModalAvatar');
-      const nameEl = document.getElementById('dashModalName');
-      const emailEl = document.getElementById('dashModalEmail');
-      const authBtn = document.getElementById('dashModalAuthBtn');
-      const reqCount = document.getElementById('dashModalRequestsCount');
-      const reqMax = document.getElementById('dashModalRequestsMax');
-      const reqBar = document.getElementById('dashModalRequestsBar');
-      const imgCount = document.getElementById('dashModalImagesCount');
+      try {
+        const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
+        const name = isMember ? (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0]) : 'Guest Explorer';
+        const email = isMember ? currentUser.email : 'guest@webguruji.online';
+        const tierBadge = document.getElementById('dashModalTierBadge');
+        const avatarEl = document.getElementById('dashModalAvatar');
+        const nameEl = document.getElementById('dashModalName');
+        const emailEl = document.getElementById('dashModalEmail');
+        const authBtn = document.getElementById('dashModalAuthBtn');
+        const reqCount = document.getElementById('dashModalRequestsCount');
+        const reqMax = document.getElementById('dashModalRequestsMax');
+        const reqBar = document.getElementById('dashModalRequestsBar');
+        const imgCount = document.getElementById('dashModalImagesCount');
 
-      if (nameEl) nameEl.textContent = name;
-      if (emailEl) emailEl.textContent = email;
+        if (nameEl) nameEl.textContent = name;
+        if (emailEl) emailEl.textContent = email;
 
-      const avatarUrl = isMember ? (currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture || currentUser.user_metadata?.avatar) : null;
-      if (avatarEl) {
-        if (avatarUrl) {
-          avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${name}" class="w-full h-full object-cover rounded-2xl" />`;
+        const avatarUrl = isMember ? (currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture || currentUser.user_metadata?.avatar) : null;
+        if (avatarEl) {
+          if (avatarUrl) {
+            avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${name}" class="w-full h-full object-cover rounded-2xl" />`;
+          } else {
+            avatarEl.textContent = name[0].toUpperCase();
+          }
+        }
+
+        if (isMember) {
+          if (tierBadge) {
+            tierBadge.textContent = 'Active Member';
+            tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold';
+          }
+          if (authBtn) {
+            authBtn.textContent = 'Sign Out';
+            authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-900/60 transition';
+          }
+          if (reqCount) reqCount.textContent = Math.max(0, 20 - (chatCount || 0)).toString();
+          if (reqMax) reqMax.textContent = '/ 20';
+          if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((20 - (chatCount || 0)) / 20) * 100)) + '%';
         } else {
-          avatarEl.textContent = name[0].toUpperCase();
+          if (tierBadge) {
+            tierBadge.textContent = 'Guest Tier (8/8)';
+            tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold';
+          }
+          if (authBtn) {
+            authBtn.textContent = 'Sign In';
+            authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition';
+          }
+          if (reqCount) reqCount.textContent = Math.max(0, 8 - (chatCount || 0)).toString();
+          if (reqMax) reqMax.textContent = '/ 8';
+          if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((8 - (chatCount || 0)) / 8) * 100)) + '%';
         }
-      }
 
-      if (isMember) {
-        if (tierBadge) {
-          tierBadge.textContent = 'Active Member';
-          tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold';
-        }
-        if (authBtn) {
-          authBtn.textContent = 'Sign Out';
-          authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-900/60 transition';
-        }
-        if (reqCount) reqCount.textContent = Math.max(0, 20 - (chatCount || 0)).toString();
-        if (reqMax) reqMax.textContent = '/ 20';
-        if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((20 - (chatCount || 0)) / 20) * 100)) + '%';
-      } else {
-        if (tierBadge) {
-          tierBadge.textContent = 'Guest Tier (8/8)';
-          tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold';
-        }
-        if (authBtn) {
-          authBtn.textContent = 'Sign In';
-          authBtn.className = 'px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition';
-        }
-        if (reqCount) reqCount.textContent = Math.max(0, 8 - (chatCount || 0)).toString();
-        if (reqMax) reqMax.textContent = '/ 8';
-        if (reqBar) reqBar.style.width = Math.max(0, Math.min(100, ((8 - (chatCount || 0)) / 8) * 100)) + '%';
+        let imgRemaining = isMember ? 5 : 0;
+        try {
+          if (typeof getImageQuota === 'function') {
+            const q = getImageQuota();
+            if (q && typeof q.remaining === 'number') imgRemaining = q.remaining;
+          }
+        } catch (e) {}
+        if (imgCount) imgCount.textContent = imgRemaining.toString();
+      } catch (err) {
+        console.warn('Dashboard modal render notice:', err);
       }
-
-      const imgQuota = getStoredImageQuota();
-      if (imgCount) imgCount.textContent = (imgQuota?.remaining ?? (isMember ? 5 : 0)).toString();
 
       modal.classList.remove('hidden');
+      modal.style.display = 'flex';
     }
 
     function closeUserDashboardModal() {
       const modal = document.getElementById('userDashboardModal');
-      if (modal) modal.classList.add('hidden');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
     }
 
     window.openUserDashboardModal = openUserDashboardModal;
@@ -3536,7 +3589,7 @@
           const { value, done } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
+          const lines = buffer.split(/\r?\n/);
           buffer = lines.pop() || '';
 
           for (const line of lines) {
@@ -3547,9 +3600,13 @@
                 const data = JSON.parse(trimmed.slice(6));
                 const reasoning = data.reasoning || data.choices?.[0]?.delta?.reasoning_content || '';
                 const token = data.token || data.choices?.[0]?.delta?.content || '';
+                const finishReason = data.choices?.[0]?.finish_reason;
 
                 if (reasoning) fullReasoning += reasoning;
                 if (token) fullText += token;
+                if (finishReason === 'length' && fullText && !fullText.includes('(Response continued below)')) {
+                  fullText += '\n\n*(Note: Model reached maximum response output. You can reply "continue" to carry on.)*';
+                }
 
                 let renderHtml = '';
                 if (fullReasoning) {
@@ -3693,17 +3750,23 @@ CRITICAL IDENTITY:
 - Owner Biography & Details: https://webguruji.online/owner.html
 - Model: ${activeModelConfig.name}.
 Language instruction: ${currentLang === 'hindi' ? 'Respond in pure Hindi using Devanagari script.' : currentLang === 'hinglish' ? 'Respond in natural, friendly Hinglish (Hindi words in English alphabet).' : 'Respond in clear, structured English.'}
+
+COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (CRITICAL):
+- You MUST ALWAYS provide full, complete, in-depth, and comprehensive responses from start to finish.
+- NEVER cut off, summarize, or stop halfway through an explanation or multi-step response.
+- If the user asks for multiple steps (e.g. a 5-step setup or detailed tutorial), you MUST provide ALL requested steps completely, explaining each step thoroughly with full details, code, and configuration without skipping anything.
+- Do not stop prematurely, do not omit details, and never say 'etc.'; finish the entire explanation completely.
 Always use Markdown formatting and syntax-highlighted code blocks where applicable.`;
 
           const nvPayload = {
             model: activeModelConfig.model,
             messages: [
               { role: 'system', content: sysPrompt },
-              ...conversationHistory.slice(-8).map(m => ({ role: m.role, content: m.content })),
+              ...conversationHistory.slice(-25).map(m => ({ role: m.role, content: m.content })),
               { role: 'user', content: userContent }
             ],
             stream: true,
-            max_tokens: 2048,
+            max_tokens: 8192,
             temperature: 0.6
           };
 
@@ -3734,7 +3797,10 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       // 2. Secondary AI Fallback (Groq with safe max_tokens)
       if (!backendStreamed) {
         try {
-          const sysPrompt = `You are GuruAI running on Guru-Flash created by HarshGuruJi. Official website: https://webguruji.online`;
+          const sysPrompt = `You are GuruAI running on Guru-Flash created by HarshGuruJi. Official website: https://webguruji.online
+COMPLETENESS MANDATE:
+- Provide full, complete, in-depth explanations for all requested steps and instructions.
+- Never truncate, omit steps, or stop halfway; finish all steps completely from start to finish.`;
           const groqToken = 'gs' + 'k_' + 'vmJWIdeBUhp8aEzwp1LmWGdyb3FYxAsDU3dEPrEQgxFFAJ8C6mcd';
           const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
@@ -3746,11 +3812,11 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
               model: 'qwen/qwen3.8-27b',
               messages: [
                 { role: 'system', content: sysPrompt },
-                ...conversationHistory.slice(-6).map(m => ({ role: m.role, content: m.content })),
+                ...conversationHistory.slice(-25).map(m => ({ role: m.role, content: m.content })),
                 { role: 'user', content: prompt }
               ],
               stream: true,
-              max_tokens: 400,
+              max_tokens: 4096,
               temperature: 0.7
             })
           });
@@ -4189,18 +4255,18 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       renderHistoryList(searchInput.value);
     };
 
-    // Quota Allowance System (20 requests / 24h for Member, 8 requests / 24h for Guest, all refreshing every 24 hours)
+    // Quota Allowance System (50 requests / 24h for Member, 25 requests / 24h for Guest, all refreshing every 24 hours)
     function initUserQuota(user) {
       const now = Date.now();
       const windowDuration = 24 * 60 * 60 * 1000; // All limits refresh every 24 hours
       if (user) {
-        maxRequests = 20;
+        maxRequests = 50;
         const key = 'guruai_quota_user_' + user.id;
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
 
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 20, windowStart: now };
+          stored = { remaining: 50, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
         remainingAllowance = stored.remaining;
@@ -4280,13 +4346,13 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
           };
         } catch (e) {}
       } else {
-        maxRequests = 8;
+        maxRequests = 25;
         const key = 'guruai_quota_guest';
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
 
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 8, windowStart: now };
+          stored = { remaining: 25, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
         remainingAllowance = stored.remaining;
@@ -4322,7 +4388,7 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
       const quotaSidebarEl = document.getElementById('quotaSidebarText');
       if (quotaSidebarEl) {
-        quotaSidebarEl.textContent = isMember ? `${remainingAllowance}/20 Left` : `${remainingAllowance}/8 Left`;
+        quotaSidebarEl.textContent = isMember ? `${remainingAllowance}/50 Left` : `${remainingAllowance}/25 Left`;
       }
 
       const headerQuotaBadge = document.getElementById('headerQuotaBadge');
@@ -6029,5 +6095,547 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     return html;
   };
 </script>
+
+  <!-- ═════════════════════════════════════════════════════════════════════════
+       IN-APP MODEL BUY & PAYMENT SYSTEM MODAL (HarshGuruJi Instant Desk)
+       ═════════════════════════════════════════════════════════════════════════ -->
+  <div id="aiPaymentModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl hidden flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200">
+    <div class="relative w-full max-w-lg bg-[#090e1a]/95 border border-indigo-500/35 rounded-3xl p-5 sm:p-7 text-slate-100 shadow-2xl shadow-indigo-950/80 space-y-5 max-h-[92vh] overflow-y-auto">
+      
+      <!-- Close Button -->
+      <button type="button" onclick="closeAiPaymentModal()" class="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition" aria-label="Close Payment Modal">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="flex items-center gap-3.5 pb-3 border-b border-slate-800">
+        <div class="w-12 h-12 rounded-2xl bg-[#0A0E1A] border border-indigo-500/50 flex items-center justify-center shadow-lg shadow-indigo-500/20 overflow-hidden flex-shrink-0 p-1">
+          <img src="logo.png" alt="HarshGuruJi Logo" class="w-full h-full object-cover rounded-xl" />
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 id="payModalModelName" class="font-bold font-heading text-lg text-white">Guru-Argon 1.4</h3>
+            <span id="payModalPriceBadge" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">₹999 / $15</span>
+          </div>
+          <p id="payModalContextDesc" class="text-xs text-slate-400">125,000 Token Context Window • High-Speed Reasoning</p>
+        </div>
+      </div>
+
+      <!-- Payment Method 1: QR & UPI ID -->
+      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3 text-center">
+        <div class="flex items-center justify-center gap-2 text-xs font-semibold text-slate-300">
+          <span>📲</span>
+          <span>Instant UPI Payment (GPay • PhonePe • Paytm • BHIM)</span>
+        </div>
+
+        <!-- Dynamic QR Container -->
+        <div class="relative w-44 h-44 mx-auto rounded-2xl bg-white p-2.5 shadow-xl flex items-center justify-center border-2 border-indigo-500/30">
+          <img id="payModalQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=%26pn=HarshGuruJi%26cu=INR" alt="HarshGuruJi UPI QR Code" class="w-full h-full object-contain rounded-lg" />
+        </div>
+
+        <!-- UPI ID Row with 1-Click Copy -->
+        <div class="flex items-center justify-center gap-2">
+          <span class="text-xs text-slate-400">UPI ID:</span>
+          <code id="payModalUpiId" class="text-xs font-mono font-bold text-cyan-300 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-700 select-all"></code>
+          <button type="button" onclick="copyUpiId()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-[11px] font-semibold text-white transition active:scale-95 flex items-center gap-1 shadow-sm">
+            <span>📋</span>
+            <span>Copy</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Payment Method 2: UTR Reference Input & Activation -->
+      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-3">
+        <label class="block text-xs font-semibold text-slate-300">
+          Payment Done? Enter 12-Digit UPI Transaction / UTR ID:
+        </label>
+        <div class="flex gap-2">
+          <input type="text" id="payUtrInput" placeholder="e.g. 412389123456" maxlength="24"
+            class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400 transition" />
+          <button type="button" onclick="submitUtrVerification()"
+            class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition active:scale-95 flex-shrink-0">
+            Verify &amp; Activate
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="space-y-2 pt-1">
+        <button type="button" onclick="goToOfficialPaymentGateway()"
+          class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 hover:opacity-95 transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-1.5">
+          <span>Pay via HarshGuruJi Secure Gateway ↗</span>
+        </button>
+
+        <button type="button" onclick="instantDemoUnlockModel()"
+          class="w-full py-2 px-3 rounded-xl text-[11px] font-semibold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 transition flex items-center justify-center gap-1.5">
+          <span>⚡ Instant Test Activation (1-Click Trial Unlock)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // HARSHGURUJI AI ENHANCED CONTROLLERS (PROFILE, CHATBAR, SIDEBAR, PAYMENT)
+    // =========================================================================
+
+    // 1. Payment Token Generator (Matching payment.html security guard)
+    window.generatePaymentToken = function(emailStr) {
+      if (!emailStr) return '';
+      let hash = 0;
+      const str = emailStr.toLowerCase().trim() + '::HarshGuruJiPaymentAuth2026';
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return 'hg_token_' + Math.abs(hash).toString(36);
+    };
+
+    // Active Buy Model State
+    window.activeBuyModelKey = 'guru-flash-1.3';
+    window.activeBuyPlanName = 'Scholar Pro';
+    window.activeBuyPrice = 499;
+
+    window.openAiPaymentModal = function(modelKey, priceVal) {
+      activeBuyModelKey = modelKey || 'guru-flash-1.3';
+      const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[activeBuyModelKey]) ? GURU_MODELS[activeBuyModelKey] : null;
+      activeBuyPlanName = m ? m.name : activeBuyModelKey;
+
+      let inrPrice = 499;
+      if (priceVal === 15 || activeBuyModelKey === 'guru-argon-1.4') inrPrice = 999;
+      else if (priceVal === 25 || activeBuyModelKey === 'guru-argon-1.5') inrPrice = 1999;
+      else if (priceVal === 5 || activeBuyModelKey === 'guru-flash-1.3') inrPrice = 499;
+      activeBuyPrice = inrPrice;
+
+      // Update Modal UI
+      const titleEl = document.getElementById('payModalModelName');
+      const priceEl = document.getElementById('payModalPriceBadge');
+      const descEl = document.getElementById('payModalContextDesc');
+      const qrImg = document.getElementById('payModalQrImg');
+
+      if (titleEl) titleEl.textContent = activeBuyPlanName;
+      if (priceEl) priceEl.textContent = '₹' + inrPrice + ' (' + (m && m.price ? m.price : ('$' + (priceVal || 5) + '/mo')) + ')';
+      if (descEl && m) descEl.textContent = `${m.contextTokens || '100,000+'} Tokens Context Limit • Priority GPU Speed`;
+
+      // Dynamic QR with exact amount
+      if (qrImg) {
+        const upiUrl = `upi://pay?pa=&pn=HarshGuruJi&cu=INR&am=${inrPrice}`;
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUrl)}`;
+      }
+
+      const utrInput = document.getElementById('payUtrInput');
+      if (utrInput) utrInput.value = '';
+
+      const modal = document.getElementById('aiPaymentModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeAiPaymentModal = function() {
+      const modal = document.getElementById('aiPaymentModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.copyUpiId = function() {
+      const upiId = (typeof activePaymentConfig !== 'undefined' && activePaymentConfig?.upi_id) ? activePaymentConfig.upi_id : '';
+      if (!upiId) {
+        if (typeof showToast === 'function') showToast('UPI ID is being configured on Render gateway. Check back shortly.', 'info');
+        return;
+      }
+      navigator.clipboard.writeText(upiId).then(() => {
+        if (typeof showToast === 'function') showToast('📋 UPI ID copied: ' + upiId, 'success');
+      }).catch(() => {
+        if (typeof showToast === 'function') showToast('UPI ID: ' + upiId, 'info');
+      });
+    };
+
+    window.submitUtrVerification = function() {
+      const utrInput = document.getElementById('payUtrInput');
+      const utr = utrInput ? utrInput.value.trim() : '';
+      if (!utr || utr.length < 6) {
+        if (typeof showToast === 'function') showToast('⚠️ Please enter a valid 12-digit UPI Transaction / UTR ID.', 'warning');
+        return;
+      }
+
+      // Unlock Model Immediately in LocalStorage
+      let unlocked = localStorage.getItem('guru_ai_unlocked_model') || '';
+      if (!unlocked.includes(activeBuyModelKey)) {
+        unlocked = unlocked ? `${unlocked},${activeBuyModelKey}` : activeBuyModelKey;
+        localStorage.setItem('guru_ai_unlocked_model', unlocked);
+      }
+      localStorage.setItem('guru_ai_user_paid', 'true');
+
+      // Switch model immediately!
+      const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[activeBuyModelKey]) ? GURU_MODELS[activeBuyModelKey] : null;
+      const modelName = m ? m.name : activeBuyModelKey;
+      if (typeof selectAiModel === 'function') {
+        selectAiModel(activeBuyModelKey, modelName, false);
+      }
+
+      // Dispatch Payment Alert to Master Admin at contact@webguruji.online
+      try {
+        const uEmail = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : (localStorage.getItem('guru_ai_last_upgrade_email') || 'ai_customer@webguruji.online');
+        const uName = (typeof currentUser !== 'undefined' && currentUser && (currentUser.user_metadata?.full_name || currentUser.user_metadata?.name)) ? (currentUser.user_metadata.full_name || currentUser.user_metadata.name) : uEmail.split('@')[0];
+        
+        fetch('https://api.mail.hostinger.com/api/v1/mailboxes/AC955bc6c100d79999a2c5613002ee/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer afa0c378c26eae81c5d0fbb5848f69ae108dfe0043d020cbd90e73f8e0a44b21'
+          },
+          body: JSON.stringify({
+            from: 'info@webguruji.online',
+            to: ['contact@webguruji.online'],
+            displayName: 'HarshGuruJi AI Payment Desk',
+            subject: `💰 In-App AI Upgrade Payment: ${uName} (${uEmail}) - ${modelName} [UTR: ${utr}]`,
+            text: `In-App AI Upgrade Payment Received!\nCustomer: ${uName}\nEmail: ${uEmail}\nModel: ${modelName}\nUTR: ${utr}\nTime: ${new Date().toLocaleString()}\n\nNote: Please verify bank credit and instruct Ops Manager or AI Limits Manager subadmin to expand limits if needed.`,
+            html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:20px;background:#070a13;font-family:sans-serif;color:#f8fafc;">
+  <div style="max-width:600px;margin:0 auto;background:#0f172a;border-radius:16px;border:2px solid #10b981;padding:24px;">
+    <h2 style="color:#34d399;margin-top:0;">💰 In-App AI Upgrade Payment Received</h2>
+    <p style="color:#cbd5e1;">A user submitted a payment reference on <strong>GuruAI (ai.webguruji.online)</strong>.</p>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;background:rgba(255,255,255,0.04);border-radius:8px;">
+      <tr><td style="padding:8px 12px;color:#94a3b8;">User Name</td><td style="padding:8px 12px;color:#fff;font-weight:700;">${uName}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">User Email</td><td style="padding:8px 12px;color:#38bdf8;font-family:monospace;font-weight:700;">${uEmail}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">Purchased Model</td><td style="padding:8px 12px;color:#fde68a;font-weight:700;">${modelName}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">UTR / Transaction ID</td><td style="padding:8px 12px;color:#34d399;font-family:monospace;font-weight:700;">${utr}</td></tr>
+      <tr><td style="padding:8px 12px;color:#94a3b8;">Time</td><td style="padding:8px 12px;color:#fff;">${new Date().toLocaleString()}</td></tr>
+    </table>
+    <p style="font-size:12px;color:#94a3b8;">Sent automatically from info@webguruji.online to contact@webguruji.online</p>
+  </div>
+</body>
+</html>`
+          })
+        }).catch(e => console.warn('Payment notification mail error:', e));
+      } catch(e) {}
+
+      closeAiPaymentModal();
+      if (typeof showToast === 'function') showToast(`🎉 Payment Verified! ${modelName} is now active with full context.`, 'success');
+    };
+
+    window.instantDemoUnlockModel = function() {
+      let unlocked = localStorage.getItem('guru_ai_unlocked_model') || '';
+      if (!unlocked.includes(activeBuyModelKey)) {
+        unlocked = unlocked ? `${unlocked},${activeBuyModelKey}` : activeBuyModelKey;
+        localStorage.setItem('guru_ai_unlocked_model', unlocked);
+      }
+      localStorage.setItem('guru_ai_user_paid', 'true');
+
+      const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[activeBuyModelKey]) ? GURU_MODELS[activeBuyModelKey] : null;
+      const modelName = m ? m.name : activeBuyModelKey;
+      if (typeof selectAiModel === 'function') {
+        selectAiModel(activeBuyModelKey, modelName, false);
+      }
+      closeAiPaymentModal();
+      if (typeof showToast === 'function') showToast(`⚡ ${modelName} unlocked for testing!`, 'success');
+    };
+
+    window.goToOfficialPaymentGateway = function() {
+      const email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : 'guest@webguruji.online';
+      const token = generatePaymentToken(email);
+      const payUrl = `https://payment.webguruji.online/payment.html?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}&plan=${encodeURIComponent(activeBuyModelKey)}&amount=${activeBuyPrice}`;
+      window.open(payUrl, '_blank');
+    };
+
+    // Robust Initialization & Event Bindings
+    function initAiPageImprovements() {
+      // 1. User Profile Button: Always opens dashboard modal (for both guest and logged-in users)
+      const profileBtn = document.getElementById('userProfileBtn');
+      if (profileBtn) {
+        profileBtn.onclick = (e) => {
+          if (e) e.preventDefault();
+          if (typeof openUserDashboardModal === 'function') openUserDashboardModal();
+        };
+      }
+
+      const headDashBtn = document.getElementById('headerDashboardBtn');
+      if (headDashBtn) {
+        headDashBtn.onclick = (e) => {
+          if (e) e.preventDefault();
+          if (typeof openUserDashboardModal === 'function') openUserDashboardModal();
+        };
+        headDashBtn.classList.remove('hidden');
+      }
+
+      // 2. Chatbar Model Selector Button
+      const chatbarBtn = document.getElementById('chatbarModelsBtn');
+      if (chatbarBtn) {
+        chatbarBtn.onclick = (e) => {
+          if (e) e.preventDefault();
+          if (typeof openModelPickerSheet === 'function') openModelPickerSheet();
+        };
+      }
+
+      // 3. New Chat Button
+      const newChatBtn = document.getElementById('newChatBtn');
+      if (newChatBtn) {
+        newChatBtn.onclick = (e) => {
+          if (e) e.preventDefault();
+          currentConvId = null;
+          conversationHistory = [];
+          if (typeof renderWelcome === 'function') renderWelcome();
+          const input = document.getElementById('promptInput');
+          if (input) {
+            input.value = '';
+            input.focus();
+          }
+          if (typeof renderHistoryList === 'function') renderHistoryList();
+          if (typeof showToast === 'function') showToast('✨ Fresh conversation started', 'info');
+        };
+      }
+
+      // 4. Modal Backdrop Dismissals
+      const payModal = document.getElementById('aiPaymentModal');
+      if (payModal) {
+        payModal.onclick = (e) => {
+          if (e.target === payModal) closeAiPaymentModal();
+        };
+      }
+
+      const modelSheet = document.getElementById('modelPickerSheet');
+      if (modelSheet) {
+        modelSheet.onclick = (e) => {
+          if (e.target === modelSheet) closeModelPickerSheet();
+        };
+      }
+
+      const dashModal = document.getElementById('userDashboardModal');
+      if (dashModal) {
+        dashModal.onclick = (e) => {
+          if (e.target === dashModal) closeUserDashboardModal();
+        };
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAiPageImprovements);
+    } else {
+      initAiPageImprovements();
+    }
+
+    // Override handlePlanBuy & selectPremiumAndRedirect to open In-App Payment Desk directly
+    window.handlePlanBuy = function(planName, contextLimit, price) {
+      let modelKey = 'guru-flash-1.3';
+      if (price === 15 || (typeof planName === 'string' && (planName.includes('Scholar') || planName.includes('15')))) {
+        modelKey = 'guru-argon-1.4';
+      } else if (price === 25 || (typeof planName === 'string' && (planName.includes('Master') || planName.includes('25')))) {
+        modelKey = 'guru-argon-1.5';
+      }
+      if (typeof closeUpgradeModal === 'function') closeUpgradeModal();
+      openAiPaymentModal(modelKey, price);
+    };
+
+    window.selectPremiumAndRedirect = function(modelKey, planName, priceVal) {
+      if (typeof closeModelDetailsModal === 'function') closeModelDetailsModal();
+      openAiPaymentModal(modelKey, priceVal);
+    };
+  
+    // ══════════════════════════════════════════════════════════════════════════
+    // 21st.dev Modern AI Chat Input Enhanced Controller (@jahed/components/ai-chat-input)
+    // ══════════════════════════════════════════════════════════════════════════
+
+    // Effort Cycling
+    const CHAT_EFFORT_LEVELS = ['Low', 'Medium', 'High'];
+    let currentChatEffortIdx = 1; // Default Medium
+
+    window.cycleChatEffort = function() {
+      currentChatEffortIdx = (currentChatEffortIdx + 1) % CHAT_EFFORT_LEVELS.length;
+      const level = CHAT_EFFORT_LEVELS[currentChatEffortIdx];
+      const labelEl = document.getElementById('chatbarEffortLabel');
+      if (labelEl) labelEl.textContent = level;
+
+      const icon = document.querySelector('.guru-ai-effort-icon');
+      if (icon) {
+        const b1 = icon.querySelector('.bar-1');
+        const b2 = icon.querySelector('.bar-2');
+        const b3 = icon.querySelector('.bar-3');
+        if (level === 'Low') {
+          if (b1) b1.setAttribute('height', '4.5');
+          if (b2) b2.setAttribute('height', '3.5');
+          if (b3) b3.setAttribute('height', '2.5');
+        } else if (level === 'Medium') {
+          if (b1) b1.setAttribute('height', '4.5');
+          if (b2) b2.setAttribute('height', '7.5');
+          if (b3) b3.setAttribute('height', '4.5');
+        } else {
+          if (b1) b1.setAttribute('height', '6.5');
+          if (b2) b2.setAttribute('height', '9.5');
+          if (b3) b3.setAttribute('height', '12.5');
+        }
+      }
+      try {
+        localStorage.setItem('guru_ai_effort', level);
+      } catch (e) {}
+      if (typeof showToast === 'function') showToast('⚡ Thinking Effort set to ' + level, 'info');
+    };
+
+    // Plus (+) Menu Toggle
+    window.toggleChatbarPlusMenu = function(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('chatbarPlusMenu');
+      const icon = document.getElementById('chatbarPlusIcon');
+      if (menu) {
+        menu.classList.toggle('hidden');
+        if (!menu.classList.contains('hidden')) {
+          if (icon) icon.style.transform = 'rotate(45deg)';
+          const closeMenu = (evt) => {
+            if (!menu.contains(evt.target) && evt.target.id !== 'chatbarPlusBtn') {
+              menu.classList.add('hidden');
+              if (icon) icon.style.transform = 'rotate(0deg)';
+              document.removeEventListener('click', closeMenu);
+            }
+          };
+          setTimeout(() => document.addEventListener('click', closeMenu), 50);
+        } else {
+          if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+      }
+    };
+
+    window.triggerFileAttach = function() {
+      const fileInput = document.getElementById('fileAttachmentInput');
+      if (fileInput) fileInput.click();
+      const menu = document.getElementById('chatbarPlusMenu');
+      if (menu) menu.classList.add('hidden');
+    };
+
+    window.triggerVoiceInput = function() {
+      const menu = document.getElementById('chatbarPlusMenu');
+      if (menu) menu.classList.add('hidden');
+
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        if (typeof showToast === 'function') showToast('⚠️ Web Speech API not supported in this browser.', 'warning');
+        return;
+      }
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'hi-IN';
+      recognition.interimResults = false;
+
+      const waves = document.getElementById('guru-ai-voice-waves');
+      const btnText = document.getElementById('sendBtnText');
+      if (waves) waves.classList.remove('hidden');
+      if (btnText) btnText.textContent = 'Listening…';
+      if (typeof showToast === 'function') showToast('🎤 Listening... Speak now in Hindi or English', 'info');
+
+      recognition.onresult = (evt) => {
+        const transcript = evt.results[0][0].transcript;
+        const promptInput = document.getElementById('promptInput');
+        if (promptInput) {
+          promptInput.value = (promptInput.value ? promptInput.value + ' ' : '') + transcript;
+          promptInput.dispatchEvent(new Event('input'));
+          promptInput.focus();
+        }
+      };
+
+      recognition.onend = () => {
+        if (waves) waves.classList.add('hidden');
+        updateActionMorphState();
+      };
+
+      recognition.onerror = () => {
+        if (waves) waves.classList.add('hidden');
+        updateActionMorphState();
+      };
+
+      try {
+        recognition.start();
+      } catch (err) {
+        if (waves) waves.classList.add('hidden');
+        updateActionMorphState();
+      }
+    };
+
+    window.triggerImageStudio = function() {
+      const menu = document.getElementById('chatbarPlusMenu');
+      if (menu) menu.classList.add('hidden');
+      if (typeof showToast === 'function') showToast('🖼️ Opening GuruAI Image Studio...', 'info');
+      setTimeout(() => {
+        window.location.href = 'image.html';
+      }, 400);
+    };
+
+    // Unified Morphing Action Button Click
+    window.handleUnifiedActionClick = function(e) {
+      if (e) e.preventDefault();
+      const promptInput = document.getElementById('promptInput');
+      const hasText = promptInput && promptInput.value.trim().length > 0;
+      if (hasText) {
+        if (typeof window.handleChatSubmit === 'function') {
+          window.handleChatSubmit(e);
+        } else {
+          const form = document.getElementById('chatForm');
+          if (form) form.dispatchEvent(new Event('submit'));
+        }
+      } else {
+        triggerVoiceInput();
+      }
+    };
+
+    // Live Morphing Update for Action Button (Mic vs Send)
+    function updateActionMorphState() {
+      const promptInput = document.getElementById('promptInput');
+      const sendBtn = document.getElementById('sendBtn');
+      const sendIcon = document.getElementById('sendBtnIcon');
+      const sendText = document.getElementById('sendBtnText');
+      if (!promptInput || !sendBtn) return;
+
+      const hasText = promptInput.value.trim().length > 0;
+      if (hasText) {
+        if (sendText) sendText.textContent = 'Send';
+        if (sendIcon) {
+          sendIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-6 6m6-6l6 6" />';
+        }
+        sendBtn.title = 'Send Message (Enter)';
+      } else {
+        if (sendText) sendText.textContent = 'Voice';
+        if (sendIcon) {
+          sendIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />';
+        }
+        sendBtn.title = 'Voice Dictation or Type Prompt';
+      }
+    }
+
+    // Attach File Event Listener to Show Sliding Tray
+    document.addEventListener('DOMContentLoaded', () => {
+      const fileInput = document.getElementById('fileAttachmentInput');
+      const tray = document.getElementById('guru-ai-tray');
+      const chipContainer = document.getElementById('attachmentChipContainer');
+      const fileNameSpan = document.getElementById('attachmentFileName');
+      const removeBtn = document.getElementById('removeAttachmentBtn');
+
+      if (fileInput) {
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            if (fileNameSpan) fileNameSpan.textContent = file.name;
+            if (chipContainer) chipContainer.classList.remove('hidden');
+            if (tray) tray.classList.add('has-attachments');
+            if (typeof showToast === 'function') showToast('📎 File attached: ' + file.name, 'success');
+          }
+        });
+      }
+
+      if (removeBtn) {
+        removeBtn.addEventListener('click', (e) => {
+          if (e) e.stopPropagation();
+          if (fileInput) fileInput.value = '';
+          if (chipContainer) chipContainer.classList.add('hidden');
+          if (tray) tray.classList.remove('has-attachments');
+        });
+      }
+
+      const pInput = document.getElementById('promptInput');
+      if (pInput) {
+        pInput.addEventListener('input', updateActionMorphState);
+        pInput.addEventListener('change', updateActionMorphState);
+      }
+      updateActionMorphState();
+    });
+
+  </script>
+
 </body>
 </html>

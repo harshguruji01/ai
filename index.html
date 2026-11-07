@@ -2633,8 +2633,8 @@
     let attachedFile = null;
     let currentTheme = localStorage.getItem('guruai_theme') || 'dark';
     let currentLang = localStorage.getItem('guruai_lang') || 'english';
-    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '8', 10);
-    let maxRequests = 2;
+    let remainingAllowance = parseInt(localStorage.getItem('guruai_allowance') || '25', 10);
+    let maxRequests = 25;
     let speechRecognition = null;
     let isListening = false;
     let currentUtterance = null;
@@ -3589,7 +3589,7 @@
           const { value, done } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
+          const lines = buffer.split(/\r?\n/);
           buffer = lines.pop() || '';
 
           for (const line of lines) {
@@ -3600,9 +3600,13 @@
                 const data = JSON.parse(trimmed.slice(6));
                 const reasoning = data.reasoning || data.choices?.[0]?.delta?.reasoning_content || '';
                 const token = data.token || data.choices?.[0]?.delta?.content || '';
+                const finishReason = data.choices?.[0]?.finish_reason;
 
                 if (reasoning) fullReasoning += reasoning;
                 if (token) fullText += token;
+                if (finishReason === 'length' && fullText && !fullText.includes('(Response continued below)')) {
+                  fullText += '\n\n*(Note: Model reached maximum response output. You can reply "continue" to carry on.)*';
+                }
 
                 let renderHtml = '';
                 if (fullReasoning) {
@@ -3746,17 +3750,23 @@ CRITICAL IDENTITY:
 - Owner Biography & Details: https://webguruji.online/owner.html
 - Model: ${activeModelConfig.name}.
 Language instruction: ${currentLang === 'hindi' ? 'Respond in pure Hindi using Devanagari script.' : currentLang === 'hinglish' ? 'Respond in natural, friendly Hinglish (Hindi words in English alphabet).' : 'Respond in clear, structured English.'}
+
+COMPLETENESS & EXHAUSTIVE STEP-BY-STEP EXPLANATION MANDATE (CRITICAL):
+- You MUST ALWAYS provide full, complete, in-depth, and comprehensive responses from start to finish.
+- NEVER cut off, summarize, or stop halfway through an explanation or multi-step response.
+- If the user asks for multiple steps (e.g. a 5-step setup or detailed tutorial), you MUST provide ALL requested steps completely, explaining each step thoroughly with full details, code, and configuration without skipping anything.
+- Do not stop prematurely, do not omit details, and never say 'etc.'; finish the entire explanation completely.
 Always use Markdown formatting and syntax-highlighted code blocks where applicable.`;
 
           const nvPayload = {
             model: activeModelConfig.model,
             messages: [
               { role: 'system', content: sysPrompt },
-              ...conversationHistory.slice(-8).map(m => ({ role: m.role, content: m.content })),
+              ...conversationHistory.slice(-25).map(m => ({ role: m.role, content: m.content })),
               { role: 'user', content: userContent }
             ],
             stream: true,
-            max_tokens: 2048,
+            max_tokens: 8192,
             temperature: 0.6
           };
 
@@ -3787,7 +3797,10 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       // 2. Secondary AI Fallback (Groq with safe max_tokens)
       if (!backendStreamed) {
         try {
-          const sysPrompt = `You are GuruAI running on Guru-Flash created by HarshGuruJi. Official website: https://webguruji.online`;
+          const sysPrompt = `You are GuruAI running on Guru-Flash created by HarshGuruJi. Official website: https://webguruji.online
+COMPLETENESS MANDATE:
+- Provide full, complete, in-depth explanations for all requested steps and instructions.
+- Never truncate, omit steps, or stop halfway; finish all steps completely from start to finish.`;
           const groqToken = 'gs' + 'k_' + 'vmJWIdeBUhp8aEzwp1LmWGdyb3FYxAsDU3dEPrEQgxFFAJ8C6mcd';
           const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
@@ -3799,11 +3812,11 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
               model: 'qwen/qwen3.8-27b',
               messages: [
                 { role: 'system', content: sysPrompt },
-                ...conversationHistory.slice(-6).map(m => ({ role: m.role, content: m.content })),
+                ...conversationHistory.slice(-25).map(m => ({ role: m.role, content: m.content })),
                 { role: 'user', content: prompt }
               ],
               stream: true,
-              max_tokens: 400,
+              max_tokens: 4096,
               temperature: 0.7
             })
           });
@@ -4242,18 +4255,18 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       renderHistoryList(searchInput.value);
     };
 
-    // Quota Allowance System (20 requests / 24h for Member, 8 requests / 24h for Guest, all refreshing every 24 hours)
+    // Quota Allowance System (50 requests / 24h for Member, 25 requests / 24h for Guest, all refreshing every 24 hours)
     function initUserQuota(user) {
       const now = Date.now();
       const windowDuration = 24 * 60 * 60 * 1000; // All limits refresh every 24 hours
       if (user) {
-        maxRequests = 20;
+        maxRequests = 50;
         const key = 'guruai_quota_user_' + user.id;
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
 
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 20, windowStart: now };
+          stored = { remaining: 50, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
         remainingAllowance = stored.remaining;
@@ -4333,13 +4346,13 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
           };
         } catch (e) {}
       } else {
-        maxRequests = 8;
+        maxRequests = 25;
         const key = 'guruai_quota_guest';
         let stored = null;
         try { stored = JSON.parse(localStorage.getItem(key)); } catch (e) { }
 
         if (!stored || typeof stored.remaining !== 'number' || !stored.windowStart || (now - stored.windowStart) > windowDuration) {
-          stored = { remaining: 8, windowStart: now };
+          stored = { remaining: 25, windowStart: now };
           localStorage.setItem(key, JSON.stringify(stored));
         }
         remainingAllowance = stored.remaining;
@@ -4375,7 +4388,7 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
       const isMember = !!(currentUser && !currentUser.is_guest && currentUser.email);
       const quotaSidebarEl = document.getElementById('quotaSidebarText');
       if (quotaSidebarEl) {
-        quotaSidebarEl.textContent = isMember ? `${remainingAllowance}/20 Left` : `${remainingAllowance}/8 Left`;
+        quotaSidebarEl.textContent = isMember ? `${remainingAllowance}/50 Left` : `${remainingAllowance}/25 Left`;
       }
 
       const headerQuotaBadge = document.getElementById('headerQuotaBadge');
@@ -6117,13 +6130,13 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
 
         <!-- Dynamic QR Container -->
         <div class="relative w-44 h-44 mx-auto rounded-2xl bg-white p-2.5 shadow-xl flex items-center justify-center border-2 border-indigo-500/30">
-          <img id="payModalQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=harshguruji01@oksbi%26pn=HarshGuruJi%26cu=INR" alt="HarshGuruJi UPI QR Code" class="w-full h-full object-contain rounded-lg" />
+          <img id="payModalQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=%26pn=HarshGuruJi%26cu=INR" alt="HarshGuruJi UPI QR Code" class="w-full h-full object-contain rounded-lg" />
         </div>
 
         <!-- UPI ID Row with 1-Click Copy -->
         <div class="flex items-center justify-center gap-2">
           <span class="text-xs text-slate-400">UPI ID:</span>
-          <code id="payModalUpiId" class="text-xs font-mono font-bold text-cyan-300 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-700 select-all">harshguruji01@oksbi</code>
+          <code id="payModalUpiId" class="text-xs font-mono font-bold text-cyan-300 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-700 select-all"></code>
           <button type="button" onclick="copyUpiId()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-[11px] font-semibold text-white transition active:scale-95 flex items-center gap-1 shadow-sm">
             <span>📋</span>
             <span>Copy</span>
@@ -6206,7 +6219,7 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
 
       // Dynamic QR with exact amount
       if (qrImg) {
-        const upiUrl = `upi://pay?pa=harshguruji01@oksbi&pn=HarshGuruJi&cu=INR&am=${inrPrice}`;
+        const upiUrl = `upi://pay?pa=&pn=HarshGuruJi&cu=INR&am=${inrPrice}`;
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUrl)}`;
       }
 
@@ -6223,7 +6236,11 @@ Always use Markdown formatting and syntax-highlighted code blocks where applicab
     };
 
     window.copyUpiId = function() {
-      const upiId = 'harshguruji01@oksbi';
+      const upiId = (typeof activePaymentConfig !== 'undefined' && activePaymentConfig?.upi_id) ? activePaymentConfig.upi_id : '';
+      if (!upiId) {
+        if (typeof showToast === 'function') showToast('UPI ID is being configured on Render gateway. Check back shortly.', 'info');
+        return;
+      }
       navigator.clipboard.writeText(upiId).then(() => {
         if (typeof showToast === 'function') showToast('📋 UPI ID copied: ' + upiId, 'success');
       }).catch(() => {

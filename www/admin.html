@@ -6264,7 +6264,7 @@
 
             <div class="form-group">
               <label class="form-label" style="font-weight:700; color:#e2e8f0;">Admin Official UPI ID *</label>
-              <input type="text" id="cfg-payment-upi-id" class="form-input" placeholder="e.g. harshguruji01@oksbi" value="harshguruji01@oksbi" required style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
+              <input type="text" id="cfg-payment-upi-id" class="form-input" placeholder="e.g. merchant@upi" value="" required style="background:#0f172a; border-color:rgba(255,255,255,0.15);" />
               <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Users can copy this UPI ID to pay using GPay, PhonePe, Paytm, BHIM.</div>
             </div>
           </div>
@@ -12238,7 +12238,7 @@
       if (btn) { btn.disabled = true; btn.innerHTML = '<span>Saving...</span>'; }
 
       const maintenance = document.getElementById('cfg-payment-maintenance')?.value === 'true';
-      const upiId = document.getElementById('cfg-payment-upi-id')?.value.trim() || 'harshguruji01@oksbi';
+      const upiId = document.getElementById('cfg-payment-upi-id')?.value.trim() || '';
       const qrUrl = document.getElementById('cfg-payment-qr-url')?.value.trim() || '';
       const instructions = document.getElementById('cfg-payment-instructions')?.value.trim() || '';
 

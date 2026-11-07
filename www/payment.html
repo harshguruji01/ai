@@ -287,7 +287,7 @@
   <script>
     let activePaymentConfig = {
       maintenance: false,
-      upi_id: 'harshguruji01@oksbi',
+      upi_id: '',
       qr_url: '',
       instructions: ''
     };
@@ -494,7 +494,7 @@
       document.getElementById('planContextSummary').textContent = context;
 
       // Build dynamic UPI QR code & App Intent from configured Admin UPI ID
-      const targetUpiId = activePaymentConfig?.upi_id || 'harshguruji01@oksbi';
+      const targetUpiId = activePaymentConfig?.upi_id || '';
       const upiString = `upi://pay?pa=${encodeURIComponent(targetUpiId)}&pn=HarshGuruJi&am=${inr}&cu=INR&tn=GuruAI_${encodeURIComponent(model.replace(/ /g, '_'))}`;
       const qrApiUrl = activePaymentConfig?.qr_url || `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(upiString)}`;
       const qrEl = document.getElementById('upiQrImage'); if (qrEl) qrEl.src = qrApiUrl;
@@ -515,7 +515,7 @@
     }
 
     function copyUpiId() {
-      const upiToCopy = activePaymentConfig?.upi_id || 'harshguruji01@oksbi';
+      const upiToCopy = activePaymentConfig?.upi_id || '';
       navigator.clipboard.writeText(upiToCopy).then(() => {
         const text = document.getElementById('copyUpiText');
         text.textContent = 'Copied! ✓';
