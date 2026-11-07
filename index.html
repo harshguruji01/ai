@@ -5074,6 +5074,33 @@ COMPLETENESS MANDATE:
           if (session && session.user) {
             currentUser = session.user;
             updateUserState(currentUser);
+
+            // Record authenticated user in user_ai_limits & user_activity
+            if (currentUser.email && !currentUser.email.startsWith('admin_')) {
+              try {
+                const cleanEmail = currentUser.email.toLowerCase().trim();
+                supabaseClient.from('user_ai_limits').upsert({
+                  user_id: currentUser.id,
+                  email: cleanEmail,
+                  plan_name: window.currentUserLimits?.plan_name || 'Standard Free (AI Redirect)',
+                  max_requests: window.currentUserLimits?.max_requests || 20,
+                  context_limit: window.currentUserLimits?.context_limit || 32000,
+                  is_active: true,
+                  updated_at: new Date().toISOString()
+                }, { onConflict: 'email' }).catch(() => {});
+
+                if (window.location.search.includes('login_success') || window.location.hash.includes('access_token')) {
+                  supabaseClient.from('user_activity').insert([{
+                    user_id: currentUser.id,
+                    activity_type: 'login_ai_redirect',
+                    page_type: 'ai',
+                    page_name: 'GuruAI Chat',
+                    page_path: 'https://ai.webguruji.online/',
+                    metadata: { source: 'ai_redirect', login_timestamp: new Date().toISOString() }
+                  }]).catch(() => {});
+                }
+              } catch(e) {}
+            }
           } else if (!currentUser) {
             updateUserState(null);
           }
@@ -5087,6 +5114,21 @@ COMPLETENESS MANDATE:
           if (session && session.user) {
             currentUser = session.user;
             updateUserState(currentUser);
+
+            if (currentUser.email && !currentUser.email.startsWith('admin_')) {
+              try {
+                const cleanEmail = currentUser.email.toLowerCase().trim();
+                supabaseClient.from('user_ai_limits').upsert({
+                  user_id: currentUser.id,
+                  email: cleanEmail,
+                  plan_name: window.currentUserLimits?.plan_name || 'Standard Free (AI Redirect)',
+                  max_requests: window.currentUserLimits?.max_requests || 20,
+                  context_limit: window.currentUserLimits?.context_limit || 32000,
+                  is_active: true,
+                  updated_at: new Date().toISOString()
+                }, { onConflict: 'email' }).catch(() => {});
+              } catch(e) {}
+            }
           } else if (event === 'SIGNED_OUT') {
             currentUser = null;
             updateUserState(null);

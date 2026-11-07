@@ -2899,6 +2899,49 @@
       gap: 0.3rem;
     }
 
+    .ai-user-id-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 2px 0;
+      flex-wrap: wrap;
+    }
+
+    .ai-user-id-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ai-copy-id-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      color: #cbd5e1;
+      cursor: pointer;
+      padding: 1px 6px;
+      font-size: 0.68rem;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .ai-copy-id-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: rgba(56, 189, 248, 0.5);
+      color: #38bdf8;
+    }
+
     .ai-status-dot {
       display: inline-block;
       width: 6px;
@@ -4973,7 +5016,7 @@
               <h4 class="ai-box-heading">Live AI Page Active Users &amp; Chat Limits</h4>
               <span class="ai-box-domain-badge">ai.webguruji.online</span>
             </div>
-            <p class="ai-box-subtext">Users logged in on GuruAI, their remaining chat allowances, active model tiers, and instant limit modifiers.</p>
+            <p class="ai-box-subtext">Verified users who logged in via AI page redirect (ai.webguruji.online), their User IDs, remaining chat allowances, active model tiers, and instant limit modifiers.</p>
           </div>
 
           <!-- Action Buttons -->
@@ -5034,7 +5077,7 @@
           <table class="ai-box-table">
             <thead>
               <tr>
-                <th>User / Member</th>
+                <th>User ID &amp; Member</th>
                 <th>Email Address</th>
                 <th>Current AI Model</th>
                 <th>Chat Limit &amp; Allowance</th>
@@ -6351,10 +6394,13 @@
                   <span style="font-size:0.75rem; color:#94a3b8;">Direct bridge to Laravel 12 UPI Gateway (pay.webguruji.online) for instant Paytm/PhonePe automated checks.</span>
                 </div>
               </div>
-              <div style="display:flex; align-items:center; gap:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                 <span id="gateway-api-ping-badge" style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:50px; background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid rgba(148,163,184,0.3);">Standby / Unchecked</span>
                 <button type="button" class="btn-action-outline" onclick="pingGatewayApiHealth()" style="font-size:0.72rem; padding:4px 10px;">
                   <span>📡 Test API Ping</span>
+                </button>
+                <button type="button" class="btn-action-primary" onclick="runPaymentReconciliationNow()" style="font-size:0.72rem; padding:4px 12px; background:linear-gradient(135deg, #10b981, #059669); border:none; border-radius:8px; color:#fff; font-weight:700; cursor:pointer;">
+                  <span>🔄 1-Click Reconcile Payments</span>
                 </button>
               </div>
             </div>
@@ -10696,7 +10742,7 @@
         const { data: upgradeMsgs, error: msgErr } = await sb
           .from('contact_messages')
           .select('*')
-          .or('subject.eq.AI_UPGRADE,message.ilike.%GuruAI Upgrade Request%')
+          .or('subject.eq.AI_UPGRADE,subject.eq.AI_PREMIUM_UPGRADE,message.ilike.%GuruAI%')
           .order('created_at', { ascending: false });
 
         if (msgErr) throw msgErr;
@@ -10716,6 +10762,62 @@
           } catch (e) { }
         }
 
+        // Fetch AI redirect login activities from user_activity
+        let aiActivityUsers = [];
+        try {
+          const { data: actData } = await sb
+            .from('user_activity')
+            .select('user_id, activity_type, page_type, metadata, page_path')
+            .or('activity_type.eq.login_ai_redirect,page_type.eq.ai,page_path.ilike.%ai.webguruji.online%')
+            .order('timestamp', { ascending: false });
+          if (actData) aiActivityUsers = actData;
+        } catch (e) { }
+
+        // Fetch usage_limits with registered users
+        let usageLimitUserIds = [];
+        try {
+          const { data: uLimData } = await sb
+            .from('usage_limits')
+            .select('user_id')
+            .not('user_id', 'is', null);
+          if (uLimData) usageLimitUserIds = uLimData.map(u => u.user_id).filter(Boolean);
+        } catch (e) { }
+
+        // Compile set of users who redirected from AI page to login
+        const aiRedirectUserIds = new Set();
+        const aiRedirectEmails = new Set();
+
+        if (limitsData && Array.isArray(limitsData)) {
+          limitsData.forEach(lim => {
+            const em = (lim.email || '').toLowerCase().trim();
+            if (em.startsWith('admin_') || em.startsWith('subadmin_')) return;
+            if (lim.user_id) aiRedirectUserIds.add(lim.user_id);
+            if (em) aiRedirectEmails.add(em);
+          });
+        }
+
+        if (aiActivityUsers && Array.isArray(aiActivityUsers)) {
+          aiActivityUsers.forEach(act => {
+            if (act.user_id) aiRedirectUserIds.add(act.user_id);
+          });
+        }
+
+        if (usageLimitUserIds && Array.isArray(usageLimitUserIds)) {
+          usageLimitUserIds.forEach(uid => aiRedirectUserIds.add(uid));
+        }
+
+        if (upgradeMsgs && Array.isArray(upgradeMsgs)) {
+          upgradeMsgs.forEach(msg => {
+            const em = (msg.email || '').toLowerCase().trim();
+            if (em) aiRedirectEmails.add(em);
+            if (msg.user_id) aiRedirectUserIds.add(msg.user_id);
+            if (msg.message && msg.message.includes('User ID:')) {
+              const match = msg.message.match(/User ID:\s*([a-f0-9\-]+)/i);
+              if (match && match[1]) aiRedirectUserIds.add(match[1]);
+            }
+          });
+        }
+
         const limitsMap = new Map();
         if (limitsData) {
           limitsData.forEach(lim => {
@@ -10727,8 +10829,8 @@
         const requests = upgradeMsgs || [];
         if (badge) badge.textContent = requests.length;
 
-        // CRITICAL FIX: Build and Render AI Users Roster FIRST so data is ALWAYS populated regardless of upgrade requests
-        buildAndRenderAiUsersRoster(currentProfiles, limitsData, limitsMap);
+        // CRITICAL FIX: Build and Render AI Users Roster: ONLY AI-redirected logged-in users!
+        buildAndRenderAiUsersRoster(currentProfiles, limitsData, limitsMap, aiRedirectUserIds, aiRedirectEmails);
 
         if (requests.length === 0) {
           container.innerHTML = `
@@ -10820,21 +10922,27 @@
       return `${months}mo ago`;
     }
 
-    function buildAndRenderAiUsersRoster(profiles, limitsData, limitsMap) {
+    function buildAndRenderAiUsersRoster(profiles, limitsData, limitsMap, aiRedirectUserIds, aiRedirectEmails) {
       const rawList = (profiles && profiles.length > 0) ? [...profiles] : [];
-      // Filter out internal system config accounts
+      // Filter strictly for users who logged in by redirecting from AI page (or matching AI records)
       const usersList = rawList.filter(u => {
         const em = (u.email || '').toLowerCase().trim();
-        return !em.startsWith('admin_') && !em.startsWith('subadmin_');
+        if (em.startsWith('admin_') || em.startsWith('subadmin_')) return false;
+
+        const matchesId = u.id && aiRedirectUserIds && aiRedirectUserIds.has(u.id);
+        const matchesEmail = em && aiRedirectEmails && aiRedirectEmails.has(em);
+        return matchesId || matchesEmail;
       });
       const knownEmails = new Set(usersList.map(u => (u.email || '').toLowerCase().trim()));
+      const knownIds = new Set(usersList.map(u => u.id).filter(Boolean));
 
       if (limitsData && Array.isArray(limitsData)) {
         limitsData.forEach(lim => {
           const lEmail = (lim.email || '').toLowerCase().trim();
           if (lEmail.startsWith('admin_') || lEmail.startsWith('subadmin_')) return;
-          if (lim.email && !knownEmails.has(lEmail)) {
+          if (!knownEmails.has(lEmail) && (!lim.user_id || !knownIds.has(lim.user_id))) {
             knownEmails.add(lEmail);
+            if (lim.user_id) knownIds.add(lim.user_id);
             usersList.push({
               id: lim.user_id || lim.id || 'usr_' + Math.random().toString(36).slice(2, 8),
               email: lim.email,
@@ -10940,7 +11048,8 @@
           const name = (u.displayName || '').toLowerCase();
           const email = (u.email || '').toLowerCase();
           const model = (u.unlockedModelName || '').toLowerCase();
-          return name.includes(searchTerm) || email.includes(searchTerm) || model.includes(searchTerm);
+          const id = (u.id || '').toLowerCase();
+          return name.includes(searchTerm) || email.includes(searchTerm) || model.includes(searchTerm) || id.includes(searchTerm);
         }
         return true;
       });
@@ -10965,7 +11074,16 @@
       if (cntFree) cntFree.textContent = totalFree;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="ai-box-loading-cell">No AI users found matching the search criteria.</td></tr>';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="ai-box-loading-cell" style="padding:2.5rem 1rem; text-align:center;">
+              <div style="font-size:1.1rem; font-weight:700; color:#cbd5e1; margin-bottom:0.4rem;">🤖 No AI-Redirected Users Found</div>
+              <div style="font-size:0.82rem; color:var(--text-muted); max-width:520px; margin:0 auto; line-height:1.5;">
+                This operations table exclusively displays users who logged in via redirect from <code>ai.webguruji.online</code>.
+              </div>
+            </td>
+          </tr>
+        `;
         return;
       }
 
@@ -10983,9 +11101,14 @@
                     ${u.goldenTick ? '<span class="ai-badge-tick" title="Golden Verified">✓</span>' : ''}
                     ${u.isAdmin ? '<span class="ai-badge-admin">ADMIN</span>' : ''}
                   </div>
+                  <!-- Prominent User ID with 1-click Copy -->
+                  <div class="ai-user-id-row">
+                    <span class="ai-user-id-badge" title="Supabase User ID: ${escapeHtml(u.id || '')}">ID: ${escapeHtml(u.id || 'N/A')}</span>
+                    <button type="button" class="ai-copy-id-btn" onclick="navigator.clipboard.writeText('${escapeHtml(u.id || '')}'); if(typeof showMasterToast==='function') showMasterToast('Copied User ID: ${escapeHtml(u.id || '')}', 'info');" title="Copy User ID">📋 Copy</button>
+                  </div>
                   <div class="ai-user-status-line">
                     <span class="ai-status-dot"></span>
-                    <span>Logged in on AI</span>
+                    <span style="color:#a5b4fc; font-weight:600; font-size:0.72rem;">🔗 AI Page Redirect Login</span>
                   </div>
                 </div>
               </div>
@@ -11275,7 +11398,10 @@
                     ${u.goldenTick ? '<span style="color:#fbbf24; font-size:0.85rem;" title="Golden Verified">✓</span>' : ''}
                     ${u.isAdmin ? '<span style="font-size:0.6rem; background:rgba(99,102,241,0.25); color:#a5b4fc; padding:1px 5px; border-radius:4px; font-weight:700;">ADMIN</span>' : ''}
                   </div>
-                  <div style="font-size:0.7rem; color:#64748b; font-family:'JetBrains Mono',monospace;">ID: ${escapeHtml((u.id || '').substring(0, 10))}...</div>
+                  <div style="display:flex; align-items:center; gap:0.35rem; margin-top:2px;">
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:#38bdf8; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.28); padding:1px 5px; border-radius:4px; font-weight:700;" title="User ID: ${escapeHtml(u.id || '')}">ID: ${escapeHtml(u.id || 'N/A')}</span>
+                    <button type="button" class="ai-copy-id-btn" onclick="navigator.clipboard.writeText('${escapeHtml(u.id || '')}'); if(typeof showMasterToast==='function') showMasterToast('Copied User ID: ${escapeHtml(u.id || '')}', 'info');" title="Copy User ID">📋 Copy</button>
+                  </div>
                 </div>
               </div>
             </td>
@@ -12442,6 +12568,27 @@
           badge.style.borderColor = 'rgba(148,163,184,0.3)';
         }
         showMasterToast('Gateway server offline. Client using resilient Supabase mode.', 'info');
+      }
+    };
+
+    window.runPaymentReconciliationNow = async function() {
+      showMasterToast('🔄 Querying Render UPI Gateway to reconcile pending payments...', 'info');
+      try {
+        const res = await fetch('https://ai.webguruji.online/api/payment/reconcile', {
+          method: 'POST',
+          headers: {
+            'x-admin-code': 'HarshGuruJi@2547277654'
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMasterToast(`✅ Reconciliation Done: ${data.reconciledCount} payments verified & unlocked!`, 'success');
+          if (typeof loadSubmissions === 'function') loadSubmissions();
+        } else {
+          showMasterToast(`Notice: ${data.error || 'Reconciliation check finished'}`, 'info');
+        }
+      } catch(e) {
+        showMasterToast('Reconciliation trigger notice: Checking gateway queue...', 'info');
       }
     };
 

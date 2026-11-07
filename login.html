@@ -551,6 +551,31 @@
         redirectTarget = 'https://ai.webguruji.online/';
       }
 
+      // Track AI user in user_ai_limits and user_activity
+      if (session && session.user && session.user.email) {
+        try {
+          const uEmail = session.user.email.toLowerCase().trim();
+          supabase.from('user_ai_limits').upsert({
+            user_id: session.user.id,
+            email: uEmail,
+            plan_name: 'Standard Free (AI Redirect)',
+            max_requests: 20,
+            context_limit: 32000,
+            is_active: true,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'email' }).catch(() => {});
+
+          supabase.from('user_activity').insert([{
+            user_id: session.user.id,
+            activity_type: 'login_ai_redirect',
+            page_type: 'ai',
+            page_name: 'GuruAI Chat',
+            page_path: 'https://ai.webguruji.online/',
+            metadata: { source: 'ai_redirect', login_timestamp: new Date().toISOString() }
+          }]).catch(() => {});
+        } catch(e) {}
+      }
+
       // App redirect (when user initiated login from native mobile app)
       if (source === 'app' || redirectTarget.startsWith('online.webguruji.ai') || redirectTarget.startsWith('guruai')) {
         const tokenHash = session ? `#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}&token_type=bearer` : '';
