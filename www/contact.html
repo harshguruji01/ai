@@ -441,11 +441,11 @@
                 </div>
                 <div>
                   <div style="font-size:0.75rem; color:#94a3b8;">Plan Tier</div>
-                  <div id="ai-summary-plan" style="font-size:1rem; font-weight:800; color:#a78bfa; margin-top:2px;">Starter Premium</div>
+                  <div id="ai-summary-plan" style="font-size:1rem; font-weight:800; color:#a78bfa; margin-top:2px;">Starter Plan</div>
                 </div>
                 <div>
                   <div style="font-size:0.75rem; color:#94a3b8;">Subscription Price</div>
-                  <div id="ai-summary-price" style="font-size:1rem; font-weight:800; color:#fbbf24; margin-top:2px;">$5 / Activation</div>
+                  <div id="ai-summary-price" style="font-size:1rem; font-weight:800; color:#fbbf24; margin-top:2px;">₹399 / Month</div>
                 </div>
                 <div>
                   <div style="font-size:0.75rem; color:#94a3b8;">Routing</div>
@@ -583,11 +583,11 @@
     const CANONICAL_PLANS = {
       'guru-flash-1.3': {
         id: 'guru-flash-1.3',
-        name: 'Starter Premium ($5)',
+        name: 'Starter Plan (₹399)',
         model: 'Guru-Flash 1.3',
-        price: 5,
+        price: 399,
         context: '64,000 Tokens',
-        badge: '👑 Starter Premium • $5',
+        badge: '👑 Starter Plan • ₹399',
         benefits: [
           '64,000 Token Memory Buffer with Extended Thinking',
           '100 Daily Inquiries with NVIDIA Nemotron 3.5 Bolt reasoning',
@@ -597,11 +597,11 @@
       },
       'guru-argon-1.4': {
         id: 'guru-argon-1.4',
-        name: 'Pro Premium ($15)',
+        name: 'Pro / Scholar Plan (₹1,299)',
         model: 'Guru-Argon 1.4',
-        price: 15,
+        price: 1299,
         context: '128,000 Tokens',
-        badge: '💎 Pro Premium • $15',
+        badge: '💎 Scholar Plan • ₹1,299',
         benefits: [
           '128,000 Token Massive Context Window',
           '300 Daily Inquiries with Deep Mathematical Logic',
@@ -611,11 +611,11 @@
       },
       'guru-argon-1.5': {
         id: 'guru-argon-1.5',
-        name: 'Power User ($25)',
+        name: 'Grandmaster / Power Plan (₹2,099)',
         model: 'Guru-Argon 1.5',
-        price: 25,
+        price: 2099,
         context: '256,000 Tokens',
-        badge: '🚀 Power User • $25',
+        badge: '🚀 Grandmaster Plan • ₹2,099',
         benefits: [
           '256,000 Maximum Token Memory Context',
           'Unlimited High-Reasoning Inquiries',
@@ -631,10 +631,10 @@
       const plan = (params.get('plan') || '').toLowerCase().trim();
       const price = params.get('price');
 
-      if (planId === 'guru-argon-1.5' || model.includes('1.5') || plan.includes('25') || price === '25') {
+      if (planId === 'guru-argon-1.5' || model.includes('1.5') || plan.includes('25') || plan.includes('2099') || price === '25' || price === '2099') {
         return CANONICAL_PLANS['guru-argon-1.5'];
       }
-      if (planId === 'guru-argon-1.4' || model.includes('1.4') || plan.includes('15') || price === '15') {
+      if (planId === 'guru-argon-1.4' || model.includes('1.4') || plan.includes('15') || plan.includes('1299') || price === '15' || price === '1299') {
         return CANONICAL_PLANS['guru-argon-1.4'];
       }
       return CANONICAL_PLANS['guru-flash-1.3'];
@@ -732,7 +732,7 @@
         if (planEl) planEl.textContent = activeCanonicalPlan.name;
 
         const priceEl = document.getElementById('ai-summary-price');
-        if (priceEl) priceEl.textContent = '$' + activeCanonicalPlan.price + ' / Activation';
+        if (priceEl) priceEl.textContent = '₹' + activeCanonicalPlan.price.toLocaleString('en-IN') + ' / Month';
 
         // Populate Benefits List
         const benefitsList = document.getElementById('ai-plan-benefits-list');
@@ -774,7 +774,7 @@
               name: verifiedActiveUser.name,
               email: verifiedActiveUser.email,
               subject: 'AI_PREMIUM_UPGRADE',
-              message: 'GuruAI Premium Purchase Request:\n• Selected Model: ' + plan.model + '\n• Plan ID: ' + plan.id + '\n• Plan Tier: ' + plan.name + '\n• Requested Pricing: $' + plan.price + '\n• User ID: ' + (verifiedActiveUser.id || 'N/A') + '\n• Avatar: ' + (verifiedActiveUser.avatar || '') + '\n• Status: Awaiting Admin Approval',
+              message: 'GuruAI Premium Purchase Request:\n• Selected Model: ' + plan.model + '\n• Plan ID: ' + plan.id + '\n• Plan Tier: ' + plan.name + '\n• Requested Pricing: ₹' + plan.price.toLocaleString('en-IN') + '\n• User ID: ' + (verifiedActiveUser.id || 'N/A') + '\n• Avatar: ' + (verifiedActiveUser.avatar || '') + '\n• Status: Awaiting Admin Approval',
               status: 'Pending Admin Review',
               created_at: new Date().toISOString()
             }]);

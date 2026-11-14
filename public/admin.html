@@ -6285,11 +6285,11 @@
             <button type="button" class="quick-chip" onclick="applyAiPreset('free')">Standard Free (20 chats / 32K
               context)</button>
             <button type="button" class="quick-chip" onclick="applyAiPreset('starter')"
-              style="border-color:#6366f1; color:#a5b4fc;">⭐ Starter Pro $5 (50 chats / 50K context)</button>
+              style="border-color:#6366f1; color:#a5b4fc;">⭐ Starter Pro ₹399 (50 chats / 50K context)</button>
             <button type="button" class="quick-chip" onclick="applyAiPreset('power')"
-              style="border-color:#38bdf8; color:#7dd3fc;">🚀 Power Scholar $15 (150 chats / 175K context)</button>
+              style="border-color:#38bdf8; color:#7dd3fc;">🚀 Power Scholar ₹1,299 (150 chats / 175K context)</button>
             <button type="button" class="quick-chip" onclick="applyAiPreset('grandmaster')"
-              style="border-color:#f59e0b; color:#fde68a;">👑 Grandmaster $25 (350 chats / 325K context)</button>
+              style="border-color:#f59e0b; color:#fde68a;">👑 Grandmaster ₹2,099 (350 chats / 325K context)</button>
             <button type="button" class="quick-chip" onclick="applyAiPreset('unlimited')"
               style="border-color:#10b981; color:#6ee7b7;">🔥 Unlimited VIP (9999 chats / 500K context)</button>
           </div>
@@ -10247,8 +10247,8 @@
             const senderAvatar = resolveUserAvatar(userProfile || req.email || req.user_id, senderName);
 
             let whichModel = 'Guru-Flash 1.3';
-            let planTier = 'Starter Premium ($5)';
-            let price = '$5';
+            let planTier = 'Starter Plan (₹399)';
+            let price = '₹399';
 
             if (req.message) {
               const mMatch = req.message.match(/Selected Model:\s*([^\r\n]+)/i);
@@ -11730,15 +11730,15 @@
       if (tier === 'starter') {
         if (chatInput) chatInput.value = 50;
         if (contextInput) contextInput.value = 50000;
-        if (statusEl) statusEl.innerHTML = `Preset loaded: <strong style="color:#a5b4fc;">Starter Pro ($5)</strong> (50 chats / 50K context)`;
+        if (statusEl) statusEl.innerHTML = `Preset loaded: <strong style="color:#a5b4fc;">Starter Pro (₹399)</strong> (50 chats / 50K context)`;
       } else if (tier === 'power') {
         if (chatInput) chatInput.value = 150;
         if (contextInput) contextInput.value = 175000;
-        if (statusEl) statusEl.innerHTML = `Preset loaded: <strong style="color:#38bdf8;">Power Scholar ($15)</strong> (150 chats / 175K context)`;
+        if (statusEl) statusEl.innerHTML = `Preset loaded: <strong style="color:#38bdf8;">Power Scholar (₹1,299)</strong> (150 chats / 175K context)`;
       } else if (tier === 'grandmaster') {
         if (chatInput) chatInput.value = 350;
         if (contextInput) contextInput.value = 325000;
-        if (statusEl) statusEl.innerHTML = `Preset loaded: <strong style="color:#f59e0b;">Grandmaster Enterprise ($25)</strong> (350 chats / 325K context)`;
+        if (statusEl) statusEl.innerHTML = `Preset loaded: <strong style="color:#f59e0b;">Grandmaster Enterprise (₹2,099)</strong> (350 chats / 325K context)`;
       } else if (tier === 'unlimited') {
         if (chatInput) chatInput.value = 9999;
         if (contextInput) contextInput.value = 500000;
@@ -12831,9 +12831,9 @@
       let totalRevenue = 0;
       aiRequests.filter(r => (r.status || '').toLowerCase() === 'active').forEach(r => {
         const msg = r.message || '';
-        if (msg.includes('Guru-Argon 1.5') || msg.includes('$25')) totalRevenue += 2100;
-        else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15')) totalRevenue += 1250;
-        else totalRevenue += 420;
+        if (msg.includes('Guru-Argon 1.5') || msg.includes('$25') || msg.includes('2099')) totalRevenue += 2099;
+        else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15') || msg.includes('1299')) totalRevenue += 1299;
+        else totalRevenue += 399;
       });
 
       const pill = document.getElementById('mpill-premium-requests');
@@ -12868,13 +12868,13 @@
           utrReviewQueue.forEach(req => {
             const msg = req.message || '';
             let model = 'Guru-Flash 1.3';
-            let price = '₹420';
-            if (msg.includes('Guru-Argon 1.5') || msg.includes('$25')) {
+            let price = '₹399';
+            if (msg.includes('Guru-Argon 1.5') || msg.includes('$25') || msg.includes('2099')) {
               model = 'Guru-Argon 1.5';
-              price = '₹2,100';
-            } else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15')) {
+              price = '₹2,099';
+            } else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15') || msg.includes('1299')) {
               model = 'Guru-Argon 1.4';
-              price = '₹1,250';
+              price = '₹1,299';
             }
             const extractedUtr = req.utr_ref || (msg.match(/UTR:\s*([A-Za-z0-9]+)/i)?.[1] || 'N/A');
             const extractedOrder = (msg.match(/\[Order:\s*([A-Za-z0-9]+)\]/i)?.[1] || 'ORD-LIVE');
@@ -12942,21 +12942,21 @@
       filtered.forEach(req => {
         const msg = req.message || '';
         let model = 'Guru-Flash 1.3';
-        let plan = 'Starter Premium ($5)';
-        let price = '₹420 ($5.00)';
+        let plan = 'Starter Plan (₹399)';
+        let price = '₹399';
 
-        if (msg.includes('Guru-Argon 1.5') || msg.includes('$25')) {
+        if (msg.includes('Guru-Argon 1.5') || msg.includes('$25') || msg.includes('2099')) {
           model = 'Guru-Argon 1.5';
-          plan = 'Power User ($25)';
-          price = '₹2,100 ($25.00)';
-        } else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15')) {
+          plan = 'Grandmaster / Power Plan (₹2,099)';
+          price = '₹2,099';
+        } else if (msg.includes('Guru-Argon 1.4') || msg.includes('$15') || msg.includes('1299')) {
           model = 'Guru-Argon 1.4';
-          plan = 'Pro Premium ($15)';
-          price = '₹1,250 ($15.00)';
-        } else if (msg.includes('Guru-Flash 1.3') || msg.includes('$5')) {
+          plan = 'Pro / Scholar Plan (₹1,299)';
+          price = '₹1,299';
+        } else if (msg.includes('Guru-Flash 1.3') || msg.includes('$5') || msg.includes('399')) {
           model = 'Guru-Flash 1.3';
-          plan = 'Starter Premium ($5)';
-          price = '₹420 ($5.00)';
+          plan = 'Starter Plan (₹399)';
+          price = '₹399';
         }
 
         const isApproved = (req.status || '').toLowerCase() === 'active';

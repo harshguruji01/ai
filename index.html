@@ -593,6 +593,141 @@
 
 <body class="h-screen w-screen overflow-hidden flex flex-col font-sans-mode text-size-medium select-none">
 
+  <!-- ========================================== -->
+  <!-- GURUAI SYSTEM MAINTENANCE & MODEL UPGRADE OVERLAY -->
+  <!-- Active Force Stop until March 1, 2027 -->
+  <!-- ========================================== -->
+  <div id="aiMaintenanceOverlay" class="fixed inset-0 z-[999999] flex items-center justify-center bg-[#07090e]/95 backdrop-blur-2xl p-4 sm:p-6 overflow-y-auto" style="display: none;">
+    <!-- Cosmic Glowing Backlight Ambient Orbs -->
+    <div class="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="fixed bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-96 h-96 bg-cyan-500/15 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="relative max-w-xl w-full bg-slate-900/90 border border-indigo-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-indigo-950/80 text-center backdrop-blur-xl my-auto">
+      
+      <!-- Animated GuruAI Mascot Logo -->
+      <div class="relative w-24 h-24 mx-auto mb-5">
+        <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-indigo-500 to-cyan-400 blur-lg opacity-60 animate-pulse"></div>
+        <div class="relative w-full h-full rounded-3xl bg-[#0b0f19] border border-indigo-500/40 p-2 shadow-xl flex items-center justify-center overflow-hidden">
+          <img src="logo.png" alt="GuruAI Mascot" class="w-full h-full object-cover rounded-2xl" />
+        </div>
+      </div>
+
+      <!-- Maintenance Badge -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        <span>🛠️ Scheduled Maintenance</span>
+      </div>
+
+      <!-- Main Title -->
+      <h1 class="text-2xl sm:text-3xl font-extrabold font-heading text-white tracking-tight mb-2">
+        GuruAI is Upgrading
+      </h1>
+
+      <!-- Requested Maintenance Message Box -->
+      <div class="my-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-indigo-950/60 via-slate-950 to-slate-950 border border-indigo-500/40 shadow-inner">
+        <p class="text-sm sm:text-base font-semibold text-indigo-200 italic leading-relaxed">
+          &ldquo;maintaioning server and train a new ai model for more complex solution&rdquo;
+        </p>
+      </div>
+
+      <!-- Timeline & Schedule Note -->
+      <div class="flex items-center justify-center gap-2 text-xs text-slate-300 mb-2">
+        <span class="text-slate-400">🔒 AI Services Force Paused Until:</span>
+        <span class="font-mono font-bold text-cyan-300 bg-cyan-950/60 border border-cyan-500/30 px-2.5 py-0.5 rounded-lg">March 1, 2027</span>
+      </div>
+      <div id="maintenanceCountdownText" class="text-xs font-mono text-slate-400 mb-6"></div>
+
+      <!-- Official Contact Details & Links -->
+      <div class="pt-5 border-t border-slate-800 text-left">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center mb-3">
+          Official Support &amp; HarshGuruJi Ecosystem
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+          <a href="mailto:info@webguruji.online" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/60 text-slate-200 transition group">
+            <span class="text-lg">✉️</span>
+            <div class="min-w-0 flex-1">
+              <div class="text-[10px] text-slate-400">Direct Inquiries</div>
+              <div class="font-bold text-cyan-300 truncate group-hover:text-cyan-200">info@webguruji.online</div>
+            </div>
+          </a>
+          <a href="https://webguruji.online/contact.html" target="_blank" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/60 text-slate-200 transition group">
+            <span class="text-lg">💬</span>
+            <div class="min-w-0 flex-1">
+              <div class="text-[10px] text-slate-400">Help Desk</div>
+              <div class="font-bold text-indigo-300 group-hover:text-indigo-200">Contact Us ↗</div>
+            </div>
+          </a>
+          <a href="https://webguruji.online/" target="_blank" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/60 text-slate-200 transition group">
+            <span class="text-lg">🌐</span>
+            <div class="min-w-0 flex-1">
+              <div class="text-[10px] text-slate-400">HarshGuruJi Portal</div>
+              <div class="font-bold text-emerald-300 group-hover:text-emerald-200">webguruji.online ↗</div>
+            </div>
+          </a>
+          <a href="https://store.webguruji.online/" target="_blank" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/60 text-slate-200 transition group">
+            <span class="text-lg">📱</span>
+            <div class="min-w-0 flex-1">
+              <div class="text-[10px] text-slate-400">App Store</div>
+              <div class="font-bold text-amber-300 group-hover:text-amber-200">store.webguruji.online ↗</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Automatic Maintenance Controller - Active until March 1, 2027
+      const MAINTENANCE_EXPIRY = new Date('2027-03-01T00:00:00').getTime();
+
+      function updateMaintenanceUI() {
+        const now = Date.now();
+        const overlay = document.getElementById('aiMaintenanceOverlay');
+        const isMaintenance = now < MAINTENANCE_EXPIRY;
+
+        if (overlay) {
+          if (isMaintenance) {
+            overlay.style.display = 'flex';
+            const diff = MAINTENANCE_EXPIRY - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / (1000 * 60)) % 60);
+            const cdEl = document.getElementById('maintenanceCountdownText');
+            if (cdEl) {
+              cdEl.textContent = `⏳ ${days} days, ${hours} hours, and ${mins} minutes until system reactivation`;
+            }
+          } else {
+            overlay.style.display = 'none';
+          }
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateMaintenanceUI);
+      } else {
+        updateMaintenanceUI();
+      }
+      setInterval(updateMaintenanceUI, 60000);
+
+      // Force block chat submissions during maintenance
+      const originalHandleChatSubmit = window.handleChatSubmit;
+      window.handleChatSubmit = function(e) {
+        if (Date.now() < MAINTENANCE_EXPIRY) {
+          if (e && e.preventDefault) e.preventDefault();
+          if (typeof showToast === 'function') {
+            showToast('⚠️ AI is paused: maintaining server & training new model until March 1, 2027.', 'warning');
+          }
+          return false;
+        }
+        if (typeof originalHandleChatSubmit === 'function') {
+          return originalHandleChatSubmit.apply(this, arguments);
+        }
+      };
+    })();
+  </script>
+
   <!-- APP SPLASH SCREEN OVERLAY (Auto-fades on load) -->
   <div id="appSplashScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0b0f19] transition-opacity duration-500 pointer-events-none">
     <div class="flex flex-col items-center">
@@ -2042,12 +2177,12 @@
       <!-- 3 Tier Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
         
-        <!-- Tier 1: Starter Pro ($5) -->
+        <!-- Tier 1: Starter Pro (₹399) -->
         <div class="rounded-2xl bg-slate-950/90 border border-slate-800 p-5 sm:p-6 flex flex-col justify-between hover:border-slate-700 transition relative">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Starter Pro</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-xs text-slate-200 font-mono font-bold">$5 / mo</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-xs text-slate-200 font-mono font-bold">₹399 / mo</span>
             </div>
             <div class="mb-4">
               <div class="text-3xl font-extrabold text-white font-heading">50,000</div>
@@ -2072,13 +2207,13 @@
               </li>
             </ul>
           </div>
-          <button onclick="handlePlanBuy('Starter Pro ($5)', 50000, 5)"
+          <button onclick="handlePlanBuy('Starter Pro (₹399)', 50000, 399)"
             class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
-            <span>Upgrade to Starter ($5)</span> ➔
+            <span>Upgrade to Starter (₹399)</span> ➔
           </button>
         </div>
 
-        <!-- Tier 2: Power Scholar ($15 - Recommended / Best Value) -->
+        <!-- Tier 2: Power Scholar (₹1,299 - Recommended / Best Value) -->
         <div class="rounded-2xl bg-gradient-to-b from-indigo-950/50 via-slate-950 to-slate-950 border-2 border-indigo-500/70 p-5 sm:p-6 flex flex-col justify-between hover:border-indigo-400 transition relative shadow-2xl shadow-indigo-950/60">
           <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-500 to-cyan-400 text-slate-950 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-wider shadow">
             🔥 Best Value • 3.5x Context
@@ -2086,7 +2221,7 @@
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Power Scholar</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-xs text-cyan-300 font-mono font-bold">$15 / mo</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-xs text-cyan-300 font-mono font-bold">₹1,299 / mo</span>
             </div>
             <div class="mb-4">
               <div class="text-3xl font-extrabold text-white font-heading">175,000</div>
@@ -2111,18 +2246,18 @@
               </li>
             </ul>
           </div>
-          <button onclick="handlePlanBuy('Power Scholar ($15)', 175000, 15)"
+          <button onclick="handlePlanBuy('Power Scholar (₹1,299)', 175000, 1299)"
             class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/40 hover:opacity-95 transition flex items-center justify-center gap-1.5">
-            <span>Upgrade to Scholar ($15)</span> ➔
+            <span>Upgrade to Scholar (₹1,299)</span> ➔
           </button>
         </div>
 
-        <!-- Tier 3: Grandmaster Enterprise ($25) -->
+        <!-- Tier 3: Grandmaster Enterprise (₹2,099) -->
         <div class="rounded-2xl bg-slate-950/90 border border-slate-800 p-5 sm:p-6 flex flex-col justify-between hover:border-slate-700 transition relative">
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Grandmaster</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-xs text-purple-300 font-mono font-bold">$25 / mo</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-xs text-purple-300 font-mono font-bold">₹2,099 / mo</span>
             </div>
             <div class="mb-4">
               <div class="text-3xl font-extrabold text-white font-heading">325,000</div>
@@ -2147,9 +2282,9 @@
               </li>
             </ul>
           </div>
-          <button onclick="handlePlanBuy('Grandmaster Enterprise ($25)', 325000, 25)"
+          <button onclick="handlePlanBuy('Grandmaster Enterprise (₹2,099)', 325000, 2099)"
             class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow">
-            <span>Upgrade to Grandmaster ($25)</span> ➔
+            <span>Upgrade to Grandmaster (₹2,099)</span> ➔
           </button>
         </div>
 
@@ -2174,21 +2309,21 @@
             <tbody class="divide-y divide-slate-800/60 text-slate-300">
               <tr>
                 <td class="py-2.5 font-semibold text-slate-200">Starter Pro</td>
-                <td class="py-2.5 font-mono">$5</td>
+                <td class="py-2.5 font-mono">₹399</td>
                 <td class="py-2.5 text-cyan-400 font-mono">50,000</td>
                 <td class="py-2.5 font-mono">$1.00 / 10k</td>
                 <td class="py-2.5 text-slate-400">Standard Baseline</td>
               </tr>
               <tr class="bg-indigo-950/20">
                 <td class="py-2.5 font-bold text-indigo-300">Power Scholar</td>
-                <td class="py-2.5 font-mono font-bold">$15</td>
+                <td class="py-2.5 font-mono font-bold">₹1,299</td>
                 <td class="py-2.5 text-cyan-300 font-mono font-bold">175,000</td>
                 <td class="py-2.5 font-mono text-emerald-400 font-bold">$0.85 / 10k</td>
                 <td class="py-2.5 text-emerald-400 font-semibold">+15% Cheaper &amp; 3.5x Context Volume</td>
               </tr>
               <tr>
                 <td class="py-2.5 font-bold text-purple-300">Grandmaster</td>
-                <td class="py-2.5 font-mono font-bold">$25</td>
+                <td class="py-2.5 font-mono font-bold">₹2,099</td>
                 <td class="py-2.5 text-purple-300 font-mono font-bold">325,000</td>
                 <td class="py-2.5 font-mono text-emerald-400 font-bold">$0.76 / 10k</td>
                 <td class="py-2.5 text-emerald-400 font-semibold">+24% Cheaper &amp; 6.5x Context Volume</td>
@@ -2320,7 +2455,7 @@
         } else {
           showToast('🔒 ' + modelName + ' payment ke baad hi unlock hota hai. Kripya upgrade karein!', 'warning');
           if (typeof openAiPaymentModal === 'function') {
-            openAiPaymentModal(modelId, targetTier === 5 ? 25 : (targetTier === 4 ? 15 : 5));
+            openAiPaymentModal(modelId, targetTier === 5 ? 2099 : (targetTier === 4 ? 1299 : 399));
           } else if (typeof openUpgradeModal === 'function') {
             openUpgradeModal();
           }
@@ -2351,13 +2486,13 @@
     window.handlePlanBuy = function(planName, contextLimit, price) {
       closeUpgradeModal();
       let planId = 'guru-flash-1.3';
-      let inr = 499;
-      if (price === 15 || (typeof planName === 'string' && (planName.includes('Scholar') || planName.includes('15') || planName.includes('1.4')))) {
+      let inr = 399;
+      if (price === 1299 || price === 15 || (typeof planName === 'string' && (planName.includes('Scholar') || planName.includes('1.4') || planName.includes('1299')))) {
         planId = 'guru-argon-1.4';
-        inr = 999;
-      } else if (price === 25 || (typeof planName === 'string' && (planName.includes('Master') || planName.includes('25') || planName.includes('1.5')))) {
+        inr = 1299;
+      } else if (price === 2099 || price === 25 || (typeof planName === 'string' && (planName.includes('Master') || planName.includes('1.5') || planName.includes('2099')))) {
         planId = 'guru-argon-1.5';
-        inr = 1999;
+        inr = 2099;
       }
       if (typeof openAiPaymentModal === 'function') {
         openAiPaymentModal(planId, price);
@@ -5271,7 +5406,7 @@ COMPLETENESS MANDATE:
             <div class="min-w-0">
               <div class="flex items-center gap-1.5">
                 <span class="font-bold text-xs text-amber-300 group-hover:text-amber-200 truncate">Guru-Flash 1.3</span>
-                <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">$5</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">₹399</span>
               </div>
               <p class="text-[10px] text-slate-400 truncate">Nemotron 3.5 Thinking & tools</p>
             </div>
@@ -5290,7 +5425,7 @@ COMPLETENESS MANDATE:
             <div class="min-w-0">
               <div class="flex items-center gap-1.5">
                 <span class="font-bold text-xs text-purple-300 group-hover:text-purple-200 truncate">Guru-Argon 1.4</span>
-                <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">$15</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">₹1,299</span>
               </div>
               <p class="text-[10px] text-slate-400 truncate">Deep multi-step math logic</p>
             </div>
@@ -5309,7 +5444,7 @@ COMPLETENESS MANDATE:
             <div class="min-w-0">
               <div class="flex items-center gap-1.5">
                 <span class="font-bold text-xs text-cyan-300 group-hover:text-cyan-200 truncate">Guru-Argon 1.5</span>
-                <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">$25</span>
+                <span class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">₹2,099</span>
               </div>
               <p class="text-[10px] text-slate-400 truncate">Mistral Large 1T Multimodal</p>
             </div>
@@ -5600,44 +5735,44 @@ COMPLETENESS MANDATE:
     'guru-flash-1.3': {
       name: 'Guru-Flash 1.3',
       icon: '👑',
-      badge: 'Starter Premium • $5',
+      badge: 'Starter Premium • ₹399',
       badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
       desc: 'Powered by NVIDIA Nemotron 3.5 Bolt with Extended Thinking capability enabled. Ideal for complex logical deductions, deterministic seeds, and parallel tool calling.',
       context: '64,000 Tokens',
       reasoning: 'High (Thinking Enabled)',
       vision: 'Standard + Docs',
-      price: '$5 (Starter Plan)',
+      price: '₹399 (Starter Plan)',
       isPremium: true,
       priceVal: 5,
-      planName: 'Starter Premium ($5)'
+      planName: 'Starter Premium (₹399)'
     },
     'guru-argon-1.4': {
       name: 'Guru-Argon 1.4',
       icon: '💎',
-      badge: 'Pro Premium • $15',
+      badge: 'Pro Premium • ₹1,299',
       badgeClass: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
       desc: 'High-reasoning academic and scientific model designed for complex multi-variable mathematics, competitive code architecture, and deep analysis.',
       context: '128,000 Tokens',
       reasoning: 'Deep Mathematical Logic',
       vision: 'Code & Diagrams',
-      price: '$15 (Pro Plan)',
+      price: '₹1,299 (Pro Plan)',
       isPremium: true,
       priceVal: 15,
-      planName: 'Pro Premium ($15)'
+      planName: 'Pro Premium (₹1,299)'
     },
     'guru-argon-1.5': {
       name: 'Guru-Argon 1.5',
       icon: '🚀',
-      badge: 'Power User • $25',
+      badge: 'Power User • ₹2,099',
       badgeClass: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
       desc: 'Top-tier 1-Trillion Parameter Mistral Large A52B model with High Reasoning Effort. Fully multimodal with native image and vision comprehension.',
       context: '128,000 Tokens',
       reasoning: 'Maximum (High Effort 1T)',
       vision: 'Multimodal Vision Active',
-      price: '$25 (Power Plan)',
+      price: '₹2,099 (Power Plan)',
       isPremium: true,
       priceVal: 25,
-      planName: 'Power User ($25)'
+      planName: 'Power User (₹2,099)'
     }
   };
 
@@ -6290,7 +6425,7 @@ COMPLETENESS MANDATE:
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 flex-wrap">
             <h3 id="payModalModelName" class="font-bold font-heading text-lg text-white">Guru-Argon 1.4</h3>
-            <span id="payModalPriceBadge" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">₹999 / $15</span>
+            <span id="payModalPriceBadge" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">₹1,299 / mo</span>
           </div>
           <p id="payModalContextDesc" class="text-xs text-slate-400">125,000 Token Context Window • High-Speed Reasoning</p>
         </div>
@@ -6398,10 +6533,10 @@ COMPLETENESS MANDATE:
       const m = (typeof GURU_MODELS !== 'undefined' && GURU_MODELS[activeBuyModelKey]) ? GURU_MODELS[activeBuyModelKey] : null;
       activeBuyPlanName = m ? m.name : activeBuyModelKey;
 
-      let inrPrice = 499;
-      if (priceVal === 15 || activeBuyModelKey === 'guru-argon-1.4') inrPrice = 999;
-      else if (priceVal === 25 || activeBuyModelKey === 'guru-argon-1.5') inrPrice = 1999;
-      else if (priceVal === 5 || activeBuyModelKey === 'guru-flash-1.3') inrPrice = 499;
+      let inrPrice = 399;
+      if (priceVal === 1299 || priceVal === 15 || activeBuyModelKey === 'guru-argon-1.4') inrPrice = 1299;
+      else if (priceVal === 2099 || priceVal === 25 || activeBuyModelKey === 'guru-argon-1.5') inrPrice = 2099;
+      else if (priceVal === 399 || priceVal === 5 || activeBuyModelKey === 'guru-flash-1.3') inrPrice = 399;
       activeBuyPrice = inrPrice;
 
       // Update Modal UI
@@ -6411,7 +6546,7 @@ COMPLETENESS MANDATE:
       const qrImg = document.getElementById('payModalQrImg');
 
       if (titleEl) titleEl.textContent = activeBuyPlanName;
-      if (priceEl) priceEl.textContent = '₹' + inrPrice + ' (' + (m && m.price ? m.price : ('$' + (priceVal || 5) + '/mo')) + ')';
+      if (priceEl) priceEl.textContent = '₹' + inrPrice.toLocaleString('en-IN') + ' / mo';
       if (descEl && m) descEl.textContent = `${m.contextTokens || '100,000+'} Tokens Context Limit • Priority GPU Speed`;
 
       // Dynamic QR with exact amount
@@ -6826,13 +6961,16 @@ COMPLETENESS MANDATE:
     // Override handlePlanBuy & selectPremiumAndRedirect to open In-App Payment Desk directly
     window.handlePlanBuy = function(planName, contextLimit, price) {
       let modelKey = 'guru-flash-1.3';
-      if (price === 15 || (typeof planName === 'string' && (planName.includes('Scholar') || planName.includes('15')))) {
+      let cleanPrice = 399;
+      if (price === 1299 || price === 15 || (typeof planName === 'string' && (planName.includes('Scholar') || planName.includes('1299') || planName.includes('1.4')))) {
         modelKey = 'guru-argon-1.4';
-      } else if (price === 25 || (typeof planName === 'string' && (planName.includes('Master') || planName.includes('25')))) {
+        cleanPrice = 1299;
+      } else if (price === 2099 || price === 25 || (typeof planName === 'string' && (planName.includes('Master') || planName.includes('2099') || planName.includes('1.5')))) {
         modelKey = 'guru-argon-1.5';
+        cleanPrice = 2099;
       }
       if (typeof closeUpgradeModal === 'function') closeUpgradeModal();
-      openAiPaymentModal(modelKey, price);
+      openAiPaymentModal(modelKey, cleanPrice);
     };
 
     window.selectPremiumAndRedirect = function(modelKey, planName, priceVal) {
